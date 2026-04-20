@@ -1,9 +1,11 @@
 """AMOS Society/Culture Engine - Social and cultural analysis."""
 
-from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
 
-from amos_runtime import get_runtime
+from dataclasses import dataclass
+from typing import Any
+
+from clawspring.amos_runtime import get_runtime
 
 
 @dataclass
@@ -12,9 +14,9 @@ class SocietyAnalysis:
 
     domain: str
     input_data: str
-    findings: List[dict]
+    findings: list[dict]
     confidence: float
-    limitations: List[str]
+    limitations: list[str]
     law_compliance: dict
     gap_acknowledgment: str
 
@@ -61,7 +63,7 @@ class InstitutionalKernel:
             ),
         )
 
-    def _get_primitives(self, category: str) -> List[str]:
+    def _get_primitives(self, category: str) -> list[str]:
         """Get institutional primitives for category."""
         primitives = {
             "state_governance": ["role", "rule", "enforcement", "legitimacy"],
@@ -130,7 +132,7 @@ class CulturalNormsKernel:
             ),
         )
 
-    def _get_primitives(self, category: str) -> List[str]:
+    def _get_primitives(self, category: str) -> list[str]:
         """Get cultural primitives for category."""
         primitives = {
             "values": ["symbol", "script", "identity_marker"],
@@ -194,7 +196,7 @@ class DemographicKernel:
             ),
         )
 
-    def _get_primitives(self, category: str) -> List[str]:
+    def _get_primitives(self, category: str) -> list[str]:
         """Get demographic primitives for category."""
         primitives = {
             "population_dynamics": ["cohort", "fertility", "mortality"],
@@ -263,7 +265,7 @@ class MediaInformationKernel:
             ),
         )
 
-    def _get_primitives(self, category: str) -> List[str]:
+    def _get_primitives(self, category: str) -> list[str]:
         """Get media primitives for category."""
         primitives = {
             "news_media": ["channel", "message", "filter", "gatekeeping"],
@@ -287,7 +289,7 @@ class AMOSSocietyEngine:
 
     def __init__(self):
         self.runtime = get_runtime()
-        self.kernels: Dict[str, Any] = {}
+        self.kernels: dict[str, Any] = {}
         self._init_kernels()
 
     def _init_kernels(self):
@@ -298,8 +300,8 @@ class AMOSSocietyEngine:
     def analyze(
         self,
         description: str,
-        domains: Optional[List[str]] = None,
-    ) -> Dict[str, SocietyAnalysis]:
+        domains: list[str | None] = None,
+    ) -> dict[str, SocietyAnalysis]:
         """Run society/culture analysis across specified domains."""
         domains = domains or list(self.DOMAINS.keys())
         results = {}
@@ -311,7 +313,7 @@ class AMOSSocietyEngine:
 
         return results
 
-    def get_findings_summary(self, results: Dict[str, SocietyAnalysis]) -> str:
+    def get_findings_summary(self, results: dict[str, SocietyAnalysis]) -> str:
         """Generate human-readable findings summary."""
         lines = [
             "# AMOS Society/Culture Analysis Summary",
@@ -398,7 +400,7 @@ class AMOSSocietyEngine:
 
 
 # Singleton
-_society_engine: Optional[AMOSSocietyEngine] = None
+_society_engine: AMOSSocietyEngine | None = None
 
 
 def get_society_engine() -> AMOSSocietyEngine:
@@ -411,9 +413,9 @@ def get_society_engine() -> AMOSSocietyEngine:
 
 def analyze_society(
     description: str,
-    domains: Optional[List[str]] = None,
-) -> Dict[str, SocietyAnalysis]:
-    """Quick helper for society/culture analysis."""
+    domains: list[str | None] = None,
+) -> dict[str, SocietyAnalysis]:
+    """Quick helper.*?"""
     return get_society_engine().analyze(description, domains)
 
 

@@ -40,9 +40,11 @@ Phase: 14 Enhancement
 """
 
 from collections.abc import Callable
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from enum import Enum
-from typing import Any, Dict, Optional
+from typing import Any
 
 # FastAPI imports
 try:
@@ -110,7 +112,7 @@ class AMOSException(Exception):
         message: str,
         error_code: str,
         status_code: int = 500,
-        details: Dict[str, Any] = None,
+        details: dict[str, Any] = None,
         severity: ErrorSeverity = ErrorSeverity.ERROR,
         category: ErrorCategory = ErrorCategory.INTERNAL,
     ):
@@ -123,7 +125,7 @@ class AMOSException(Exception):
         self.timestamp = datetime.now(UTC).isoformat()
         super().__init__(message)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert exception to dictionary."""
         return {
             "type": f"https://amos.io/errors/{self.error_code.lower()}",
@@ -140,7 +142,7 @@ class AMOSException(Exception):
 class ValidationException(AMOSException):
     """Exception for validation errors."""
 
-    def __init__(self, message: str = "Validation error", details: Dict[str, Any] = None):
+    def __init__(self, message: str = "Validation error", details: dict[str, Any] = None):
         super().__init__(
             message=message,
             error_code="VALIDATION_ERROR",
@@ -154,7 +156,7 @@ class ValidationException(AMOSException):
 class NotFoundException(AMOSException):
     """Exception for resource not found errors."""
 
-    def __init__(self, resource_type: str, resource_id: str = None, details: Dict[str, Any] = None):
+    def __init__(self, resource_type: str, resource_id: str = None, details: dict[str, Any] = None):
         message = f"{resource_type} not found"
         if resource_id:
             message = f"{resource_type} '{resource_id}' not found"
@@ -198,7 +200,7 @@ class AuthorizationException(AMOSException):
 class ConflictException(AMOSException):
     """Exception for resource conflict errors."""
 
-    def __init__(self, message: str = "Resource conflict", details: Dict[str, Any] = None):
+    def __init__(self, message: str = "Resource conflict", details: dict[str, Any] = None):
         super().__init__(
             message=message,
             error_code="RESOURCE_CONFLICT",
@@ -212,7 +214,7 @@ class ConflictException(AMOSException):
 class DatabaseException(AMOSException):
     """Exception for database errors."""
 
-    def __init__(self, message: str = "Database error", details: Dict[str, Any] = None):
+    def __init__(self, message: str = "Database error", details: dict[str, Any] = None):
         super().__init__(
             message=message,
             error_code="DATABASE_ERROR",
@@ -251,7 +253,7 @@ class CircuitBreakerException(AMOSException):
         )
 
 
-def create_error_response(exc: Exception, correlation_id: str = None) -> Dict[str, Any]:
+def create_error_response(exc: Exception, correlation_id: str = None) -> dict[str, Any]:
     """Create standardized error response."""
 
     if isinstance(exc, AMOSException):

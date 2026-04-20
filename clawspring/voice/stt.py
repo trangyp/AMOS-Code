@@ -19,7 +19,6 @@ import os
 import struct
 
 from .recorder import BYTES_PER_SAMPLE, CHANNELS, SAMPLE_RATE
-from typing import List, Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -65,7 +64,7 @@ def _pcm_to_wav(pcm_bytes: bytes) -> bytes:
 # ── Availability ──────────────────────────────────────────────────────────
 
 
-def check_stt_availability() -> Tuple[bool, str]:
+def check_stt_availability() -> tuple[bool, str]:
     """Return (available, reason_if_not)."""
     try:
         import faster_whisper  # noqa: F401
@@ -146,7 +145,7 @@ def _has_cuda() -> bool:
 
 def _transcribe_faster_whisper(
     pcm_bytes: bytes,
-    keyterms: List[str],
+    keyterms: list[str],
     language: str,
 ) -> str:
     import numpy as np
@@ -185,7 +184,7 @@ def _get_openai_whisper_model():
 
 def _transcribe_openai_whisper(
     pcm_bytes: bytes,
-    keyterms: List[str],
+    keyterms: list[str],
     language: str,
 ) -> str:
     import numpy as np
@@ -225,7 +224,7 @@ def _transcribe_openai_api(
 # ── Keyterms → prompt ─────────────────────────────────────────────────────
 
 
-def _keyterms_to_prompt(keyterms: List[str]) -> str:
+def _keyterms_to_prompt(keyterms: list[str]) -> str:
     """Convert a list of keywords into a Whisper initial_prompt string.
 
     Whisper treats the initial_prompt as preceding context; sprinkling the
@@ -242,7 +241,7 @@ def _keyterms_to_prompt(keyterms: List[str]) -> str:
 
 def transcribe(
     pcm_bytes: bytes,
-    keyterms: List[str] = None,
+    keyterms: list[str] = None,
     language: str = "auto",
 ) -> str:
     """Transcribe raw PCM audio to text.
@@ -254,6 +253,7 @@ def transcribe(
 
     Returns:
         Transcribed text, or empty string if audio contains no speech.
+
     """
     if not pcm_bytes:
         return ""

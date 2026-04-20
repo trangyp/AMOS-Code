@@ -37,14 +37,7 @@ Owner: Trang
 import asyncio
 import json
 import sys
-from pathlib import Path
-from typing import Any, Dict, List
-
-# Add paths
-REPO_ROOT = Path(__file__).parent
-sys.path.insert(0, str(REPO_ROOT))
-sys.path.insert(0, str(REPO_ROOT / "AMOS_ORGANISM_OS"))
-sys.path.insert(0, str(REPO_ROOT / "amos_brain"))
+from typing import Any
 
 
 class AMOSMCPServer:
@@ -57,7 +50,7 @@ class AMOSMCPServer:
         self.amos = None
         self.tools = self._define_tools()
 
-    def _define_tools(self) -> List[dict[str, Any]]:
+    def _define_tools(self) -> list[dict[str, Any]]:
         """Define MCP tools."""
         return [
             {
@@ -171,7 +164,7 @@ class AMOSMCPServer:
     def initialize(self):
         """Initialize AMOS system."""
         try:
-            from amos_unified_enhanced import AMOSUnifiedEnhanced
+            from AMOS_ORGANISM_OS.amos_unified_enhanced import AMOSUnifiedEnhanced
 
             self.amos = AMOSUnifiedEnhanced()
             self.amos.initialize(auto_load_knowledge=True)
@@ -180,7 +173,7 @@ class AMOSMCPServer:
             print(f"Warning: Could not initialize AMOS: {e}", file=sys.stderr)
             return False
 
-    async def handle_request(self, request: Dict[str, Any]) -> Dict[str, Any]:
+    async def handle_request(self, request: dict[str, Any]) -> dict[str, Any]:
         """Handle MCP request."""
         method = request.get("method")
         params = request.get("params", {})
@@ -194,7 +187,7 @@ class AMOSMCPServer:
         else:
             return {"error": f"Unknown method: {method}"}
 
-    def _handle_initialize(self) -> Dict[str, Any]:
+    def _handle_initialize(self) -> dict[str, Any]:
         """Handle initialize request."""
         return {
             "protocolVersion": "2024-11-05",
@@ -202,11 +195,11 @@ class AMOSMCPServer:
             "capabilities": {"tools": {}},
         }
 
-    def _handle_tools_list(self) -> Dict[str, Any]:
+    def _handle_tools_list(self) -> dict[str, Any]:
         """Handle tools/list request."""
         return {"tools": self.tools}
 
-    async def _handle_tool_call(self, params: Dict[str, Any]) -> Dict[str, Any]:
+    async def _handle_tool_call(self, params: dict[str, Any]) -> dict[str, Any]:
         """Handle tool call."""
         tool_name = params.get("name")
         arguments = params.get("arguments", {})
@@ -235,7 +228,7 @@ class AMOSMCPServer:
                 "isError": True,
             }
 
-    async def _handle_think(self, args: Dict[str, Any]) -> Dict[str, Any]:
+    async def _handle_think(self, args: dict[str, Any]) -> dict[str, Any]:
         """Handle amos_think."""
         problem = args.get("problem")
         context = args.get("context", {})
@@ -252,7 +245,7 @@ class AMOSMCPServer:
             "status": "success",
         }
 
-    async def _handle_query(self, args: Dict[str, Any]) -> Dict[str, Any]:
+    async def _handle_query(self, args: dict[str, Any]) -> dict[str, Any]:
         """Handle amos_query."""
         query = args.get("query")
         domain = args.get("domain")
@@ -270,7 +263,7 @@ class AMOSMCPServer:
             "status": "success",
         }
 
-    async def _handle_status(self, args: Dict[str, Any]) -> Dict[str, Any]:
+    async def _handle_status(self, args: dict[str, Any]) -> dict[str, Any]:
         """Handle amos_status."""
         if not self.amos or not self.amos.status:
             return {"error": "AMOS not initialized"}
@@ -292,7 +285,7 @@ class AMOSMCPServer:
             "status": "success",
         }
 
-    async def _handle_subsystems(self, args: Dict[str, Any]) -> Dict[str, Any]:
+    async def _handle_subsystems(self, args: dict[str, Any]) -> dict[str, Any]:
         """Handle amos_subsystems."""
         action = args.get("action", "list")
 
@@ -319,7 +312,7 @@ class AMOSMCPServer:
                 "status": "success",
             }
 
-    async def _handle_countries(self, args: Dict[str, Any]) -> Dict[str, Any]:
+    async def _handle_countries(self, args: dict[str, Any]) -> dict[str, Any]:
         """Handle amos_countries."""
         action = args.get("action", "list")
 
@@ -355,7 +348,7 @@ class AMOSMCPServer:
             else:
                 return {"error": f"Country {code} not found"}
 
-    async def _handle_sectors(self, args: Dict[str, Any]) -> Dict[str, Any]:
+    async def _handle_sectors(self, args: dict[str, Any]) -> dict[str, Any]:
         """Handle amos_sectors."""
         action = args.get("action", "list")
 
@@ -391,7 +384,7 @@ class AMOSMCPServer:
             else:
                 return {"error": f"Sector {code} not found"}
 
-    async def _handle_decide(self, args: Dict[str, Any]) -> Dict[str, Any]:
+    async def _handle_decide(self, args: dict[str, Any]) -> dict[str, Any]:
         """Handle amos_decide."""
         question = args.get("question")
         options = args.get("options", [])
@@ -417,7 +410,7 @@ class AMOSMCPServer:
 
         return analysis
 
-    async def _handle_help(self, args: Dict[str, Any]) -> Dict[str, Any]:
+    async def _handle_help(self, args: dict[str, Any]) -> dict[str, Any]:
         """Handle amos_help."""
         return {
             "tool": "amos_help",

@@ -19,17 +19,52 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+# ============================================================================
+# AMOS TOOL LATTICE - Six-Kernel Architecture
+# ============================================================================
+
+# Kernel 1: Bootstrap
+bootstrap = []
+
+# Kernel 2: Schema & Deterministic Core
+schema = ["pydantic>=2.5.0", "hypothesis>=6.92.0"]
+
+# Kernel 3: Numeric Speed
+numeric = ["numpy>=1.26.0", "polars>=0.20.0", "numba>=0.59.0"]
+
+# Kernel 4: Code-Agent
+agent = ["aider-chat>=0.24.0"]
+
+# Kernel 5: Enforcement
+enforcement = [
+    "ruff>=0.1.0", "mypy>=1.7.0", "bandit>=1.7.7",
+    "pip-audit>=2.7.0", "import-linter>=2.0.0", "jscpd>=3.5.0",
+    "deptry>=0.15.0", "pre-commit>=3.6.0"
+]
+
+# Kernel 6: Test & Async
+test = ["pytest>=7.4.0", "pytest-asyncio>=0.21.0", "pytest-cov>=4.1.0"]
+
+# Legacy options
 voice  = ["sounddevice"]
 vision = ["Pillow"]
 api = ["fastapi>=0.100.0", "uvicorn>=0.23.0", "pydantic>=2.0.0"]
 
+# Layer-based extras (L0-L15)
+l0-l1 = ["pydantic>=2.5.0", "hypothesis>=6.92.0", "import-linter>=2.0.0"]
+l2-l3 = ["pydantic>=2.5.0", "ruff>=0.1.0", "mypy>=1.7.0", "deptry>=0.15.0"]
+l4-l5 = ["numpy>=1.26.0", "polars>=0.20.0", "numba>=0.59.0"]
+l6-l7 = ["pytest>=7.4.0", "pytest-asyncio>=0.21.0", "polars>=0.20.0"]
+l8-l9 = ["hypothesis>=6.92.0", "pytest>=7.4.0", "import-linter>=2.0.0"]
+l10-l11 = ["aider-chat>=0.24.0"]
+l12-l15 = ["pydantic>=2.5.0", "hypothesis>=6.92.0", "pytest>=7.4.0", "bandit>=1.7.7"]
+
+all = ["amos[schema,numeric,test,enforcement,agent]"]
+dev = ["amos[all]"]
+
 [project.scripts]
+# Only clawspring entrypoint - AMOS brain entrypoints defined in root pyproject.toml
 clawspring = "amos:main"
-amos = "amos_brain.__main__:main"
-amos-validate = "amos_brain.system_validator:validate_system"
-amos-unified = "amos_brain.unified_cli:main"
-amos-api = "amos_brain.api_gateway:main"
-amos-test = "amos_brain.test_integration_suite:main"
 
 [tool.setuptools]
 py-modules = [
@@ -46,3 +81,49 @@ py-modules = [
     "tools",
 ]
 packages = ["mcp", "memory", "multi_agent", "plugin", "skill", "task", "voice", "amos_brain"]
+
+# ============================================================================
+# TOOL CONFIGURATION - AMOS TOOL LATTICE
+# ============================================================================
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "D", "B", "C4", "UP", "SIM", "S"]
+ignore = ["D100", "D101", "D102", "D103", "S101"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+
+[tool.bandit]
+exclude_dirs = ["tests"]
+skips = ["B101"]
+
+[tool.importlinter]
+root_package = "openclaws"
+
+[[tool.importlinter.contracts]]
+name = "OpenClaws layers"
+type = "layers"
+layers = [
+    "frontends",
+    "api",
+    "orchestration",
+    "tools",
+    "memory",
+    "runtimes",
+    "protocols",
+    "core",
+    "config"
+]
+containers = ["openclaws"]
+exhaustive = true
+exhaustive_ignores = ["tests", "examples"]

@@ -3,10 +3,11 @@
 
 import json
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 
 @dataclass
@@ -23,12 +24,12 @@ class PrimaryFeatureHandler:
 
     def __init__(self, organism_root: Optional[Path] = None):
         self.root = organism_root or Path(__file__).parent
-        self.features: Dict[str, FeatureCapability] = {}
-        self.engines: Dict[str, Any] = {}
-        self.knowledge_index: Dict[str, Any] = {}
+        self.features: dict[str, FeatureCapability] = {}
+        self.engines: dict[str, Any] = {}
+        self.knowledge_index: dict[str, Any] = {}
         self.activated_count = 0
 
-    def scan_ecosystem(self) -> Dict[str, Any]:
+    def scan_ecosystem(self) -> dict[str, Any]:
         """Scan entire ecosystem for 1,500+ components."""
         print("[FEATURE_HANDLER] Scanning ecosystem...")
 
@@ -104,7 +105,7 @@ class PrimaryFeatureHandler:
 
         return stats
 
-    def activate_for_cycle(self, cycle_context: Dict[str, Any]) -> Dict[str, Any]:
+    def activate_for_cycle(self, cycle_context: dict[str, Any]) -> dict[str, Any]:
         """Activate relevant features for current cycle."""
         activated = {"engines": [], "knowledge": [], "capabilities": []}
 
@@ -133,7 +134,7 @@ class PrimaryFeatureHandler:
 
         return activated
 
-    def get_cycle_recommendation(self, cycle_context: Dict[str, Any]) -> Dict[str, Any]:
+    def get_cycle_recommendation(self, cycle_context: dict[str, Any]) -> dict[str, Any]:
         """Recommend features for next cycle based on discovered capabilities."""
         current = cycle_context.get("current_position", "01_BRAIN")
 
@@ -167,7 +168,7 @@ class PrimaryFeatureHandler:
             with open(filepath, "w") as f:
                 json.dump(data, f, indent=2)
             return True
-        except Exception:
+        except (OSError, ValueError):
             return False
 
 

@@ -1,15 +1,18 @@
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
+
+from typing import Any, Optional
 
 """SIKS API Router - Super-Intelligence Kernel Stack endpoints."""
 
 
+import importlib.util
+import sys
+import time
+from pathlib import Path
+
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
-import sys
-from pathlib import Path
-import importlib.util
-import time
 router = APIRouter(prefix="/siks", tags=["siks"])
 
 # ============================================================================
@@ -22,15 +25,15 @@ class SIKSPipelineRequest(BaseModel):
 
     content: str = Field(..., description="Input content to process")
     context_id: Optional[str] = Field(None, description="Optional context identifier")
-    stages: Optional[List[str] ] = Field(None, description="Specific stages to run (default: all)")
+    stages: list[Optional[str]] = Field(None, description="Specific stages to run (default: all)")
 
 
 class SIKSPipelineResponse(BaseModel):
     """Response from SIKS pipeline execution."""
 
     status: str
-    stages_executed: List[str]
-    results: Dict[str, Any]
+    stages_executed: list[str]
+    results: dict[str, Any]
     execution_time_ms: float
     siks_enabled: bool
 
@@ -56,14 +59,14 @@ class ProblemFindingRequest(BaseModel):
     """Request for problem finding kernel."""
 
     content: str
-    goals: Optional[List[str] ] = None
+    goals: list[Optional[str]] = None
 
 
 class ProblemFindingResponse(BaseModel):
     """Response from problem finding kernel."""
 
     problems_discovered: int
-    problems: List[dict[str, Any]]
+    problems: list[dict[str, Any]]
     hidden_problems: int
     framing_errors: int
     false_goals: int
@@ -102,10 +105,8 @@ async def get_siks_stack():
         return _siks_stack
 
     try:
-
         amos_root = Path(__file__).parent.parent.parent.resolve()
         if str(amos_root) not in sys.path:
-            sys.path.insert(0, str(amos_root))
 
         # Import SIKS module
 
@@ -259,7 +260,7 @@ async def run_calibration_check(request: CalibrationCheckRequest) -> Calibration
 
 
 @router.get("/status")
-async def get_siks_status() -> Dict[str, Any]:
+async def get_siks_status() -> dict[str, Any]:
     """Get SIKS stack status."""
     stack = await get_siks_stack()
 
@@ -275,7 +276,7 @@ async def get_siks_status() -> Dict[str, Any]:
 
 
 @router.get("/kernels")
-async def list_kernels() -> Dict[str, Any]:
+async def list_kernels() -> dict[str, Any]:
     """List all available SIKS kernels."""
     stack = await get_siks_stack()
 

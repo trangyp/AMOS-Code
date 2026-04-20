@@ -1,4 +1,7 @@
-from typing import Any, Dict, Optional
+from __future__ import annotations
+
+import asyncio
+from typing import Any
 
 """AMOS Brain API Integration - FastAPI routes for brain-powered endpoints.
 
@@ -9,6 +12,7 @@ Real backend integration providing:
 
 Owner: Trang Phan
 """
+
 
 try:
     from .cognitive_task_processor import process_cognitive_task
@@ -34,7 +38,7 @@ class BrainAPIIntegration:
             print(f"[BrainAPI] Init failed: {e}")
             return False
 
-    async def submit_brain_task(self, description: str, priority: str = "MEDIUM") -> Dict[str, Any]:
+    async def submit_brain_task(self, description: str, priority: str = "MEDIUM") -> dict[str, Any]:
         """Submit task to brain-powered queue."""
         if not self._initialized:
             await self.initialize()
@@ -46,7 +50,7 @@ class BrainAPIIntegration:
             "priority": priority,
         }
 
-    async def get_task_result(self, task_id: str) -> Dict[str, Any]:
+    async def get_task_result(self, task_id: str) -> dict[str, Any]:
         """Get task status and result."""
         task = await get_task_status(task_id)
         if not task:
@@ -64,7 +68,7 @@ class BrainAPIIntegration:
             "error": task.error,
         }
 
-    async def process_sync(self, description: str, priority: str = "MEDIUM") -> Dict[str, Any]:
+    async def process_sync(self, description: str, priority: str = "MEDIUM") -> dict[str, Any]:
         """Process task synchronously using brain."""
         import asyncio
 
@@ -83,7 +87,7 @@ class BrainAPIIntegration:
             "result": response.result,
         }
 
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """Health check for brain integration."""
         try:
             queue = await get_task_queue()
@@ -100,7 +104,7 @@ class BrainAPIIntegration:
 
 
 # Singleton
-_api_integration: Optional[BrainAPIIntegration] = None
+_api_integration: BrainAPIIntegration | None = None
 
 
 async def get_brain_api() -> BrainAPIIntegration:
@@ -113,19 +117,19 @@ async def get_brain_api() -> BrainAPIIntegration:
 
 
 # Convenience functions
-async def brain_submit_task(description: str, priority: str = "MEDIUM") -> Dict[str, Any]:
+async def brain_submit_task(description: str, priority: str = "MEDIUM") -> dict[str, Any]:
     """Submit task to brain."""
     api = await get_brain_api()
     return await api.submit_brain_task(description, priority)
 
 
-async def brain_get_result(task_id: str) -> Dict[str, Any]:
+async def brain_get_result(task_id: str) -> dict[str, Any]:
     """Get task result."""
     api = await get_brain_api()
     return await api.get_task_result(task_id)
 
 
-async def brain_process_sync(description: str, priority: str = "MEDIUM") -> Dict[str, Any]:
+async def brain_process_sync(description: str, priority: str = "MEDIUM") -> dict[str, Any]:
     """Process task synchronously."""
     api = await get_brain_api()
     return await api.process_sync(description, priority)

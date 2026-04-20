@@ -11,17 +11,18 @@ Creator: Trang Phan
 Version: 3.0.0
 """
 
+from __future__ import annotations
+
 import asyncio
 import json
-from datetime import datetime, timezone
-
-UTC = timezone.utc
+from datetime import UTC, datetime
 
 from fastapi import WebSocket, WebSocketDisconnect
-from typing import Dict
+
+UTC = UTC
 
 # Active connections store
-active_connections: Dict[str, set[WebSocket]] = {
+active_connections: dict[str, set[WebSocket]] = {
     "dashboard": set(),
     "agents": set(),
     "system": set(),

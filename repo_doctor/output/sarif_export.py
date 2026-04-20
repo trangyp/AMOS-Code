@@ -144,7 +144,7 @@ class SarifExporter:
         )
         self.results.append(result)
 
-    def export(self, output_path: Optional[Path] = None) -> Dict[str, Any]:
+    def export(self, output_path: Path | None = None) -> Dict[str, Any]:
         """
         Generate SARIF report.
         """

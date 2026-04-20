@@ -11,7 +11,7 @@ Usage:
 import re
 from dataclasses import dataclass
 from enum import Enum, auto
-from typing import Any, Dict, List
+from typing import Any
 
 try:
     from amos_superbrain_equation_bridge import AMOSSuperBrainBridge
@@ -38,7 +38,7 @@ class EquationExtraction:
     source_location: str = ""
     paper_doi: str = ""
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "equation_id": self.equation_id,
             "latex_source": self.latex_source,
@@ -58,14 +58,14 @@ class LaTeXParser:
         r"\\$\\$(.*?)\\$\\$",
     ]
 
-    def extract_math(self, text: str) -> List[dict[str, Any]]:
+    def extract_math(self, text: str) -> list[dict[str, Any]]:
         equations = []
         for pattern in self.MATH_PATTERNS:
             for match in re.findall(pattern, text, re.DOTALL):
                 equations.append({"latex": match.strip(), "variables": self._extract_vars(match)})
         return equations
 
-    def _extract_vars(self, latex: str) -> List[str]:
+    def _extract_vars(self, latex: str) -> list[str]:
         return list(set(re.findall(r"[a-zA-Z](?:_\{?\w+\}?)?", latex)))
 
 
@@ -76,9 +76,9 @@ class AutoFormalizer:
         self.confidence_threshold = confidence_threshold
         self.parser = LaTeXParser()
         self.superbrain = AMOSSuperBrainBridge() if SUPERBRAIN_AVAILABLE else None
-        self.history: List[EquationExtraction] = []
+        self.history: list[EquationExtraction] = []
 
-    def process_paper(self, source: str, domain: str) -> List[EquationExtraction]:
+    def process_paper(self, source: str, domain: str) -> list[EquationExtraction]:
         """Process paper and extract equations."""
         # Ingest
         text = self._ingest(source)
@@ -89,7 +89,7 @@ class AutoFormalizer:
         # Process each
         results = []
         for i, math in enumerate(math_exprs):
-            extraction = self._formalize(math, domain, source, f"eq_{i+1}")
+            extraction = self._formalize(math, domain, source, f"eq_{i + 1}")
             results.append(extraction)
             self.history.append(extraction)
 
@@ -149,7 +149,7 @@ class AutoFormalizer:
         except Exception:
             return source
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get extraction statistics."""
         total = len(self.history)
         success = sum(1 for e in self.history if e.status == ExtractionStatus.SUCCESS)

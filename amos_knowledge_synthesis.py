@@ -27,7 +27,7 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 sys.path.insert(0, str(Path(__file__).parent / "clawspring"))
 sys.path.insert(0, str(Path(__file__).parent))
@@ -38,12 +38,12 @@ class SynthesisResult:
     """Result of knowledge synthesis."""
 
     topic: str
-    internal_sources: List[str]
-    external_sources: List[str]
+    internal_sources: list[str]
+    external_sources: list[str]
     synthesis: str
     confidence: float
     timestamp: str
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -63,8 +63,8 @@ class KnowledgeSynthesisEngine:
     def __init__(self):
         self.agent = None
         self.activation = None
-        self.synthesis_cache: Dict[str, SynthesisResult] = {}
-        self.external_data_store: Dict[str, list[ExternalData]] = defaultdict(list)
+        self.synthesis_cache: dict[str, SynthesisResult] = {}
+        self.external_data_store: dict[str, list[ExternalData]] = defaultdict(list)
         self._init_components()
 
     def _init_components(self):
@@ -244,7 +244,7 @@ class KnowledgeSynthesisEngine:
 
         return min(score, 1.0)
 
-    def query_synthesized_knowledge(self, question: str) -> Dict[str, Any]:
+    def query_synthesized_knowledge(self, question: str) -> dict[str, Any]:
         """Query the synthesized knowledge base."""
         print("=" * 70)
         print("QUERYING SYNTHESIZED KNOWLEDGE")
@@ -317,7 +317,7 @@ class KnowledgeSynthesisEngine:
 
         return True
 
-    def update_knowledge(self) -> Dict[str, Any]:
+    def update_knowledge(self) -> dict[str, Any]:
         """Update knowledge with latest external data."""
         print("=" * 70)
         print("UPDATING KNOWLEDGE BASE")
@@ -347,7 +347,7 @@ class KnowledgeSynthesisEngine:
 
         return updates
 
-    def generate_synthesis_report(self) -> Dict[str, Any]:
+    def generate_synthesis_report(self) -> dict[str, Any]:
         """Generate comprehensive synthesis report."""
         print("=" * 70)
         print("KNOWLEDGE SYNTHESIS REPORT")

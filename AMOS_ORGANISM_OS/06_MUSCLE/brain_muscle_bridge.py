@@ -10,7 +10,7 @@ Version: 1.0.0
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from amos_worker_engine import (
     CodeWorker,
@@ -26,8 +26,8 @@ class CognitiveTask:
     id: str
     description: str
     cognitive_mode: str  # exploratory_mapping, diagnostic_analysis, etc.
-    execution_plan: Dict[str, Any]
-    context: Dict[str, Any]
+    execution_plan: dict[str, Any]
+    context: dict[str, Any]
     immune_validated: bool = False
 
 
@@ -39,9 +39,9 @@ class CognitiveExecutionResult:
     success: bool
     cognitive_analysis: str
     execution_output: str
-    artifacts: List[Path]
-    law_compliance: Dict[str, Any]
-    metadata: Dict[str, Any]
+    artifacts: list[Path]
+    law_compliance: dict[str, Any]
+    metadata: dict[str, Any]
 
 
 class BrainMuscleBridge:
@@ -108,8 +108,8 @@ class BrainMuscleBridge:
         )
 
     def _convert_analysis_to_plan(
-        self, analysis: Dict[str, Any], original_task: str
-    ) -> Dict[str, Any]:
+        self, analysis: dict[str, Any], original_task: str
+    ) -> dict[str, Any]:
         """Convert cognitive analysis to executable plan."""
         synthesis = analysis.get("synthesis", {})
 

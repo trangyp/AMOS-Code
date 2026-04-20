@@ -64,11 +64,13 @@ when drift is detected, adjusting its behavior based on constitutional principle
 while maintaining complete transparency through audit trails.
 """
 
+from __future__ import annotations
+
 import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Optional
 
 
 class PrinciplePriority(Enum):
@@ -150,14 +152,14 @@ class GovernanceEvaluation:
     action_description: str
 
     # Results
-    principle_checks: List[ConstraintCheck]
+    principle_checks: list[ConstraintCheck]
     overall_score: float  # Weighted governance score
     decision: GovernanceDecision
 
     # Correction
     requires_correction: bool
     correction_strategy: str = None
-    modified_action: Dict[str, Any] = None
+    modified_action: dict[str, Any] = None
 
     # Rationale
     decision_rationale: str = ""
@@ -169,15 +171,15 @@ class BehavioralDriftMetrics:
     """Metrics tracking behavioral drift over time."""
 
     # Drift detection
-    baseline_profile: Dict[str, Any] = field(default_factory=dict)
-    current_profile: Dict[str, Any] = field(default_factory=dict)
+    baseline_profile: dict[str, Any] = field(default_factory=dict)
+    current_profile: dict[str, Any] = field(default_factory=dict)
 
     # Metrics
     drift_score: float = 0.0  # 0 = aligned, 1 = drifted
-    drift_dimensions: List[str] = field(default_factory=list)
+    drift_dimensions: list[str] = field(default_factory=list)
 
     # History
-    drift_history: List[tuple[float, float]] = field(default_factory=list)
+    drift_history: list[tuple[float, float]] = field(default_factory=list)
     last_calibration: float = field(default_factory=time.time)
 
 
@@ -190,7 +192,7 @@ class GovernanceAuditLog:
 
     # Action context
     action_type: str
-    action_params: Dict[str, Any] = field(default_factory=dict)
+    action_params: dict[str, Any] = field(default_factory=dict)
 
     # Decision
     evaluation: Optional[GovernanceEvaluation] = None
@@ -203,7 +205,7 @@ class GovernanceAuditLog:
 
     # Transparency
     full_rationale: str = ""
-    principles_consulted: List[str] = field(default_factory=list)
+    principles_consulted: list[str] = field(default_factory=list)
 
 
 class ConstitutionalGovernance:
@@ -221,15 +223,15 @@ class ConstitutionalGovernance:
         self.drift_threshold = drift_threshold
 
         # Constitutional principles
-        self.principles: Dict[str, ConstitutionalPrinciple] = {}
+        self.principles: dict[str, ConstitutionalPrinciple] = {}
         self._initialize_default_principles()
 
         # State
         self.drift_metrics = BehavioralDriftMetrics()
 
         # History
-        self.audit_logs: List[GovernanceAuditLog] = []
-        self.evaluation_history: List[GovernanceEvaluation] = []
+        self.audit_logs: list[GovernanceAuditLog] = []
+        self.evaluation_history: list[GovernanceEvaluation] = []
 
         # Self-correction stats
         self.corrections_applied: int = 0
@@ -284,7 +286,7 @@ class ConstitutionalGovernance:
             self.principles[principle.principle_id] = principle
 
     def evaluate_action(
-        self, action_type: str, action_params: Dict[str, Any], context: Dict[str, Any] = None
+        self, action_type: str, action_params: dict[str, Any], context: dict[str, Any] = None
     ) -> GovernanceEvaluation:
         """Evaluate an action against all constitutional principles.
 
@@ -292,7 +294,7 @@ class ConstitutionalGovernance:
         and determines whether action should proceed, be modified, or rejected.
         """
         # Check each principle
-        principle_checks: List[ConstraintCheck] = []
+        principle_checks: list[ConstraintCheck] = []
 
         for principle in self.principles.values():
             compliance = principle.evaluation_fn(action_params)
@@ -352,7 +354,7 @@ class ConstitutionalGovernance:
 
         return evaluation
 
-    def check_for_drift(self, current_behavior_profile: Dict[str, Any]) -> BehavioralDriftMetrics:
+    def check_for_drift(self, current_behavior_profile: dict[str, Any]) -> BehavioralDriftMetrics:
         """Check if system behavior has drifted from baseline alignment.
 
         Drift detection is essential for self-correcting governance.
@@ -389,7 +391,7 @@ class ConstitutionalGovernance:
 
         return self.drift_metrics
 
-    def self_correct(self, drift_metrics: BehavioralDriftMetrics) -> Dict[str, Any]:
+    def self_correct(self, drift_metrics: BehavioralDriftMetrics) -> dict[str, Any]:
         """Generate self-correction strategy when drift is detected.
 
         This implements the self-correcting capability of the governance system.
@@ -397,7 +399,7 @@ class ConstitutionalGovernance:
         if drift_metrics.drift_score < self.drift_threshold:
             return {"correction_needed": False, "reason": "Drift within tolerance"}
 
-        corrections: Dict[str, Any] = {
+        corrections: dict[str, Any] = {
             "correction_needed": True,
             "drift_score": drift_metrics.drift_score,
             "drift_dimensions": drift_metrics.drift_dimensions,
@@ -420,7 +422,7 @@ class ConstitutionalGovernance:
 
         return corrections
 
-    def add_principle(self, principle: ConstitutionalPrinciple) -> Dict[str, Any]:
+    def add_principle(self, principle: ConstitutionalPrinciple) -> dict[str, Any]:
         """Add a new constitutional principle."""
         self.principles[principle.principle_id] = principle
 
@@ -430,7 +432,7 @@ class ConstitutionalGovernance:
             "total_principles": len(self.principles),
         }
 
-    def get_governance_report(self) -> Dict[str, Any]:
+    def get_governance_report(self) -> dict[str, Any]:
         """Generate comprehensive governance report."""
         # Calculate statistics
         total_evaluations = len(self.evaluation_history)
@@ -473,7 +475,7 @@ class ConstitutionalGovernance:
         }
 
     # Private evaluation functions
-    def _check_safety(self, action_params: Dict[str, Any]) -> float:
+    def _check_safety(self, action_params: dict[str, Any]) -> float:
         """Check if action is safe."""
         # Check for safety-related keywords and parameters
         dangerous_terms = ["harm", "damage", "destroy", "attack", "unsafe"]
@@ -489,7 +491,7 @@ class ConstitutionalGovernance:
 
         return 0.95  # Assume safe unless red flags
 
-    def _check_transparency(self, action_params: Dict[str, Any]) -> float:
+    def _check_transparency(self, action_params: dict[str, Any]) -> float:
         """Check if action is transparent/explainable."""
         has_explanation = (
             "explanation" in action_params
@@ -499,7 +501,7 @@ class ConstitutionalGovernance:
 
         return 1.0 if has_explanation else 0.7
 
-    def _check_autonomy(self, action_params: Dict[str, Any]) -> float:
+    def _check_autonomy(self, action_params: dict[str, Any]) -> float:
         """Check if action respects human autonomy."""
         # Check for autonomy-preserving features
         if action_params.get("human_approval_required", False):
@@ -509,7 +511,7 @@ class ConstitutionalGovernance:
 
         return 0.9
 
-    def _check_fairness(self, action_params: Dict[str, Any]) -> float:
+    def _check_fairness(self, action_params: dict[str, Any]) -> float:
         """Check if action is fair/non-biased."""
         # Check for bias mitigation
         if action_params.get("bias_check_passed", False):
@@ -519,7 +521,7 @@ class ConstitutionalGovernance:
 
         return 0.85  # Assume fair unless indicated otherwise
 
-    def _check_efficiency(self, action_params: Dict[str, Any]) -> float:
+    def _check_efficiency(self, action_params: dict[str, Any]) -> float:
         """Check if action is resource-efficient."""
         cost = action_params.get("estimated_cost", 1.0)
         max_cost = action_params.get("max_cost", 10.0)
@@ -548,7 +550,7 @@ class ConstitutionalGovernance:
         return mapping.get(principle_id, ViolationType.DRIFT)
 
     def _suggest_modification(
-        self, principle: ConstitutionalPrinciple, action_params: Dict[str, Any], compliance: float
+        self, principle: ConstitutionalPrinciple, action_params: dict[str, Any], compliance: float
     ) -> str:
         """Suggest modification to improve compliance."""
         suggestions = {
@@ -561,7 +563,7 @@ class ConstitutionalGovernance:
 
         return suggestions.get(principle.principle_id, "Review and adjust")
 
-    def _calculate_governance_score(self, checks: List[ConstraintCheck]) -> float:
+    def _calculate_governance_score(self, checks: list[ConstraintCheck]) -> float:
         """Calculate weighted governance score."""
         if not checks:
             return 1.0
@@ -590,7 +592,7 @@ class ConstitutionalGovernance:
         return weighted_score / total_weight if total_weight > 0 else 0.0
 
     def _determine_governance_decision(
-        self, checks: List[ConstraintCheck], overall_score: float
+        self, checks: list[ConstraintCheck], overall_score: float
     ) -> GovernanceDecision:
         """Determine final governance decision."""
         # Check for critical violations
@@ -622,8 +624,8 @@ class ConstitutionalGovernance:
             return GovernanceDecision.REJECT
 
     def _generate_correction(
-        self, action_type: str, action_params: Dict[str, Any], checks: List[ConstraintCheck]
-    ) -> Tuple[str, dict[str, Any]]:
+        self, action_type: str, action_params: dict[str, Any], checks: list[ConstraintCheck]
+    ) -> tuple[str, dict[str, Any]]:
         """Generate correction strategy and modified action."""
         # Find the most significant violation
         worst_check = min(checks, key=lambda c: c.compliance_score)
@@ -647,7 +649,7 @@ class ConstitutionalGovernance:
         return strategy, modified
 
     def _generate_decision_rationale(
-        self, checks: List[ConstraintCheck], decision: GovernanceDecision
+        self, checks: list[ConstraintCheck], decision: GovernanceDecision
     ) -> str:
         """Generate human-readable decision rationale."""
         violations = [c for c in checks if c.violation_detected]
@@ -658,7 +660,7 @@ class ConstitutionalGovernance:
         violation_str = ", ".join(v.principle_name for v in violations)
         return f"Decision: {decision.name}. Violations: {violation_str}"
 
-    def _generate_drift_correction(self, dimension: str) -> Dict[str, Any]:
+    def _generate_drift_correction(self, dimension: str) -> dict[str, Any]:
         """Generate correction strategy for a drift dimension."""
         corrections = {
             "decision_accuracy": {
@@ -685,7 +687,7 @@ class ConstitutionalGovernance:
         )
 
     def _log_governance_decision(
-        self, action_type: str, action_params: Dict[str, Any], evaluation: GovernanceEvaluation
+        self, action_type: str, action_params: dict[str, Any], evaluation: GovernanceEvaluation
     ) -> None:
         """Log governance decision to audit trail."""
         log = GovernanceAuditLog(
@@ -709,7 +711,7 @@ class ConstitutionalGovernance:
     # 2025 SOTA: Adversarial testing framework
     def adversarial_test(
         self, action_generator: Callable[[], dict[str, Any]], num_tests: int = 100
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Test governance system against adversarial inputs.
 
@@ -760,7 +762,7 @@ class ConstitutionalGovernance:
         return results
 
     # 2025 SOTA: EU AI Act compliance check
-    def check_eu_ai_act_compliance(self, action_params: Dict[str, Any]) -> Dict[str, Any]:
+    def check_eu_ai_act_compliance(self, action_params: dict[str, Any]) -> dict[str, Any]:
         """
         Check compliance with EU AI Act requirements.
 
@@ -817,8 +819,8 @@ class ConstitutionalGovernance:
 
     # 2025 SOTA: Recursive reward modeling validation
     def validate_reward_model(
-        self, reward_function: Callable[[dict[str, Any]], float], test_cases: List[dict[str, Any]]
-    ) -> Dict[str, Any]:
+        self, reward_function: Callable[[dict[str, Any]], float], test_cases: list[dict[str, Any]]
+    ) -> dict[str, Any]:
         """
         Validate reward function against constitutional principles.
 

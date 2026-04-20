@@ -13,15 +13,20 @@ Implements 2025 AI agent evaluation patterns (LangSmith, AlphaEval, Mem0):
 Component #75 - Agent Evaluation & Testing Framework
 """
 
+from __future__ import annotations
+
 import asyncio
 import json
+import logging
 import statistics
 import time
 import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any, Optional, Protocol
+
+logger = logging.getLogger(__name__)
 
 
 class EvalMetricType(Enum):
@@ -55,7 +60,7 @@ class TestCase:
     # Input
     input_query: str
     input_context: str = None
-    variables: Dict[str, Any] = field(default_factory=dict)
+    variables: dict[str, Any] = field(default_factory=dict)
 
     # Expected output (for automated evaluation)
     expected_output: str = None
@@ -64,7 +69,7 @@ class TestCase:
     # Metadata
     domain: str = "general"  # Domain category (e.g., "customer_support", "coding")
     difficulty: str = "medium"  # easy, medium, hard
-    tags: List[str] = field(default_factory=list)
+    tags: list[str] = field(default_factory=list)
     is_edge_case: bool = False
 
     # Evaluation criteria
@@ -114,13 +119,13 @@ class TestResult:
     cost: float
 
     # Evaluation metrics
-    metrics: List[EvalMetric] = field(default_factory=list)
+    metrics: list[EvalMetric] = field(default_factory=list)
     overall_score: float = 0.0
     status: EvalResultStatus = EvalResultStatus.PENDING
 
     # Metadata
     executed_at: float = field(default_factory=time.time)
-    agent_config: Dict[str, Any] = field(default_factory=dict)
+    agent_config: dict[str, Any] = field(default_factory=dict)
     error_message: str = None
 
     def calculate_overall_score(self) -> float:
@@ -150,10 +155,10 @@ class EvalRun:
     target_version: str
 
     # Test cases
-    test_case_ids: List[str]
+    test_case_ids: list[str]
 
     # Results
-    results: List[TestResult] = field(default_factory=list)
+    results: list[TestResult] = field(default_factory=list)
 
     # Status
     status: str = "running"  # running, completed, failed
@@ -161,7 +166,7 @@ class EvalRun:
     completed_at: float = None
 
     # Agent configuration used for this run
-    agent_config: Dict[str, Any] = field(default_factory=dict)
+    agent_config: dict[str, Any] = field(default_factory=dict)
 
     # Summary (computed)
     overall_score: float = 0.0
@@ -192,17 +197,17 @@ class ABTest:
     description: str
 
     # Variants
-    control_config: Dict[str, Any]  # Baseline configuration
-    variant_configs: List[dict[str, Any]]  # Test configurations
+    control_config: dict[str, Any]  # Baseline configuration
+    variant_configs: list[dict[str, Any]]  # Test configurations
 
     # Test parameters
-    test_case_ids: List[str]
+    test_case_ids: list[str]
     sample_size: int = 100
     confidence_level: float = 0.95
 
     # Results
-    control_results: List[TestResult] = field(default_factory=list)
-    variant_results: List[list[TestResult]] = field(default_factory=list)
+    control_results: list[TestResult] = field(default_factory=list)
+    variant_results: list[list[TestResult]] = field(default_factory=list)
 
     # Analysis
     winner: str = None
@@ -224,13 +229,13 @@ class BenchmarkDataset:
     domain: str
 
     # Test cases
-    test_case_ids: List[str]
+    test_case_ids: list[str]
 
     # Metadata
     version: str = "1.0.0"
     created_at: float = field(default_factory=time.time)
     updated_at: float = field(default_factory=time.time)
-    tags: List[str] = field(default_factory=list)
+    tags: list[str] = field(default_factory=list)
 
     # Statistics
     total_tests: int = 0
@@ -248,33 +253,147 @@ class AgentRunner(Protocol):
     """Protocol for running an agent against a test case."""
 
     async def run(
-        self, query: str, context: str, variables: Dict[str, Any], config: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, query: str, context: str, variables: dict[str, Any], config: dict[str, Any]
+    ) -> dict[str, Any]:
         """Run agent and return output with metadata."""
         ...
 
 
-class MockAgentRunner:
-    """Mock agent runner for testing."""
+class BrainAgentRunner:
+    """Real brain-powered agent runner using AMOS brain components."""
+
+    def __init__(self):
+        self.brain_client = None
+        self.canon_processor = None
+        self.llm_router = None
+        self._initialize_brain()
+
+    def _initialize_brain(self) -> None:
+        """Initialize brain components for real agent execution."""
+        try:
+            from amos_brain import BrainClient
+            from amos_brain.canon_cognitive_processor import CanonCognitiveProcessor
+
+            self.brain_client = BrainClient()
+            self.canon_processor = CanonCognitiveProcessor()
+            self.canon_processor.initialize()
+        except ImportError:
+            logger.warning("Brain components not available, will use LLM fallback")
+
+        try:
+            from amos_platform.core.llm_router import LLMRouter
+
+            self.llm_router = LLMRouter()
+        except ImportError:
+            logger.warning("LLM Router not available")
 
     async def run(
-        self, query: str, context: str, variables: Dict[str, Any], config: Dict[str, Any]
-    ) -> Dict[str, Any]:
-        """Simulate agent execution."""
-        # Simulate processing time
-        await asyncio.sleep(0.1)
+        self, query: str, context: str, variables: dict[str, Any], config: dict[str, Any]
+    ) -> dict[str, Any]:
+        """Execute agent with real brain-powered processing."""
+        start_time = time.time()
+        domain = config.get("domain", "general")
+        model = config.get("model", "canon-cognitive")
 
-        # Generate mock response based on query
-        response = f"Response to: {query[:50]}..."
+        # Step 1: Try Canon Cognitive Processing
+        if self.canon_processor:
+            try:
+                cognitive_result = self.canon_processor.process(
+                    query=query, domain=domain, context={"variables": variables, "context": context}
+                )
+                execution_time_ms = (time.time() - start_time) * 1000
 
+                return {
+                    "output": cognitive_result.content,
+                    "execution_time_ms": execution_time_ms,
+                    "tokens_input": len(query.split()),
+                    "tokens_output": len(cognitive_result.content.split()),
+                    "cost": self._estimate_cost(
+                        len(query.split()), len(cognitive_result.content.split()), model
+                    ),
+                    "metadata": {
+                        "canon_enriched": True,
+                        "confidence": cognitive_result.confidence,
+                        "canon_terms": getattr(cognitive_result, "canon_terms_used", []),
+                        "sources": getattr(cognitive_result, "canon_sources", []),
+                    },
+                }
+            except Exception as e:
+                logger.warning(f"Canon processing failed: {e}, falling back to LLM")
+
+        # Step 2: Try LLM Router
+        if self.llm_router:
+            try:
+                messages = [{"role": "user", "content": query}]
+                if context:
+                    messages.insert(0, {"role": "system", "content": context})
+
+                llm_response = await self.llm_router.chat(model, messages)
+                execution_time_ms = (time.time() - start_time) * 1000
+                content = llm_response.get("content", "")
+
+                return {
+                    "output": content,
+                    "execution_time_ms": execution_time_ms,
+                    "tokens_input": llm_response.get("tokens_input", len(query.split())),
+                    "tokens_output": llm_response.get("tokens_output", len(content.split())),
+                    "cost": llm_response.get(
+                        "cost", self._estimate_cost(len(query.split()), len(content.split()), model)
+                    ),
+                    "metadata": {
+                        "model_used": llm_response.get("model", model),
+                        "backend": llm_response.get("backend", "unknown"),
+                    },
+                }
+            except Exception as e:
+                logger.warning(f"LLM routing failed: {e}")
+
+        # Step 3: Fallback to direct LLM if available
+        try:
+            import openai
+
+            response = await openai.AsyncOpenAI().chat.completions.create(
+                model="gpt-4", messages=[{"role": "user", "content": query}]
+            )
+            execution_time_ms = (time.time() - start_time) * 1000
+            content = response.choices[0].message.content
+
+            return {
+                "output": content,
+                "execution_time_ms": execution_time_ms,
+                "tokens_input": response.usage.prompt_tokens,
+                "tokens_output": response.usage.completion_tokens,
+                "cost": self._estimate_cost(
+                    response.usage.prompt_tokens, response.usage.completion_tokens, "gpt-4"
+                ),
+                "metadata": {"model_used": "gpt-4"},
+            }
+        except Exception:
+            pass
+
+        # Final fallback: basic response
+        execution_time_ms = (time.time() - start_time) * 1000
         return {
-            "output": response,
-            "execution_time_ms": 150.0,
+            "output": f"Unable to process query: {query[:100]}...",
+            "execution_time_ms": execution_time_ms,
             "tokens_input": len(query.split()),
-            "tokens_output": len(response.split()),
-            "cost": 0.002,
-            "metadata": {},
+            "tokens_output": 0,
+            "cost": 0.0,
+            "metadata": {"error": "No processing backend available"},
         }
+
+    def _estimate_cost(self, input_tokens: int, output_tokens: int, model: str) -> float:
+        """Estimate cost based on token usage and model."""
+        # Pricing per 1K tokens (approximate)
+        pricing = {
+            "gpt-4": 0.03,
+            "gpt-3.5-turbo": 0.002,
+            "canon-cognitive": 0.01,
+            "llama2": 0.001,
+            "default": 0.02,
+        }
+        rate = pricing.get(model, pricing["default"])
+        return (input_tokens + output_tokens) * rate / 1000
 
 
 class AMOSAgentEvaluator:
@@ -302,17 +421,17 @@ class AMOSAgentEvaluator:
     """
 
     def __init__(self, agent_runner: Optional[AgentRunner] = None):
-        self.agent_runner = agent_runner or MockAgentRunner()
+        self.agent_runner = agent_runner or BrainAgentRunner()
 
         # Storage
-        self.test_cases: Dict[str, TestCase] = {}
-        self.eval_runs: Dict[str, EvalRun] = {}
-        self.ab_tests: Dict[str, ABTest] = {}
-        self.benchmarks: Dict[str, BenchmarkDataset] = {}
-        self.results: Dict[str, TestResult] = {}
+        self.test_cases: dict[str, TestCase] = {}
+        self.eval_runs: dict[str, EvalRun] = {}
+        self.ab_tests: dict[str, ABTest] = {}
+        self.benchmarks: dict[str, BenchmarkDataset] = {}
+        self.results: dict[str, TestResult] = {}
 
         # Metric evaluators
-        self.metric_evaluators: Dict[str, Callable] = {
+        self.metric_evaluators: dict[str, Callable] = {
             "exact_match": self._eval_exact_match,
             "contains": self._eval_contains,
             "similarity": self._eval_similarity,
@@ -339,11 +458,11 @@ class AMOSAgentEvaluator:
         expected_behavior: str = None,
         domain: str = "general",
         difficulty: str = "medium",
-        tags: List[str] = None,
+        tags: list[str] = None,
         is_edge_case: bool = False,
         min_acceptable_score: float = 0.7,
         critical: bool = False,
-        variables: Dict[str, Any] = None,
+        variables: dict[str, Any] = None,
     ) -> TestCase:
         """Create a new test case."""
         test_id = f"test_{uuid.uuid4().hex[:12]}"
@@ -374,8 +493,8 @@ class AMOSAgentEvaluator:
         name: str,
         description: str,
         domain: str,
-        test_case_ids: List[str],
-        tags: List[str] = None,
+        test_case_ids: list[str],
+        tags: list[str] = None,
     ) -> BenchmarkDataset:
         """Create a benchmark dataset."""
         dataset_id = f"bench_{uuid.uuid4().hex[:12]}"
@@ -406,8 +525,8 @@ class AMOSAgentEvaluator:
         target_type: str,
         target_id: str,
         target_version: str,
-        test_case_ids: List[str],
-        agent_config: Dict[str, Any] = None,
+        test_case_ids: list[str],
+        agent_config: dict[str, Any] = None,
     ) -> EvalRun:
         """Run a complete evaluation."""
         run_id = f"run_{uuid.uuid4().hex[:12]}"
@@ -510,8 +629,8 @@ class AMOSAgentEvaluator:
         return result
 
     def _evaluate_test(
-        self, test_case: TestCase, result: TestResult, agent_output: Dict[str, Any]
-    ) -> List[EvalMetric]:
+        self, test_case: TestCase, result: TestResult, agent_output: dict[str, Any]
+    ) -> list[EvalMetric]:
         """Evaluate all metrics for a test result."""
         metrics = []
 
@@ -690,9 +809,9 @@ class AMOSAgentEvaluator:
         self,
         name: str,
         description: str,
-        control_config: Dict[str, Any],
-        variant_configs: List[dict[str, Any]],
-        test_case_ids: List[str],
+        control_config: dict[str, Any],
+        variant_configs: list[dict[str, Any]],
+        test_case_ids: list[str],
         sample_size: int = 100,
     ) -> ABTest:
         """Run an A/B test comparing configurations."""
@@ -730,10 +849,10 @@ class AMOSAgentEvaluator:
         # Run variants
         for i, variant_config in enumerate(variant_configs):
             variant_run = await self.run_evaluation(
-                name=f"{name} - Variant {i+1}",
-                description=f"Test variant {i+1}",
+                name=f"{name} - Variant {i + 1}",
+                description=f"Test variant {i + 1}",
                 target_type=variant_config.get("type", "agent"),
-                target_id=variant_config.get("id", f"variant_{i+1}"),
+                target_id=variant_config.get("id", f"variant_{i + 1}"),
                 target_version=variant_config.get("version", "1.0.0"),
                 test_case_ids=test_case_ids,
                 agent_config=variant_config,
@@ -769,14 +888,14 @@ class AMOSAgentEvaluator:
 
             if improvement > best_improvement:
                 best_improvement = improvement
-                best_variant = f"Variant {i+1}"
+                best_variant = f"Variant {i + 1}"
 
         if best_variant and best_improvement > 0.05:  # 5% improvement threshold
             ab_test.winner = best_variant
             ab_test.improvement_pct = best_improvement * 100
             ab_test.statistical_significance = best_improvement > 0.1  # 10% = significant
 
-    def compare_eval_runs(self, baseline_run_id: str, new_run_id: str) -> Dict[str, Any]:
+    def compare_eval_runs(self, baseline_run_id: str, new_run_id: str) -> dict[str, Any]:
         """Compare two evaluation runs (for regression testing)."""
         if baseline_run_id not in self.eval_runs or new_run_id not in self.eval_runs:
             return {"error": "Run not found"}
@@ -803,7 +922,7 @@ class AMOSAgentEvaluator:
 
         return comparison
 
-    def get_eval_summary(self, run_id: str) -> Dict[str, Any]:
+    def get_eval_summary(self, run_id: str) -> dict[str, Any]:
         """Get summary of an evaluation run."""
         if run_id not in self.eval_runs:
             return {"error": "Run not found"}
@@ -811,7 +930,7 @@ class AMOSAgentEvaluator:
         eval_run = self.eval_runs[run_id]
 
         # Metric breakdown
-        metric_scores: Dict[str, list[float]] = {}
+        metric_scores: dict[str, list[float]] = {}
         for result in eval_run.results:
             for metric in result.metrics:
                 if metric.metric_name not in metric_scores:

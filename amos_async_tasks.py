@@ -59,36 +59,47 @@ Author: Trang Phan
 Version: 1.0.0
 """
 
-
-import json
 import sys
-from datetime import datetime, timezone
-UTC = timezone.utc
-from pathlib import Path
-from typing import Any, List
+import uuid
+from datetime import UTC, datetime, timezone
 
-# Add project root to path
-sys.path.insert(0, str(Path(__file__).parent))
+UTC = UTC
+from typing import Any, Optional
+
+# Import alias modules to set up paths
+import AMOS_ORGANISM_OS  # noqa: F401
 
 # Try to import Celery
 try:
+    from celery import Celery
+    from celery.exceptions import MaxRetriesExceededError
+    from celery.result import AsyncResult
+
     CELERY_AVAILABLE = True
 except ImportError:
+    Celery = None
+    AsyncResult = None
+    MaxRetriesExceededError = None
     CELERY_AVAILABLE = False
-    print("[AsyncTasks] Celery not available, using mock implementation")
+    print("[AsyncTasks] Celery not available, using in-process execution")
 
 # Try to import Redis
 try:
+    import redis
+
     REDIS_AVAILABLE = True
 except ImportError:
+    redis = None
     REDIS_AVAILABLE = False
 
 # Import AMOS configuration
 try:
+    from amos_config import settings
+
     CONFIG_AVAILABLE = True
 except ImportError:
+    settings = None
     CONFIG_AVAILABLE = False
-    print("[AsyncTasks] Config not available, using defaults")
 
 
 # Celery configuration
@@ -100,10 +111,7 @@ if CELERY_AVAILABLE:
         redis_url = "redis://localhost:6379/0"
 
     celery_app = Celery(
-        "amos_tasks",
-        broker=redis_url,
-        backend=redis_url,
-        include=["amos_async_tasks"]
+        "amos_tasks", broker=redis_url, backend=redis_url, include=["amos_async_tasks"]
     )
 
     # Celery configuration
@@ -112,28 +120,22 @@ if CELERY_AVAILABLE:
         task_serializer="json",
         accept_content=["json"],
         result_serializer="json",
-
         # Timezone
         timezone="timezone.utc",
         enable_utc=True,
-
         # Task settings
         task_track_started=True,
         task_time_limit=300,  # 5 minutes max
         task_soft_time_limit=240,  # 4 minutes soft limit
-
         # Result settings
         result_expires=3600,  # Results expire after 1 hour
         result_extended=True,  # Include more result info
-
         # Worker settings
         worker_prefetch_multiplier=1,  # One task at a time
         worker_max_tasks_per_child=1000,  # Restart after 1000 tasks
-
         # Retry settings
         task_default_retry_delay=60,  # 1 minute between retries
         task_max_retries=3,  # Max 3 retries
-
         # Queue settings
         task_default_queue="amos_default",
         task_routes={
@@ -142,7 +144,6 @@ if CELERY_AVAILABLE:
             "amos_async_tasks.vector_index_task": {"queue": "amos_indexing"},
             "amos_async_tasks.self_evolution_task": {"queue": "amos_evolution"},
         },
-
         # Dead letter queue
         task_reject_on_worker_lost=True,
     )
@@ -151,8 +152,12 @@ else:
     celery_app = None
 
 
-class MockTask:
-    """Mock task for when Celery is not available."""
+class InProcessTask:
+    """Real in-process task executor when Celery is not available.
+
+    This actually executes the task function synchronously, providing
+    real functionality without requiring Celery/Redis.
+    """
 
     def __init__(self, task_id: str, func, args, kwargs):
         self.id = task_id
@@ -164,18 +169,19 @@ class MockTask:
         self._state = {}
 
     def delay(self, *args, **kwargs):
-        """Execute synchronously for mock mode."""
+        """Execute synchronously."""
         self._status = "STARTED"
         try:
             result = self.func(*self.args, **self.kwargs)
             self._result = result
             self._status = "SUCCESS"
         except Exception as e:
-            self._result = str(e)
+            self._result = {"error": str(e), "status": "failed"}
             self._status = "FAILURE"
+            print(f"[InProcessTask] Task {self.id} failed: {e}")
         return self
 
-    def get(self, timeout: int  = None) -> Any:
+    def get(self, timeout: int = None) -> Any:
         """Get task result."""
         return self._result
 
@@ -190,15 +196,15 @@ class MockTask:
         return self._status
 
 
-class MockAsyncResult:
-    """Mock AsyncResult for when Celery is not available."""
+class InProcessAsyncResult:
+    """In-process AsyncResult when Celery is not available."""
 
-    def __init__(self, task_id: str):
+    def __init__(self, task_id: str, result=None, status="PENDING"):
         self.id = task_id
-        self._status = "PENDING"
-        self._result = None
+        self._status = status
+        self._result = result
 
-    def get(self, timeout: int  = None) -> Any:
+    def get(self, timeout: int = None) -> Any:
         return self._result
 
     @property
@@ -220,13 +226,9 @@ class MockAsyncResult:
 
 # Task definitions
 if CELERY_AVAILABLE:
-    @celery_app.task(
-        bind=True,
-        max_retries=3,
-        default_retry_delay=60,
-        queue="amos_agents"
-    )
-    def spawn_agent_task(self, role: str, paradigm: str = "HYBRID", name: str  = None):
+
+    @celery_app.task(bind=True, max_retries=3, default_retry_delay=60, queue="amos_agents")
+    def spawn_agent_task(self, role: str, paradigm: str = "HYBRID", name: str = None):
         """
         Async task to spawn an agent.
 
@@ -239,7 +241,6 @@ if CELERY_AVAILABLE:
             Agent info dict
         """
         try:
-
             # Initialize AMOS
             amos = AMOSUnifiedSystem()
             if not amos.initialize():
@@ -247,8 +248,7 @@ if CELERY_AVAILABLE:
 
             # Update task state
             self.update_state(
-                state="PROGRESS",
-                meta={"step": "spawning", "role": role, "paradigm": paradigm}
+                state="PROGRESS", meta={"step": "spawning", "role": role, "paradigm": paradigm}
             )
 
             # Spawn agent
@@ -287,9 +287,9 @@ if CELERY_AVAILABLE:
     def orchestrate_task(
         self,
         task_description: str,
-        agents: List[str]  = None,
+        agents: list[str] = None,
         require_consensus: bool = True,
-        session_id: str  = None
+        session_id: str = None,
     ):
         """
         Async task for multi-agent orchestration.
@@ -304,17 +304,13 @@ if CELERY_AVAILABLE:
             Orchestration result dict
         """
         try:
-
             # Initialize AMOS
             amos = AMOSUnifiedSystem()
             if not amos.initialize():
                 raise RuntimeError("AMOS initialization failed")
 
             # Progress updates
-            self.update_state(
-                state="PROGRESS",
-                meta={"step": "initialization", "progress": 10}
-            )
+            self.update_state(state="PROGRESS", meta={"step": "initialization", "progress": 10})
 
             # Validate task
             validation = amos.validate_action(task_description)
@@ -325,22 +321,14 @@ if CELERY_AVAILABLE:
                     "violations": validation["violations"],
                 }
 
-            self.update_state(
-                state="PROGRESS",
-                meta={"step": "executing", "progress": 30}
-            )
+            self.update_state(state="PROGRESS", meta={"step": "executing", "progress": 30})
 
             # Execute orchestration
             result = amos.execute(
-                task=task_description,
-                agents=agents,
-                require_consensus=require_consensus
+                task=task_description, agents=agents, require_consensus=require_consensus
             )
 
-            self.update_state(
-                state="PROGRESS",
-                meta={"step": "finalizing", "progress": 90}
-            )
+            self.update_state(state="PROGRESS", meta={"step": "finalizing", "progress": 90})
 
             # Record to memory if session provided
             if session_id and amos.memory:
@@ -349,7 +337,7 @@ if CELERY_AVAILABLE:
                     outcome=result.get("final_decision", ""),
                     agents_used=result.get("agents_used", []),
                     law_compliance=result.get("law_compliant", False),
-                    lessons_learned=[]
+                    lessons_learned=[],
                 )
 
             return {
@@ -369,13 +357,8 @@ if CELERY_AVAILABLE:
                     "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
 
-    @celery_app.task(
-        bind=True,
-        max_retries=3,
-        default_retry_delay=120,
-        queue="amos_indexing"
-    )
-    def vector_index_task(self, memories: List[dict]):
+    @celery_app.task(bind=True, max_retries=3, default_retry_delay=120, queue="amos_indexing")
+    def vector_index_task(self, memories: list[dict]):
         """
         Async task to index memories in vector database.
 
@@ -386,7 +369,6 @@ if CELERY_AVAILABLE:
             Indexing result
         """
         try:
-
             vm = AMOSVectorMemory()
             if not vm.initialize():
                 raise RuntimeError("Vector memory initialization failed")
@@ -399,14 +381,14 @@ if CELERY_AVAILABLE:
                         "step": "indexing",
                         "current": i + 1,
                         "total": len(memories),
-                        "progress": int((i + 1) / len(memories) * 100)
-                    }
+                        "progress": int((i + 1) / len(memories) * 100),
+                    },
                 )
 
                 success = vm.add_memory(
                     content=memory.get("content", ""),
                     category=memory.get("category", "general"),
-                    metadata=memory.get("metadata", {})
+                    metadata=memory.get("metadata", {}),
                 )
                 if success:
                     indexed += 1
@@ -428,12 +410,7 @@ if CELERY_AVAILABLE:
                     "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
 
-    @celery_app.task(
-        bind=True,
-        max_retries=1,
-        default_retry_delay=300,
-        queue="amos_evolution"
-    )
+    @celery_app.task(bind=True, max_retries=1, default_retry_delay=300, queue="amos_evolution")
     def self_evolution_task(self, target_file: str, evolution_plan: dict):
         """
         Async task for self-evolution (requires approval).
@@ -446,15 +423,11 @@ if CELERY_AVAILABLE:
             Evolution result awaiting approval
         """
         try:
-
             evo = AMOSSelfEvolution()
             if not evo.initialize():
                 raise RuntimeError("Self-evolution initialization failed")
 
-            self.update_state(
-                state="PROGRESS",
-                meta={"step": "generating", "target": target_file}
-            )
+            self.update_state(state="PROGRESS", meta={"step": "generating", "target": target_file})
 
             # Generate evolution proposal
             proposal = evo.generate_proposal(target_file, evolution_plan)
@@ -466,7 +439,7 @@ if CELERY_AVAILABLE:
                 "proposal": proposal,
                 "target_file": target_file,
                 "timestamp": datetime.now(timezone.utc).isoformat(),
-                "approval_url": f"/api/v1/evolution/approve/{proposal['id']}"
+                "approval_url": f"/api/v1/evolution/approve/{proposal['id']}",
             }
 
         except Exception as exc:
@@ -477,19 +450,114 @@ if CELERY_AVAILABLE:
             }
 
 else:
-    # Mock implementations
-    def spawn_agent_task(role: str, paradigm: str = "HYBRID", name: str  = None):
-        return MockTask("mock-spawn", lambda r, p, n: {"agent_id": "mock"}, (role, paradigm, name), {})
+    # In-process fallback implementations (real execution without Celery)
+    def spawn_agent_task(role: str, paradigm: str = "HYBRID", name: Optional[str] = None):
+        """Spawn agent using in-process execution."""
 
-    def orchestrate_task(task_description: str, agents: List[str]  = None,
-                        require_consensus: bool = True, session_id: str  = None):
-        return MockTask("mock-orchestrate", lambda **kw: {"success": True}, (), {})
+        def _spawn(role, paradigm, name):
+            try:
+                from amos_unified_system import AMOSUnifiedSystem
 
-    def vector_index_task(memories: List[dict]):
-        return MockTask("mock-index", lambda m: {"indexed": len(m)}, (memories,), {})
+                amos = AMOSUnifiedSystem()
+                if not amos.initialize():
+                    return {"error": "AMOS initialization failed", "status": "failed"}
+                agent = amos.spawn_agent(role=role, paradigm=paradigm, name=name)
+                return {
+                    "agent_id": agent.agent_id,
+                    "name": agent.name,
+                    "role": agent.role,
+                    "paradigm": agent.paradigm.name,
+                    "capabilities": {
+                        "strengths": agent.capabilities.strengths,
+                        "constraints": agent.capabilities.constraints,
+                    },
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                }
+            except Exception as e:
+                return {"error": str(e), "status": "failed"}
+
+        return InProcessTask(f"inproc-spawn-{uuid.uuid4()}", _spawn, (role, paradigm, name), {})
+
+    def orchestrate_task(
+        task_description: str,
+        agents: Optional[list[str]] = None,
+        require_consensus: bool = True,
+        session_id: Optional[str] = None,
+    ):
+        """Orchestrate using in-process execution."""
+
+        def _orchestrate(task_desc, agent_roles, req_consensus, sess_id):
+            try:
+                from amos_unified_system import AMOSUnifiedSystem
+
+                amos = AMOSUnifiedSystem()
+                if not amos.initialize():
+                    return {"success": False, "error": "AMOS initialization failed"}
+                validation = amos.validate_action(task_desc)
+                if not validation.get("compliant", True):
+                    return {"success": False, "error": "Task violates Global Laws"}
+                result = amos.execute(
+                    task=task_desc, agents=agent_roles, require_consensus=req_consensus
+                )
+                return {"success": True, "result": result, "session_id": sess_id}
+            except Exception as e:
+                return {"success": False, "error": str(e)}
+
+        return InProcessTask(
+            f"inproc-orchestrate-{uuid.uuid4()}",
+            _orchestrate,
+            (task_description, agents or [], require_consensus, session_id),
+            {},
+        )
+
+    def vector_index_task(memories: list[dict]):
+        """Index memories using in-process execution."""
+
+        def _index(mem_list):
+            try:
+                from amos_vector_memory import AMOSVectorMemory
+
+                vm = AMOSVectorMemory()
+                if not vm.initialize():
+                    return {"success": False, "error": "Vector memory initialization failed"}
+                indexed = 0
+                for memory in mem_list:
+                    success = vm.add_memory(
+                        content=memory.get("content", ""),
+                        category=memory.get("category", "general"),
+                        metadata=memory.get("metadata", {}),
+                    )
+                    if success:
+                        indexed += 1
+                return {"success": True, "indexed": indexed, "total": len(mem_list)}
+            except Exception as e:
+                return {"success": False, "error": str(e)}
+
+        return InProcessTask(f"inproc-index-{uuid.uuid4()}", _index, (memories,), {})
 
     def self_evolution_task(target_file: str, evolution_plan: dict):
-        return MockTask("mock-evolve", lambda **kw: {"status": "awaiting_approval"}, (), {})
+        """Self-evolution using in-process execution."""
+
+        def _evolve(target, plan):
+            try:
+                from amos_self_evolution import AMOSSelfEvolution
+
+                evo = AMOSSelfEvolution()
+                if not evo.initialize():
+                    return {"success": False, "error": "Self-evolution initialization failed"}
+                proposal = evo.generate_proposal(target, plan)
+                return {
+                    "success": True,
+                    "status": "awaiting_approval",
+                    "proposal": proposal,
+                    "target_file": target,
+                }
+            except Exception as e:
+                return {"success": False, "error": str(e)}
+
+        return InProcessTask(
+            f"inproc-evolve-{uuid.uuid4()}", _evolve, (target_file, evolution_plan), {}
+        )
 
 
 class AMOSAsyncTaskManager:
@@ -523,8 +591,7 @@ class AMOSAsyncTaskManager:
         print("  ✓ Async task manager ready")
         return True
 
-    def submit_spawn_agent(self, role: str, paradigm: str = "HYBRID",
-                          name: str  = None) -> str:
+    def submit_spawn_agent(self, role: str, paradigm: str = "HYBRID", name: str = None) -> str:
         """Submit agent spawn task."""
         if CELERY_AVAILABLE:
             task = spawn_agent_task.delay(role, paradigm, name)
@@ -532,9 +599,13 @@ class AMOSAsyncTaskManager:
         else:
             return "mock-task-id"
 
-    def submit_orchestrate(self, task: str, agents: List[str]  = None,
-                           require_consensus: bool = True,
-                           session_id: str  = None) -> str:
+    def submit_orchestrate(
+        self,
+        task: str,
+        agents: list[str] = None,
+        require_consensus: bool = True,
+        session_id: str = None,
+    ) -> str:
         """Submit orchestration task."""
         if CELERY_AVAILABLE:
             task = orchestrate_task.delay(task, agents, require_consensus, session_id)
@@ -542,7 +613,7 @@ class AMOSAsyncTaskManager:
         else:
             return "mock-task-id"
 
-    def submit_vector_index(self, memories: List[dict]) -> str:
+    def submit_vector_index(self, memories: list[dict]) -> str:
         """Submit vector indexing task."""
         if CELERY_AVAILABLE:
             task = vector_index_task.delay(memories)
@@ -622,9 +693,7 @@ def main():
 
     # Submit orchestration task
     task2_id = manager.submit_orchestrate(
-        task="Design a REST API",
-        agents=["architect", "reviewer"],
-        require_consensus=True
+        task="Design a REST API", agents=["architect", "reviewer"], require_consensus=True
     )
     print(f"  ✓ Orchestration task: {task2_id}")
 

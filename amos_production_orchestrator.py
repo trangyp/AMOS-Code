@@ -13,13 +13,15 @@ Implements 5-layer activation architecture per 2024-2025 best practices:
 Based on arXiv 2025 research on production-grade agentic AI workflows.
 """
 
+from __future__ import annotations
+
 import asyncio
 import logging
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Optional
 
 import uvicorn
 from fastapi import FastAPI, HTTPException, Response, status
@@ -60,8 +62,8 @@ class SystemModule:
     name: str
     path: Path
     tier: SystemTier
-    dependencies: Set[str] = field(default_factory=set)
-    provides: Set[str] = field(default_factory=set)
+    dependencies: set[str] = field(default_factory=set)
+    provides: set[str] = field(default_factory=set)
     size_bytes: int = 0
     activated: bool = False
     activation_order: int = 0
@@ -84,10 +86,10 @@ class AMOSModuleDiscovery:
 
     def __init__(self, root_path: Path) -> None:
         self.root_path = root_path
-        self.discovered: Dict[str, SystemModule] = {}
+        self.discovered: dict[str, SystemModule] = {}
         self.total_modules = 0
 
-    def discover_all(self) -> Dict[str, SystemModule]:
+    def discover_all(self) -> dict[str, SystemModule]:
         """Discover all AMOS modules in the codebase."""
         logger.info("Starting AMOS module discovery...")
 
@@ -135,7 +137,7 @@ class AMOSModuleDiscovery:
 
     def _extract_provides(self, py_file: Path) -> set[str]:
         """Extract capabilities provided by a module."""
-        provides: Set[str] = set()
+        provides: set[str] = set()
 
         try:
             content = py_file.read_text(errors="ignore")
@@ -153,12 +155,12 @@ class AMOSModuleDiscovery:
 class AMOSDependencyGraph:
     """Layer 1: Build dependency graph between systems."""
 
-    def __init__(self, modules: Dict[str, SystemModule]) -> None:
+    def __init__(self, modules: dict[str, SystemModule]) -> None:
         self.modules = modules
-        self.graph: Dict[str, set[str]] = defaultdict(set)
-        self.reverse_graph: Dict[str, set[str]] = defaultdict(set)
+        self.graph: dict[str, set[str]] = defaultdict(set)
+        self.reverse_graph: dict[str, set[str]] = defaultdict(set)
 
-    def build_graph(self) -> Dict[str, set[str]]:
+    def build_graph(self) -> dict[str, set[str]]:
         """Build dependency graph from imports and naming."""
         logger.info("Building dependency graph...")
 
@@ -178,7 +180,7 @@ class AMOSDependencyGraph:
 
     def _extract_dependencies(self, module: SystemModule) -> set[str]:
         """Extract dependencies from module imports."""
-        deps: Set[str] = set()
+        deps: set[str] = set()
 
         try:
             content = module.path.read_text(errors="ignore")
@@ -205,11 +207,11 @@ class AMOSDependencyGraph:
 
         return deps
 
-    def topological_sort(self) -> List[str]:
+    def topological_sort(self) -> list[str]:
         """Return activation order using topological sort."""
         in_degree = {name: len(self.graph[name]) for name in self.modules}
         queue = deque([name for name, deg in in_degree.items() if deg == 0])
-        result: List[str] = []
+        result: list[str] = []
 
         while queue:
             queue = deque(sorted(queue, key=lambda x: self.modules[x].tier.value))
@@ -235,15 +237,15 @@ class AMOSActivationEngine:
 
     def __init__(
         self,
-        modules: Dict[str, SystemModule],
-        activation_order: List[str],
+        modules: dict[str, SystemModule],
+        activation_order: list[str],
     ) -> None:
         self.modules = modules
         self.activation_order = activation_order
         self.activated_count = 0
         self.failed_count = 0
 
-    async def activate_all(self) -> Dict[str, SystemModule]:
+    async def activate_all(self) -> dict[str, SystemModule]:
         """Activate all systems in topological order."""
         logger.info("Activating %d systems...", len(self.activation_order))
 
@@ -289,11 +291,11 @@ class AMOSActivationEngine:
 class AMOSMemoryBridge:
     """Layer 3: Multi-tier memory connections between systems."""
 
-    def __init__(self, modules: Dict[str, SystemModule]) -> None:
+    def __init__(self, modules: dict[str, SystemModule]) -> None:
         self.modules = modules
-        self.bridges: List[MemoryBridge] = []
+        self.bridges: list[MemoryBridge] = []
 
-    def establish_bridges(self) -> List[MemoryBridge]:
+    def establish_bridges(self) -> list[MemoryBridge]:
         """Establish memory connections between systems."""
         logger.info("Establishing memory bridges...")
 
@@ -355,11 +357,11 @@ class AMOSMemoryBridge:
 class AMOSGuardrails:
     """Layer 4: Safety guardrails from constitutional governance."""
 
-    def __init__(self, modules: Dict[str, SystemModule]) -> None:
+    def __init__(self, modules: dict[str, SystemModule]) -> None:
         self.modules = modules
-        self.rules: List[dict[str, Any]] = []
+        self.rules: list[dict[str, Any]] = []
 
-    def install_guardrails(self) -> List[dict[str, Any]]:
+    def install_guardrails(self) -> list[dict[str, Any]]:
         """Install safety guardrails across all systems."""
         logger.info("Installing guardrails...")
 
@@ -378,9 +380,9 @@ class AMOSProductionOrchestrator:
 
     def __init__(self, root_path: Optional[Path] = None) -> None:
         self.root_path = root_path or Path(__file__).parent
-        self.modules: Dict[str, SystemModule] = {}
-        self.bridges: List[MemoryBridge] = []
-        self.guardrails: List[dict[str, Any]] = []
+        self.modules: dict[str, SystemModule] = {}
+        self.bridges: list[MemoryBridge] = []
+        self.guardrails: list[dict[str, Any]] = []
         self.initialized = False
         self.app = FastAPI(
             title="AMOS Production Orchestrator",
@@ -394,11 +396,11 @@ class AMOSProductionOrchestrator:
         """Setup REST API routes."""
 
         @self.app.get("/")
-        async def root() -> Dict[str, str]:
+        async def root() -> dict[str, str]:
             return {"message": "AMOS Production Orchestrator v14.0.0"}
 
         @self.app.get("/status")
-        async def get_status() -> Dict[str, Any]:
+        async def get_status() -> dict[str, Any]:
             activated = sum(1 for m in self.modules.values() if m.activated)
             total = len(self.modules)
             return {
@@ -414,7 +416,7 @@ class AMOSProductionOrchestrator:
         @self.app.get("/modules")
         async def list_modules(
             tier: str = None,
-        ) -> List[dict[str, Any]]:
+        ) -> list[dict[str, Any]]:
             result = []
             for name, module in self.modules.items():
                 if tier is None or module.tier.name.lower() == tier.lower():
@@ -431,7 +433,7 @@ class AMOSProductionOrchestrator:
             return result
 
         @self.app.post("/initialize")
-        async def initialize() -> Dict[str, Any]:
+        async def initialize() -> dict[str, Any]:
             try:
                 await self.initialize()
                 return {"status": "initialized", "success": True}
@@ -442,7 +444,7 @@ class AMOSProductionOrchestrator:
                 )
 
         @self.app.get("/bridges")
-        async def list_bridges() -> List[dict[str, Any]]:
+        async def list_bridges() -> list[dict[str, Any]]:
             return [
                 {
                     "source": b.source,
@@ -454,7 +456,7 @@ class AMOSProductionOrchestrator:
             ]
 
         @self.app.get("/guardrails")
-        async def list_guardrails() -> List[dict[str, Any]]:
+        async def list_guardrails() -> list[dict[str, Any]]:
             return self.guardrails
 
         @self.app.get("/metrics")
@@ -488,7 +490,7 @@ class AMOSProductionOrchestrator:
             activated = sum(1 for m in self.modules.values() if m.activated)
 
             # Update metrics
-            tier_counts: Dict[str, int] = {}
+            tier_counts: dict[str, int] = {}
             for module in self.modules.values():
                 tier = module.tier.name
                 tier_counts[tier] = tier_counts.get(tier, 0) + 1

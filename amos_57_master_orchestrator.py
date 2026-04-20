@@ -22,12 +22,11 @@ Architecture:
 State-of-the-art autonomous system activation pattern.
 """
 
-import time
 import threading
-from dataclasses import dataclass, field
+import time
+from dataclasses import dataclass
 from datetime import datetime
-from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 @dataclass
@@ -79,7 +78,7 @@ class AMOS57MasterOrchestrator:
         self.config = config or OrchestratorConfig()
         self.initialized = False
         self.running = False
-        self.start_time: float  = None
+        self.start_time: float = None
         self.cycles = 0
         self.healing_actions = 0
 
@@ -90,11 +89,11 @@ class AMOS57MasterOrchestrator:
         self.coherence_engine: Optional[Any] = None
 
         # Health tracking
-        self.health_history: List[SystemHealth] = []
+        self.health_history: list[SystemHealth] = []
         self.current_health: Optional[SystemHealth] = None
 
         # Operation thread
-        self._operation_thread: threading.Thread  = None
+        self._operation_thread: threading.Thread = None
         self._stop_event = threading.Event()
 
     def initialize(self) -> bool:
@@ -241,12 +240,14 @@ class AMOS57MasterOrchestrator:
         production_health = self._check_production()
 
         # Calculate overall metrics
-        operational = sum([
-            meta_arch_health > 0.5,
-            meta_ont_health > 0.5,
-            formal_health > 0.5,
-            production_health > 0.5,
-        ])
+        operational = sum(
+            [
+                meta_arch_health > 0.5,
+                meta_ont_health > 0.5,
+                formal_health > 0.5,
+                production_health > 0.5,
+            ]
+        )
         degraded = 4 - operational
 
         # Coherence score (weighted average)
@@ -354,14 +355,14 @@ class AMOS57MasterOrchestrator:
 
         # Critical: Immediate intervention
         if health.overall_status == "CRITICAL":
-            print(f"\n🚨 CRITICAL: Executing emergency self-healing...")
+            print("\n🚨 CRITICAL: Executing emergency self-healing...")
             self._emergency_healing()
             self.healing_actions += 1
 
         # Degraded: Preventive healing
         elif health.overall_status == "DEGRADED":
             if health.meta_architecture_health < 0.7:
-                print(f"\n⚠️  DEGRADED: Strengthening meta-architecture...")
+                print("\n⚠️  DEGRADED: Strengthening meta-architecture...")
                 self._heal_meta_architecture()
                 self.healing_actions += 1
 
@@ -392,7 +393,7 @@ class AMOS57MasterOrchestrator:
         except Exception as e:
             print(f"   Meta-architecture healing error: {e}")
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get current system status."""
         if not self.current_health:
             return {"status": "NOT_INITIALIZED", "components": 0}
@@ -413,7 +414,7 @@ class AMOS57MasterOrchestrator:
             "running": self.running,
         }
 
-    def process_message(self, message: str) -> Dict[str, Any]:
+    def process_message(self, message: str) -> dict[str, Any]:
         """Process a message through the coherence engine."""
         if not self.coherence_engine:
             return {"error": "Coherence engine not initialized"}
@@ -478,8 +479,8 @@ def main():
             print("=" * 70)
             print(f"Status: {status['status']}")
             print(f"Coherence: {status['coherence_score']}")
-            print(f"Components:")
-            for layer, health in status['components'].items():
+            print("Components:")
+            for layer, health in status["components"].items():
                 print(f"  - {layer}: {health}")
             print("=" * 70)
 

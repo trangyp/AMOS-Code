@@ -35,12 +35,36 @@ jobs:
           python -m pip install --upgrade pip
           pip install fastapi uvicorn aiohttp numpy
 
-      - name: Run Cognitive Test Suite
-        run: python test_cognitive_amos.py
-
-      - name: Test Module Imports
+      - name: Build wheel
         run: |
-          python -c "import sys; sys.path[:0] = ['clawspring', 'clawspring/amos_brain']; [__import__(m) and print(f'OK: {m}') for m in ['amos_cognitive_router', 'engine_executor', 'organism_bridge', 'master_orchestrator', 'system_validator', 'deploy_amos']]; print('All modules OK')"
+          pip install build
+          python -m build --wheel
+
+      - name: Install wheel and test entrypoints
+        run: |
+          pip install dist/amos_brain-*.whl
+          amos-brain --help
+          amosl --help
+
+      - name: Test Package Imports from installed wheel
+        run: |
+          pip install dist/amos_brain-*.whl
+          python -c "
+          import amos_brain
+          import amosl
+          import amos_model_fabric
+          import amos_self_evolution
+          import amos_platform
+          import multi_agent
+          import skill
+          import search
+          import streaming
+          import memory
+          import analytics
+          import repo_doctor
+          import clawspring
+          print('All declared packages import successfully')
+          "
 
   test-deployment:
     name: Test Deployment
@@ -73,5 +97,5 @@ jobs:
           python-version: '3.11'
       - name: Install Tools
         run: pip install flake8
-      - name: Run Flake8
-        run: cd clawspring/amos_brain && flake8 --max-line-length=100 *.py || true
+      - name: Run Flake8 on published packages
+        run: flake8 amos_brain amosl amos_model_fabric --max-line-length=100

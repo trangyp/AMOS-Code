@@ -5,7 +5,7 @@ import os
 import socket
 from collections.abc import Generator
 from contextlib import contextmanager
-from typing import Any, Dict
+from typing import Any
 
 try:
     from opentelemetry import metrics, trace
@@ -93,7 +93,7 @@ def instrument_fastapi(app: Any) -> None:
 @contextmanager
 def create_span(
     name: str,
-    attributes: Dict[str, Any] = None,
+    attributes: dict[str, Any] = None,
 ) -> Generator[Span, None, None]:
     """Create a custom span with attributes."""
     if not _otel_available:
@@ -115,7 +115,7 @@ def set_span_error(span: Span, exception: Exception) -> None:
         span.record_exception(exception)
 
 
-def get_trace_context() -> Dict[str, str]:
+def get_trace_context() -> dict[str, str]:
     """Get current trace context for propagation."""
     if not _otel_available:
         return {}

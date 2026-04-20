@@ -18,10 +18,11 @@ Status: PRODUCTION LIVE
 import argparse
 import sys
 import time
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 
 class AmosRuntime:
@@ -38,7 +39,7 @@ class AmosRuntime:
         self.mode = mode
         self.root = Path(__file__).parent
         self.start_time = datetime.now(timezone.utc)
-        self.subsystems: Dict[str, Any] = {}
+        self.subsystems: dict[str, Any] = {}
         self.status = "initializing"
 
     def initialize(self) -> bool:

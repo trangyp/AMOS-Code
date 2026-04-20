@@ -26,9 +26,13 @@ Creator: Trang Phan
 System: AMOS vInfinity - Layer 20
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
-from datetime import datetime
-from typing import Any, Dict, List, Optional
+from datetime import UTC, datetime
+
+UTC = UTC
+from typing import Any, Optional
 
 
 @dataclass
@@ -42,8 +46,8 @@ class EcosystemState:
     clawspring_connected: bool = False
     sdk_available: bool = False
     session_id: str = None
-    active_engines: List[str] = field(default_factory=list)
-    law_compliance: Dict[str, bool] = field(default_factory=dict)
+    active_engines: list[str] = field(default_factory=list)
+    law_compliance: dict[str, bool] = field(default_factory=dict)
     canon_loaded: bool = False
     canon_terms: int = 0
     canon_agents: int = 0
@@ -82,7 +86,7 @@ class Ecosystem:
             self._canon_bridge = await get_canon_bridge()
         return self._canon_bridge
 
-    def activate(self) -> Dict[str, Any]:
+    def activate(self) -> dict[str, Any]:
         """Activate the complete AMOS ecosystem.
 
         Initializes all systems in dependency order:
@@ -211,7 +215,7 @@ class Ecosystem:
 
     # ===== BRAIN INTERFACE (L10) =====
 
-    async def think(self, query: str, domain: str = "general") -> Dict[str, Any]:
+    async def think(self, query: str, domain: str = "general") -> dict[str, Any]:
         """Cognitive analysis via Brain L10 with Canon context."""
         if not self._initialized:
             self.activate()
@@ -245,7 +249,7 @@ class Ecosystem:
             "canon_context": canon_context,
         }
 
-    def decide(self, problem: str, options: List[str] = None) -> Dict[str, Any]:
+    def decide(self, problem: str, options: list[str] = None) -> dict[str, Any]:
         """Decision making via Brain L10."""
         if not self._initialized:
             self.activate()
@@ -263,7 +267,7 @@ class Ecosystem:
             "source": "brain",
         }
 
-    def validate(self, action: str) -> Dict[str, Any]:
+    def validate(self, action: str) -> dict[str, Any]:
         """Law validation via Brain L5."""
         if not self._initialized:
             self.activate()
@@ -276,7 +280,7 @@ class Ecosystem:
 
     # ===== COOKBOOK INTERFACE (L12) =====
 
-    def architecture_decision(self, question: str) -> Dict[str, Any]:
+    def architecture_decision(self, question: str) -> dict[str, Any]:
         """Architecture decision via Cookbook L12."""
         if not self._initialized:
             self.activate()
@@ -295,7 +299,7 @@ class Ecosystem:
             "source": "cookbook",
         }
 
-    def code_review(self, code: str) -> Dict[str, Any]:
+    def code_review(self, code: str) -> dict[str, Any]:
         """Code review via Cookbook L12."""
         if not self._initialized:
             self.activate()
@@ -315,7 +319,7 @@ class Ecosystem:
 
     # ===== ORGANISM INTERFACE (L18) =====
 
-    def execute(self, task: str, domain: str = "general") -> Dict[str, Any]:
+    def execute(self, task: str, domain: str = "general") -> dict[str, Any]:
         """Execute via Organism OS L18."""
         if not self._initialized:
             self.activate()
@@ -338,7 +342,7 @@ class Ecosystem:
 
     # ===== ORCHESTRATION INTERFACE (L8) =====
 
-    def orchestrate(self, goal: str) -> Dict[str, Any]:
+    def orchestrate(self, goal: str) -> dict[str, Any]:
         """Orchestrate via Meta-Cognitive L8."""
         if not self._initialized:
             self.activate()
@@ -359,7 +363,7 @@ class Ecosystem:
 
     # ===== ECOSYSTEM STATUS =====
 
-    def status(self) -> Dict[str, Any]:
+    def status(self) -> dict[str, Any]:
         """Get complete ecosystem status."""
         return {
             "version": self.VERSION,
@@ -429,17 +433,17 @@ def get_ecosystem() -> Ecosystem:
 
 
 # Convenience exports
-def think(query: str) -> Dict[str, Any]:
+def think(query: str) -> dict[str, Any]:
     """Quick think via ecosystem."""
     return get_ecosystem().think(query)
 
 
-def decide(problem: str, options: List[str] = None) -> Dict[str, Any]:
+def decide(problem: str, options: list[str] = None) -> dict[str, Any]:
     """Quick decide via ecosystem."""
     return get_ecosystem().decide(problem, options)
 
 
-def execute(task: str, domain: str = "general") -> Dict[str, Any]:
+def execute(task: str, domain: str = "general") -> dict[str, Any]:
     """Quick execute via ecosystem."""
     return get_ecosystem().execute(task, domain)
 

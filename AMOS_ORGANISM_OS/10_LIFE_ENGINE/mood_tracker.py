@@ -7,10 +7,12 @@ insights into psychological well-being.
 import json
 import uuid
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timedelta
+from datetime import UTC, datetime
+
+UTC = UTC, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class MoodState(Enum):
@@ -39,9 +41,9 @@ class MoodEntry:
     context: str = ""  # what was happening
     notes: str = ""
     timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
-    tags: List[str] = field(default_factory=list)
+    tags: list[str] = field(default_factory=list)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "mood": self.mood.value,
@@ -61,7 +63,7 @@ class MoodTracker:
         self.data_dir = data_dir
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
-        self.entries: List[MoodEntry] = []
+        self.entries: list[MoodEntry] = []
 
         self._load_data()
 
@@ -143,13 +145,13 @@ class MoodTracker:
 
         return (round(valence, 2), round(arousal, 2))
 
-    def get_recent_moods(self, hours: int = 24) -> List[dict[str, Any]]:
+    def get_recent_moods(self, hours: int = 24) -> list[dict[str, Any]]:
         """Get recent mood entries."""
         cutoff = (datetime.now(UTC) - timedelta(hours=hours)).isoformat()
         recent = [e for e in self.entries if e.timestamp > cutoff]
         return [e.to_dict() for e in recent]
 
-    def get_mood_summary(self, days: int = 7) -> Dict[str, Any]:
+    def get_mood_summary(self, days: int = 7) -> dict[str, Any]:
         """Get mood summary for a period."""
         cutoff = (datetime.now(UTC) - timedelta(days=days)).isoformat()
         recent = [e for e in self.entries if e.timestamp > cutoff]
@@ -209,7 +211,7 @@ class MoodTracker:
         else:
             return "stable"
 
-    def get_recommendations(self) -> List[str]:
+    def get_recommendations(self) -> list[str]:
         """Get mood-based recommendations."""
         recs = []
         summary = self.get_mood_summary(7)

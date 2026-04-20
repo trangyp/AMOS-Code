@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """Status-truth validation substrate.
 
 Validates that reported status labels are logically implied by actual state.
@@ -13,6 +15,7 @@ Examples:
 """
 
 import ast
+from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -39,7 +42,7 @@ class StatusValidation:
 
     claim: StatusClaim
     valid: bool
-    actual_state: Dict[str, Any] = field(default_factory=dict)
+    actual_state: dict[str, Any] = field(default_factory=dict)
     error_message: str = ""
 
     @property
@@ -69,7 +72,7 @@ class StatusSubstrate:
 
     def __init__(self, repo_path: str):
         self.repo_path = Path(repo_path).resolve()
-        self._state_cache: Dict[str, Any] = None
+        self._state_cache: dict[str, Any] = None
 
     def extract_status_claims(self, pattern: str = "*.py") -> list[StatusClaim]:
         """Extract status claims from source code.
@@ -219,7 +222,7 @@ class StatusSubstrate:
                 error_message="Unknown status type - cannot validate",
             )
 
-    def _compute_actual_state(self) -> Dict[str, Any]:
+    def _compute_actual_state(self) -> dict[str, Any]:
         """Compute actual repository state."""
         if self._state_cache is not None:
             return self._state_cache
@@ -275,7 +278,7 @@ class StatusSubstrate:
         ]
         return any((self.repo_path / f).exists() for f in brain_files)
 
-    def _validate_initialized(self, claim: StatusClaim, state: Dict[str, Any]) -> StatusValidation:
+    def _validate_initialized(self, claim: StatusClaim, state: dict[str, Any]) -> StatusValidation:
         """Validate 'initialized' claim."""
         if claim.claimed_value is True:
             # initialized=true requires specs loaded
@@ -293,7 +296,7 @@ class StatusSubstrate:
             actual_state=state,
         )
 
-    def _validate_brain_loaded(self, claim: StatusClaim, state: Dict[str, Any]) -> StatusValidation:
+    def _validate_brain_loaded(self, claim: StatusClaim, state: dict[str, Any]) -> StatusValidation:
         """Validate 'brain_loaded' claim."""
         if claim.claimed_value is True:
             # brain_loaded=true requires non-empty spec surface
@@ -311,7 +314,7 @@ class StatusSubstrate:
             actual_state=state,
         )
 
-    def _validate_healthy(self, claim: StatusClaim, state: Dict[str, Any]) -> StatusValidation:
+    def _validate_healthy(self, claim: StatusClaim, state: dict[str, Any]) -> StatusValidation:
         """Validate 'healthy' claim."""
         if claim.claimed_value is True:
             # healthy=true requires no hard invariant failures
@@ -330,7 +333,7 @@ class StatusSubstrate:
             actual_state=state,
         )
 
-    def _validate_active(self, claim: StatusClaim, state: Dict[str, Any]) -> StatusValidation:
+    def _validate_active(self, claim: StatusClaim, state: dict[str, Any]) -> StatusValidation:
         """Validate 'active' claim."""
         if claim.claimed_value is True:
             # active=true requires not terminal
@@ -356,17 +359,17 @@ class StatusSubstrate:
         """Get all false status claims."""
         return [v for v in self.analyze_repository() if not v.valid]
 
-    def get_summary(self, validations: list[StatusValidation]) -> Dict[str, Any]:
+    def get_summary(self, validations: list[StatusValidation]) -> dict[str, Any]:
         """Generate summary statistics."""
         total = len(validations)
         false_claims = sum(1 for v in validations if not v.valid)
         valid = total - false_claims
 
         # Categorize by status type
-        by_type: Dict[str, int] = {}
+        by_type: dict[str, int] = defaultdict(int)
         for v in validations:
             status_name = v.claim.status_name
-            by_type[status_name] = by_type.get(status_name, 0) + (0 if v.valid else 1)
+            by_type[status_name] += 0 if v.valid else 1
 
         return {
             "total_claims": total,

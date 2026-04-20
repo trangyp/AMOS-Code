@@ -12,7 +12,7 @@ Provides unified control interface for the complete organism.
 import asyncio
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 # Core components
 from amos_organism_runner import AMOSOrganismRunner, OrganismConfig, OrganismState
@@ -70,13 +70,13 @@ class CycleMetrics:
 
     # Component results
     runner_result: dict = None
-    orchestrator_result: Optional[Any] = None
-    ethics_result: Optional[Any] = None
+    orchestrator_result: Any = None
+    ethics_result: Any = None
 
     # Status
     success: bool = False
-    errors: List[str] = field(default_factory=list)
-    warnings: List[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
 
 
 class AMOSOrganismIntegration:
@@ -91,19 +91,19 @@ class AMOSOrganismIntegration:
     Provides unified API for organism control.
     """
 
-    def __init__(self, config: Optional[IntegrationConfig] = None):
+    def __init__(self, config: IntegrationConfig = None):
         self.config = config or IntegrationConfig()
 
         # Core components
-        self.runner: Optional[AMOSOrganismRunner] = None
-        self.orchestrator: Optional[Any] = None
-        self.ethics: Optional[Any] = None
+        self.runner: AMOSOrganismRunner = None
+        self.orchestrator: Any = None
+        self.ethics: Any = None
 
         # Runtime state
         self._cycle_count = 0
         self._running = False
-        self._metrics: List[CycleMetrics] = []
-        self._current_cycle: Optional[CycleMetrics] = None
+        self._metrics: list[CycleMetrics] = []
+        self._current_cycle: CycleMetrics = None
 
     async def initialize(self) -> bool:
         """Initialize all integrated components."""
@@ -242,7 +242,7 @@ class AMOSOrganismIntegration:
         finally:
             self._running = False
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get current integration status."""
         return {
             "running": self._running,

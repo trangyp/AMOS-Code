@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Optional
 
 """
 AMOS Cognitive Control Kernel
@@ -27,7 +27,9 @@ import json
 import logging
 import time
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from enum import Enum
 
 # Configure logging
@@ -143,7 +145,7 @@ class CognitiveControlState:
     timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     input_hash: str = ""
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Serialize to dictionary for logging and serialization."""
         return {
             "runtime_mode": self.runtime_mode.value,
@@ -192,7 +194,7 @@ class ErrorMonitor:
     dominant_failure: Optional[FailureType] = None
 
     # Weights for global error computation
-    _weights: Dict[str, float] = field(
+    _weights: dict[str, float] = field(
         default_factory=lambda: {
             "constraint_drop": 0.20,
             "binding_failure": 0.20,
@@ -237,7 +239,7 @@ class ErrorMonitor:
 
         return self.global_error_score
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Serialize to dictionary."""
         return {
             "constraint_drop": self.constraint_drop,
@@ -270,7 +272,7 @@ class VerificationResult:
     can_hard_commit: bool = False
     recommendation: str = "repair"  # "commit" | "repair" | "escalate"
 
-    def evaluate(self, thresholds: Dict[str, float]) -> None:
+    def evaluate(self, thresholds: dict[str, float]) -> None:
         """Evaluate all checks against thresholds."""
         self.all_checks_passed = all(
             [
@@ -304,7 +306,7 @@ class PatternCacheEntry:
 
     pattern_id: str
     input_signature: str
-    read_template: Dict[str, Any]
+    read_template: dict[str, Any]
     success_rate: float = 1.0
     use_count: int = 0
     last_used: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
@@ -374,8 +376,8 @@ class FastScreen:
     """
 
     def __init__(self):
-        self._pattern_signatures: Dict[str, InputClass] = {}
-        self._complexity_indicators: List[str] = [
+        self._pattern_signatures: dict[str, InputClass] = {}
+        self._complexity_indicators: list[str] = [
             "if",
             "then",
             "else",
@@ -387,7 +389,7 @@ class FastScreen:
             "complex",
             "multi-step",
         ]
-        self._risk_indicators: List[str] = [
+        self._risk_indicators: list[str] = [
             "critical",
             "urgent",
             "security",
@@ -399,7 +401,7 @@ class FastScreen:
             "payment",
         ]
 
-    async def screen(self, input_object: Dict[str, Any]) -> CognitiveControlState:
+    async def screen(self, input_object: dict[str, Any]) -> CognitiveControlState:
         """
         Fast screening of input to determine processing path.
 
@@ -441,7 +443,7 @@ class FastScreen:
             input_hash=input_hash,
         )
 
-    def _estimate_ambiguity(self, input_object: Dict[str, Any], length: int) -> float:
+    def _estimate_ambiguity(self, input_object: dict[str, Any], length: int) -> float:
         """Estimate input ambiguity from structure and content."""
         # Base ambiguity from length (longer = more potential ambiguity)
         length_factor = min(length / 1000, 0.5)
@@ -474,7 +476,7 @@ class FastScreen:
         return current_depth
 
     def _classify_input(
-        self, input_object: Dict[str, Any], ambiguity: float, risk: float, has_complexity: bool
+        self, input_object: dict[str, Any], ambiguity: float, risk: float, has_complexity: bool
     ) -> InputClass:
         """Classify input into processing category."""
         if risk > 0.6:
@@ -508,7 +510,7 @@ class FastScreen:
         length_factor = min(length / 5000, 0.2)
         return min(base + length_factor, 1.0)
 
-    def _estimate_value(self, input_object: Dict[str, Any]) -> float:
+    def _estimate_value(self, input_object: dict[str, Any]) -> float:
         """Estimate value/impact of correct processing."""
         # Check for high-value markers
         text = json.dumps(input_object).lower()
@@ -526,7 +528,7 @@ class RoutingController:
     Equation: Route(ControlState) → fast_path | deep_path | blocked
     """
 
-    def __init__(self, thresholds: Dict[str, float] = None):
+    def __init__(self, thresholds: dict[str, float] = None):
         self.thresholds = thresholds or DEFAULT_THRESHOLDS
 
     async def route(self, control_state: CognitiveControlState) -> CognitiveControlState:
@@ -594,10 +596,10 @@ class FastPathProcessor:
 
     async def process(
         self,
-        input_object: Dict[str, Any],
+        input_object: dict[str, Any],
         control_state: CognitiveControlState,
-        context: Dict[str, Any] = None,
-    ) -> Dict[str, Any]:
+        context: dict[str, Any] = None,
+    ) -> dict[str, Any]:
         """
         Execute fast path processing with cache lookup and approximate read.
         """
@@ -629,7 +631,7 @@ class FastPathProcessor:
 
         return result
 
-    def _generate_signature(self, input_object: Dict[str, Any]) -> str:
+    def _generate_signature(self, input_object: dict[str, Any]) -> str:
         """Generate canonical signature for cache lookup."""
         canonical = json.dumps(input_object, sort_keys=True, separators=(",", ":"))
         return hashlib.sha256(canonical.encode()).hexdigest()[:32]
@@ -637,9 +639,9 @@ class FastPathProcessor:
     async def _apply_cached_pattern(
         self,
         pattern: PatternCacheEntry,
-        input_object: Dict[str, Any],
-        context: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        input_object: dict[str, Any],
+        context: dict[str, Any],
+    ) -> dict[str, Any]:
         """Apply cached pattern with lightweight adaptation."""
         # Start from cached template
         result = pattern.read_template.copy()
@@ -653,8 +655,8 @@ class FastPathProcessor:
         return result
 
     async def _approximate_read(
-        self, input_object: Dict[str, Any], context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, input_object: dict[str, Any], context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Lightweight approximate read without full analysis."""
         # Extract key fields only
         result = {
@@ -685,12 +687,12 @@ class DeepPathProcessor:
 
     async def process(
         self,
-        input_object: Dict[str, Any],
+        input_object: dict[str, Any],
         control_state: CognitiveControlState,
-        context: Dict[str, Any] = None,
-        memory: Dict[str, Any] = None,
-        goals: Optional[List[str] ] = None,
-    ) -> Dict[str, Any]:
+        context: dict[str, Any] = None,
+        memory: dict[str, Any] = None,
+        goals: list[Optional[str]] = None,
+    ) -> dict[str, Any]:
         """
         Execute deep path processing with full analysis.
         """
@@ -735,11 +737,11 @@ class DeepPathProcessor:
 
     async def _analysis_pass(
         self,
-        input_object: Dict[str, Any],
+        input_object: dict[str, Any],
         pass_num: int,
-        context: Dict[str, Any],
-        memory: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        context: dict[str, Any],
+        memory: dict[str, Any],
+    ) -> dict[str, Any]:
         """Single analysis pass with increasing depth."""
         depth_factor = 1 + pass_num * 0.5
 
@@ -751,7 +753,7 @@ class DeepPathProcessor:
             "confidence": min(0.5 + pass_num * 0.2, 0.95),
         }
 
-    def _deep_structure_extract(self, obj: Any, depth_factor: float) -> Dict[str, Any]:
+    def _deep_structure_extract(self, obj: Any, depth_factor: float) -> dict[str, Any]:
         """Deep structure extraction with controlled recursion."""
         if isinstance(obj, dict):
             return {
@@ -765,14 +767,14 @@ class DeepPathProcessor:
             ]
         return {"type": type(obj).__name__, "value": str(obj)[:100]}
 
-    def _check_convergence(self, prev: Dict[str, Any], curr: Dict[str, Any]) -> bool:
+    def _check_convergence(self, prev: dict[str, Any], curr: dict[str, Any]) -> bool:
         """Check if analysis has converged between passes."""
         # Simplified convergence check
         return curr.get("confidence", 0) > 0.85
 
     async def _run_reference_binding(
-        self, input_object: Dict[str, Any], analysis: Dict[str, Any], context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, input_object: dict[str, Any], analysis: dict[str, Any], context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Run reference binding to link entities."""
         return {
             "bound_entities": [],
@@ -781,17 +783,17 @@ class DeepPathProcessor:
         }
 
     async def _extract_constraints(
-        self, input_object: Dict[str, Any], analysis: Dict[str, Any]
-    ) -> List[dict[str, Any]]:
+        self, input_object: dict[str, Any], analysis: dict[str, Any]
+    ) -> list[dict[str, Any]]:
         """Extract constraints from input and analysis."""
         return []
 
     async def _global_verification(
         self,
-        analysis: Dict[str, Any],
-        bindings: Dict[str, Any],
-        constraints: List[dict[str, Any]],
-        goals: Optional[List[str] ],
+        analysis: dict[str, Any],
+        bindings: dict[str, Any],
+        constraints: list[dict[str, Any]],
+        goals: list[Optional[str]],
     ) -> bool:
         """Perform global verification against goals and constraints."""
         return analysis.get("confidence", 0) > 0.8
@@ -819,8 +821,8 @@ class ErrorMonitorModule:
 
     async def monitor(
         self,
-        read_result: Dict[str, Any],
-        output_object: Dict[str, Any],
+        read_result: dict[str, Any],
+        output_object: dict[str, Any],
         control_state: CognitiveControlState,
     ) -> ErrorMonitor:
         """
@@ -856,14 +858,14 @@ class ErrorMonitorModule:
         return monitor
 
     async def _check_constraint_preservation(
-        self, read: Dict[str, Any], output: Dict[str, Any], state: CognitiveControlState
+        self, read: dict[str, Any], output: dict[str, Any], state: CognitiveControlState
     ) -> float:
         """Check if constraints were preserved through processing."""
         # Placeholder implementation
         return 0.0 if state.confidence > 0.8 else 0.2
 
     async def _check_binding_integrity(
-        self, read: Dict[str, Any], output: Dict[str, Any], state: CognitiveControlState
+        self, read: dict[str, Any], output: dict[str, Any], state: CognitiveControlState
     ) -> float:
         """Check if reference bindings are consistent."""
         bindings = read.get("bindings", {})
@@ -871,25 +873,25 @@ class ErrorMonitorModule:
         return 0.0 if binding_confidence > 0.8 else 0.3
 
     async def _check_scope_consistency(
-        self, read: Dict[str, Any], output: Dict[str, Any], state: CognitiveControlState
+        self, read: dict[str, Any], output: dict[str, Any], state: CognitiveControlState
     ) -> float:
         """Check for scope mismatches."""
         return 0.0 if state.input_class != InputClass.AMBIGUOUS else 0.15
 
     async def _check_goal_alignment(
-        self, read: Dict[str, Any], output: Dict[str, Any], state: CognitiveControlState
+        self, read: dict[str, Any], output: dict[str, Any], state: CognitiveControlState
     ) -> float:
         """Check if output aligns with inferred goals."""
         return 0.0 if state.estimated_value > 0.5 else 0.1
 
     async def _check_state_coherence(
-        self, read: Dict[str, Any], output: Dict[str, Any], state: CognitiveControlState
+        self, read: dict[str, Any], output: dict[str, Any], state: CognitiveControlState
     ) -> float:
         """Check state coherence across processing stages."""
         return 0.0 if state.confidence > 0.7 else 0.2
 
     async def _check_overconfidence(
-        self, read: Dict[str, Any], output: Dict[str, Any], state: CognitiveControlState
+        self, read: dict[str, Any], output: dict[str, Any], state: CognitiveControlState
     ) -> float:
         """Check for overconfidence in low-certainty situations."""
         # Flag overconfidence when confidence is high but error likelihood is also high
@@ -898,7 +900,7 @@ class ErrorMonitorModule:
         return 0.0
 
     async def _check_conflict_residuals(
-        self, read: Dict[str, Any], output: Dict[str, Any], state: CognitiveControlState
+        self, read: dict[str, Any], output: dict[str, Any], state: CognitiveControlState
     ) -> float:
         """Check for unresolved conflicts."""
         return 0.0 if state.input_class != InputClass.COMPLEX else 0.1
@@ -914,7 +916,7 @@ class RepairEngine:
     """
 
     def __init__(self):
-        self.repair_strategies: Dict[FailureType, RepairStrategy] = {
+        self.repair_strategies: dict[FailureType, RepairStrategy] = {
             FailureType.BINDING_FAILURE: RepairStrategy.RERUN_REFERENCE_BINDING,
             FailureType.CONSTRAINT_DROP: RepairStrategy.RERUN_CONSTRAINT_EXTRACTION,
             FailureType.SCOPE_MISMATCH: RepairStrategy.RERUN_SCOPE_RESOLUTION,
@@ -927,10 +929,10 @@ class RepairEngine:
     async def repair(
         self,
         error_monitor: ErrorMonitor,
-        read_result: Dict[str, Any],
+        read_result: dict[str, Any],
         control_state: CognitiveControlState,
-        context: Dict[str, Any],
-    ) -> Tuple[dict[str, Any], bool]:
+        context: dict[str, Any],
+    ) -> tuple[dict[str, Any], bool]:
         """
         Execute repair loop on failed components.
 
@@ -965,9 +967,9 @@ class RepairEngine:
         self,
         strategy: RepairStrategy,
         failure_type: FailureType,
-        read_result: Dict[str, Any],
-        context: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        read_result: dict[str, Any],
+        context: dict[str, Any],
+    ) -> dict[str, Any]:
         """Execute the specific repair strategy."""
         result = read_result.copy()
 
@@ -1008,7 +1010,7 @@ class VerificationSuite:
     Equation: Verify* = CheckRead + CheckConstraints + CheckBindings + CheckAltHypothesis + CheckOutputAgainstUserIntent
     """
 
-    def __init__(self, thresholds: Dict[str, float] = None):
+    def __init__(self, thresholds: dict[str, float] = None):
         self.thresholds = thresholds or DEFAULT_THRESHOLDS
         self.checks = [
             "check_primary_read",
@@ -1022,9 +1024,9 @@ class VerificationSuite:
 
     async def verify(
         self,
-        read_object: Dict[str, Any],
-        output_object: Dict[str, Any],
-        governance_state: Dict[str, Any],
+        read_object: dict[str, Any],
+        output_object: dict[str, Any],
+        governance_state: dict[str, Any],
     ) -> VerificationResult:
         """
         Run full verification suite.
@@ -1060,20 +1062,20 @@ class VerificationSuite:
 
         return result
 
-    async def _check_primary_read(self, read_object: Dict[str, Any]) -> bool:
+    async def _check_primary_read(self, read_object: dict[str, Any]) -> bool:
         """Verify primary read integrity."""
         return read_object.get("_meta", {}).get("path") in ["fast", "deep", "repaired"]
 
-    async def _check_constraints(self, read_object: Dict[str, Any]) -> bool:
+    async def _check_constraints(self, read_object: dict[str, Any]) -> bool:
         """Verify constraint preservation."""
         return len(read_object.get("constraints", [])) >= 0  # Placeholder
 
-    async def _check_bindings(self, read_object: Dict[str, Any]) -> bool:
+    async def _check_bindings(self, read_object: dict[str, Any]) -> bool:
         """Verify reference bindings."""
         bindings = read_object.get("bindings", {})
         return bindings.get("binding_confidence", 0) > 0.7
 
-    async def _check_alt_hypothesis(self, read_object: Dict[str, Any]) -> Tuple[bool, float]:
+    async def _check_alt_hypothesis(self, read_object: dict[str, Any]) -> tuple[bool, float]:
         """Check alternative hypothesis margin."""
         # Generate alternative interpretation and compare
         alt_confidence = read_object.get("final_pass", {}).get("confidence", 0.8) * 0.85
@@ -1082,19 +1084,19 @@ class VerificationSuite:
         return True, margin
 
     async def _check_goal_match(
-        self, read_object: Dict[str, Any], output_object: Dict[str, Any]
+        self, read_object: dict[str, Any], output_object: dict[str, Any]
     ) -> bool:
         """Check output against inferred goals."""
         return True  # Placeholder
 
     async def _check_safety(
-        self, read_object: Dict[str, Any], output_object: Dict[str, Any]
+        self, read_object: dict[str, Any], output_object: dict[str, Any]
     ) -> bool:
         """Check human safety implications."""
         return True  # Placeholder - would check for harmful outputs
 
     async def _check_governance(
-        self, read_object: Dict[str, Any], governance_state: Dict[str, Any]
+        self, read_object: dict[str, Any], governance_state: dict[str, Any]
     ) -> bool:
         """Check governance compliance."""
         return True  # Placeholder
@@ -1109,7 +1111,7 @@ class CommitGate:
     Equation: CommitAllowed = 1[Confidence ≥ τ_c ∧ GlobalErrorScore ≤ τ_e ∧ ConstraintDrop = 0 ∧ ...]
     """
 
-    def __init__(self, thresholds: Dict[str, float] = None):
+    def __init__(self, thresholds: dict[str, float] = None):
         self.thresholds = thresholds or DEFAULT_THRESHOLDS
 
     async def check_commit_allowed(
@@ -1117,7 +1119,7 @@ class CommitGate:
         control_state: CognitiveControlState,
         error_monitor: ErrorMonitor,
         verification_result: VerificationResult,
-    ) -> Tuple[bool, str]:
+    ) -> tuple[bool, str]:
         """
         Determine if output can be committed.
 
@@ -1156,8 +1158,8 @@ class PatternCache:
 
     def __init__(self, max_size: int = 1000):
         self.max_size = max_size
-        self._cache: Dict[str, PatternCacheEntry] = {}
-        self._access_order: List[str] = []
+        self._cache: dict[str, PatternCacheEntry] = {}
+        self._access_order: list[str] = []
 
     async def lookup(self, input_signature: str) -> Optional[PatternCacheEntry]:
         """Look up pattern by input signature."""
@@ -1170,7 +1172,7 @@ class PatternCache:
         return None
 
     async def store(
-        self, input_signature: str, read_template: Dict[str, Any], success: bool = True
+        self, input_signature: str, read_template: dict[str, Any], success: bool = True
     ) -> None:
         """Store successful read pattern in cache."""
         if input_signature in self._cache:
@@ -1198,7 +1200,7 @@ class PatternCache:
         if input_signature in self._cache:
             self._cache[input_signature].record_use(success)
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get cache statistics."""
         if not self._cache:
             return {"size": 0, "hit_rate": 0.0, "avg_success_rate": 0.0}
@@ -1232,7 +1234,7 @@ class AMOSCognitiveControlKernel:
     - Speed = FastCorrectRouting + LocalRepair + CacheReuse + AdaptiveDepth
     """
 
-    def __init__(self, config: Dict[str, Any] = None):
+    def __init__(self, config: dict[str, Any] = None):
         self.config = config or {}
         self.thresholds = self.config.get("thresholds", DEFAULT_THRESHOLDS)
 
@@ -1256,12 +1258,12 @@ class AMOSCognitiveControlKernel:
 
     async def process(
         self,
-        input_object: Dict[str, Any],
-        context: Dict[str, Any] = None,
-        memory: Dict[str, Any] = None,
-        goals: Optional[List[str] ] = None,
-        governance_state: Dict[str, Any] = None,
-    ) -> Dict[str, Any]:
+        input_object: dict[str, Any],
+        context: dict[str, Any] = None,
+        memory: dict[str, Any] = None,
+        goals: list[Optional[str]] = None,
+        governance_state: dict[str, Any] = None,
+    ) -> dict[str, Any]:
         """
         Main entry point for cognitive processing with full control architecture.
 
@@ -1404,7 +1406,7 @@ class AMOSCognitiveControlKernel:
         """Get current performance metrics."""
         return self.metrics
 
-    def get_kernel_state(self) -> Dict[str, Any]:
+    def get_kernel_state(self) -> dict[str, Any]:
         """Get full kernel state for introspection."""
         return {
             "total_processed": self._total_processed,
@@ -1424,13 +1426,11 @@ class AMOSCognitiveControlKernel:
 
 # =============================================================================
 # GLOBAL SINGLETON ACCESSOR
-# =============================================================================
-
-_kernel_instance: Optional[AMOSCognitiveControlKernel] = None
+# =============================================================================_kernel_instance: Optional[AMOSCognitiveControlKernel] = None
 
 
 def get_cognitive_control_kernel(
-    config: Dict[str, Any] = None,
+    config: dict[str, Any] = None,
 ) -> AMOSCognitiveControlKernel:
     """
     Get or create the global Cognitive Control Kernel instance.
@@ -1463,10 +1463,10 @@ class AMOSCognitiveControlBridge:
 
     async def process_brain_input(
         self,
-        input_data: Dict[str, Any],
+        input_data: dict[str, Any],
         source_layer: str = "14-interfaces",
-        context: Dict[str, Any] = None,
-    ) -> Dict[str, Any]:
+        context: dict[str, Any] = None,
+    ) -> dict[str, Any]:
         """
         Process input through cognitive control before brain processing.
 
@@ -1491,11 +1491,11 @@ class AMOSCognitiveControlBridge:
 
         return result
 
-    async def quick_screen(self, input_data: Dict[str, Any]) -> CognitiveControlState:
+    async def quick_screen(self, input_data: dict[str, Any]) -> CognitiveControlState:
         """Fast screen for routing decisions without full processing."""
         return await self.kernel.fast_screen.screen(input_data)
 
-    def get_performance_report(self) -> Dict[str, Any]:
+    def get_performance_report(self) -> dict[str, Any]:
         """Get formatted performance report for dashboards."""
         metrics = self.kernel.get_metrics()
         state = self.kernel.get_kernel_state()

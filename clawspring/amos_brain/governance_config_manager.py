@@ -5,7 +5,6 @@ Owner: Trang Phan
 Version: 1.0.0
 """
 
-
 import json
 import os
 import threading
@@ -15,7 +14,6 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Dict, List, Optional
 
 
 class GovernanceMode(Enum):
@@ -75,9 +73,9 @@ class GovernanceConfigManager:
     def __init__(self, config_path: Optional[Path] = None, environment: str = "development"):
         self.config_path = config_path or self.DEFAULT_CONFIG_PATH
         self.environment = environment
-        self._policies: Dict[str, GovernancePolicy] = {}
+        self._policies: dict[str, GovernancePolicy] = {}
         self._current_policy_name: str = None
-        self._change_callbacks: List[Callable[[], None]] = []
+        self._change_callbacks: list[Callable[[], None]] = []
         self._lock = threading.RLock()
         self._reload_enabled = False
         self._load_config()
@@ -244,7 +242,7 @@ class GovernanceConfigManager:
             self._notify_change()
             return True
 
-    def list_policies(self) -> List[str]:
+    def list_policies(self) -> list[str]:
         """List all available policy names."""
         with self._lock:
             return list(self._policies.keys())

@@ -24,6 +24,8 @@ Author: AMOS Team
 Version: 2.0.0
 """
 
+from __future__ import annotations
+
 import argparse
 import json
 import subprocess

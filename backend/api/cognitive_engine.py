@@ -1,4 +1,6 @@
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
+
+from typing import Any, Optional
 
 """AMOS Cognitive Engine API - Real-time brain-powered cognition.
 
@@ -10,23 +12,18 @@ Production-grade cognitive processing with AMOS brain integration:
 """
 
 import hashlib
-import sys
 import time
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-
-UTC = timezone.utc
-from pathlib import Path
+from datetime import UTC, datetime
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
-AMOS_ROOT = Path(__file__).parent.parent.parent.resolve()
-sys.path.insert(0, str(AMOS_ROOT / "clawspring" / "amos_brain"))
+UTC = UTC
 
 try:
-    from amos_kernel_runtime import AMOSKernelRuntime  # noqa: E402
+    from amos_kernel_runtime import AMOSKernelRuntime
 
     from amos_brain_working import think as brain_think
 
@@ -40,11 +37,11 @@ router = APIRouter(prefix="/cognitive", tags=["Cognitive Engine"])
 class CognitiveRequest(BaseModel):
     """Request for cognitive processing."""
 
-    observation: Dict[str, Any] = Field(
+    observation: dict[str, Any] = Field(
         description="Current state/observation for brain processing"
     )
-    goal: Dict[str, Any] = Field(description="Target goal state")
-    context: Dict[str, Any] = Field(default_factory=dict, description="Additional context")
+    goal: dict[str, Any] = Field(description="Target goal state")
+    context: dict[str, Any] = Field(default_factory=dict, description="Additional context")
     require_legality: bool = Field(default=True, description="Require brain legality validation")
     max_depth: int = Field(default=3, ge=1, le=10, description="Maximum reasoning depth")
 
@@ -52,11 +49,11 @@ class CognitiveRequest(BaseModel):
 class CognitiveResponse(BaseModel):
     """Response from cognitive processing."""
 
-    decision: Dict[str, Any]
+    decision: dict[str, Any]
     legality: float
     confidence: float
-    reasoning_chain: List[dict[str, Any]]
-    execution_plan: List[str]
+    reasoning_chain: list[dict[str, Any]]
+    execution_plan: list[str]
     cognitive_state: str
     processing_time_ms: float
     brain_validated: bool
@@ -66,7 +63,7 @@ class CognitiveResponse(BaseModel):
 class PatternRecognitionRequest(BaseModel):
     """Request for pattern recognition."""
 
-    data: List[dict[str, Any]]
+    data: list[dict[str, Any]]
     pattern_type: str = Field(
         default="anomaly", description="Type: anomaly, trend, cycle, correlation"
     )
@@ -76,17 +73,17 @@ class PatternRecognitionRequest(BaseModel):
 class PatternRecognitionResponse(BaseModel):
     """Response with recognized patterns."""
 
-    patterns: List[dict[str, Any]]
+    patterns: list[dict[str, Any]]
     confidence: float
-    brain_assessment: Dict[str, Any]
-    recommendations: List[str]
+    brain_assessment: dict[str, Any]
+    recommendations: list[str]
 
 
 class ReasoningChainRequest(BaseModel):
     """Request for multi-step reasoning."""
 
     premise: str
-    steps: List[str]
+    steps: list[str]
     validate_each: bool = True
 
 
@@ -94,7 +91,7 @@ class ReasoningChainResponse(BaseModel):
     """Response with reasoning results."""
 
     chain_id: str
-    results: List[dict[str, Any]]
+    results: list[dict[str, Any]]
     overall_valid: bool
     brain_coherence: float
 
@@ -106,15 +103,15 @@ class CognitiveSession:
     session_id: str
     created_at: datetime
     kernel: Optional[AMOSKernelRuntime] = None
-    history: List[dict[str, Any]] = field(default_factory=list)
-    state: Dict[str, Any] = field(default_factory=dict)
+    history: list[dict[str, Any]] = field(default_factory=list)
+    state: dict[str, Any] = field(default_factory=dict)
 
 
 class CognitiveEngine:
     """Production cognitive engine with brain integration."""
 
     def __init__(self):
-        self._sessions: Dict[str, CognitiveSession] = {}
+        self._sessions: dict[str, CognitiveSession] = {}
         self._kernel = AMOSKernelRuntime() if BRAIN_AVAILABLE else None
 
     def _generate_session_id(self) -> str:
@@ -348,7 +345,7 @@ async def reasoning_chain(request: ReasoningChainRequest) -> ReasoningChainRespo
 
 
 @router.post("/process-fast")
-async def cognitive_process_fast(request: CognitiveRequest) -> Dict[str, Any]:
+async def cognitive_process_fast(request: CognitiveRequest) -> dict[str, Any]:
     """Fast cognitive processing using dual-process brain (<100ms)."""
 
     start = time.perf_counter()
@@ -391,7 +388,7 @@ async def cognitive_process_fast(request: CognitiveRequest) -> Dict[str, Any]:
 
 
 @router.get("/status")
-async def cognitive_status() -> Dict[str, Any]:
+async def cognitive_status() -> dict[str, Any]:
     """Get cognitive engine status."""
     # Check fast thinking availability
     fast_thinking = False

@@ -5,14 +5,14 @@ Layer 12 of Axiom One: Predict system behavior before changes are applied.
 
 from __future__ import annotations
 
-
 import asyncio
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timezone, timedelta
-UTC = timezone.utc
+from datetime import UTC, datetime, timedelta, timezone
+
+UTC = UTC
 from enum import Enum
-from typing import Any
+from typing import Any, Optional
 
 
 class SimulationType(Enum):

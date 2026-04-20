@@ -142,7 +142,7 @@ class ConsistencyConstraint:
 
     domain_id: str
     declared_model: ConsistencyModel
-    actual_behavior: Optional[ConsistencyModel] = None
+    actual_behavior: ConsistencyModel | None = None
     dependent_domains: list[str] = field(default_factory=list)
     convergence_bound_ms: float = None
 

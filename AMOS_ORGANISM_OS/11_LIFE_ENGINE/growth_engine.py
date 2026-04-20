@@ -7,10 +7,12 @@ Tracks growth plans and executes staged expansion.
 import json
 import uuid
 from dataclasses import asdict, dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class GrowthStage(Enum):
@@ -41,15 +43,15 @@ class GrowthPlan:
     description: str = ""
     growth_type: GrowthType = GrowthType.CAPABILITY
     target_subsystem: str = ""
-    requirements: List[str] = field(default_factory=list)
-    expected_outcome: Dict[str, Any] = field(default_factory=dict)
+    requirements: list[str] = field(default_factory=list)
+    expected_outcome: dict[str, Any] = field(default_factory=dict)
     stage: GrowthStage = GrowthStage.PLANNED
     progress: float = 0.0
     created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     started_at: str = None
     completed_at: str = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "growth_type": self.growth_type.value,
@@ -70,9 +72,9 @@ class GrowthEngine:
         self.data_dir = data_dir
         self.data_dir.mkdir(exist_ok=True)
 
-        self.plans: Dict[str, GrowthPlan] = {}
-        self.growth_history: List[dict[str, Any]] = []
-        self.capabilities: Dict[str, dict[str, Any]] = {}
+        self.plans: dict[str, GrowthPlan] = {}
+        self.growth_history: list[dict[str, Any]] = []
+        self.capabilities: dict[str, dict[str, Any]] = {}
 
         self._init_default_capabilities()
 
@@ -107,8 +109,8 @@ class GrowthEngine:
         description: str,
         growth_type: GrowthType,
         target_subsystem: str,
-        requirements: List[str],
-        expected_outcome: Dict[str, Any],
+        requirements: list[str],
+        expected_outcome: dict[str, Any],
     ) -> GrowthPlan:
         """Create a new growth plan."""
         plan = GrowthPlan(
@@ -232,14 +234,14 @@ class GrowthEngine:
         }
         plans_file.write_text(json.dumps(data, indent=2))
 
-    def list_plans(self, stage: Optional[GrowthStage] = None) -> List[dict[str, Any]]:
+    def list_plans(self, stage: Optional[GrowthStage] = None) -> list[dict[str, Any]]:
         """List growth plans."""
         plans = self.plans.values()
         if stage:
             plans = [p for p in plans if p.stage == stage]
         return [p.to_dict() for p in plans]
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get growth engine status."""
         active = sum(1 for p in self.plans.values() if p.stage == GrowthStage.IN_PROGRESS)
         completed = sum(1 for p in self.plans.values() if p.stage == GrowthStage.COMPLETED)

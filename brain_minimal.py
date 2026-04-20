@@ -7,7 +7,7 @@ Uses only amos_brain_working.think - no complex imports.
 """
 
 from dataclasses import dataclass
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 # Direct import of working brain
 from amos_brain_working import think as _brain_think
@@ -19,7 +19,7 @@ class MinimalBrainResponse:
     confidence: float
     law_compliant: bool
     reasoning: str
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
 
 
 class MinimalBrain:

@@ -1,6 +1,6 @@
 """Test suite for Phase 19: Human-AI Collaborative Cognition."""
 
-from typing import Any, Dict
+from typing import Any
 
 import pytest
 
@@ -22,7 +22,7 @@ def collaboration() -> HumanAICollaboration:
 def mock_reasoning() -> Any:
     """Mock reasoning function for testing."""
 
-    def reasoning(prompt: str, context: Dict[str, Any]) -> str:
+    def reasoning(prompt: str, context: dict[str, Any]) -> str:
         return f"Analysis of: {prompt[:30]}"
 
     return reasoning

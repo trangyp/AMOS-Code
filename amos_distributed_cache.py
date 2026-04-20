@@ -17,17 +17,16 @@ Owner: Trang
 Version: 9.0.0
 """
 
-
-import time
 import hashlib
-import threading
-import asyncio
-import pickle
-from typing import Any, Callable, Dict, Generic, List, Optional, TypeVar
-from dataclasses import dataclass, field
-from collections import OrderedDict
-from enum import Enum
 import heapq
+import pickle
+import threading
+import time
+from collections import OrderedDict
+from collections.abc import Callable
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any, Generic, Optional, TypeVar
 
 T = TypeVar("T")
 
@@ -48,6 +47,7 @@ class EvictionPolicy(Enum):
 @dataclass
 class CacheEntry(Generic[T]):
     """Cache entry with metadata."""
+
     key: str
     value: T
     created_at: float = field(default_factory=time.time)
@@ -67,6 +67,7 @@ class CacheEntry(Generic[T]):
 @dataclass
 class CacheStats:
     """Cache statistics."""
+
     hits: int = 0
     misses: int = 0
     evictions: int = 0
@@ -96,13 +97,13 @@ class LocalCache(Generic[T]):
         self.eviction_policy = eviction_policy
         self.default_ttl = default_ttl
 
-        self._cache: Dict[str, CacheEntry[T]] = {}
+        self._cache: dict[str, CacheEntry[T]] = {}
         self._access_order: OrderedDict[str, None] = OrderedDict()
         self._lock = threading.RLock()
         self._stats = CacheStats(memory_limit_bytes=max_memory_bytes)
 
         # TTL tracking for efficient expiration
-        self._ttl_heap: List[tuple[float, str]] = []
+        self._ttl_heap: list[tuple[float, str]] = []
         self._eviction_thread = threading.Thread(target=self._eviction_loop, daemon=True)
         self._eviction_thread.start()
 
@@ -270,7 +271,7 @@ class CacheStampedePreventer:
 
     def __init__(self, beta: float = 1.0):
         self.beta = beta
-        self._locks: Dict[str, threading.Lock] = {}
+        self._locks: dict[str, threading.Lock] = {}
         self._global_lock = threading.Lock()
 
     def should_recompute(self, entry: CacheEntry) -> bool:
@@ -395,9 +396,10 @@ class DistributedCache(Generic[T]):
     def _match_pattern(self, key: str, pattern: str) -> bool:
         """Simple pattern matching for invalidation."""
         import fnmatch
+
         return fnmatch.fnmatch(key, pattern)
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get combined cache statistics."""
         l1_stats = self.l1.get_stats()
         return {
@@ -421,7 +423,7 @@ class AMOSCacheManager:
     """Central cache manager for AMOS system."""
 
     def __init__(self):
-        self._caches: Dict[str, DistributedCache[Any]] = {}
+        self._caches: dict[str, DistributedCache[Any]] = {}
         self._lock = threading.RLock()
 
     def get_cache(self, name: str) -> DistributedCache[Any]:
@@ -443,7 +445,7 @@ class AMOSCacheManager:
                     total += 1
         return total
 
-    def get_all_stats(self) -> Dict[str, Any]:
+    def get_all_stats(self) -> dict[str, Any]:
         """Get stats for all caches."""
         with self._lock:
             return {name: cache.get_stats() for name, cache in self._caches.items()}
@@ -485,7 +487,7 @@ def get_cached_llm_response(prompt_hash: str) -> Optional[str]:
 
 def cache_user_context(
     user_id: str,
-    context: Dict[str, Any],
+    context: dict[str, Any],
     ttl: int = 1800,  # 30 minutes for user context
 ) -> bool:
     """Cache user biological context."""
@@ -501,7 +503,7 @@ def get_cached_user_context(user_id: str) -> Optional[dict[str, Any]]:
 
 def cache_workflow_state(
     workflow_id: str,
-    state: Dict[str, Any],
+    state: dict[str, Any],
     ttl: int = 86400,  # 24 hours for workflow state
 ) -> bool:
     """Cache workflow execution state."""

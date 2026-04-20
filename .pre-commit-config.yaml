@@ -3,9 +3,17 @@
 # Run all: pre-commit run --all-files
 # Docs: https://pre-commit.com
 
-minimum_pre_commit_version: "3.5.0"
+minimum_pre_commit_version: "3.6.0"
 default_stages: [pre-commit, pre-push]
 fail_fast: false
+
+# ============================================================================
+# AMOS TOOL LATTICE - Six-Kernel Enforcement Order
+# 1. Syntax & Formatting (Ruff)
+# 2. Tests (pytest)
+# 3. Architecture (import-linter)
+# 4. Duplication/Dependency/Security
+# ============================================================================
 
 repos:
   # General file checks
@@ -32,28 +40,83 @@ repos:
       - id: requirements-txt-fixer
 
   # Python linting and formatting (Ruff - replaces black, flake8, isort)
+  # KERNEL 1: Syntax & Formatting (fast feedback)
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.3.0
+    rev: v0.14.1
     hooks:
       - id: ruff
-        name: ruff-lint
-        args: [--fix, --exit-non-zero-on-fix, --select, "E9,F63,F7,F82,F841,F401,E741,S110"]
+        name: ruff-lint-format
+        args: [--fix, --exit-non-zero-on-fix]
         types_or: [python, pyi]
       - id: ruff-format
         name: ruff-format
         types_or: [python, pyi]
 
+  # KERNEL 6: Tests & Async (second priority)
+  - repo: local
+    hooks:
+      - id: pytest
+        name: AMOS Test Runner (pytest + asyncio)
+        entry: python -m pytest
+        args: ["-q", "--tb=short", "--strict-markers"]
+        language: system
+        types: [python]
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]
+
   # Python type checking (MyPy)
+  # Type checking (runs after tests, before architecture)
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.7.1
+    rev: v1.8.0
     hooks:
       - id: mypy
+        name: mypy-type-check
         additional_dependencies:
-          - pydantic>=2.0.0
+          - pydantic>=2.5.0
           - types-PyYAML
           - types-requests
         args: [--ignore-missing-imports, --show-error-codes]
         exclude: "tests/|test_|venv/|.venv/|__pycache__/"
+        stages: [pre-push]
+
+  # Architecture: Import Linter - Enforces layered architecture
+  # Docs: https://import-linter.readthedocs.io/
+  - repo: local
+    hooks:
+      - id: import-linter
+        name: AMOS Architecture Enforcement (Import Linter)
+        entry: lint-imports
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]
+
+  # Duplicate Detection: jscpd - Finds code duplication
+  # Docs: https://jscpd.dev/
+  - repo: local
+    hooks:
+      - id: jscpd
+        name: AMOS Duplicate Detection (jscpd)
+        entry: jscpd
+        args: ["--config", ".jscpd.json"]
+        language: node
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]
+
+  # Dependency Audit: deptry - Finds missing/unused dependencies
+  # Docs: https://deptry.com/
+  - repo: local
+    hooks:
+      - id: deptry
+        name: AMOS Dependency Audit (deptry)
+        entry: deptry
+        args: ["."]
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]
 
   # Security: Secret scanning (Gitleaks)
   - repo: https://github.com/gitleaks/gitleaks
@@ -87,23 +150,77 @@ repos:
         pass_filenames: false
         stages: [pre-push]
 
-  # Testing: pytest with coverage
-  # Note: Only runs on push, not every commit
+  # ============================================================================
+  # AMOS TOOL LATTICE - Architecture Enforcement Kernel
+  # ============================================================================
+
+  # Architecture: Import Linter - Enforces layered architecture
+  # Docs: https://import-linter.readthedocs.io/
   - repo: local
     hooks:
-      - id: pytest
-        name: Run tests with pytest
-        entry: python -m pytest
-        args: ["-q", "--tb=short"]
+      - id: import-linter
+        name: AMOS Architecture Enforcement (Import Linter)
+        entry: lint-imports
         language: system
-        types: [python]
         pass_filenames: false
         always_run: true
         stages: [pre-push]
 
-      - id: coverage
-        name: Check test coverage
-        entry: coverage run -m pytest
+  # Duplicate Detection: jscpd - Finds code duplication
+  # Docs: https://jscpd.dev/
+  - repo: local
+    hooks:
+      - id: jscpd
+        name: AMOS Duplicate Detection (jscpd)
+        entry: jscpd
+        args: ["--config", ".jscpd.json"]
+        language: node
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]
+
+  # Dependency Audit: deptry - Finds missing/unused dependencies
+  # Docs: https://deptry.com/
+  - repo: local
+    hooks:
+      - id: deptry
+        name: AMOS Dependency Audit (deptry)
+        entry: deptry
+        args: ["."]
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]
+
+  # Security: Bandit - Python security linter
+  # Docs: https://bandit.readthedocs.io/
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.7
+    hooks:
+      - id: bandit
+        name: AMOS Security Scan (Bandit)
+        args: ["-c", "pyproject.toml", "-r", "."]
+        exclude: "tests/|test_|venv/|.venv/|__pycache__/"
+        stages: [pre-push]
+
+  # Security: pip-audit - Dependency vulnerability scanner
+  # Docs: https://pypi.org/project/pip-audit/
+  - repo: https://github.com/pypa/pip-audit
+    rev: v2.7.0
+    hooks:
+      - id: pip-audit
+        name: AMOS Vulnerability Audit (pip-audit)
+        args: ["--requirement", "requirements.txt", "--requirement", "requirements-dev.txt"]
+        stages: [pre-push]
+
+  # Complexity: Radon - Code complexity analysis
+  # Docs: https://radon.readthedocs.io/
+  - repo: local
+    hooks:
+      - id: radon
+        name: AMOS Complexity Check (radon)
+        entry: radon
+        args: ["cc", "-nc", "C", "-s", "."]
         language: system
         pass_filenames: false
         always_run: true

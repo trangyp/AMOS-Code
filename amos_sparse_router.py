@@ -1,4 +1,6 @@
-from typing import Any, Dict, Optional, Set
+from __future__ import annotations
+
+from typing import Any, Optional
 
 """
 AMOS Sparse Router
@@ -10,8 +12,10 @@ To:   RuntimeCost ∝ Σᵢ∈ActiveSet ModuleCostᵢ (active only)
 
 import time
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
 from enum import Enum, auto
+
+UTC = UTC
 
 from amos_fastloop_classifier import ClassificationResult, InterruptClass
 
@@ -39,10 +43,10 @@ class ModuleType(Enum):
 class ActiveModuleSet:
     """Set of modules activated for a request."""
 
-    modules: Set[ModuleType]
+    modules: set[ModuleType]
     latency_budget_ms: float
     verification_tier: str
-    search_limits: Dict[str, int]
+    search_limits: dict[str, int]
 
     def __post_init__(self):
         """Validate module set."""
@@ -57,7 +61,7 @@ class RouteResult:
     module_set: ActiveModuleSet
     routing_latency_ms: float
     timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class SparseRouter:
@@ -73,7 +77,7 @@ class SparseRouter:
     """
 
     # Core routing table
-    ROUTING_TABLE: Dict[InterruptClass, ActiveModuleSet] = {
+    ROUTING_TABLE: dict[InterruptClass, ActiveModuleSet] = {
         InterruptClass.QUERY: ActiveModuleSet(
             modules={ModuleType.MEMORY, ModuleType.RETRIEVAL},
             latency_budget_ms=10.0,
@@ -115,7 +119,7 @@ class SparseRouter:
     def __init__(self):
         """Initialize router."""
         self._route_count = 0
-        self._active_module_stats: Dict[ModuleType, int] = {m: 0 for m in ModuleType}
+        self._active_module_stats: dict[ModuleType, int] = {m: 0 for m in ModuleType}
 
     def route(self, classification: ClassificationResult) -> RouteResult:
         """
@@ -146,7 +150,7 @@ class SparseRouter:
             },
         )
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get routing statistics."""
         total_module_activations = sum(self._active_module_stats.values())
         return {
@@ -193,7 +197,7 @@ def get_latency_budget(classification: ClassificationResult) -> float:
     return result.module_set.latency_budget_ms
 
 
-def get_search_limits(classification: ClassificationResult) -> Dict[str, int]:
+def get_search_limits(classification: ClassificationResult) -> dict[str, int]:
     """Get search limits for a classification."""
     router = get_router()
     result = router.route(classification)

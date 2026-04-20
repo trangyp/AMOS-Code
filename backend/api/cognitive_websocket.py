@@ -6,25 +6,19 @@ to process cognitive queries, spawn agents, and stream results.
 
 from __future__ import annotations
 
-
-
-
 import asyncio
 import json
-import sys
 import uuid
-from datetime import datetime, timezone
-
-UTC = timezone.utc
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
+UTC = UTC
+
 # Add repo root to path
 _REPO_ROOT = Path(__file__).parent.parent.parent.resolve()
-sys.path.insert(0, str(_REPO_ROOT))
-sys.path.insert(0, str(_REPO_ROOT / "clawspring" / "amos_brain"))
 
 # Import real brain facade
 try:
@@ -39,15 +33,15 @@ except ImportError:
 router = APIRouter()
 
 # Active cognitive sessions
-_cognitive_sessions: Dict[str, dict[str, Any]] = {}
+_cognitive_sessions: dict[str, dict[str, Any]] = {}
 
 
 class CognitiveWebSocketManager:
     """Manage cognitive WebSocket connections with real brain integration."""
 
     def __init__(self):
-        self.connections: Dict[str, WebSocket] = {}
-        self.brain_clients: Dict[str, BrainClient] = {}
+        self.connections: dict[str, WebSocket] = {}
+        self.brain_clients: dict[str, BrainClient] = {}
 
     async def connect(self, session_id: str, websocket: WebSocket) -> Optional[BrainClient]:
         """Accept connection and initialize brain client."""

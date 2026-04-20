@@ -40,6 +40,8 @@ Owner: Trang Phan
 Version: 1.0.0
 """
 
+from __future__ import annotations
+
 import json
 import time
 from collections.abc import Callable
@@ -47,13 +49,10 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 # Import SuperBrain components
 try:
-    import sys
-
-    sys.path.insert(0, str(Path(__file__).parent.parent.parent))
     from amos_superbrain_equation_bridge import (
         AMOSSuperBrainBridge,
         CoreMLEquations,
@@ -109,14 +108,13 @@ class ValidationReport:
     failed: int
     errors: int
     skipped: int
-    by_domain: Dict[str, list[ValidationResult]]
-    performance_summary: Dict[str, float]
+    by_domain: dict[str, list[ValidationResult]]
+    performance_summary: dict[str, float]
     coverage_percentage: float
 
 
 class EquationValidationEngine:
-    """
-    Automated validation engine for AMOS mathematical equations.
+    """Automated validation engine for AMOS mathematical equations.
 
     Features:
     - Validates all 145+ equations across 33 domains
@@ -128,12 +126,12 @@ class EquationValidationEngine:
 
     def __init__(self, enable_audit: bool = True):
         self.enable_audit = enable_audit and AUDIT_AVAILABLE
-        self._bridge: Optional[AMOSSuperBrainBridge] = None
-        self._audit: Optional[Any] = None
-        self._results: List[ValidationResult] = []
+        self._bridge: AMOSSuperBrainBridge | None = None
+        self._audit: Any | None = None
+        self._results: list[ValidationResult] = []
 
         # Equation registry
-        self._equation_tests: Dict[str, Callable] = {}
+        self._equation_tests: dict[str, Callable] = {}
 
         self._initialize()
 
@@ -172,7 +170,7 @@ class EquationValidationEngine:
             }
         )
 
-    def _test_sigmoid(self) -> Dict[str, Any]:
+    def _test_sigmoid(self) -> dict[str, Any]:
         """Test sigmoid function invariants."""
         if not self._bridge:
             return {"error": "Bridge not available"}
@@ -190,7 +188,7 @@ class EquationValidationEngine:
 
         return {"invariants": ["sigmoid(0) = 0.5", "range in (0,1)"], "passed": True}
 
-    def _test_relu(self) -> Dict[str, Any]:
+    def _test_relu(self) -> dict[str, Any]:
         """Test ReLU function invariants."""
         if not self._bridge:
             return {"error": "Bridge not available"}
@@ -209,7 +207,7 @@ class EquationValidationEngine:
 
         return {"invariants": ["relu(x) = max(0, x)"], "passed": True}
 
-    def _test_softmax(self) -> Dict[str, Any]:
+    def _test_softmax(self) -> dict[str, Any]:
         """Test softmax function invariants."""
         if not self._bridge:
             return {"error": "Bridge not available"}
@@ -227,7 +225,7 @@ class EquationValidationEngine:
 
         return {"invariants": ["sum = 1", "range in (0,1)"], "passed": True}
 
-    def _test_cross_entropy(self) -> Dict[str, Any]:
+    def _test_cross_entropy(self) -> dict[str, Any]:
         """Test cross-entropy loss invariants."""
         if not self._bridge:
             return {"error": "Bridge not available"}
@@ -242,7 +240,7 @@ class EquationValidationEngine:
 
         return {"invariants": ["low loss for correct predictions"], "passed": True}
 
-    def _test_fedavg(self) -> Dict[str, Any]:
+    def _test_fedavg(self) -> dict[str, Any]:
         """Test Federated Averaging invariants."""
         if not self._bridge:
             return {"error": "Bridge not available"}
@@ -265,7 +263,7 @@ class EquationValidationEngine:
 
         return {"invariants": ["weighted average correct"], "passed": True}
 
-    def _test_allreduce(self) -> Dict[str, Any]:
+    def _test_allreduce(self) -> dict[str, Any]:
         """Test All-Reduce bandwidth invariants."""
         if not self._bridge:
             return {"error": "Bridge not available"}
@@ -336,7 +334,7 @@ class EquationValidationEngine:
 
         self._results = []
         passed = failed = errors = skipped = 0
-        by_domain: Dict[str, list[ValidationResult]] = {}
+        by_domain: dict[str, list[ValidationResult]] = {}
 
         total_start = time.time()
 
@@ -463,7 +461,7 @@ class EquationValidationEngine:
 
 
 # Global instance
-_validator: Optional[EquationValidationEngine] = None
+_validator: EquationValidationEngine | None = None
 
 
 def get_equation_validator() -> EquationValidationEngine:

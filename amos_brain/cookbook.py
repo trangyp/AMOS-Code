@@ -1,10 +1,25 @@
 """AMOS Brain Cookbook - Pre-built cognitive workflows (Layer 12)."""
 
+from __future__ import annotations
+
+import asyncio
 from dataclasses import dataclass
 from typing import Any
 
 from .facade import BrainClient
 from .state_manager import get_state_manager
+
+
+def _run_sync(coro: Any) -> Any:
+    """Run async coroutine synchronously."""
+    try:
+        loop = asyncio.get_running_loop()
+        if loop.is_running():
+            # If already in async context, schedule and return
+            return coro
+    except RuntimeError:
+        pass
+    return asyncio.run(coro)
 
 
 @dataclass
@@ -56,12 +71,11 @@ class ArchitectureDecision:
     RECIPE_NAME = "Architecture Decision Record (ADR)"
 
     @classmethod
-    def analyze(cls, question: str, context: dict[str, Any] = None) -> CookbookResult:
-        """Analyze an architectural decision."""
+    async def analyze_async(cls, question: str, context: dict[str, Any] = None) -> CookbookResult:
+        """Analyze an architectural decision (async version)."""
         client = BrainClient()
         sm = get_state_manager()
 
-        # Build enriched prompt
         prompt = f"""Architecture Decision: {question}
 
 Consider these factors:
@@ -81,17 +95,14 @@ Provide:
         if context:
             prompt += f"\n\nContext: {context}"
 
-        # Process through brain
-        response = client.think(prompt, domain="software")
+        response = await client.think(prompt, domain="software")
 
-        # Extract recommendations from reasoning
         recommendations = [
             step
             for step in response.reasoning
             if any(k in step.lower() for k in ["recommend", "suggest", "choose", "use"])
         ][:3]
 
-        # Create session for audit
         session_id = sm.start_session(goal=f"ADR: {question[:50]}", domain="software")
 
         return CookbookResult(
@@ -103,6 +114,11 @@ Provide:
             law_compliant=response.law_compliant,
             session_id=session_id,
         )
+
+    @classmethod
+    def analyze(cls, question: str, context: dict[str, Any] = None) -> CookbookResult:
+        """Analyze an architectural decision (sync wrapper)."""
+        return _run_sync(cls.analyze_async(question, context))
 
     @classmethod
     def run(cls, question: str, context: dict[str, Any] = None) -> CookbookResult:
@@ -119,10 +135,10 @@ class CodeReview:
     RECIPE_NAME = "Code Review"
 
     @classmethod
-    def analyze(
+    async def analyze_async(
         cls, code: str, language: str = "python", focus_areas: list[str] = None
     ) -> CookbookResult:
-        """Analyze code with cognitive rules."""
+        """Analyze code with cognitive rules (async)."""
         client = BrainClient()
         sm = get_state_manager()
 
@@ -151,7 +167,7 @@ Identify:
 - Law of Structural Integrity violations
 - UBI alignment issues"""
 
-        response = client.think(prompt, domain="software")
+        response = await client.think(prompt, domain="software")
 
         recommendations = [
             step
@@ -170,6 +186,13 @@ Identify:
             law_compliant=response.law_compliant,
             session_id=session_id,
         )
+
+    @classmethod
+    def analyze(
+        cls, code: str, language: str = "python", focus_areas: list[str] = None
+    ) -> CookbookResult:
+        """Analyze code with cognitive rules (sync wrapper)."""
+        return _run_sync(cls.analyze_async(code, language, focus_areas))
 
     @classmethod
     def run(
@@ -320,8 +343,10 @@ class ProblemDiagnosis:
     RECIPE_NAME = "Problem Diagnosis & RCA"
 
     @classmethod
-    def diagnose(cls, problem: str, symptoms: list[str], context: str = "") -> CookbookResult:
-        """Diagnose problem root cause."""
+    async def diagnose_async(
+        cls, problem: str, symptoms: list[str], context: str = ""
+    ) -> CookbookResult:
+        """Diagnose problem root cause (async)."""
         client = BrainClient()
 
         prompt = f"""Root Cause Analysis:
@@ -354,7 +379,7 @@ Identify:
 - Immediate mitigation
 - Long-term prevention"""
 
-        response = client.think(prompt, domain="diagnostics")
+        response = await client.think(prompt, domain="diagnostics")
 
         recommendations = [
             step
@@ -373,13 +398,9 @@ Identify:
         )
 
     @classmethod
-    def run(
-        cls,
-        problem: str,
-        symptoms: list[str],
-        context: str = "",
-    ) -> CookbookResult:
-        return cls.diagnose(problem, symptoms, context)
+    def diagnose(cls, problem: str, symptoms: list[str], context: str = "") -> CookbookResult:
+        """Diagnose problem root cause (sync wrapper)."""
+        return _run_sync(cls.diagnose_async(problem, symptoms, context))
 
     @classmethod
     def run(
@@ -405,8 +426,10 @@ class ProjectPlanner:
     RECIPE_NAME = "Project Planning & Estimation"
 
     @classmethod
-    def plan(cls, project_description: str, constraints: dict[str, Any] = None) -> CookbookResult:
-        """Create project plan with cognitive analysis."""
+    async def plan_async(
+        cls, project_description: str, constraints: dict[str, Any] = None
+    ) -> CookbookResult:
+        """Create project plan with cognitive analysis (async)."""
         client = BrainClient()
 
         cons = constraints or {}
@@ -435,7 +458,7 @@ Provide:
 5. Milestone schedule
 6. Resource requirements"""
 
-        response = client.think(prompt, domain="project")
+        response = await client.think(prompt, domain="project")
 
         recommendations = [
             step
@@ -452,6 +475,11 @@ Provide:
             law_compliant=response.law_compliant,
             session_id="",
         )
+
+    @classmethod
+    def plan(cls, project_description: str, constraints: dict[str, Any] = None) -> CookbookResult:
+        """Create project plan with cognitive analysis (sync wrapper)."""
+        return _run_sync(cls.plan_async(project_description, constraints))
 
     @classmethod
     def run(
@@ -502,13 +530,14 @@ class TechnologySelection:
     RECIPE_NAME = "Technology Selection"
 
     @classmethod
-    def run(
+    async def select_async(
         cls,
         category: str,
         options: list[str],
         criteria: list[str] = None,
         **extra: Any,
     ) -> CookbookResult:
+        """Select technology (async)."""
         merged_criteria = list(criteria or [])
         for key, value in extra.items():
             if isinstance(value, list):
@@ -525,7 +554,7 @@ Criteria: {", ".join(merged_criteria)}
 Compare the options using Rule of 2 and Rule of 4.
 Return a recommendation, tradeoffs, and selection rationale.
 """
-        response = client.think(prompt, domain="software")
+        response = await client.think(prompt, domain="software")
         recommendations = [
             step
             for step in response.reasoning
@@ -541,6 +570,17 @@ Return a recommendation, tradeoffs, and selection rationale.
             session_id="",
         )
 
+    @classmethod
+    def run(
+        cls,
+        category: str,
+        options: list[str],
+        criteria: list[str] = None,
+        **extra: Any,
+    ) -> CookbookResult:
+        """Select technology (sync wrapper)."""
+        return _run_sync(cls.select_async(category, options, criteria, **extra))
+
 
 class RiskAssessment:
     """Recipe: Risk Assessment."""
@@ -548,12 +588,13 @@ class RiskAssessment:
     RECIPE_NAME = "Risk Assessment"
 
     @classmethod
-    def run(
+    async def assess_async(
         cls,
         change: str,
         impacts: list[str] = None,
         **extra: Any,
     ) -> CookbookResult:
+        """Assess risk (async)."""
         merged_impacts = list(impacts or [])
         for key, value in extra.items():
             if isinstance(value, list):
@@ -568,7 +609,7 @@ Impacts: {", ".join(merged_impacts)}
 
 Assess the main risks, mitigations, fallback paths, and monitoring signals.
 """
-        response = client.think(prompt, domain="risk")
+        response = await client.think(prompt, domain="risk")
         recommendations = [
             step
             for step in response.reasoning
@@ -584,7 +625,92 @@ Assess the main risks, mitigations, fallback paths, and monitoring signals.
             session_id="",
         )
 
+    @classmethod
+    def run(
+        cls,
+        change: str,
+        impacts: list[str] = None,
+        **extra: Any,
+    ) -> CookbookResult:
+        """Assess risk (sync wrapper)."""
+        return _run_sync(cls.assess_async(change, impacts, **extra))
+
 
 def plan_project(description: str, **kwargs) -> CookbookResult:
     """Quick project planning."""
     return ProjectPlanner.plan(description, **kwargs)
+
+
+def run_cookbook_demo() -> None:
+    """Run interactive cookbook demo.
+
+    Presents menu of available recipes and executes selected workflow.
+    """
+    print("\n📚 AMOS Brain Cookbook Demos")
+    print("=" * 50)
+    print()
+    print("Available Recipes:")
+    print("  1. Architecture Decision (ADR)")
+    print("  2. Code Review")
+    print("  3. Security Audit")
+    print("  4. Design Pattern")
+    print("  5. Problem Diagnosis")
+    print("  6. Project Planning")
+    print("  7. Technology Selection")
+    print("  8. Risk Assessment")
+    print()
+
+    choice = input("Select recipe (1-8, or q to quit): ").strip().lower()
+
+    if choice == "q":
+        return
+
+    recipes = {
+        "1": ArchitectureDecision,
+        "2": CodeReview,
+        "3": SecurityAudit,
+        "4": DesignPattern,
+        "5": ProblemDiagnosis,
+        "6": ProjectPlanner,
+        "7": TechnologySelection,
+        "8": RiskAssessment,
+    }
+
+    recipe_class = recipes.get(choice)
+    if not recipe_class:
+        print("Invalid selection.")
+        return
+
+    print(f"\nRunning: {recipe_class.RECIPE_NAME}")
+    print("-" * 50)
+
+    # Get input based on recipe type
+    if choice in ("1", "2", "3", "4"):
+        question = input("Enter question/analysis target: ")
+        result = recipe_class.analyze(question)
+    elif choice == "5":
+        problem = input("Enter problem: ")
+        result = recipe_class.diagnose(problem)
+    elif choice == "6":
+        description = input("Enter project description: ")
+        result = recipe_class.plan(description)
+    elif choice == "7":
+        criteria = input("Enter selection criteria: ")
+        result = recipe_class.select(criteria)
+    elif choice == "8":
+        change = input("Enter change to assess: ")
+        result = recipe_class.run(change)
+    else:
+        return
+
+    # Display results
+    print("\n✓ Analysis Complete")
+    print(f"Recipe: {result.recipe_name}")
+    print(f"Confidence: {result.confidence:.0%}")
+    print(f"Law Compliant: {'✓' if result.law_compliant else '✗'}")
+    print()
+    print("Recommendations:")
+    for i, rec in enumerate(result.recommendations, 1):
+        print(f"  {i}. {rec}")
+    print()
+    print(f"Session ID: {result.session_id}")

@@ -23,6 +23,8 @@ Author: AMOS Brain Architecture Team
 Version: 14.0.0
 """
 
+from __future__ import annotations
+
 import asyncio
 import inspect
 import logging
@@ -32,7 +34,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Optional
 
 # Configure logging
 logging.basicConfig(
@@ -68,8 +70,8 @@ class SystemModule:
     name: str
     path: Path
     tier: SystemTier
-    dependencies: Set[str] = field(default_factory=set)
-    provides: Set[str] = field(default_factory=set)
+    dependencies: set[str] = field(default_factory=set)
+    provides: set[str] = field(default_factory=set)
     size_bytes: int = 0
     activated: bool = False
     activation_order: int = 0
@@ -103,10 +105,10 @@ class AMOSModuleDiscovery:
 
     def __init__(self, root_path: Path):
         self.root_path = root_path
-        self.discovered: Dict[str, SystemModule] = {}
+        self.discovered: dict[str, SystemModule] = {}
         self.total_modules = 0
 
-    def discover_all(self) -> Dict[str, SystemModule]:
+    def discover_all(self) -> dict[str, SystemModule]:
         """Discover all AMOS modules in the codebase."""
         logger.info("Starting AMOS module discovery...")
 
@@ -153,7 +155,7 @@ class AMOSModuleDiscovery:
 
     def _extract_provides(self, py_file: Path) -> set[str]:
         """Extract capabilities provided by a module."""
-        provides: Set[str] = set()
+        provides: set[str] = set()
 
         try:
             content = py_file.read_text(errors="ignore")
@@ -173,12 +175,12 @@ class AMOSModuleDiscovery:
 class AMOSDependencyGraph:
     """Layer 1: Build dependency graph between systems."""
 
-    def __init__(self, modules: Dict[str, SystemModule]):
+    def __init__(self, modules: dict[str, SystemModule]):
         self.modules = modules
-        self.graph: Dict[str, set[str]] = defaultdict(set)
-        self.reverse_graph: Dict[str, set[str]] = defaultdict(set)
+        self.graph: dict[str, set[str]] = defaultdict(set)
+        self.reverse_graph: dict[str, set[str]] = defaultdict(set)
 
-    def build_graph(self) -> Dict[str, set[str]]:
+    def build_graph(self) -> dict[str, set[str]]:
         """Build dependency graph from imports and naming."""
         logger.info("Building dependency graph...")
 
@@ -200,7 +202,7 @@ class AMOSDependencyGraph:
 
     def _extract_dependencies(self, module: SystemModule) -> set[str]:
         """Extract dependencies from module imports."""
-        deps: Set[str] = set()
+        deps: set[str] = set()
 
         try:
             content = module.path.read_text(errors="ignore")
@@ -231,7 +233,7 @@ class AMOSDependencyGraph:
 
         return deps
 
-    def topological_sort(self) -> List[str]:
+    def topological_sort(self) -> list[str]:
         """Return activation order using topological sort."""
         # Kahn's algorithm
         in_degree = {name: len(self.graph[name]) for name in self.modules}
@@ -262,13 +264,13 @@ class AMOSDependencyGraph:
 class AMOSActivationEngine:
     """Layer 2: Topological activation of systems."""
 
-    def __init__(self, modules: Dict[str, SystemModule], activation_order: List[str]):
+    def __init__(self, modules: dict[str, SystemModule], activation_order: list[str]):
         self.modules = modules
         self.activation_order = activation_order
         self.activated_count = 0
         self.failed_count = 0
 
-    async def activate_all(self) -> Dict[str, SystemModule]:
+    async def activate_all(self) -> dict[str, SystemModule]:
         """Activate all systems in topological order."""
         logger.info(f"Activating {len(self.activation_order)} systems...")
 
@@ -297,7 +299,7 @@ class AMOSActivationEngine:
                     raise RuntimeError(f"Critical module {name} failed: {e}")
 
         logger.info(
-            f"Activation complete: {self.activated_count} succeeded, " f"{self.failed_count} failed"
+            f"Activation complete: {self.activated_count} succeeded, {self.failed_count} failed"
         )
 
         return self.modules
@@ -313,11 +315,11 @@ class AMOSActivationEngine:
 class AMOSMemoryBridge:
     """Layer 3: Multi-tier memory connections between systems."""
 
-    def __init__(self, modules: Dict[str, SystemModule]):
+    def __init__(self, modules: dict[str, SystemModule]):
         self.modules = modules
-        self.bridges: List[MemoryBridge] = []
+        self.bridges: list[MemoryBridge] = []
 
-    def establish_bridges(self) -> List[MemoryBridge]:
+    def establish_bridges(self) -> list[MemoryBridge]:
         """Establish memory connections between systems."""
         logger.info("🧠 Establishing memory bridges...")
 
@@ -383,11 +385,11 @@ class AMOSMemoryBridge:
 class AMOSGuardrails:
     """Layer 4: Safety guardrails from constitutional governance."""
 
-    def __init__(self, modules: Dict[str, SystemModule]):
+    def __init__(self, modules: dict[str, SystemModule]):
         self.modules = modules
-        self.rules: List[GuardrailRule] = []
+        self.rules: list[GuardrailRule] = []
 
-    def install_guardrails(self) -> List[GuardrailRule]:
+    def install_guardrails(self) -> list[GuardrailRule]:
         """Install safety guardrails across all systems."""
         logger.info("🛡️ Installing guardrails...")
 
@@ -452,16 +454,16 @@ class AMOSUnifiedAPI:
 
     def __init__(
         self,
-        modules: Dict[str, SystemModule],
-        bridges: List[MemoryBridge],
+        modules: dict[str, SystemModule],
+        bridges: list[MemoryBridge],
         guardrails: AMOSGuardrails,
     ):
         self.modules = modules
         self.bridges = bridges
         self.guardrails = guardrails
-        self.endpoints: Dict[str, Callable] = {}
+        self.endpoints: dict[str, Callable] = {}
 
-    def expose_api(self) -> Dict[str, Callable]:
+    def expose_api(self) -> dict[str, Callable]:
         """Expose unified API for all activated systems."""
         logger.info("🌐 Exposing unified API...")
 
@@ -481,7 +483,7 @@ class AMOSUnifiedAPI:
         logger.info(f"✅ Exposed {len(self.endpoints)} API endpoints")
         return self.endpoints
 
-    def _get_status(self) -> Dict[str, Any]:
+    def _get_status(self) -> dict[str, Any]:
         """Get overall system status."""
         activated = sum(1 for m in self.modules.values() if m.activated)
         total = len(self.modules)
@@ -497,7 +499,7 @@ class AMOSUnifiedAPI:
             "healthy": activated / total > 0.8 if total > 0 else False,
         }
 
-    def _list_modules(self, tier: Optional[SystemTier] = None) -> List[dict]:
+    def _list_modules(self, tier: Optional[SystemTier] = None) -> list[dict]:
         """List all modules, optionally filtered by tier."""
         result = []
         for name, module in self.modules.items():
@@ -526,7 +528,7 @@ class AMOSUnifiedAPI:
         # Activation logic here
         return {"status": "activation_started"}
 
-    def _query_system(self, query: str, context: Optional[dict] = None) -> dict:
+    def _query_system(self, query: str, context: dict | None = None) -> dict:
         """Query the unified system."""
         # This would route to appropriate modules
         return {"query": query, "context": context, "results": [], "routing": "unified"}
@@ -536,7 +538,7 @@ class AMOSUnifiedAPI:
         # Memory access logic
         return {"memory_type": memory_type, "key": key, "value": None}
 
-    def _list_guardrails(self) -> List[dict]:
+    def _list_guardrails(self) -> list[dict]:
         """List all guardrail rules."""
         return [
             {"name": r.name, "action": r.action, "priority": r.priority}
@@ -580,7 +582,7 @@ class AMOSUnifiedIntegrator:
 
     def __init__(self, root_path: Optional[Path] = None):
         self.root_path = root_path or Path(__file__).parent
-        self.modules: Dict[str, SystemModule] = {}
+        self.modules: dict[str, SystemModule] = {}
         self.discovery: Optional[AMOSModuleDiscovery] = None
         self.dependency_graph: Optional[AMOSDependencyGraph] = None
         self.activation_engine: Optional[AMOSActivationEngine] = None
@@ -639,13 +641,13 @@ class AMOSUnifiedIntegrator:
             traceback.print_exc()
             return False
 
-    def get_api(self) -> Dict[str, Callable]:
+    def get_api(self) -> dict[str, Callable]:
         """Get the unified API endpoints."""
         if self.api:
             return self.api.endpoints
         return None
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get current integration status."""
         if self.api:
             return self.api._get_status()
@@ -706,7 +708,7 @@ async def main():
         # Show status
         status = integrator.get_status()
         print(f"\n📊 Overall Status: {'HEALTHY ✓' if status['healthy'] else 'DEGRADED ✗'}")
-        print(f"   Activation Rate: {status['activation_rate']*100:.1f}%")
+        print(f"   Activation Rate: {status['activation_rate'] * 100:.1f}%")
 
     return integrator
 

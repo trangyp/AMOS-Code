@@ -45,7 +45,7 @@ class EntanglementMatrix:
 
     THRESHOLD = 0.3  # Threshold for high entanglement
 
-    def __init__(self, repo_path: str | Path):
+    def __init__(self, repo_path: Union[str, Path]):
         self.repo_path = Path(repo_path).resolve()
         self.modules: set[str] = set()
         self.import_links: dict[tuple[str, str], float] = {}

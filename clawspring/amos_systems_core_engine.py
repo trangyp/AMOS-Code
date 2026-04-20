@@ -1,13 +1,16 @@
 """AMOS Systems Core Engine - Central nervous system orchestration."""
 
+from __future__ import annotations
+
 import time
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 
 class SystemState(Enum):
     """System lifecycle states."""
+
     INITIALIZING = "initializing"
     ACTIVE = "active"
     DEGRADED = "degraded"
@@ -17,6 +20,7 @@ class SystemState(Enum):
 
 class ComponentType(Enum):
     """Types of system components."""
+
     ENGINE = "engine"
     KERNEL = "kernel"
     SERVICE = "service"
@@ -33,15 +37,15 @@ class ComponentStatus:
     state: str
     health_score: float
     last_check: float
-    dependencies: List[str]
+    dependencies: list[str]
 
 
 class LifecycleManager:
     """Manages system and component lifecycle."""
 
     def __init__(self):
-        self.states: Dict[str, str] = {}
-        self.transitions: Dict[str, list[str]] = {
+        self.states: dict[str, str] = {}
+        self.transitions: dict[str, list[str]] = {
             "initializing": ["active", "shutdown"],
             "active": ["degraded", "maintenance", "shutdown"],
             "degraded": ["active", "maintenance", "shutdown"],
@@ -66,10 +70,10 @@ class HealthMonitor:
     """Monitors system health."""
 
     def __init__(self):
-        self.health_scores: Dict[str, float] = {}
-        self.check_history: Dict[str, list[tuple[float, float]]] = {}
+        self.health_scores: dict[str, float] = {}
+        self.check_history: dict[str, list[tuple[float, float]]] = {}
 
-    def check_component(self, name: str, dependencies: List[str]) -> float:
+    def check_component(self, name: str, dependencies: list[str]) -> float:
         """Calculate health score for component."""
         base_score = 1.0
         dep_penalty = len(dependencies) * 0.05
@@ -82,7 +86,7 @@ class HealthMonitor:
         self.check_history[name] = self.check_history[name][-100:]
         return score
 
-    def get_system_health(self) -> Dict[str, Any]:
+    def get_system_health(self) -> dict[str, Any]:
         """Get overall system health."""
         if not self.health_scores:
             return {"overall": 0.0, "components": 0, "status": "unknown"}
@@ -101,10 +105,10 @@ class DependencyResolver:
     """Resolves component dependencies."""
 
     def __init__(self):
-        self.dependencies: Dict[str, set[str]] = {}
-        self.dependents: Dict[str, set[str]] = {}
+        self.dependencies: dict[str, set[str]] = {}
+        self.dependents: dict[str, set[str]] = {}
 
-    def register(self, name: str, deps: List[str]) -> None:
+    def register(self, name: str, deps: list[str]) -> None:
         """Register component dependencies."""
         self.dependencies[name] = set(deps)
         for dep in deps:
@@ -112,10 +116,10 @@ class DependencyResolver:
                 self.dependents[dep] = set()
             self.dependents[dep].add(name)
 
-    def get_start_order(self) -> List[str]:
+    def get_start_order(self) -> list[str]:
         """Get topological start order."""
-        visited: Set[str] = set()
-        order: List[str] = []
+        visited: set[str] = set()
+        order: list[str] = []
 
         def visit(name: str) -> None:
             if name in visited:
@@ -129,15 +133,15 @@ class DependencyResolver:
             visit(name)
         return order
 
-    def get_shutdown_order(self) -> List[str]:
+    def get_shutdown_order(self) -> list[str]:
         """Get reverse shutdown order."""
         return self.get_start_order()[::-1]
 
-    def check_circular(self) -> List[str]:
+    def check_circular(self) -> list[str]:
         """Check for circular dependencies."""
-        path: Set[str] = set()
-        visited: Set[str] = set()
-        cycles: List[str] = []
+        path: set[str] = set()
+        visited: set[str] = set()
+        cycles: list[str] = []
 
         def dfs(name: str) -> bool:
             if name in path:
@@ -164,9 +168,9 @@ class ResourceBalancer:
     """Balances system resources."""
 
     def __init__(self):
-        self.allocations: Dict[str, float] = {}
-        self.limits: Dict[str, float] = {}
-        self.usage: Dict[str, float] = {}
+        self.allocations: dict[str, float] = {}
+        self.limits: dict[str, float] = {}
+        self.usage: dict[str, float] = {}
 
     def set_limit(self, component: str, limit: float) -> None:
         """Set resource limit for component."""
@@ -186,7 +190,7 @@ class ResourceBalancer:
         current = self.allocations.get(component, 0.0)
         self.allocations[component] = max(0.0, current - amount)
 
-    def get_utilization(self) -> Dict[str, float]:
+    def get_utilization(self) -> dict[str, float]:
         """Get resource utilization by component."""
         util = {}
         for comp, allocated in self.allocations.items():
@@ -206,14 +210,14 @@ class SystemsCoreEngine:
         self.health = HealthMonitor()
         self.dependencies = DependencyResolver()
         self.resources = ResourceBalancer()
-        self.components: Dict[str, ComponentStatus] = {}
+        self.components: dict[str, ComponentStatus] = {}
         self.start_time = time.time()
 
     def register_component(
         self,
         name: str,
         component_type: str,
-        deps: List[str],
+        deps: list[str],
         resource_limit: float = 1.0,
     ) -> bool:
         """Register a system component."""
@@ -251,7 +255,7 @@ class SystemsCoreEngine:
             self.resources.release(name, self.resources.allocations.get(name, 0.0))
         return success
 
-    def get_component_status(self, name: str) -> Dict[str, Any] :
+    def get_component_status(self, name: str) -> dict[str, Any]:
         """Get status of a specific component."""
         if name not in self.components:
             return None
@@ -265,7 +269,7 @@ class SystemsCoreEngine:
             "uptime": time.time() - self.start_time,
         }
 
-    def get_system_report(self) -> Dict[str, Any]:
+    def get_system_report(self) -> dict[str, Any]:
         """Generate comprehensive system report."""
         health = self.health.get_system_health()
         cycles = self.dependencies.check_circular()
@@ -308,24 +312,30 @@ class SystemsCoreEngine:
             "## System Overview",
         ]
         sys = results.get("system", {})
-        lines.extend([
-            f"- **Uptime**: {sys.get('uptime', 0):.1f}s",
-            f"- **Components**: {sys.get('components_registered', 0)}",
-            "",
-            "## Health Status",
-        ])
+        lines.extend(
+            [
+                f"- **Uptime**: {sys.get('uptime', 0):.1f}s",
+                f"- **Components**: {sys.get('components_registered', 0)}",
+                "",
+                "## Health Status",
+            ]
+        )
         health = results.get("health", {})
-        lines.extend([
-            f"- **Overall Health**: {health.get('overall', 0) * 100:.0f}%",
-            f"- **Status**: {health.get('status', 'unknown')}",
-            f"- **Components Monitored**: {health.get('components', 0)}",
-        ])
+        lines.extend(
+            [
+                f"- **Overall Health**: {health.get('overall', 0) * 100:.0f}%",
+                f"- **Status**: {health.get('status', 'unknown')}",
+                f"- **Components Monitored**: {health.get('components', 0)}",
+            ]
+        )
         deps = results.get("dependencies", {})
-        lines.extend([
-            "",
-            "## Dependencies",
-            f"- **Circular Detected**: {deps.get('circular_detected', False)}",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Dependencies",
+                f"- **Circular Detected**: {deps.get('circular_detected', False)}",
+            ]
+        )
         if deps.get("cycles"):
             lines.append("- **Cycles**: " + ", ".join(deps["cycles"]))
         start_order = deps.get("start_order", [])
@@ -333,52 +343,58 @@ class SystemsCoreEngine:
             lines.append(f"- **Start Order**: {', '.join(start_order[:5])}...")
         resources = results.get("resources", {})
         util = resources.get("utilization", {})
-        lines.extend([
-            "",
-            "## Resource Utilization",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Resource Utilization",
+            ]
+        )
         for comp, u in list(util.items())[:5]:
             lines.append(f"- {comp}: {u * 100:.0f}%")
-        lines.extend([
-            "",
-            "## Component States",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Component States",
+            ]
+        )
         comps = results.get("components", {})
         for name, data in list(comps.items())[:10]:
             lines.append(f"- {name}: {data['state']} (health: {data['health']:.2f})")
-        lines.extend([
-            "",
-            "## Core Capabilities",
-            "- **Lifecycle Management**: State transitions (init → active → degraded → maintenance → shutdown)",
-            "- **Health Monitoring**: Continuous health score tracking",
-            "- **Dependency Resolution**: Topological ordering, circular detection",
-            "- **Resource Balancing**: Allocation, limits, utilization tracking",
-            "",
-            "## Architecture Principles",
-            "1. **Fail-Fast**: Detect and report issues immediately",
-            "2. **Graceful Degradation**: Continue operating with reduced capacity",
-            "3. **Circular Detection**: Prevent dependency deadlocks",
-            "4. **Resource Limits**: Prevent component resource exhaustion",
-            "5. **State Isolation**: Components manage own state",
-            "",
-            "## Safety Constraints",
-            "- No autonomous component restart without oversight",
-            "- Resource limits cannot be exceeded",
-            "- Circular dependencies block system start",
-            "- Shutdown respects dependency order",
-            "",
-            "## Usage Patterns",
-            "- Register all components before starting",
-            "- Use topological start order for initialization",
-            "- Monitor health scores continuously",
-            "- Check for circular dependencies pre-start",
-            "- Graceful shutdown: reverse start order",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Core Capabilities",
+                "- **Lifecycle Management**: State transitions (init → active → degraded → maintenance → shutdown)",
+                "- **Health Monitoring**: Continuous health score tracking",
+                "- **Dependency Resolution**: Topological ordering, circular detection",
+                "- **Resource Balancing**: Allocation, limits, utilization tracking",
+                "",
+                "## Architecture Principles",
+                "1. **Fail-Fast**: Detect and report issues immediately",
+                "2. **Graceful Degradation**: Continue operating with reduced capacity",
+                "3. **Circular Detection**: Prevent dependency deadlocks",
+                "4. **Resource Limits**: Prevent component resource exhaustion",
+                "5. **State Isolation**: Components manage own state",
+                "",
+                "## Safety Constraints",
+                "- No autonomous component restart without oversight",
+                "- Resource limits cannot be exceeded",
+                "- Circular dependencies block system start",
+                "- Shutdown respects dependency order",
+                "",
+                "## Usage Patterns",
+                "- Register all components before starting",
+                "- Use topological start order for initialization",
+                "- Monitor health scores continuously",
+                "- Check for circular dependencies pre-start",
+                "- Graceful shutdown: reverse start order",
+            ]
+        )
         return "\n".join(lines)
 
 
 # Singleton instance
-_systems_core: Optional[SystemsCoreEngine] = None
+_systems_core: SystemsCoreEngine | None = None
 
 
 def get_systems_core_engine() -> SystemsCoreEngine:

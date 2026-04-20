@@ -50,23 +50,19 @@ jobs:
 
       - name: Run Ruff formatter check
         run: |
-          ruff format --check clawspring/ amos_brain/ amosl/ || true  # Non-blocking for now
+          ruff format --check clawspring/ amos_brain/ amosl/
 
       - name: Run Black formatter check
         run: |
-          black --check --diff clawspring/ amos_brain/ amosl/ || true  # Non-blocking
+          black --check --diff clawspring/ amos_brain/ amosl/
 
-      - name: Run MyPy type checker (Non-blocking)
+      - name: Run MyPy type checker
         run: |
-          # Type checking is informational only until annotations are complete
-          mypy amos_unified_system.py \
-               amos_hybrid_orchestrator.py \
-               amos_mcp_tools.py \
-               amos_auth_integration.py \
-               amos_vector_memory.py \
+          # Type checking now enforced - all new code must be typed
+          mypy amos_brain/ amosl/ amos_model_fabric/ \
                --ignore-missing-imports \
                --warn-unreachable \
-               --warn-unused-ignores || true  # Non-blocking until type sprint
+               --warn-unused-ignores
 
   pre-commit-check:
     name: Pre-Commit Validation

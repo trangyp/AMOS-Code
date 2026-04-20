@@ -2,18 +2,21 @@
 
 This SDK is used by:
 - AMOS-Claws (agent frontend)
-- Mailinhconect (product frontend)  
+- Mailinhconect (product frontend)
 - AMOS-Invest (investor frontend)
 
 Usage:
     from amos_client_sdk import AMOSClient
-    
+
     client = AMOSClient(api_url="https://api.yourdomain.com")
     response = await client.chat("Hello", session_id="sess-123")
 """
 
+from __future__ import annotations
+
+import json
 import os
-from typing import Any, List, Optional
+from typing import Optional
 
 try:
     import httpx
@@ -21,18 +24,18 @@ except ImportError:
     raise ImportError("httpx not installed. Run: pip install httpx")
 
 from amos_brain.api_contracts import (
-    ChatRequest,
-    ChatResponse,
-    ChatContext,
     BrainRunRequest,
     BrainRunResponse,
-    RepoScanRequest,
-    RepoScanResult,
-    RepoFixRequest,
-    RepoFixResult,
+    ChatContext,
+    ChatRequest,
+    ChatResponse,
     ModelInfo,
     ModelRequest,
     ModelResponse,
+    RepoFixRequest,
+    RepoFixResult,
+    RepoScanRequest,
+    RepoScanResult,
     WorkflowRunRequest,
     WorkflowRunResponse,
 )
@@ -40,8 +43,10 @@ from amos_brain.api_contracts import (
 
 class AMOSClientError(Exception):
     """Error from AMOS API Hub."""
-    
-    def __init__(self, message: str, status_code: Optional[int] = None, details: Optional[dict] = None):
+
+    def __init__(
+        self, message: str, status_code: Optional[int] = None, details: Optional[dict] = None
+    ):
         super().__init__(message)
         self.status_code = status_code
         self.details = details or {}
@@ -49,11 +54,11 @@ class AMOSClientError(Exception):
 
 class AMOSClient:
     """Client for AMOS API Hub.
-    
+
     All client repos (AMOS-Claws, Mailinhconect, AMOS-Invest) use this
     to communicate with the AMOS-Consulting backend.
     """
-    
+
     def __init__(
         self,
         api_url: Optional[str] = None,
@@ -61,7 +66,7 @@ class AMOSClient:
         timeout: float = 30.0,
     ):
         """Initialize AMOS client.
-        
+
         Args:
             api_url: AMOS API Hub URL (default: from AMOS_API_URL env var)
             api_key: API key for authentication
@@ -70,38 +75,38 @@ class AMOSClient:
         self.api_url = api_url or os.getenv("AMOS_API_URL", "http://localhost:8000")
         self.api_key = api_key or os.getenv("AMOS_API_KEY")
         self.timeout = timeout
-        
+
         # Ensure no trailing slash
         self.api_url = self.api_url.rstrip("/")
-        
-        self._client: httpx.AsyncClient | None = None
-    
+
+        self._client: httpx.Optional[AsyncClient] = None
+
     async def _get_client(self) -> httpx.AsyncClient:
         """Get or create HTTP client."""
         if self._client is None:
             headers = {}
             if self.api_key:
-                headers["Authorization"] = f"Bearer {self.api_key}"
-            
+                headers["X-API-Key"] = self.api_key
+
             self._client = httpx.AsyncClient(
                 timeout=self.timeout,
                 headers=headers,
             )
         return self._client
-    
+
     async def close(self) -> None:
         """Close HTTP client."""
         if self._client:
             await self._client.aclose()
             self._client = None
-    
+
     async def _post(self, path: str, data: dict) -> dict:
         """Make POST request to API."""
         client = await self._get_client()
         url = f"{self.api_url}{path}"
-        
+
         response = await client.post(url, json=data)
-        
+
         if response.status_code >= 400:
             error_data = response.json().get("error", {})
             raise AMOSClientError(
@@ -109,37 +114,37 @@ class AMOSClient:
                 status_code=response.status_code,
                 details=error_data.get("details"),
             )
-        
+
         return response.json()
-    
+
     async def _get(self, path: str) -> dict | list:
         """Make GET request to API."""
         client = await self._get_client()
         url = f"{self.api_url}{path}"
-        
+
         response = await client.get(url)
-        
+
         if response.status_code >= 400:
             error_data = response.json().get("error", {})
             raise AMOSClientError(
                 error_data.get("message", f"HTTP {response.status_code}"),
                 status_code=response.status_code,
             )
-        
+
         return response.json()
-    
+
     # ========================================================================
     # Health Check
     # ========================================================================
-    
+
     async def health(self) -> dict:
         """Check API health."""
         return await self._get("/v1/health")
-    
+
     # ========================================================================
     # Chat API
     # ========================================================================
-    
+
     async def chat(
         self,
         message: str,
@@ -147,10 +152,10 @@ class AMOSClient:
         conversation_id: Optional[str] = None,
         workspace_id: Optional[str] = None,
         model: Optional[str] = None,
-        history: Optional[List[dict] ] = None,
+        history: Optional[list[dict]] = None,
     ) -> ChatResponse:
         """Send chat message to AMOS.
-        
+
         Args:
             message: User message
             session_id: Session identifier
@@ -158,7 +163,7 @@ class AMOSClient:
             workspace_id: Optional workspace/tenant ID
             model: Optional specific model to use
             history: Optional conversation history
-            
+
         Returns:
             ChatResponse with assistant's message
         """
@@ -172,14 +177,63 @@ class AMOSClient:
             history=history or [],
             model=model,
         )
-        
+
         response_data = await self._post("/v1/chat", request.model_dump())
         return ChatResponse(**response_data)
-    
+
+    async def chat_stream(
+        self,
+        message: str,
+        session_id: str,
+        model: Optional[str] = None,
+    ):
+        """Stream chat response via WebSocket.
+
+        Args:
+            message: User message
+            session_id: Session identifier
+            model: Optional specific model to use
+
+        Yields:
+            Response chunks as they arrive from LLM
+        """
+        try:
+            import websockets
+        except ImportError:
+            raise ImportError("websockets not installed. Run: pip install websockets")
+
+        # Convert http:// to ws:// or https:// to wss://
+        ws_url = self.api_url.replace("http://", "ws://").replace("https://", "wss://")
+        ws_url = f"{ws_url}/v1/chat/stream"
+
+        headers = {}
+        if self.api_key:
+            headers["X-API-Key"] = self.api_key
+
+        async with websockets.connect(ws_url, extra_headers=headers) as ws:
+            # Send message
+            await ws.send(
+                json.dumps(
+                    {
+                        "message": message,
+                        "model": model,
+                        "session_id": session_id,
+                    }
+                )
+            )
+
+            # Stream responses
+            async for message_data in ws:
+                data = json.loads(message_data)
+                yield data
+
+                if data.get("done"):
+                    break
+
     # ========================================================================
     # Brain API
     # ========================================================================
-    
+
     async def brain_run(
         self,
         input_data: dict,
@@ -188,43 +242,43 @@ class AMOSClient:
         collapse_strategy: str = "best",
     ) -> BrainRunResponse:
         """Execute AMOS brain cycle.
-        
+
         Args:
             input_data: State graph input variables
             session_id: Optional session ID
             max_branches: Maximum branches to generate
             collapse_strategy: Branch selection strategy
-            
+
         Returns:
             BrainRunResponse with execution results
         """
         from amos_brain.api_contracts.brain import StateGraphInput
-        
+
         request = BrainRunRequest(
             input=StateGraphInput(variables=input_data),
             max_branches=max_branches,
             collapse_strategy=collapse_strategy,
             session_id=session_id,
         )
-        
+
         response_data = await self._post("/v1/brain/run", request.model_dump())
         return BrainRunResponse(**response_data)
-    
+
     # ========================================================================
     # Repo Doctor API
     # ========================================================================
-    
+
     async def repo_scan(
         self,
         repo_path: str,
-        scan_types: Optional[List[str] ] = None,
+        scan_types: Optional[list[str]] = None,
     ) -> RepoScanResult:
         """Scan repository for issues.
-        
+
         Args:
             repo_path: Path to repository
             scan_types: Types of scans to run (style, security, performance)
-            
+
         Returns:
             RepoScanResult with found issues
         """
@@ -232,23 +286,23 @@ class AMOSClient:
             repo_path=repo_path,
             scan_types=scan_types or ["style", "security"],
         )
-        
+
         response_data = await self._post("/v1/repo/scan", request.model_dump())
         return RepoScanResult(**response_data)
-    
+
     async def repo_fix(
         self,
         scan_id: str,
-        issue_ids: Optional[List[str] ] = None,
+        issue_ids: Optional[list[str]] = None,
         dry_run: bool = True,
     ) -> RepoFixResult:
         """Apply fixes to repository issues.
-        
+
         Args:
             scan_id: Scan ID from repo_scan
             issue_ids: Specific issues to fix (None = all)
             dry_run: Preview changes without applying
-            
+
         Returns:
             RepoFixResult with applied changes
         """
@@ -257,23 +311,23 @@ class AMOSClient:
             issue_ids=issue_ids,
             dry_run=dry_run,
         )
-        
+
         response_data = await self._post("/v1/repo/fix", request.model_dump())
         return RepoFixResult(**response_data)
-    
+
     # ========================================================================
     # Models API
     # ========================================================================
-    
-    async def list_models(self) -> List[ModelInfo]:
+
+    async def list_models(self) -> list[ModelInfo]:
         """List available LLM models.
-        
+
         Returns:
             List of available models
         """
         response_data = await self._get("/v1/models")
         return [ModelInfo(**m) for m in response_data]
-    
+
     async def run_model(
         self,
         model_id: str,
@@ -282,13 +336,13 @@ class AMOSClient:
         max_tokens: Optional[int] = None,
     ) -> ModelResponse:
         """Run inference on specific model.
-        
+
         Args:
             model_id: Model identifier
             prompt: Input prompt
             temperature: Sampling temperature
             max_tokens: Maximum tokens to generate
-            
+
         Returns:
             ModelResponse with generated content
         """
@@ -298,14 +352,14 @@ class AMOSClient:
             temperature=temperature,
             max_tokens=max_tokens,
         )
-        
+
         response_data = await self._post("/v1/models/run", request.model_dump())
         return ModelResponse(**response_data)
-    
+
     # ========================================================================
     # Workflow API
     # ========================================================================
-    
+
     async def run_workflow(
         self,
         workflow_id: str,
@@ -313,12 +367,12 @@ class AMOSClient:
         synchronous: bool = True,
     ) -> WorkflowRunResponse:
         """Execute AMOS workflow.
-        
+
         Args:
             workflow_id: Workflow identifier
             inputs: Workflow inputs
             synchronous: Wait for completion
-            
+
         Returns:
             WorkflowRunResponse with results
         """
@@ -327,7 +381,7 @@ class AMOSClient:
             inputs=inputs or {},
             synchronous=synchronous,
         )
-        
+
         response_data = await self._post("/v1/workflow/run", request.model_dump())
         return WorkflowRunResponse(**response_data)
 
@@ -335,6 +389,7 @@ class AMOSClient:
 # ============================================================================
 # Convenience Functions
 # ============================================================================
+
 
 async def chat(message: str, session_id: str, **kwargs) -> ChatResponse:
     """Quick chat function using default client."""

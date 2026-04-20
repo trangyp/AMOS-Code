@@ -4,13 +4,15 @@ Manages communication with external systems, agents, and services.
 Handles message routing, protocol adaptation, and connection management.
 """
 
+from __future__ import annotations
+
 import json
 import uuid
 from dataclasses import asdict, dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class MessageType(Enum):
@@ -42,12 +44,12 @@ class Message:
     priority: MessagePriority = MessagePriority.NORMAL
     sender: str = ""
     recipient: str = ""
-    content: Dict[str, Any] = field(default_factory=dict)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    content: dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
     timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     replied_to: str = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "msg_type": self.msg_type.value,
@@ -68,11 +70,11 @@ class CommunicationBridge:
         self.data_dir = data_dir
         self.data_dir.mkdir(exist_ok=True)
 
-        self.connections: Dict[str, dict[str, Any]] = {}
-        self.message_queue: List[Message] = []
-        self.sent_messages: List[Message] = []
-        self.received_messages: List[Message] = []
-        self.protocols: Dict[str, dict[str, Any]] = {}
+        self.connections: dict[str, dict[str, Any]] = {}
+        self.message_queue: list[Message] = []
+        self.sent_messages: list[Message] = []
+        self.received_messages: list[Message] = []
+        self.protocols: dict[str, dict[str, Any]] = {}
 
         self._init_default_protocols()
 
@@ -106,7 +108,7 @@ class CommunicationBridge:
         connection_id: str,
         protocol: str,
         endpoint: str,
-        credentials: Dict[str, Any] = None,
+        credentials: dict[str, Any] = None,
     ) -> bool:
         """Register a new external connection."""
         if protocol not in self.protocols:
@@ -125,7 +127,7 @@ class CommunicationBridge:
     def send_message(
         self,
         recipient: str,
-        content: Dict[str, Any],
+        content: dict[str, Any],
         msg_type: MessageType = MessageType.REQUEST,
         priority: MessagePriority = MessagePriority.NORMAL,
         reply_to: str = None,
@@ -149,7 +151,7 @@ class CommunicationBridge:
         self._save_messages()
         return message
 
-    def receive_message(self, sender: str, content: Dict[str, Any]) -> Message:
+    def receive_message(self, sender: str, content: dict[str, Any]) -> Message:
         """Receive a message from an external sender."""
         message = Message(
             msg_type=MessageType.EVENT,
@@ -169,9 +171,9 @@ class CommunicationBridge:
 
     def broadcast(
         self,
-        content: Dict[str, Any],
+        content: dict[str, Any],
         msg_type: MessageType = MessageType.EVENT,
-    ) -> List[Message]:
+    ) -> list[Message]:
         """Broadcast a message to all connected recipients."""
         messages = []
         for connection_id in self.connections.keys():
@@ -179,7 +181,7 @@ class CommunicationBridge:
             messages.append(msg)
         return messages
 
-    def get_pending_messages(self) -> List[dict[str, Any]]:
+    def get_pending_messages(self) -> list[dict[str, Any]]:
         """Get messages awaiting processing."""
         # In a real implementation, this would filter unprocessed messages
         return [m.to_dict() for m in self.received_messages[-10:]]
@@ -188,7 +190,7 @@ class CommunicationBridge:
         self,
         recipient: str = None,
         limit: int = 50,
-    ) -> List[dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Get message history."""
         messages = self.sent_messages + self.received_messages
         if recipient:
@@ -208,15 +210,15 @@ class CommunicationBridge:
         }
         messages_file.write_text(json.dumps(data, indent=2))
 
-    def get_connection_status(self, connection_id: str) -> Dict[str, Any]:
+    def get_connection_status(self, connection_id: str) -> dict[str, Any]:
         """Get status of a connection."""
         return self.connections.get(connection_id)
 
-    def list_connections(self) -> List[dict[str, Any]]:
+    def list_connections(self) -> list[dict[str, Any]]:
         """List all registered connections."""
         return [{"id": cid, **info} for cid, info in self.connections.items()]
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get bridge status."""
         return {
             "active_connections": len(self.connections),

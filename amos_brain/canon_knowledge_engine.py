@@ -16,7 +16,7 @@ import json
 import os
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 
 @dataclass
@@ -157,7 +157,7 @@ class CanonKnowledgeEngine:
         for json_file in directory.rglob("*.json"):
             try:
                 self._load_json_file(json_file, domain_prefix)
-            except (json.JSONDecodeError, IOError, OSError):
+            except (json.JSONDecodeError, OSError):
                 continue
 
     def _load_json_file(self, file_path: Path, domain: str) -> None:

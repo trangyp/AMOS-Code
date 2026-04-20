@@ -8,13 +8,13 @@ from pathlib import Path
 def needs_future_annotations(filepath):
     """Check if file uses Python 3.10+ union syntax."""
     try:
-        with open(filepath, "r") as f:
+        with open(filepath) as f:
             content = f.read()
 
         # Check for union syntax patterns
         patterns = [
             r":\s*\w+\s*\|\s*None",  # type | None
-            r"->\s*\w+\s*\|\s*None",  # -> type | None
+            r"->\s*\w+\s*\|\s*None",  # -> Optional[type]
             r"\w+\s*\|\s*\w+",  # type1 | type2 (simplified check)
         ]
 
@@ -30,7 +30,7 @@ def needs_future_annotations(filepath):
 
 def add_future_annotations(filepath):
     """Add from __future__ import annotations to a file."""
-    with open(filepath, "r") as f:
+    with open(filepath) as f:
         content = f.read()
 
     # Find the right place to insert (after docstring, before other imports)

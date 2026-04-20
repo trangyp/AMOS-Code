@@ -1,4 +1,3 @@
-from typing import Any, Dict
 """Memory type taxonomy and system-prompt guidance text.
 
 Four types capture context NOT derivable from the current project state.
@@ -9,7 +8,7 @@ Code patterns, architecture, git history, and file structure are derivable
 MEMORY_TYPES = ["user", "feedback", "project", "reference"]
 
 # Condensed per-type guidance (used in system prompt injection)
-MEMORY_TYPE_DESCRIPTIONS: Dict[str, str] = {
+MEMORY_TYPE_DESCRIPTIONS: dict[str, str] = {
     "user": (
         "Information about the user's role, goals, responsibilities, and knowledge. "
         "Helps tailor future behavior to the user's preferences."

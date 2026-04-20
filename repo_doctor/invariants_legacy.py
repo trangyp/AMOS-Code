@@ -543,7 +543,7 @@ class InvariantEngine:
         ∀ I_n ∈ I : I_n(Ψ_repo) = 1
     """
 
-    def __init__(self, repo_path: str | Path):
+    def __init__(self, repo_path: Union[str, Path]):
         self.repo_path = Path(repo_path).resolve()
         self.invariants = [cls() for cls in INVARIANT_CLASSES]
 

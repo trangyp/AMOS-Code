@@ -8,13 +8,11 @@ Version: 2.0.0
 
 from __future__ import annotations
 
-from typing import Any
-
 import time
+from typing import Any, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
-
 
 from backend.ml_inference.model_serving import (
     InferenceMode,
@@ -190,7 +188,7 @@ async def run_batch_inference(
 @router.get("/models/{model_id}", response_model=list[ModelResponse])
 async def list_model_versions(
     model_id: str, service: InferenceService = Depends(get_inference_service)
-) -> List[ModelResponse]:
+) -> list[ModelResponse]:
     """List all versions of a model."""
     versions = service.list_model_versions(model_id)
 

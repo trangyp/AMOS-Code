@@ -8,7 +8,7 @@ across the entire AMOS codebase efficiently.
 import re
 import sys
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 # Common undefined names and their fixes
 TYPING_IMPORTS = {
@@ -65,7 +65,7 @@ def find_insertion_point(content: str) -> int:
     return last_import
 
 
-def fix_file(filepath: Path) -> Dict[str, Any]:
+def fix_file(filepath: Path) -> dict[str, Any]:
     """Fix a single file's F821 errors."""
     try:
         content = filepath.read_text(encoding="utf-8")

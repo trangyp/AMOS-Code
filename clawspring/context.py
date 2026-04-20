@@ -16,11 +16,6 @@ def _get_amos_brain():
     global _amos_brain_loader, _amos_router
     if _amos_brain_loader is None:
         try:
-            import sys
-
-            amos_path = Path(__file__).resolve().parent.parent
-            if str(amos_path) not in sys.path:
-                sys.path.insert(0, str(amos_path))
             from amos_brain import get_brain
 
             try:

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """OpenTelemetry setup and configuration for AMOS."""
 
 import os

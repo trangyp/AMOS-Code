@@ -9,26 +9,26 @@ Provides intelligent code capabilities:
 - Code quality scoring
 """
 
+from __future__ import annotations
 
 import asyncio
 import sys
 from collections.abc import AsyncIterator
 from datetime import datetime, timezone
-
-UTC = timezone.utc
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
+UTC = timezone.utc
+
 # Setup paths
 AMOS_ROOT = Path(__file__).parent.parent.parent.resolve()
 for p in [AMOS_ROOT, AMOS_ROOT / "clawspring", AMOS_ROOT / "amos_brain"]:
     if str(p) not in sys.path:
-        sys.path.insert(0, str(p))
 
 # Import real brain
 try:
@@ -58,7 +58,7 @@ class CodeIntelligenceRequest(BaseModel):
     code: str = Field(..., min_length=1, description="Code to analyze")
     language: str = Field(default="python", description="Programming language")
     analysis_type: AnalysisType = AnalysisType.SEMANTIC
-    context: Dict[str, Any] = Field(default_factory=dict)
+    context: dict[str, Any] = Field(default_factory=dict)
     include_suggestions: bool = True
 
 
@@ -66,8 +66,8 @@ class CodeUnderstanding(BaseModel):
     """Semantic understanding of code."""
 
     purpose: str
-    functionality: List[str]
-    dependencies: List[str]
+    functionality: list[str]
+    dependencies: list[str]
     complexity_score: float = Field(ge=0.0, le=10.0)
     readability_score: float = Field(ge=0.0, le=10.0)
     maintainability_score: float = Field(ge=0.0, le=10.0)
@@ -88,9 +88,9 @@ class CodeQualityReport(BaseModel):
 
     overall_score: float = Field(ge=0.0, le=100.0)
     understanding: CodeUnderstanding
-    issues: List[CodeIssue]
-    metrics: Dict[str, float]
-    recommendations: List[str]
+    issues: list[CodeIssue]
+    metrics: dict[str, float]
+    recommendations: list[str]
     timestamp: datetime
 
 
@@ -114,7 +114,7 @@ class CompletionSuggestion(BaseModel):
 class CompletionResponse(BaseModel):
     """Code completion response."""
 
-    suggestions: List[CompletionSuggestion]
+    suggestions: list[CompletionSuggestion]
     context_analysis: str
     timestamp: datetime
 
@@ -124,7 +124,7 @@ class GenerationRequest(BaseModel):
 
     specification: str = Field(..., min_length=10)
     language: str = Field(default="python")
-    constraints: List[str] = Field(default_factory=list)
+    constraints: list[str] = Field(default_factory=list)
     style_guide: str = Field(default="pep8")
 
 
@@ -133,7 +133,7 @@ class GeneratedCode(BaseModel):
 
     code: str
     explanation: str
-    tests: List[str]
+    tests: list[str]
     documentation: str
     confidence: float
     timestamp: datetime
@@ -143,7 +143,7 @@ class PatternDetectionRequest(BaseModel):
     """Request for pattern detection."""
 
     code: str = Field(..., min_length=1)
-    pattern_types: List[str] = Field(
+    pattern_types: list[str] = Field(
         default_factory=lambda: ["design_patterns", "anti_patterns", "idioms"]
     )
 
@@ -161,7 +161,7 @@ class DetectedPattern(BaseModel):
 class PatternDetectionResponse(BaseModel):
     """Pattern detection response."""
 
-    patterns: List[DetectedPattern]
+    patterns: list[DetectedPattern]
     summary: str
     timestamp: datetime
 
@@ -169,7 +169,7 @@ class PatternDetectionResponse(BaseModel):
 class TechnicalDebtRequest(BaseModel):
     """Request for technical debt analysis."""
 
-    file_paths: List[str] = Field(..., min_length=1, max_length=50)
+    file_paths: list[str] = Field(..., min_length=1, max_length=50)
     codebase_context: str = Field(default="")
 
 
@@ -188,8 +188,8 @@ class TechnicalDebtReport(BaseModel):
     """Technical debt analysis report."""
 
     total_debt_hours: float
-    debt_items: List[DebtItem]
-    prioritized_actions: List[str]
+    debt_items: list[DebtItem]
+    prioritized_actions: list[str]
     timestamp: datetime
 
 
@@ -215,7 +215,7 @@ class CodeIntelligenceEngine:
         code: str,
         language: str,
         analysis_type: AnalysisType,
-        context: Dict[str, Any],
+        context: dict[str, Any],
         include_suggestions: bool,
     ) -> CodeQualityReport:
         """Perform intelligent code analysis."""
@@ -284,7 +284,7 @@ class CodeIntelligenceEngine:
                     return lines[i + 1].strip()
         return default
 
-    def _extract_list(self, text: str, section: str) -> List[str]:
+    def _extract_list(self, text: str, section: str) -> list[str]:
         """Extract a list from text."""
         items = []
         lines = text.split("\n")
@@ -300,7 +300,7 @@ class CodeIntelligenceEngine:
                     break
         return items[:10] or ["No items identified"]
 
-    def _extract_issues(self, text: str) -> List[CodeIssue]:
+    def _extract_issues(self, text: str) -> list[CodeIssue]:
         """Extract issues from analysis text."""
         issues = []
         lines = text.split("\n")
@@ -366,7 +366,7 @@ class CodeIntelligenceEngine:
         )
 
     async def generate_code(
-        self, specification: str, language: str, constraints: List[str], style_guide: str
+        self, specification: str, language: str, constraints: list[str], style_guide: str
     ) -> GeneratedCode:
         """Generate code from specification."""
         brain = await self._get_brain()
@@ -428,7 +428,7 @@ Provide:
         return "\n".join(code_lines) if code_lines else None
 
     async def detect_patterns(
-        self, code: str, pattern_types: List[str]
+        self, code: str, pattern_types: list[str]
     ) -> PatternDetectionResponse:
         """Detect patterns in code."""
         brain = await self._get_brain()
@@ -463,7 +463,7 @@ Provide:
         )
 
     async def analyze_technical_debt(
-        self, file_paths: List[str], codebase_context: str
+        self, file_paths: list[str], codebase_context: str
     ) -> TechnicalDebtReport:
         """Analyze technical debt across files."""
         brain = await self._get_brain()
@@ -540,7 +540,7 @@ Identify debt items and estimate effort."""
         }
 
 
-# Global engine
+#Global engine
 _intelligence_engine: Optional[CodeIntelligenceEngine] = None
 
 
@@ -630,7 +630,7 @@ async def stream_code_analysis(
 
 
 @router.get("/health")
-async def health_check() -> Dict[str, Any]:
+async def health_check() -> dict[str, Any]:
     """Check code intelligence engine health."""
     return {
         "status": "healthy" if _BRAIN_AVAILABLE else "degraded",

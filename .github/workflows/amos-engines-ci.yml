@@ -97,7 +97,7 @@ jobs:
 
       - name: Type check with mypy
         run: |
-          mypy amos_temporal_engine.py amos_field_dynamics.py --ignore-missing-imports || true
+          mypy amos_temporal_engine.py amos_field_dynamics.py --ignore-missing-imports
 
   security-scan:
     runs-on: ubuntu-latest
@@ -107,7 +107,7 @@ jobs:
       - name: Run Bandit security scan
         run: |
           pip install bandit
-          bandit -r amos_temporal_engine.py amos_field_dynamics.py amos_self_evolution_test_suite.py -f json -o bandit-report.json || true
+          bandit -r amos_temporal_engine.py amos_field_dynamics.py amos_self_evolution_test_suite.py -f json -o bandit-report.json
 
       - name: Upload security report
         uses: actions/upload-artifact@v3

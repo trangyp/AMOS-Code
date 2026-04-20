@@ -10,13 +10,17 @@ Reference:
 - Azure AI Agent Observability Patterns
 """
 
+from __future__ import annotations
+
 import threading
 import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime, timezone
+
+UTC = UTC, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class HealthStatus(Enum):
@@ -37,7 +41,7 @@ class ComponentHealth:
     health_score: float  # 0.0 to 1.0
     last_check: datetime
     message: str = ""
-    metrics: Dict[str, Any] = field(default_factory=dict)
+    metrics: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -47,8 +51,8 @@ class SystemHealth:
     timestamp: datetime
     overall_score: float
     overall_status: HealthStatus
-    components: Dict[str, ComponentHealth]
-    alerts: List[str]
+    components: dict[str, ComponentHealth]
+    alerts: list[str]
 
 
 class HealthMonitor:
@@ -68,13 +72,13 @@ class HealthMonitor:
             check_interval: Seconds between health checks
         """
         self.check_interval = check_interval
-        self._components: Dict[str, Callable[[], ComponentHealth]] = {}
-        self._history: List[SystemHealth] = []
+        self._components: dict[str, Callable[[], ComponentHealth]] = {}
+        self._history: list[SystemHealth] = []
         self._max_history = 1000
         self._lock = threading.Lock()
         self._running = False
         self._monitor_thread: threading.Thread = None
-        self._alert_handlers: List[Callable[[str], None]] = []
+        self._alert_handlers: list[Callable[[str], None]] = []
 
     def register_component(self, name: str, health_check: Callable[[], ComponentHealth]) -> None:
         """Register a component for health monitoring.
@@ -126,8 +130,8 @@ class HealthMonitor:
             SystemHealth snapshot
         """
         with self._lock:
-            components: Dict[str, ComponentHealth] = {}
-            alerts: List[str] = []
+            components: dict[str, ComponentHealth] = {}
+            alerts: list[str] = []
 
             for name, check_fn in self._components.items():
                 try:
@@ -145,7 +149,7 @@ class HealthMonitor:
                         name=name,
                         status=HealthStatus.UNKNOWN,
                         health_score=0.0,
-                        last_check=datetime.now(UTC),
+                        last_check=datetime.now(timezone.utc),
                         message=f"Health check failed: {e}",
                     )
                     alerts.append(f"ERROR: {name} health check failed - {e}")
@@ -171,7 +175,7 @@ class HealthMonitor:
                 overall_status = HealthStatus.UNKNOWN
 
             system_health = SystemHealth(
-                timestamp=datetime.now(UTC),
+                timestamp=datetime.now(timezone.utc),
                 overall_score=overall_score,
                 overall_status=overall_status,
                 components=components,
@@ -206,7 +210,7 @@ class HealthMonitor:
         with self._lock:
             return self._history[-1] if self._history else None
 
-    def get_health_history(self, last_n: int = 100) -> List[SystemHealth]:
+    def get_health_history(self, last_n: int = 100) -> list[SystemHealth]:
         """Get health check history.
 
         Args:
@@ -220,7 +224,7 @@ class HealthMonitor:
 
     def get_component_trend(
         self, component_name: str, last_n: int = 100
-    ) -> List[tuple[datetime, float]]:
+    ) -> list[tuple[datetime, float]]:
         """Get health score trend for a component.
 
         Args:
@@ -363,7 +367,7 @@ def initialize_health_monitoring(brain) -> HealthMonitor:
 
     # Register console alert handler
     def console_alert(message: str) -> None:
-        print(f"[HEALTH ALERT] {datetime.now(UTC).isoformat()}: {message}")
+        print(f"[HEALTH ALERT] {datetime.now(timezone.utc).isoformat()}: {message}")
 
     monitor.register_alert_handler(console_alert)
 

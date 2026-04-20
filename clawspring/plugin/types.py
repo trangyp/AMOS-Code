@@ -4,7 +4,7 @@ import re
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 
 class PluginScope(str, Enum):
@@ -20,11 +20,11 @@ class PluginManifest:
     version: str = "0.1.0"
     description: str = ""
     author: str = ""
-    tags: List[str] = field(default_factory=list)
-    tools: List[str] = field(default_factory=list)  # python modules exporting tools
-    skills: List[str] = field(default_factory=list)  # skill .md files
-    mcp_servers: Dict[str, Any] = field(default_factory=dict)  # name → mcp server config
-    dependencies: List[str] = field(default_factory=list)  # pip packages
+    tags: list[str] = field(default_factory=list)
+    tools: list[str] = field(default_factory=list)  # python modules exporting tools
+    skills: list[str] = field(default_factory=list)  # skill .md files
+    mcp_servers: dict[str, Any] = field(default_factory=dict)  # name → mcp server config
+    dependencies: list[str] = field(default_factory=list)  # pip packages
     homepage: str = ""
 
     @classmethod
@@ -122,7 +122,7 @@ class PluginEntry:
         )
 
 
-def parse_plugin_identifier(identifier: str) -> Tuple[str, str]:
+def parse_plugin_identifier(identifier: str) -> tuple[str, str]:
     """Parse 'name' or 'name@source'. Returns (name, source_or_None)."""
     if "@" in identifier:
         name, _, source = identifier.partition("@")

@@ -122,6 +122,7 @@ Author: AMOS Data Infrastructure Team
 Version: 27.0.0
 """
 
+from __future__ import annotations
 
 import heapq
 import random
@@ -129,11 +130,12 @@ import secrets
 import time
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class VectorMetric(Enum):
     """Vector similarity metrics."""
+
     COSINE = auto()
     EUCLIDEAN = auto()
     DOT_PRODUCT = auto()
@@ -142,6 +144,7 @@ class VectorMetric(Enum):
 
 class Modality(Enum):
     """Data modalities for embeddings."""
+
     TEXT = "text"
     IMAGE = "image"
     AUDIO = "audio"
@@ -150,6 +153,7 @@ class Modality(Enum):
 
 class CachePolicy(Enum):
     """Cache eviction policies."""
+
     LRU = auto()
     LFU = auto()
     FIFO = auto()
@@ -159,9 +163,10 @@ class CachePolicy(Enum):
 @dataclass
 class VectorEntry:
     """Vector database entry."""
+
     vector_id: str
-    vector: List[float]
-    metadata: Dict[str, Any]
+    vector: list[float]
+    metadata: dict[str, Any]
     modality: Modality
     timestamp: float = field(default_factory=lambda: time.time())
     version: int = 1
@@ -170,41 +175,45 @@ class VectorEntry:
 @dataclass
 class GraphNode:
     """Graph database node."""
+
     node_id: str
-    labels: List[str]
-    properties: Dict[str, Any]
+    labels: list[str]
+    properties: dict[str, Any]
     created_at: float = field(default_factory=lambda: time.time())
 
 
 @dataclass
 class GraphEdge:
     """Graph database edge/relationship."""
+
     edge_id: str
     source_id: str
     target_id: str
     relation_type: str
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
     created_at: float = field(default_factory=lambda: time.time())
 
 
 @dataclass
 class FeatureValue:
     """Feature store value."""
+
     entity_id: str
     feature_name: str
     value: Any
     timestamp: float
     version: int = 1
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
 class CacheEntry:
     """Cache entry with metadata."""
+
     key: str
     value: Any
     created_at: float
-    ttl: float  = None  # None = no expiration
+    ttl: float = None  # None = no expiration
     access_count: int = 0
     last_accessed: float = field(default_factory=lambda: time.time())
 
@@ -223,35 +232,29 @@ class AMOSDataInfrastructure:
         self,
         vector_dim: int = 768,
         cache_size: int = 10000,
-        cache_policy: CachePolicy = CachePolicy.LRU
+        cache_policy: CachePolicy = CachePolicy.LRU,
     ):
         self.vector_dim = vector_dim
         self.cache_size = cache_size
         self.cache_policy = cache_policy
 
         # Vector database
-        self.vectors: Dict[str, VectorEntry] = {}
-        self.vector_indices: Dict[Modality, list[str]] = {
-            mod: [] for mod in Modality
-        }
+        self.vectors: dict[str, VectorEntry] = {}
+        self.vector_indices: dict[Modality, list[str]] = {mod: [] for mod in Modality}
 
         # Graph database
-        self.graph_nodes: Dict[str, GraphNode] = {}
-        self.graph_edges: Dict[str, list[GraphEdge]] = {}  # source_id -> edges
-        self.node_labels_index: Dict[str, set[str]] = {}  # label -> node_ids
+        self.graph_nodes: dict[str, GraphNode] = {}
+        self.graph_edges: dict[str, list[GraphEdge]] = {}  # source_id -> edges
+        self.node_labels_index: dict[str, set[str]] = {}  # label -> node_ids
 
         # Feature store
-        self.online_features: Dict[str, dict[str, FeatureValue]] = {}  # entity -> features
-        self.offline_features: List[FeatureValue] = []
-        self.feature_registry: Dict[str, dict[str, Any]] = {}
+        self.online_features: dict[str, dict[str, FeatureValue]] = {}  # entity -> features
+        self.offline_features: list[FeatureValue] = []
+        self.feature_registry: dict[str, dict[str, Any]] = {}
 
         # Cache
-        self.cache: Dict[str, CacheEntry] = {}
-        self.cache_stats = {
-            "hits": 0,
-            "misses": 0,
-            "evictions": 0
-        }
+        self.cache: dict[str, CacheEntry] = {}
+        self.cache_stats = {"hits": 0, "misses": 0, "evictions": 0}
 
         # Statistics
         self.total_vectors_stored: int = 0
@@ -263,19 +266,16 @@ class AMOSDataInfrastructure:
 
     def store_vector(
         self,
-        vector: List[float],
-        metadata: Dict[str, Any],
+        vector: list[float],
+        metadata: dict[str, Any],
         modality: Modality = Modality.TEXT,
-        vector_id: str  = None
+        vector_id: str = None,
     ) -> str:
         """Store vector embedding in database."""
         vector_id = vector_id or f"vec_{secrets.token_hex(8)}"
 
         entry = VectorEntry(
-            vector_id=vector_id,
-            vector=vector,
-            metadata=metadata,
-            modality=modality
+            vector_id=vector_id, vector=vector, metadata=metadata, modality=modality
         )
 
         self.vectors[vector_id] = entry
@@ -286,12 +286,12 @@ class AMOSDataInfrastructure:
 
     def similarity_search(
         self,
-        query_vector: List[float],
+        query_vector: list[float],
         top_k: int = 10,
         metric: VectorMetric = VectorMetric.COSINE,
-        filters: Dict[str, Any]  = None,
-        modality: Optional[Modality] = None
-    ) -> List[dict[str, Any]]:
+        filters: dict[str, Any] = None,
+        modality: Optional[Modality] = None,
+    ) -> list[dict[str, Any]]:
         """
         Find most similar vectors using specified metric.
 
@@ -307,8 +307,7 @@ class AMOSDataInfrastructure:
         # Apply metadata filters
         if filters:
             candidates = [
-                c for c in candidates
-                if all(c.metadata.get(k) == v for k, v in filters.items())
+                c for c in candidates if all(c.metadata.get(k) == v for k, v in filters.items())
             ]
 
         if not candidates:
@@ -317,9 +316,7 @@ class AMOSDataInfrastructure:
         # Calculate similarities
         scored = []
         for candidate in candidates:
-            score = self._calculate_similarity(
-                query_vector, candidate.vector, metric
-            )
+            score = self._calculate_similarity(query_vector, candidate.vector, metric)
             scored.append((score, candidate))
 
         # Get top-k
@@ -330,16 +327,13 @@ class AMOSDataInfrastructure:
                 "vector_id": entry.vector_id,
                 "score": score,
                 "metadata": entry.metadata,
-                "modality": entry.modality.value
+                "modality": entry.modality.value,
             }
             for score, entry in top_results
         ]
 
     def _calculate_similarity(
-        self,
-        v1: List[float],
-        v2: List[float],
-        metric: VectorMetric
+        self, v1: list[float], v2: list[float], metric: VectorMetric
     ) -> float:
         """Calculate similarity between two vectors."""
         if metric == VectorMetric.COSINE:
@@ -352,7 +346,7 @@ class AMOSDataInfrastructure:
             return -sum(abs(a - b) for a, b in zip(v1, v2))
         return 0.0
 
-    def _cosine_similarity(self, v1: List[float], v2: List[float]) -> float:
+    def _cosine_similarity(self, v1: list[float], v2: list[float]) -> float:
         """Calculate cosine similarity."""
         dot = sum(a * b for a, b in zip(v1, v2))
         norm1 = sum(a * a for a in v1) ** 0.5
@@ -361,17 +355,14 @@ class AMOSDataInfrastructure:
             return 0.0
         return dot / (norm1 * norm2)
 
-    def _euclidean_distance(self, v1: List[float], v2: List[float]) -> float:
+    def _euclidean_distance(self, v1: list[float], v2: list[float]) -> float:
         """Calculate Euclidean distance."""
         return sum((a - b) ** 2 for a, b in zip(v1, v2)) ** 0.5
 
     # ==================== Graph Database ====================
 
     def create_node(
-        self,
-        labels: str | list[str],
-        node_id: str  = None,
-        properties: Dict[str, Any]  = None
+        self, labels: str | list[str], node_id: str = None, properties: dict[str, Any] = None
     ) -> str:
         """Create graph node with labels and properties."""
         node_id = node_id or f"node_{secrets.token_hex(8)}"
@@ -379,11 +370,7 @@ class AMOSDataInfrastructure:
         if isinstance(labels, str):
             labels = [labels]
 
-        node = GraphNode(
-            node_id=node_id,
-            labels=labels,
-            properties=properties or {}
-        )
+        node = GraphNode(node_id=node_id, labels=labels, properties=properties or {})
 
         self.graph_nodes[node_id] = node
 
@@ -397,11 +384,7 @@ class AMOSDataInfrastructure:
         return node_id
 
     def create_edge(
-        self,
-        source_id: str,
-        relation_type: str,
-        target_id: str,
-        properties: Dict[str, Any]  = None
+        self, source_id: str, relation_type: str, target_id: str, properties: dict[str, Any] = None
     ) -> str:
         """Create directed edge between nodes."""
         if source_id not in self.graph_nodes or target_id not in self.graph_nodes:
@@ -414,7 +397,7 @@ class AMOSDataInfrastructure:
             source_id=source_id,
             target_id=target_id,
             relation_type=relation_type,
-            properties=properties or {}
+            properties=properties or {},
         )
 
         if source_id not in self.graph_edges:
@@ -426,11 +409,8 @@ class AMOSDataInfrastructure:
         return edge_id
 
     def traverse_graph(
-        self,
-        start_node_id: str,
-        depth: int = 2,
-        relation_types: List[str]  = None
-    ) -> Dict[str, Any]:
+        self, start_node_id: str, depth: int = 2, relation_types: list[str] = None
+    ) -> dict[str, Any]:
         """
         Traverse graph from starting node.
 
@@ -445,7 +425,7 @@ class AMOSDataInfrastructure:
             "start_node": start_node_id,
             "nodes": [self._node_to_dict(self.graph_nodes[start_node_id])],
             "edges": [],
-            "depth_reached": 0
+            "depth_reached": 0,
         }
 
         for d in range(depth):
@@ -475,11 +455,8 @@ class AMOSDataInfrastructure:
         return results
 
     def find_shortest_path(
-        self,
-        source_id: str,
-        target_id: str,
-        max_depth: int = 10
-    ) -> List[dict[str, Any]] :
+        self, source_id: str, target_id: str, max_depth: int = 10
+    ) -> list[dict[str, Any]]:
         """Find shortest path between two nodes using BFS."""
         if source_id not in self.graph_nodes or target_id not in self.graph_nodes:
             return None
@@ -503,10 +480,7 @@ class AMOSDataInfrastructure:
                 if edge.target_id == target_id:
                     # Found path
                     full_path = path + [edge.target_id]
-                    return [
-                        self._node_to_dict(self.graph_nodes[nid])
-                        for nid in full_path
-                    ]
+                    return [self._node_to_dict(self.graph_nodes[nid]) for nid in full_path]
 
                 if edge.target_id not in visited:
                     visited.add(edge.target_id)
@@ -514,22 +488,18 @@ class AMOSDataInfrastructure:
 
         return None  # No path found
 
-    def _node_to_dict(self, node: GraphNode) -> Dict[str, Any]:
+    def _node_to_dict(self, node: GraphNode) -> dict[str, Any]:
         """Convert node to dictionary."""
-        return {
-            "node_id": node.node_id,
-            "labels": node.labels,
-            "properties": node.properties
-        }
+        return {"node_id": node.node_id, "labels": node.labels, "properties": node.properties}
 
-    def _edge_to_dict(self, edge: GraphEdge) -> Dict[str, Any]:
+    def _edge_to_dict(self, edge: GraphEdge) -> dict[str, Any]:
         """Convert edge to dictionary."""
         return {
             "edge_id": edge.edge_id,
             "source_id": edge.source_id,
             "target_id": edge.target_id,
             "relation_type": edge.relation_type,
-            "properties": edge.properties
+            "properties": edge.properties,
         }
 
     # ==================== Feature Store ====================
@@ -540,7 +510,7 @@ class AMOSDataInfrastructure:
         feature_type: str,
         description: str,
         entity_type: str,
-        ttl: float  = None
+        ttl: float = None,
     ) -> None:
         """Register feature in feature registry."""
         self.feature_registry[feature_name] = {
@@ -549,15 +519,11 @@ class AMOSDataInfrastructure:
             "description": description,
             "entity_type": entity_type,
             "ttl": ttl,
-            "registered_at": time.time()
+            "registered_at": time.time(),
         }
 
     def store_feature(
-        self,
-        entity_id: str,
-        feature_name: str,
-        value: Any,
-        timestamp: float  = None
+        self, entity_id: str, feature_name: str, value: Any, timestamp: float = None
     ) -> None:
         """Store feature value in online feature store."""
         if feature_name not in self.feature_registry:
@@ -566,10 +532,7 @@ class AMOSDataInfrastructure:
         timestamp = timestamp or time.time()
 
         feature_value = FeatureValue(
-            entity_id=entity_id,
-            feature_name=feature_name,
-            value=value,
-            timestamp=timestamp
+            entity_id=entity_id, feature_name=feature_name, value=value, timestamp=timestamp
         )
 
         if entity_id not in self.online_features:
@@ -577,8 +540,7 @@ class AMOSDataInfrastructure:
 
         # Version increment
         if feature_name in self.online_features[entity_id]:
-            feature_value.version = \
-                self.online_features[entity_id][feature_name].version + 1
+            feature_value.version = self.online_features[entity_id][feature_name].version + 1
 
         self.online_features[entity_id][feature_name] = feature_value
         self.total_features_stored += 1
@@ -587,10 +549,8 @@ class AMOSDataInfrastructure:
         self.offline_features.append(feature_value)
 
     def get_online_features(
-        self,
-        entity_ids: List[str],
-        feature_names: List[str]
-    ) -> Dict[str, dict[str, Any]]:
+        self, entity_ids: list[str], feature_names: list[str]
+    ) -> dict[str, dict[str, Any]]:
         """Get online features for entities (low-latency serving)."""
         results = {}
 
@@ -604,7 +564,7 @@ class AMOSDataInfrastructure:
                     entity_features[feature_name] = {
                         "value": fv.value,
                         "timestamp": fv.timestamp,
-                        "version": fv.version
+                        "version": fv.version,
                     }
                 else:
                     entity_features[feature_name] = None
@@ -615,11 +575,11 @@ class AMOSDataInfrastructure:
 
     def get_offline_features(
         self,
-        entity_ids: List[str]  = None,
-        feature_names: List[str]  = None,
-        start_time: float  = None,
-        end_time: float  = None
-    ) -> List[dict[str, Any]]:
+        entity_ids: list[str] = None,
+        feature_names: list[str] = None,
+        start_time: float = None,
+        end_time: float = None,
+    ) -> list[dict[str, Any]]:
         """Get offline features for training (batch retrieval)."""
         results = []
 
@@ -638,35 +598,27 @@ class AMOSDataInfrastructure:
             if end_time and fv.timestamp > end_time:
                 continue
 
-            results.append({
-                "entity_id": fv.entity_id,
-                "feature_name": fv.feature_name,
-                "value": fv.value,
-                "timestamp": fv.timestamp,
-                "version": fv.version
-            })
+            results.append(
+                {
+                    "entity_id": fv.entity_id,
+                    "feature_name": fv.feature_name,
+                    "value": fv.value,
+                    "timestamp": fv.timestamp,
+                    "version": fv.version,
+                }
+            )
 
         return results
 
     # ==================== Distributed Cache ====================
 
-    def cache_set(
-        self,
-        key: str,
-        value: Any,
-        ttl: float  = None
-    ) -> None:
+    def cache_set(self, key: str, value: Any, ttl: float = None) -> None:
         """Set value in cache with optional TTL."""
         # Evict if at capacity
         if len(self.cache) >= self.cache_size and key not in self.cache:
             self._evict_entry()
 
-        entry = CacheEntry(
-            key=key,
-            value=value,
-            created_at=time.time(),
-            ttl=ttl
-        )
+        entry = CacheEntry(key=key, value=value, created_at=time.time(), ttl=ttl)
 
         self.cache[key] = entry
 
@@ -726,7 +678,7 @@ class AMOSDataInfrastructure:
 
         self.cache_stats["evictions"] += 1
 
-    def get_cache_stats(self) -> Dict[str, Any]:
+    def get_cache_stats(self) -> dict[str, Any]:
         """Get cache statistics."""
         total = self.cache_stats["hits"] + self.cache_stats["misses"]
         hit_rate = self.cache_stats["hits"] / total if total > 0 else 0.0
@@ -739,33 +691,31 @@ class AMOSDataInfrastructure:
             "misses": self.cache_stats["misses"],
             "evictions": self.cache_stats["evictions"],
             "hit_rate": hit_rate,
-            "policy": self.cache_policy.name
+            "policy": self.cache_policy.name,
         }
 
     # ==================== Statistics & Health ====================
 
-    def get_infrastructure_stats(self) -> Dict[str, Any]:
+    def get_infrastructure_stats(self) -> dict[str, Any]:
         """Get comprehensive infrastructure statistics."""
         return {
             "vector_database": {
                 "total_vectors": self.total_vectors_stored,
-                "by_modality": {
-                    mod.value: len(ids) for mod, ids in self.vector_indices.items()
-                },
-                "dimension": self.vector_dim
+                "by_modality": {mod.value: len(ids) for mod, ids in self.vector_indices.items()},
+                "dimension": self.vector_dim,
             },
             "graph_database": {
                 "total_nodes": self.total_graph_nodes,
                 "total_edges": self.total_graph_edges,
-                "labels": list(self.node_labels_index.keys())
+                "labels": list(self.node_labels_index.keys()),
             },
             "feature_store": {
                 "total_features": self.total_features_stored,
                 "registered_features": len(self.feature_registry),
                 "online_entities": len(self.online_features),
-                "offline_entries": len(self.offline_features)
+                "offline_entries": len(self.offline_features),
             },
-            "cache": self.get_cache_stats()
+            "cache": self.get_cache_stats(),
         }
 
 
@@ -773,9 +723,7 @@ def main():
     """CLI demo for data infrastructure."""
     import argparse
 
-    parser = argparse.ArgumentParser(
-        description="AMOS Data Infrastructure (Phase 27)"
-    )
+    parser = argparse.ArgumentParser(description="AMOS Data Infrastructure (Phase 27)")
     parser.add_argument("--demo", action="store_true", help="Run demonstration")
 
     args = parser.parse_args()
@@ -787,10 +735,7 @@ def main():
         print("=" * 70)
 
         # Initialize infrastructure
-        infra = AMOSDataInfrastructure(
-            vector_dim=128,
-            cache_size=1000
-        )
+        infra = AMOSDataInfrastructure(vector_dim=128, cache_size=1000)
 
         # 1. Vector Database Demo
         print("\n1. Vector Database - Semantic Search")
@@ -802,7 +747,7 @@ def main():
             ("black_scholes", "finance", [0.2, 0.3, 0.1, 0.5]),
             ("maxwell", "physics", [0.15, 0.25, 0.35, 0.45]),
             ("schrodinger", "physics", [0.12, 0.22, 0.32, 0.42]),
-            ("heat_equation", "physics", [0.11, 0.21, 0.31, 0.41])
+            ("heat_equation", "physics", [0.11, 0.21, 0.31, 0.41]),
         ]
 
         for name, domain, vec in sample_texts:
@@ -811,19 +756,17 @@ def main():
             vid = infra.store_vector(
                 vector=full_vec[:128],
                 metadata={"name": name, "domain": domain},
-                modality=Modality.TEXT
+                modality=Modality.TEXT,
             )
             print(f"   Stored: {name} ({domain}) -> {vid[:15]}...")
 
         # Search similar vectors
         query = [0.1, 0.2, 0.3, 0.4] * 32
         results = infra.similarity_search(
-            query_vector=query[:128],
-            top_k=3,
-            filters={"domain": "physics"}
+            query_vector=query[:128], top_k=3, filters={"domain": "physics"}
         )
 
-        print(f"\n   Similarity search results:")
+        print("\n   Similarity search results:")
         for r in results:
             print(f"      {r['metadata']['name']}: score={r['score']:.3f}")
 
@@ -835,9 +778,13 @@ def main():
         equations = [
             ("eq_neural_ode", ["Equation", "Differential"], {"name": "Neural ODE"}),
             ("eq_maxwell", ["Equation", "Physics"], {"name": "Maxwell's Equations"}),
-            ("eq_schrodinger", ["Equation", "Physics", "Quantum"], {"name": "Schrodinger Equation"}),
+            (
+                "eq_schrodinger",
+                ["Equation", "Physics", "Quantum"],
+                {"name": "Schrodinger Equation"},
+            ),
             ("domain_physics", ["Domain"], {"name": "Physics"}),
-            ("domain_ml", ["Domain"], {"name": "Machine Learning"})
+            ("domain_ml", ["Domain"], {"name": "Machine Learning"}),
         ]
 
         for node_id, labels, props in equations:
@@ -850,7 +797,7 @@ def main():
             ("eq_maxwell", "BELONGS_TO", "domain_physics"),
             ("eq_schrodinger", "BELONGS_TO", "domain_physics"),
             ("eq_schrodinger", "RELATED_TO", "eq_maxwell"),
-            ("eq_neural_ode", "USES", "eq_maxwell")
+            ("eq_neural_ode", "USES", "eq_maxwell"),
         ]
 
         for source, rel, target in edges:
@@ -858,7 +805,7 @@ def main():
             print(f"   Edge: {source} -[{rel}]-> {target}")
 
         # Traverse graph
-        print(f"\n   Traversal from eq_neural_ode (depth 2):")
+        print("\n   Traversal from eq_neural_ode (depth 2):")
         traversal = infra.traverse_graph("eq_neural_ode", depth=2)
         for node in traversal["nodes"]:
             print(f"      {node['node_id']}: {node['properties'].get('name', 'N/A')}")
@@ -866,7 +813,7 @@ def main():
         # Find path
         path = infra.find_shortest_path("eq_neural_ode", "eq_schrodinger", max_depth=5)
         if path:
-            print(f"\n   Path from Neural ODE to Schrodinger:")
+            print("\n   Path from Neural ODE to Schrodinger:")
             for node in path:
                 print(f"      -> {node['properties'].get('name', node['node_id'])}")
 
@@ -879,7 +826,7 @@ def main():
             ("equation_complexity", "float", "Complexity score of equation", "equation"),
             ("execution_time_ms", "float", "Execution time in milliseconds", "execution"),
             ("user_proficiency", "float", "User proficiency score", "user"),
-            ("error_rate", "float", "Historical error rate", "user")
+            ("error_rate", "float", "Historical error rate", "user"),
         ]
 
         for name, ftype, desc, entity in features:
@@ -887,30 +834,29 @@ def main():
             print(f"   Registered: {name} ({ftype}) for {entity}")
 
         # Store feature values
-        print(f"\n   Storing online features:")
+        print("\n   Storing online features:")
         for i in range(5):
             infra.store_feature(
                 entity_id=f"user_{i}",
                 feature_name="user_proficiency",
                 value=random.uniform(0.5, 1.0),
-                timestamp=time.time()
+                timestamp=time.time(),
             )
             infra.store_feature(
                 entity_id=f"equation_{i}",
                 feature_name="equation_complexity",
                 value=random.uniform(0.3, 0.9),
-                timestamp=time.time()
+                timestamp=time.time(),
             )
 
-        print(f"      Stored features for 5 users and 5 equations")
+        print("      Stored features for 5 users and 5 equations")
 
         # Retrieve online features
         online = infra.get_online_features(
-            entity_ids=["user_0", "user_1"],
-            feature_names=["user_proficiency"]
+            entity_ids=["user_0", "user_1"], feature_names=["user_proficiency"]
         )
 
-        print(f"\n   Online feature retrieval:")
+        print("\n   Online feature retrieval:")
         for entity, features in online.items():
             for name, value in features.items():
                 if value:
@@ -924,7 +870,7 @@ def main():
         cache_entries = [
             ("equation_result:eq_001", {"result": 42.5, "status": "success"}, 60),
             ("user_profile:user_123", {"name": "Alice", "role": "researcher"}, 300),
-            ("model_weights:v2.1", [0.1, 0.2, 0.3], None)  # No TTL
+            ("model_weights:v2.1", [0.1, 0.2, 0.3], None),  # No TTL
         ]
 
         for key, value, ttl in cache_entries:
@@ -933,7 +879,7 @@ def main():
             print(f"   Cached: {key} (TTL: {ttl_str})")
 
         # Retrieve from cache
-        print(f"\n   Cache retrieval:")
+        print("\n   Cache retrieval:")
         for key, _, _ in cache_entries:
             value = infra.cache_get(key)
             if value:
@@ -952,19 +898,19 @@ def main():
 
         stats = infra.get_infrastructure_stats()
 
-        print(f"   Vector Database:")
+        print("   Vector Database:")
         print(f"      Total vectors: {stats['vector_database']['total_vectors']}")
         print(f"      Dimensions: {stats['vector_database']['dimension']}")
 
-        print(f"   Graph Database:")
+        print("   Graph Database:")
         print(f"      Nodes: {stats['graph_database']['total_nodes']}")
         print(f"      Edges: {stats['graph_database']['total_edges']}")
 
-        print(f"   Feature Store:")
+        print("   Feature Store:")
         print(f"      Total features: {stats['feature_store']['total_features']}")
         print(f"      Registered: {stats['feature_store']['registered_features']}")
 
-        print(f"   Cache:")
+        print("   Cache:")
         print(f"      Size: {stats['cache']['size']}/{stats['cache']['max_size']}")
         print(f"      Hit rate: {stats['cache']['hit_rate']:.1%}")
         print(f"      Policy: {stats['cache']['policy']}")

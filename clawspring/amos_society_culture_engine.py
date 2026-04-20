@@ -1,12 +1,15 @@
 """AMOS Society & Culture Engine - Social dynamics and institutions."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class SocietyCultureDomain(Enum):
     """Society and culture domain classifications."""
+
     INSTITUTIONS = "institutions"
     CULTURAL_NORMS = "cultural_norms"
     DEMOGRAPHICS = "demographics"
@@ -27,8 +30,8 @@ class InstitutionalKernel:
     """Kernel for institutional analysis (states, markets, civil society)."""
 
     def __init__(self):
-        self.institutions: List[dict] = []
-        self.roles: List[dict] = []
+        self.institutions: list[dict] = []
+        self.roles: list[dict] = []
 
     def add_institution(
         self, name: str, inst_type: str, scope: str, legitimacy_score: float
@@ -43,7 +46,7 @@ class InstitutionalKernel:
         self.institutions.append(institution)
         return institution
 
-    def add_role(self, name: str, institution: str, permissions: List[str]) -> dict:
+    def add_role(self, name: str, institution: str, permissions: list[str]) -> dict:
         """Add role within institution."""
         role = {
             "name": name,
@@ -53,9 +56,7 @@ class InstitutionalKernel:
         self.roles.append(role)
         return role
 
-    def power_index_simple(
-        self, resources_controlled: float, network_connections: int
-    ) -> dict:
+    def power_index_simple(self, resources_controlled: float, network_connections: int) -> dict:
         """Calculate simple power index."""
         # Power as function of resources and connections
         power = resources_controlled * (1 + 0.1 * network_connections)
@@ -65,7 +66,7 @@ class InstitutionalKernel:
             "power_index": power,
         }
 
-    def get_principles(self) -> List[str]:
+    def get_principles(self) -> list[str]:
         return [
             "Institutional roles and rules",
             "Resource flows and enforcement",
@@ -78,8 +79,8 @@ class CulturalNormsKernel:
     """Kernel for cultural norms, values, and narratives."""
 
     def __init__(self):
-        self.values: List[dict] = []
-        self.narratives: List[dict] = []
+        self.values: list[dict] = []
+        self.narratives: list[dict] = []
 
     def add_value(self, name: str, importance: float, universality: float) -> dict:
         """Add cultural value."""
@@ -91,9 +92,7 @@ class CulturalNormsKernel:
         self.values.append(value)
         return value
 
-    def add_narrative(
-        self, name: str, narrative_type: str, transmission_rate: float
-    ) -> dict:
+    def add_narrative(self, name: str, narrative_type: str, transmission_rate: float) -> dict:
         """Add cultural narrative."""
         narrative = {
             "name": name,
@@ -103,9 +102,7 @@ class CulturalNormsKernel:
         self.narratives.append(narrative)
         return narrative
 
-    def cultural_distance(
-        self, values_set_a: List[float], values_set_b: List[float]
-    ) -> dict:
+    def cultural_distance(self, values_set_a: list[float], values_set_b: list[float]) -> dict:
         """Calculate cultural distance between two value sets."""
         if len(values_set_a) != len(values_set_b):
             return {"error": "Value sets must have same length"}
@@ -118,7 +115,7 @@ class CulturalNormsKernel:
             "similar": distance < 1.0,
         }
 
-    def get_principles(self) -> List[str]:
+    def get_principles(self) -> list[str]:
         return [
             "Values and value systems",
             "Cultural narratives and scripts",
@@ -131,12 +128,10 @@ class DemographicKernel:
     """Kernel for population dynamics and demographics."""
 
     def __init__(self):
-        self.populations: List[dict] = []
-        self.cohorts: List[dict] = []
+        self.populations: list[dict] = []
+        self.cohorts: list[dict] = []
 
-    def add_population(
-        self, name: str, total: int, growth_rate: float, urban_pct: float
-    ) -> dict:
+    def add_population(self, name: str, total: int, growth_rate: float, urban_pct: float) -> dict:
         """Add population."""
         population = {
             "name": name,
@@ -148,7 +143,7 @@ class DemographicKernel:
         return population
 
     def add_cohort(
-        self, name: str, birth_year_range: str, size: int, characteristics: List[str]
+        self, name: str, birth_year_range: str, size: int, characteristics: list[str]
     ) -> dict:
         """Add demographic cohort."""
         cohort = {
@@ -180,9 +175,7 @@ class DemographicKernel:
             "demographic_stage": stage,
         }
 
-    def dependency_ratio(
-        self, young_pop: int, working_age_pop: int, elderly_pop: int
-    ) -> dict:
+    def dependency_ratio(self, young_pop: int, working_age_pop: int, elderly_pop: int) -> dict:
         """Calculate dependency ratio."""
         if working_age_pop == 0:
             return {"error": "Zero working age population"}
@@ -196,7 +189,7 @@ class DemographicKernel:
             "burden_per_worker": ratio,
         }
 
-    def get_principles(self) -> List[str]:
+    def get_principles(self) -> list[str]:
         return [
             "Population dynamics",
             "Fertility and mortality",
@@ -209,8 +202,8 @@ class MediaInformationKernel:
     """Kernel for media, information flows, and network effects."""
 
     def __init__(self):
-        self.channels: List[dict] = []
-        self.networks: List[dict] = []
+        self.channels: list[dict] = []
+        self.networks: list[dict] = []
 
     def add_channel(
         self, name: str, channel_type: str, reach_millions: float, bias_score: float
@@ -251,7 +244,7 @@ class MediaInformationKernel:
             "cascade_likely": threshold < 0.5,
         }
 
-    def get_principles(self) -> List[str]:
+    def get_principles(self) -> list[str]:
         return [
             "Media channels and reach",
             "Information networks",
@@ -272,14 +265,10 @@ class SocietyCultureEngine:
         self.demographic_kernel = DemographicKernel()
         self.media_kernel = MediaInformationKernel()
 
-    def analyze(
-        self, description: str, domains: Optional[List[str]] = None
-    ) -> Dict[str, Any]:
+    def analyze(self, description: str, domains: list[str | None] = None) -> dict[str, Any]:
         """Run society/culture analysis across specified domains."""
-        domains = domains or [
-            "institutions", "cultural_norms", "demographics", "media_information"
-        ]
-        results: Dict[str, Any] = {}
+        domains = domains or ["institutions", "cultural_norms", "demographics", "media_information"]
+        results: dict[str, Any] = {}
         if "institutions" in domains:
             results["institutions"] = self._analyze_institutions(description)
         if "cultural_norms" in domains:
@@ -345,27 +334,27 @@ class SocietyCultureEngine:
                     if key not in ("principles", "query"):
                         lines.append(f"- **{key}**: {value}")
                 if "principles" in data:
-                    lines.append(
-                        f"- **Principles**: {', '.join(data['principles'][:2])}..."
-                    )
-        lines.extend([
-            "",
-            "## Gaps and Limitations",
-            "- Deep cultural context requires local expertise",
-            "- Demographic projections subject to uncertainty",
-            "- Media landscape changes rapidly",
-            "- Institutional power dynamics are complex",
-            "",
-            "## Safety Disclaimer",
-            "Avoids prescriptive cultural judgments. Flags sensitive demographic "
-            "topics. Does not generate targeted manipulation strategies. "
-            "Analysis is for understanding, not manipulation.",
-        ])
+                    lines.append(f"- **Principles**: {', '.join(data['principles'][:2])}...")
+        lines.extend(
+            [
+                "",
+                "## Gaps and Limitations",
+                "- Deep cultural context requires local expertise",
+                "- Demographic projections subject to uncertainty",
+                "- Media landscape changes rapidly",
+                "- Institutional power dynamics are complex",
+                "",
+                "## Safety Disclaimer",
+                "Avoids prescriptive cultural judgments. Flags sensitive demographic "
+                "topics. Does not generate targeted manipulation strategies. "
+                "Analysis is for understanding, not manipulation.",
+            ]
+        )
         return "\n".join(lines)
 
 
 # Singleton instance
-_society_culture_engine: Optional[SocietyCultureEngine] = None
+_society_culture_engine: SocietyCultureEngine | None = None
 
 
 def get_society_culture_engine() -> SocietyCultureEngine:

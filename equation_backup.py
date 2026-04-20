@@ -15,12 +15,12 @@ Version: 2.0.0
 
 import gzip
 import hashlib
-import json
 import os
 import shutil
 import subprocess
-from datetime import datetime, timedelta, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 from enum import Enum
 from pathlib import Path
 
@@ -38,6 +38,7 @@ settings = get_settings()
 # =============================================================================
 # Configuration
 # =============================================================================
+
 
 class BackupConfig:
     """Backup configuration."""
@@ -71,6 +72,7 @@ class BackupConfig:
 # Backup Types
 # =============================================================================
 
+
 class BackupType(str, Enum):
     """Backup types."""
 
@@ -94,15 +96,13 @@ class BackupStatus(str, Enum):
 # Backup Manager
 # =============================================================================
 
+
 class BackupManager:
     """Backup and recovery manager."""
 
     def __init__(self):
         self.config = BackupConfig()
-        self.s3_client = boto3.client(
-            "s3",
-            region_name=self.config.S3_REGION
-        )
+        self.s3_client = boto3.client("s3", region_name=self.config.S3_REGION)
         self._ensure_temp_dir()
 
     def _ensure_temp_dir(self):
@@ -129,28 +129,16 @@ class BackupManager:
                 shutil.copyfileobj(f_in, f_out)
         return destination
 
-    def _upload_to_s3(
-        self,
-        local_path: Path,
-        s3_key: str,
-        metadata: dict  = None
-    ) -> bool:
+    def _upload_to_s3(self, local_path: Path, s3_key: str, metadata: dict = None) -> bool:
         """Upload file to S3 with encryption."""
         try:
-            extra_args = {
-                "ServerSideEncryption": "AES256"
-            }
+            extra_args = {"ServerSideEncryption": "AES256"}
 
             if metadata:
-                extra_args["Metadata"] = {
-                    k: str(v) for k, v in metadata.items()
-                }
+                extra_args["Metadata"] = {k: str(v) for k, v in metadata.items()}
 
             self.s3_client.upload_file(
-                str(local_path),
-                self.config.S3_BUCKET,
-                s3_key,
-                ExtraArgs=extra_args
+                str(local_path), self.config.S3_BUCKET, s3_key, ExtraArgs=extra_args
             )
 
             logger.info(f"Uploaded {local_path.name} to s3://{self.config.S3_BUCKET}/{s3_key}")
@@ -175,22 +163,22 @@ class BackupManager:
 
             cmd = [
                 "pg_dump",
-                "-h", self.config.DB_HOST,
-                "-p", str(self.config.DB_PORT),
-                "-U", self.config.DB_USER,
-                "-d", self.config.DB_NAME,
-                "-F", "p",  # Plain text format
+                "-h",
+                self.config.DB_HOST,
+                "-p",
+                str(self.config.DB_PORT),
+                "-U",
+                self.config.DB_USER,
+                "-d",
+                self.config.DB_NAME,
+                "-F",
+                "p",  # Plain text format
                 "-v",
-                "-f", str(backup_file)
+                "-f",
+                str(backup_file),
             ]
 
-            result = subprocess.run(
-                cmd,
-                env=env,
-                capture_output=True,
-                text=True,
-                check=True
-            )
+            result = subprocess.run(cmd, env=env, capture_output=True, text=True, check=True)
 
             logger.info(f"pg_dump completed: {backup_file.stat().st_size} bytes")
 
@@ -208,7 +196,7 @@ class BackupManager:
                 "database": self.config.DB_NAME,
                 "timestamp": datetime.now(timezone.utc).isoformat(),
                 "checksum": checksum,
-                "size": str(compressed_file.stat().st_size)
+                "size": str(compressed_file.stat().st_size),
             }
 
             if self._upload_to_s3(compressed_file, s3_key, metadata):
@@ -218,13 +206,13 @@ class BackupManager:
                     "backup_id": backup_id,
                     "s3_key": s3_key,
                     "checksum": checksum,
-                    "size": compressed_file.stat().st_size
+                    "size": compressed_file.stat().st_size,
                 }
             else:
                 return {
                     "status": BackupStatus.FAILED,
                     "backup_id": backup_id,
-                    "error": "S3 upload failed"
+                    "error": "S3 upload failed",
                 }
 
         except subprocess.CalledProcessError as e:
@@ -232,7 +220,7 @@ class BackupManager:
             return {
                 "status": BackupStatus.FAILED,
                 "backup_id": backup_id,
-                "error": f"pg_dump failed: {e.stderr}"
+                "error": f"pg_dump failed: {e.stderr}",
             }
         finally:
             # Cleanup temp files
@@ -250,9 +238,7 @@ class BackupManager:
 
             # Connect to Redis
             r = redis.Redis(
-                host=self.config.REDIS_HOST,
-                port=self.config.REDIS_PORT,
-                decode_responses=False
+                host=self.config.REDIS_HOST, port=self.config.REDIS_PORT, decode_responses=False
             )
 
             # Trigger BGSAVE
@@ -260,6 +246,7 @@ class BackupManager:
 
             # Wait for BGSAVE to complete
             import time
+
             while True:
                 info = r.info("persistence")
                 if info.get("rdb_bgsave_in_progress") == 0:
@@ -289,7 +276,7 @@ class BackupManager:
                 "backup_type": BackupType.REDIS_RDB,
                 "timestamp": datetime.now(timezone.utc).isoformat(),
                 "checksum": checksum,
-                "size": str(compressed_file.stat().st_size)
+                "size": str(compressed_file.stat().st_size),
             }
 
             if self._upload_to_s3(compressed_file, s3_key, metadata):
@@ -299,22 +286,18 @@ class BackupManager:
                     "backup_id": backup_id,
                     "s3_key": s3_key,
                     "checksum": checksum,
-                    "size": compressed_file.stat().st_size
+                    "size": compressed_file.stat().st_size,
                 }
             else:
                 return {
                     "status": BackupStatus.FAILED,
                     "backup_id": backup_id,
-                    "error": "S3 upload failed"
+                    "error": "S3 upload failed",
                 }
 
         except Exception as e:
             logger.error(f"Redis backup failed: {e}")
-            return {
-                "status": BackupStatus.FAILED,
-                "backup_id": backup_id,
-                "error": str(e)
-            }
+            return {"status": BackupStatus.FAILED, "backup_id": backup_id, "error": str(e)}
         finally:
             # Cleanup temp files
             backup_file = self.config.TEMP_DIR / f"{backup_id}_redis.rdb"
@@ -335,15 +318,16 @@ class BackupManager:
             paginator = self.s3_client.get_paginator("list_objects_v2")
 
             for page in paginator.paginate(
-                Bucket=self.config.S3_BUCKET,
-                Prefix=self.config.S3_PREFIX
+                Bucket=self.config.S3_BUCKET, Prefix=self.config.S3_PREFIX
             ):
                 for obj in page.get("Contents", []):
                     key = obj["Key"]
                     last_modified = obj["LastModified"]
 
                     # Determine retention period
-                    age_days = (datetime.now(timezone.utc) - last_modified.replace(tzinfo=timezone.utc)).days
+                    age_days = (
+                        datetime.now(timezone.utc) - last_modified.replace(tzinfo=timezone.utc)
+                    ).days
 
                     should_delete = False
                     if "monthly" in key and age_days > self.config.MONTHLY_BACKUP_RETENTION_DAYS:
@@ -354,27 +338,18 @@ class BackupManager:
                         should_delete = True
 
                     if should_delete:
-                        self.s3_client.delete_object(
-                            Bucket=self.config.S3_BUCKET,
-                            Key=key
-                        )
+                        self.s3_client.delete_object(Bucket=self.config.S3_BUCKET, Key=key)
                         deleted_count += 1
                         logger.info(f"Deleted old backup: {key}")
 
             logger.info(f"Cleanup completed: {deleted_count} backups deleted")
-            return {
-                "status": "completed",
-                "deleted_count": deleted_count
-            }
+            return {"status": "completed", "deleted_count": deleted_count}
 
         except ClientError as e:
             logger.error(f"Cleanup failed: {e}")
-            return {
-                "status": "failed",
-                "error": str(e)
-            }
+            return {"status": "failed", "error": str(e)}
 
-    def list_backups(self, backup_type: str  = None) -> list:
+    def list_backups(self, backup_type: str = None) -> list:
         """List available backups."""
         backups = []
 
@@ -385,27 +360,23 @@ class BackupManager:
 
             paginator = self.s3_client.get_paginator("list_objects_v2")
 
-            for page in paginator.paginate(
-                Bucket=self.config.S3_BUCKET,
-                Prefix=prefix
-            ):
+            for page in paginator.paginate(Bucket=self.config.S3_BUCKET, Prefix=prefix):
                 for obj in page.get("Contents", []):
                     # Get metadata
-                    head = self.s3_client.head_object(
-                        Bucket=self.config.S3_BUCKET,
-                        Key=obj["Key"]
-                    )
+                    head = self.s3_client.head_object(Bucket=self.config.S3_BUCKET, Key=obj["Key"])
 
                     metadata = head.get("Metadata", {})
 
-                    backups.append({
-                        "key": obj["Key"],
-                        "size": obj["Size"],
-                        "last_modified": obj["LastModified"].isoformat(),
-                        "backup_type": metadata.get("backup_type", "unknown"),
-                        "backup_id": metadata.get("backup_id", "unknown"),
-                        "checksum": metadata.get("checksum", "unknown")
-                    })
+                    backups.append(
+                        {
+                            "key": obj["Key"],
+                            "size": obj["Size"],
+                            "last_modified": obj["LastModified"].isoformat(),
+                            "backup_type": metadata.get("backup_type", "unknown"),
+                            "backup_id": metadata.get("backup_id", "unknown"),
+                            "checksum": metadata.get("checksum", "unknown"),
+                        }
+                    )
 
             # Sort by date descending
             backups.sort(key=lambda x: x["last_modified"], reverse=True)
@@ -420,6 +391,7 @@ class BackupManager:
 # =============================================================================
 # Celery Tasks
 # =============================================================================
+
 
 @celery_app.task
 def backup_postgresql_task() -> dict:
@@ -442,7 +414,7 @@ def backup_all_task() -> dict:
     """Celery task for full system backup."""
     results = {
         "postgresql": backup_postgresql_task.delay().get(),
-        "redis": backup_redis_task.delay().get()
+        "redis": backup_redis_task.delay().get(),
     }
     return results
 
@@ -505,5 +477,5 @@ __all__ = [
     "backup_postgresql_task",
     "backup_redis_task",
     "backup_all_task",
-    "cleanup_backups_task"
+    "cleanup_backups_task",
 ]

@@ -8,9 +8,14 @@ with existing API contracts.
 LAW 4 COMPLIANCE: All execution flows through SuperBrain governance.
 """
 
+from __future__ import annotations
+
 import logging
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
+
 UTC = timezone.utc
 from typing import Any
 

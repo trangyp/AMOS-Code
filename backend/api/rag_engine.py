@@ -1,4 +1,6 @@
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
+
+from typing import Any, Optional
 
 """AMOS RAG Engine - Real Retrieval Augmented Generation with brain.
 
@@ -14,17 +16,15 @@ import sys
 import time
 from dataclasses import dataclass
 from datetime import datetime, timezone
-
-UTC = timezone.utc
 from pathlib import Path
 
 from fastapi import APIRouter
 from pydantic import BaseModel
 
+UTC = timezone.utc
+
 AMOS_BRAIN_PATH = Path(__file__).parent.parent.parent / "clawspring" / "amos_brain"
 if str(AMOS_BRAIN_PATH) not in sys.path:
-    sys.path.insert(0, str(AMOS_BRAIN_PATH))
-
 
 from amos_kernel_runtime import AMOSKernelRuntime  # noqa: E402
 
@@ -38,7 +38,7 @@ class DocumentChunk(BaseModel):
     content: str
     source: str
     chunk_index: int
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
 
 
 class RAGQuery(BaseModel):
@@ -57,7 +57,7 @@ class RAGResult(BaseModel):
     chunk_id: str
     content: str
     source: str
-    relevance_score: float
+    relevance_score:float
     brain_score: Optional[float] = None
 
 
@@ -66,7 +66,7 @@ class RAGResponse(BaseModel):
 
     query: str
     context: str
-    sources: List[dict[str, Any]]
+    sources: list[dict[str, Any]]
     total_chunks_searched: int
     retrieval_time_ms: float
     brain_enhanced: bool
@@ -77,7 +77,7 @@ class ChunkEmbedding:
     """Document chunk with embedding."""
 
     chunk: DocumentChunk
-    embedding: List[float]
+    embedding: list[float]
 
 
 class SimpleEmbedder:
@@ -86,7 +86,7 @@ class SimpleEmbedder:
     def __init__(self, dimension: int = 384):
         self.dimension = dimension
 
-    def embed(self, text: str) -> List[float]:
+    def embed(self, text: str) -> list[float]:
         """Generate embedding for text."""
         # Simple hash-based embedding for demo
         hash_val = hashlib.sha256(text.encode()).hexdigest()
@@ -97,7 +97,7 @@ class SimpleEmbedder:
             embedding.append(val)
         return embedding
 
-    def similarity(self, a: List[float], b: List[float]) -> float:
+    def similarity(self, a: list[float], b: list[float]) -> float:
         """Cosine similarity."""
         dot = sum(x * y for x, y in zip(a, b))
         norm_a = sum(x * x for x in a) ** 0.5
@@ -111,7 +111,7 @@ class AMOSRAGStore:
     """RAG document store with brain integration."""
 
     def __init__(self):
-        self._chunks: Dict[str, ChunkEmbedding] = {}
+        self._chunks: dict[str, ChunkEmbedding] = {}
         self._embedder = SimpleEmbedder()
         self._kernel = AMOSKernelRuntime()
 
@@ -119,9 +119,9 @@ class AMOSRAGStore:
         self,
         content: str,
         source: str,
-        metadata: Dict[str, Any] = None,
+        metadata: dict[str, Any] = None,
         chunk_size: int = 500,
-    ) -> List[str]:
+    ) -> list[str]:
         """Add document, chunk it, and store embeddings."""
         # Simple chunking by sentences
         sentences = content.replace(". ", ".|").replace("? ", "?|").replace("! ", "!|").split("|")
@@ -235,7 +235,7 @@ class AMOSRAGStore:
             brain_enhanced=request.use_brain_ranking,
         )
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get store statistics."""
         sources = set(c.chunk.source for c in self._chunks.values())
         return {
@@ -246,7 +246,7 @@ class AMOSRAGStore:
         }
 
 
-# Global RAG store
+#Global RAG store
 _rag_store: Optional[AMOSRAGStore] = None
 
 
@@ -285,8 +285,8 @@ async def rag_query(request: RAGQuery) -> RAGResponse:
 
 @router.post("/index")
 async def index_document(
-    content: str, source: str, metadata: Dict[str, Any] = None
-) -> Dict[str, Any]:
+    content: str, source: str, metadata: dict[str, Any] = None
+) -> dict[str, Any]:
     """Index a new document into the RAG store."""
     store = get_rag_store()
     chunk_ids = store.add_document(content, source, metadata)
@@ -298,7 +298,7 @@ async def index_document(
 
 
 @router.get("/stats")
-async def get_rag_stats() -> Dict[str, Any]:
+async def get_rag_stats() -> dict[str, Any]:
     """Get RAG store statistics."""
     store = get_rag_store()
     return store.get_stats()

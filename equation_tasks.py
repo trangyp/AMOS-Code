@@ -37,7 +37,7 @@ Environment Variables:
 """
 
 import os
-from typing import Any, Dict, List
+from typing import Any
 
 try:
     from celery import Celery, states
@@ -49,7 +49,6 @@ except ImportError:
     states = None  # type: ignore[assignment, misc]
 
 try:
-
     from equation_tracing import create_span, set_span_error
 
     TRACING_AVAILABLE = True
@@ -85,8 +84,8 @@ if CELERY_AVAILABLE and celery is not None:
         self: Any,
         equation_id: str,
         code: str,
-        options: Dict[str, Any] = None,
-    ) -> Dict[str, Any]:
+        options: dict[str, Any] = None,
+    ) -> dict[str, Any]:
         """Async equation verification task.
 
         Args:
@@ -120,9 +119,9 @@ if CELERY_AVAILABLE and celery is not None:
     @celery.task(bind=True, max_retries=2)
     def batch_compute_task(
         self: Any,
-        equation_ids: List[str],
+        equation_ids: list[str],
         computation_type: str = "verify",
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Batch equation computation task.
 
         Args:
@@ -149,7 +148,7 @@ if CELERY_AVAILABLE and celery is not None:
         return results
 
     @celery.task
-    def warm_cache_task(equation_ids: List[str]) -> Dict[str, Any]:
+    def warm_cache_task(equation_ids: list[str]) -> dict[str, Any]:
         """Pre-compute and cache equation results.
 
         Args:
@@ -168,8 +167,8 @@ if CELERY_AVAILABLE and celery is not None:
 def _verify_equation_logic(
     equation_id: str,
     code: str,
-    options: Dict[str, Any],
-) -> Dict[str, Any]:
+    options: dict[str, Any],
+) -> dict[str, Any]:
     """Core verification logic."""
     # This would call the actual equation verification
     return {
@@ -180,7 +179,7 @@ def _verify_equation_logic(
     }
 
 
-def get_task_status(task_id: str) -> Dict[str, Any]:
+def get_task_status(task_id: str) -> dict[str, Any]:
     """Get task status by ID.
 
     Args:

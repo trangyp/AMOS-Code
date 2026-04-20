@@ -9,16 +9,12 @@ Version: 3.0.0
 
 from __future__ import annotations
 
-
-
-
 import json
-from datetime import datetime, timezone
-
-UTC = timezone.utc
+from datetime import UTC, datetime
 
 from sqlmodel import Field, Session, SQLModel, create_engine, select
-from typing import List
+
+UTC = UTC
 
 # Database configuration
 DATABASE_URL = "sqlite:///./amos.db"
@@ -215,7 +211,7 @@ class AgentTaskCRUD:
         return session.get(AgentTask, task_id)
 
     @staticmethod
-    def list(session: Session, status: str = None, limit: int = 100) -> List[AgentTask]:
+    def list(session: Session, status: str = None, limit: int = 100) -> list[AgentTask]:
         query = select(AgentTask)
         if status:
             query = query.where(AgentTask.status == status)
@@ -265,7 +261,7 @@ class MemoryEntryCRUD:
     @staticmethod
     def search(
         session: Session, system: str = None, query: str = None, limit: int = 100
-    ) -> List[MemoryEntry]:
+    ) -> list[MemoryEntry]:
         statement = select(MemoryEntry)
         if system:
             statement = statement.where(MemoryEntry.system == system)
@@ -299,7 +295,7 @@ class CheckpointCRUD:
         return session.get(Checkpoint, checkpoint_id)
 
     @staticmethod
-    def list(session: Session, limit: int = 100) -> List[Checkpoint]:
+    def list(session: Session, limit: int = 100) -> list[Checkpoint]:
         statement = select(Checkpoint).order_by(Checkpoint.created_at.desc()).limit(limit)
         return session.exec(statement).all()
 

@@ -17,18 +17,11 @@ from .loader import (  # noqa: F401
 # Note: We import from root skill package (not clawspring.skill) to ensure
 # all skills go to the same registry that clawspring uses
 try:
-    import sys
-    from pathlib import Path
-
-    # Ensure AMOS-code root is in path for amos_brain import
-    root_path = Path(__file__).parent.parent.parent
-    if str(root_path) not in sys.path:
-        sys.path.insert(0, str(root_path))
     from amos_brain.skill import register_amos_skills
 
     register_amos_skills()
 except Exception:
-    pass  # AMOS skills optional
+    pass  # amos_brain not available, skip skill registration
 
 __all__ = [
     "SkillDef",

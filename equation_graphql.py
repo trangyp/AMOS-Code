@@ -44,10 +44,12 @@ Requirements:
     pip install 'strawberry-graphql[fastapi]'
 """
 
+from __future__ import annotations
+
 import asyncio
 import time
 from collections.abc import AsyncGenerator
-from typing import Any, List, Optional
+from typing import Any, Optional
 
 try:
     import strawberry
@@ -115,7 +117,7 @@ if STRAWBERRY_AVAILABLE:
         equation_id: strawberry.ID
         valid: bool
         execution_time_ms: int
-        errors: List[str]
+        errors: list[str]
 
     @strawberry.type
     class TaskStatus:
@@ -173,7 +175,7 @@ if STRAWBERRY_AVAILABLE:
             info: Info,
             filter: Optional[EquationFilter] = None,
             limit: int = 100,
-        ) -> List[Equation]:
+        ) -> list[Equation]:
             """Fetch equations with optional filtering."""
 
             async def _fetch():
@@ -279,7 +281,7 @@ if STRAWBERRY_AVAILABLE:
         async def batch_compute(
             self,
             info: Info,
-            ids: List[strawberry.ID],
+            ids: list[strawberry.ID],
         ) -> TaskStatus:
             """Trigger batch computation."""
             task_id = f"batch-{len(ids)}-{time.time()}"
@@ -307,7 +309,7 @@ if STRAWBERRY_AVAILABLE:
                 yield ProgressUpdate(
                     task_id=id,
                     progress=min(progress, 100.0),
-                    message=f"Processing step {int(progress/10)}...",
+                    message=f"Processing step {int(progress / 10)}...",
                 )
                 await asyncio.sleep(1)
 

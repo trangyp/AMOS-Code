@@ -1,4 +1,5 @@
-"""Recovery and Resilience Engine.
+"""
+Recovery and Resilience Engine.
 
 Validates recovery, disaster recovery, blast containment, and isolation.
 
@@ -74,9 +75,9 @@ class FailureDomain:
     domain_id: str
     name: str
     domain_type: FailureDomainType
-    components: List[str]  # Components in this domain
+    components: list[str]  # Components in this domain
     isolation_score: float  # 0-1, higher is better isolation
-    dependencies: List[str] = field(default_factory=list)  # External deps
+    dependencies: list[str] = field(default_factory=list)  # External deps
 
 
 @dataclass
@@ -87,7 +88,7 @@ class BlastContainment:
     name: str
     max_blast_radius: float  # Maximum acceptable blast radius
     blast_unit: BlastRadiusUnit
-    containment_measures: List[str]  # Circuit breakers, bulkheads, etc.
+    containment_measures: list[str]  # Circuit breakers, bulkheads, etc.
     isolation_domain: str  # Domain that contains failures
 
 
@@ -118,7 +119,7 @@ class ResilienceViolation:
     description: str
     invariant_broken: str
     component: str
-    evidence: List[str] = field(default_factory=list)
+    evidence: list[str] = field(default_factory=list)
     remediation: str = ""
 
 
@@ -129,19 +130,19 @@ class ResilienceAssessment:
     assessment_id: str
     timestamp: str
 
-    recovery_paths: List[RecoveryPath]
-    failure_domains: List[FailureDomain]
-    blast_containments: List[BlastContainment]
-    dr_capabilities: List[DisasterRecoveryCapability]
+    recovery_paths: list[RecoveryPath]
+    failure_domains: list[FailureDomain]
+    blast_containments: list[BlastContainment]
+    dr_capabilities: list[DisasterRecoveryCapability]
 
-    violations: List[ResilienceViolation]
+    violations: list[ResilienceViolation]
 
     recovery_valid: bool
     dr_valid: bool
     blast_valid: bool
     isolation_valid: bool
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "assessment_id": self.assessment_id,
             "timestamp": self.timestamp,
@@ -174,11 +175,11 @@ class RecoveryResilienceEngine:
     """
 
     def __init__(self):
-        self.recovery_paths: List[RecoveryPath] = []
-        self.failure_domains: List[FailureDomain] = []
-        self.blast_containments: List[BlastContainment] = []
-        self.dr_capabilities: List[DisasterRecoveryCapability] = []
-        self.assessments: List[ResilienceAssessment] = []
+        self.recovery_paths: list[RecoveryPath] = []
+        self.failure_domains: list[FailureDomain] = []
+        self.blast_containments: list[BlastContainment] = []
+        self.dr_capabilities: list[DisasterRecoveryCapability] = []
+        self.assessments: list[ResilienceAssessment] = []
 
     def add_recovery_path(self, path: RecoveryPath) -> None:
         """Add a recovery path."""
@@ -198,7 +199,7 @@ class RecoveryResilienceEngine:
 
     def assess_resilience(self) -> ResilienceAssessment:
         """Perform comprehensive resilience assessment."""
-        violations: List[ResilienceViolation] = []
+        violations: list[ResilienceViolation] = []
 
         # 1. Check recovery paths (I_recovery)
         critical_scenarios = {"database_corruption", "api_outage", "dependency_failure"}
@@ -361,8 +362,8 @@ class RecoveryResilienceEngine:
         return assessment
 
     def validate_recovery_procedure(
-        self, path_id: str, steps: List[str], estimated_minutes: int
-    ) -> Dict[str, Any]:
+        self, path_id: str, steps: list[str], estimated_minutes: int
+    ) -> dict[str, Any]:
         """Validate a recovery procedure."""
         issues = []
 
@@ -387,8 +388,8 @@ class RecoveryResilienceEngine:
         }
 
     def check_blast_radius(
-        self, component_id: str, failure_mode: str, affected_components: List[str]
-    ) -> Dict[str, Any]:
+        self, component_id: str, failure_mode: str, affected_components: list[str]
+    ) -> dict[str, Any]:
         """Check if blast radius is contained."""
         containment = next(
             (c for c in self.blast_containments if c.component_id == component_id), None

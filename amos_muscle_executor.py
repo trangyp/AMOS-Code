@@ -20,10 +20,10 @@ import subprocess
 import sys
 import traceback
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 try:
     from amos_secure_equation_runner import SecureEquationRunner
@@ -54,7 +54,7 @@ class ExecutionResult:
     error: str
     duration_ms: int
     timestamp: str
-    resources_used: Dict[str, Any] = field(default_factory=dict)
+    resources_used: dict[str, Any] = field(default_factory=dict)
 
 
 class AMOSMuscleExecutor:
@@ -68,7 +68,7 @@ class AMOSMuscleExecutor:
         self.execution_count = 0
         self.success_count = 0
         self.error_count = 0
-        self.history: List[ExecutionResult] = []
+        self.history: list[ExecutionResult] = []
 
     def execute(
         self, task: str, task_type: ExecutionType = ExecutionType.PYTHON, timeout: int = 30
@@ -222,8 +222,12 @@ class AMOSMuscleExecutor:
                 )
 
         try:
+            # SECURITY: Use shlex.split() and shell=False to prevent injection
+            import shlex
+
+            cmd_parts = shlex.split(command)
             result = subprocess.run(
-                command, shell=True, capture_output=True, text=True, timeout=timeout
+                cmd_parts, shell=False, capture_output=True, text=True, timeout=timeout
             )
 
             output = result.stdout
@@ -381,7 +385,7 @@ class AMOSMuscleExecutor:
             timestamp=datetime.now(UTC).isoformat(),
         )
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get execution statistics."""
         total = self.execution_count
         success_rate = (self.success_count / total * 100) if total > 0 else 0

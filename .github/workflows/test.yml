@@ -29,10 +29,15 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-pip-
 
-    - name: Install dependencies
+    - name: Install build dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -e ".[dev]"
+        pip install build
+
+    - name: Build and install wheel
+      run: |
+        python -m build --wheel
+        pip install dist/amos_brain-*.whl[dev]
 
     - name: Run tests (unittest-based)
       run: |
@@ -41,7 +46,7 @@ jobs:
     - name: Run memory profiling
       run: |
         pip install memray
-        python profiling_suite.py --memory || true
+        python profiling_suite.py --memory
 
     - name: Upload profiling results
       uses: actions/upload-artifact@v4
@@ -69,12 +74,12 @@ jobs:
     - name: Lint with flake8
       run: |
         flake8 amos_brain --count --select=E9,F63,F7,F82 --show-source --statistics
-        flake8 amos_brain --count --exit-zero --max-complexity=10 --max-line-length=79 --statistics
+        flake8 amos_brain --count --max-complexity=10 --max-line-length=79 --statistics
 
     - name: Format check with black
       run: |
-        black --check amos_brain || true
+        black --check amos_brain
 
     - name: Type check with mypy
       run: |
-        mypy amos_brain --ignore-missing-imports || true
+        mypy amos_brain --ignore-missing-imports

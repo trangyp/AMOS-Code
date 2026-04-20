@@ -21,6 +21,8 @@ Usage:
         pass
 """
 
+from __future__ import annotations
+
 import functools
 import logging
 from collections.abc import Callable

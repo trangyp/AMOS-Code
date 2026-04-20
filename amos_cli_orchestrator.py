@@ -10,7 +10,7 @@ import asyncio
 import json
 import sys
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 from amos_production_orchestrator import get_orchestrator
 
@@ -81,7 +81,7 @@ def cmd_modules(args: argparse.Namespace) -> int:
         print("⚠️  No modules found. Run: amos-cli init")
         return 1
 
-    modules: List[Any] = list(orchestrator.modules.values())
+    modules: list[Any] = list(orchestrator.modules.values())
 
     if args.tier:
         modules = [m for m in modules if m.tier.name.lower() == args.tier.lower()]
@@ -95,14 +95,14 @@ def cmd_modules(args: argparse.Namespace) -> int:
     for module in sorted(modules, key=lambda m: m.tier.value):
         status = "✅" if module.activated else "⏳"
         size_kb = module.size_bytes / 1024
-        print(f"{status} {module.name:40} | " f"{module.tier.name:12} | {size_kb:6.1f}KB")
+        print(f"{status} {module.name:40} | {module.tier.name:12} | {size_kb:6.1f}KB")
 
     return 0
 
 
 def cmd_api(args: argparse.Namespace) -> int:
     """Start the REST API server."""
-    print(f"🌐 Starting AMOS API Server on " f"{args.host}:{args.port}")
+    print(f"🌐 Starting AMOS API Server on {args.host}:{args.port}")
     print("Press Ctrl+C to stop")
 
     orchestrator = get_orchestrator()
@@ -131,8 +131,8 @@ def cmd_validate(args: argparse.Namespace) -> int:
     print("🔍 Validating AMOS Orchestrator...")
 
     orchestrator = get_orchestrator()
-    errors: List[str] = []
-    warnings: List[str] = []
+    errors: list[str] = []
+    warnings: list[str] = []
 
     # Check if modules exist
     if not orchestrator.modules:
@@ -146,7 +146,7 @@ def cmd_validate(args: argparse.Namespace) -> int:
         critical_activated = sum(1 for m in critical if m.activated)
 
         if critical and critical_activated < len(critical):
-            msg = f"Only {critical_activated}/{len(critical)} " f"critical modules activated"
+            msg = f"Only {critical_activated}/{len(critical)} critical modules activated"
             warnings.append(msg)
 
         # Check activation rate
@@ -185,7 +185,7 @@ def cmd_export(args: argparse.Namespace) -> int:
         print("⚠️  No data to export. Run: amos-cli init")
         return 1
 
-    data: Dict[str, Any] = {
+    data: dict[str, Any] = {
         "version": "14.0.0",
         "modules_total": len(orchestrator.modules),
         "modules_activated": sum(1 for m in orchestrator.modules.values() if m.activated),

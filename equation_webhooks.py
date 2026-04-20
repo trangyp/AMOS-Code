@@ -13,8 +13,9 @@ import hashlib
 import hmac
 import json
 import secrets
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 from enum import Enum
 
 from pydantic import BaseModel, Field, HttpUrl

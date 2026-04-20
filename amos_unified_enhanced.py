@@ -20,15 +20,7 @@ Owner: Trang
 
 import sys
 from dataclasses import dataclass, field
-from pathlib import Path
-from typing import Any, Dict, List
-
-# Add paths
-REPO_ROOT = Path(__file__).parent
-sys.path.insert(0, str(REPO_ROOT))
-sys.path.insert(0, str(REPO_ROOT / "AMOS_ORGANISM_OS"))
-sys.path.insert(0, str(REPO_ROOT / "clawspring"))
-sys.path.insert(0, str(REPO_ROOT / "amos_brain"))
+from typing import Any
 
 
 @dataclass
@@ -43,7 +35,7 @@ class SystemStatus:
     knowledge_domains: int = 0
     knowledge_mb: float = 0.0
     session_id: str = ""
-    errors: List[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
 
 
 class AMOSUnifiedEnhanced:
@@ -61,7 +53,7 @@ class AMOSUnifiedEnhanced:
         self.status = SystemStatus()
         self._initialized = False
 
-    def initialize(self, auto_load_knowledge: bool = True) -> Dict[str, Any]:
+    def initialize(self, auto_load_knowledge: bool = True) -> dict[str, Any]:
         """Initialize complete AMOS ecosystem.
 
         Args:
@@ -97,7 +89,7 @@ class AMOSUnifiedEnhanced:
         print("📦 Phase 1: Initializing Organism OS (14 Subsystems)...")
 
         try:
-            from organism import AmosOrganism
+            from AMOS_ORGANISM_OS.organism import AmosOrganism
 
             self.organism = AmosOrganism()
 
@@ -187,7 +179,7 @@ class AMOSUnifiedEnhanced:
 
         print("\n   🎯 System integration complete!")
 
-    def _generate_status(self) -> Dict[str, Any]:
+    def _generate_status(self) -> dict[str, Any]:
         """Generate comprehensive system status."""
         print("\n" + "=" * 70)
         print("📊 SYSTEM STATUS REPORT")
@@ -257,7 +249,7 @@ class AMOSUnifiedEnhanced:
 
         return status
 
-    def think(self, problem: str, context: dict = None) -> Dict[str, Any]:
+    def think(self, problem: str, context: dict = None) -> dict[str, Any]:
         """Think about a problem with knowledge enhancement.
 
         Uses brain + knowledge for intelligent reasoning.
@@ -276,7 +268,7 @@ class AMOSUnifiedEnhanced:
         else:
             return {"error": "Brain not available"}
 
-    def query_knowledge(self, query: str, domain: str = None, limit: int = 5) -> List[dict]:
+    def query_knowledge(self, query: str, domain: str = None, limit: int = 5) -> list[dict]:
         """Query the knowledge base."""
         if not self._initialized or not self.knowledge_brain:
             return []

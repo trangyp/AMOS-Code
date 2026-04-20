@@ -52,7 +52,7 @@ class SMTModel:
     """
 
     def __init__(self):
-        self.solver: Optional[Any] = None
+        self.solver: Any | None = None
         self.variables: Dict[str, Any] = {}
         self._init_solver()
 

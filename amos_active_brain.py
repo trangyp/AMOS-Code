@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 """AMOS Active Brain - Real-time Cognitive Processing System
 
@@ -42,7 +42,7 @@ class AMOSActiveBrain:
         self._initialized = True
         return True
 
-    async def analyze_file(self, file_path: Path) -> Dict[str, Any]:
+    async def analyze_file(self, file_path: Path) -> dict[str, Any]:
         """Analyze a file using cognitive processing.
 
         Real implementation using brain components.
@@ -84,7 +84,7 @@ Provide:
             "status": "analyzed",
         }
 
-    async def review_code(self, code: str, context: str = "") -> Dict[str, Any]:
+    async def review_code(self, code: str, context: str = "") -> dict[str, Any]:
         """Review code for issues using brain.
 
         Real implementation with verification.
@@ -117,7 +117,7 @@ Check for:
 
     async def suggest_refactoring(
         self, code: str, goal: str = "improve readability"
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Suggest refactoring using brain planning."""
         query = f"""Suggest refactoring for this goal: {goal}
 
@@ -136,7 +136,7 @@ Provide specific refactoring steps with rationale.
             "tools_used": result.get("tools_used", []),
         }
 
-    async def detect_architecture_issues(self, file_paths: List[Path]) -> Dict[str, Any]:
+    async def detect_architecture_issues(self, file_paths: list[Path]) -> dict[str, Any]:
         """Detect architecture issues across files."""
         # Build world state from files
         for fp in file_paths[:10]:  # Limit to 10 files
@@ -164,7 +164,7 @@ Detect:
             "world_model_size": len(self.brain.brain.world.nodes),
         }
 
-    def get_brain_stats(self) -> Dict[str, Any]:
+    def get_brain_stats(self) -> dict[str, Any]:
         """Get statistics about brain usage."""
         return self.brain.get_stats()
 
@@ -182,21 +182,21 @@ def get_active_brain() -> AMOSActiveBrain:
 
 
 # Real file analysis functions
-async def analyze_repo_file(file_path: str) -> Dict[str, Any]:
+async def analyze_repo_file(file_path: str) -> dict[str, Any]:
     """Analyze a file in the repository."""
     brain = get_active_brain()
     await brain.initialize()
     return await brain.analyze_file(Path(file_path))
 
 
-async def review_code_snippet(code: str, language: str = "python") -> Dict[str, Any]:
+async def review_code_snippet(code: str, language: str = "python") -> dict[str, Any]:
     """Review a code snippet."""
     brain = get_active_brain()
     await brain.initialize()
     return await brain.review_code(code, context=f"Language: {language}")
 
 
-async def suggest_code_refactoring(code: str, goal: str = "improve readability") -> Dict[str, Any]:
+async def suggest_code_refactoring(code: str, goal: str = "improve readability") -> dict[str, Any]:
     """Get refactoring suggestions."""
     brain = get_active_brain()
     await brain.initialize()

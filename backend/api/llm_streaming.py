@@ -1,4 +1,6 @@
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
+
+from typing import Any, Optional
 
 """Real-time LLM streaming with brain integration.
 
@@ -16,19 +18,18 @@ import json
 import sys
 from collections.abc import AsyncGenerator
 from dataclasses import dataclass
-from datetime import datetime, timezone
-
-UTC = timezone.utc
+from datetime import UTC, datetime
 from pathlib import Path
 
 from fastapi import APIRouter
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
+UTC = UTC
+
 AMOS_BRAIN_PATH = Path(__file__).parent.parent.parent / "clawspring" / "amos_brain"
 if str(AMOS_BRAIN_PATH) not in sys.path:
     sys.path.insert(0, str(AMOS_BRAIN_PATH))
-
 
 from amos_kernel_runtime import AMOSKernelRuntime  # noqa: E402
 
@@ -39,7 +40,7 @@ class StreamRequest(BaseModel):
     """Streaming generation request."""
 
     prompt: str
-    context: Dict[str, Any] = {}
+    context: dict[str, Any] = {}
     max_tokens: int = 1024
     temperature: float = 0.7
     use_brain: bool = True
@@ -53,7 +54,7 @@ class StreamChunk(BaseModel):
     data: str
     timestamp: str
     stream_id: str
-    metadata: Dict[str, Any] = {}
+    metadata: dict[str, Any] = {}
 
 
 @dataclass
@@ -61,10 +62,10 @@ class BrainOversight:
     """Brain cognitive oversight for LLM generation."""
 
     kernel: AMOSKernelRuntime
-    observation: Dict[str, Any]
-    goal: Dict[str, Any]
+    observation: dict[str, Any]
+    goal: dict[str, Any]
 
-    async def evaluate_token(self, token: str, context: dict) -> Dict[str, Any]:
+    async def evaluate_token(self, token: str, context: dict) -> dict[str, Any]:
         """Evaluate each token through brain's legality filter."""
         # Quick coherence check
         result = self.kernel.execute_cycle(
@@ -90,7 +91,7 @@ class StreamingLLMEngine:
 
     def __init__(self):
         self._kernel = AMOSKernelRuntime()
-        self._active_streams: Dict[str, asyncio.Task] = {}
+        self._active_streams: dict[str, asyncio.Task] = {}
 
     async def stream_generate(self, request: StreamRequest) -> AsyncGenerator[StreamChunk, None]:
         """Generate streaming response with brain oversight."""
@@ -202,7 +203,7 @@ class StreamingLLMEngine:
             metadata={"total_tokens": len(tokens)},
         )
 
-    def _tokenize_response(self, prompt: str) -> List[str]:
+    def _tokenize_response(self, prompt: str) -> list[str]:
         """Generate response tokens (placeholder for real LLM)."""
         # Generate a coherent response based on prompt
         responses = {
@@ -337,7 +338,7 @@ async def stream_llm(request: StreamRequest) -> StreamingResponse:
 
 
 @router.post("/generate")
-async def generate_sync(request: StreamRequest) -> Dict[str, Any]:
+async def generate_sync(request: StreamRequest) -> dict[str, Any]:
     """Synchronous generation (non-streaming)."""
     chunks = []
     full_response = ""
@@ -359,7 +360,7 @@ async def generate_sync(request: StreamRequest) -> Dict[str, Any]:
 
 
 @router.get("/models")
-async def list_models() -> List[dict[str, Any]]:
+async def list_models() -> list[dict[str, Any]]:
     """List available LLM models with brain integration."""
     return [
         {
@@ -382,7 +383,7 @@ async def list_models() -> List[dict[str, Any]]:
 
 
 @router.post("/cancel/{stream_id}")
-async def cancel_stream(stream_id: str) -> Dict[str, bool]:
+async def cancel_stream(stream_id: str) -> dict[str, bool]:
     """Cancel an active stream."""
     cancelled = _streaming_engine.cancel_stream(stream_id)
     return {"cancelled": cancelled, "stream_id": stream_id}

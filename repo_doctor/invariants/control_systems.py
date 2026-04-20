@@ -25,7 +25,7 @@ class InvariantResult:
     passed: bool
     severity: float  # 0-1, higher is worse
     message: str
-    observables: List[Observable]
+    observables: list[Observable]
 
 
 class ClockInvariant:
@@ -37,7 +37,7 @@ class ClockInvariant:
     DIMENSION = "clock_semantics"  # Will be StateDimension.CLOCK_SEMANTICS
 
     @classmethod
-    def check(cls, observables: List[Observable]) -> InvariantResult:
+    def check(cls, observables: list[Observable]) -> InvariantResult:
         """Check clock semantics invariant."""
         from ..state.basis import StateDimension
 
@@ -69,7 +69,7 @@ class CacheInvariant:
     """
 
     @classmethod
-    def check(cls, observables: List[Observable]) -> InvariantResult:
+    def check(cls, observables: list[Observable]) -> InvariantResult:
         """Check cache coherence invariant."""
         from ..state.basis import StateDimension
 
@@ -101,7 +101,7 @@ class ConsistencyInvariant:
     """
 
     @classmethod
-    def check(cls, observables: List[Observable]) -> InvariantResult:
+    def check(cls, observables: list[Observable]) -> InvariantResult:
         """Check consistency model invariant."""
         from ..state.basis import StateDimension
 
@@ -136,7 +136,7 @@ class IdentityLifecycleInvariant:
     """
 
     @classmethod
-    def check(cls, observables: List[Observable]) -> InvariantResult:
+    def check(cls, observables: list[Observable]) -> InvariantResult:
         """Check identity lifecycle invariant."""
         from ..state.basis import StateDimension
 
@@ -168,7 +168,7 @@ class CapabilityInvariant:
     """
 
     @classmethod
-    def check(cls, observables: List[Observable]) -> InvariantResult:
+    def check(cls, observables: list[Observable]) -> InvariantResult:
         """Check capability discipline invariant."""
         from ..state.basis import StateDimension
 
@@ -200,7 +200,7 @@ class QueueInvariant:
     """
 
     @classmethod
-    def check(cls, observables: List[Observable]) -> InvariantResult:
+    def check(cls, observables: list[Observable]) -> InvariantResult:
         """Check queue/backpressure invariant."""
         from ..state.basis import StateDimension
 
@@ -232,7 +232,7 @@ class FallbackInvariant:
     """
 
     @classmethod
-    def check(cls, observables: List[Observable]) -> InvariantResult:
+    def check(cls, observables: list[Observable]) -> InvariantResult:
         """Check fallback topology invariant."""
         from ..state.basis import StateDimension
 
@@ -265,7 +265,7 @@ class IdempotencyInvariant:
     """
 
     @classmethod
-    def check(cls, observables: List[Observable]) -> InvariantResult:
+    def check(cls, observables: list[Observable]) -> InvariantResult:
         """Check idempotency boundary invariant."""
         from ..state.basis import StateDimension
 
@@ -297,7 +297,7 @@ class ControlLoopInvariant:
     """
 
     @classmethod
-    def check(cls, observables: List[Observable]) -> InvariantResult:
+    def check(cls, observables: list[Observable]) -> InvariantResult:
         """Check control loop stability invariant."""
         from ..state.basis import StateDimension
 
@@ -331,7 +331,7 @@ class FailureDomainsInvariant:
     """
 
     @classmethod
-    def check(cls, observables: List[Observable]) -> InvariantResult:
+    def check(cls, observables: list[Observable]) -> InvariantResult:
         """Check failure domain isolation invariant."""
         from ..state.basis import StateDimension
 
@@ -363,7 +363,7 @@ class NegativeCapabilityInvariant:
     """
 
     @classmethod
-    def check(cls, observables: List[Observable]) -> InvariantResult:
+    def check(cls, observables: list[Observable]) -> InvariantResult:
         """Check negative capability invariant."""
         from ..state.basis import StateDimension
 
@@ -395,7 +395,7 @@ class ArchitecturalDebtInvariant:
     """
 
     @classmethod
-    def check(cls, observables: List[Observable]) -> InvariantResult:
+    def check(cls, observables: list[Observable]) -> InvariantResult:
         """Check architectural debt invariant."""
         from ..state.basis import StateDimension
 

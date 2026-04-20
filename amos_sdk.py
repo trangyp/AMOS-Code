@@ -1,6 +1,6 @@
 """AMOS SDK stub for compatibility."""
 
-from typing import Any, Dict
+from typing import Any
 
 
 class AMOSSDK:
@@ -15,7 +15,7 @@ class AMOSSDK:
         self.connected = True
         return True
 
-    def execute(self, command: str, **kwargs: Any) -> Dict[str, Any]:
+    def execute(self, command: str, **kwargs: Any) -> dict[str, Any]:
         """Execute AMOS command."""
         return {"status": "success", "result": None}
 

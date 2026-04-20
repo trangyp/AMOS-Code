@@ -1,11 +1,5 @@
 """Tests for compaction.py — token estimation, context limits, snipping, split point."""
 
-import os
-import sys
-
-# Ensure project root is on sys.path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-
 from compaction import estimate_tokens, find_split_point, get_context_limit, snip_old_tool_results
 
 # ── estimate_tokens ───────────────────────────────────────────────────────

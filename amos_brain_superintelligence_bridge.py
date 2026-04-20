@@ -1,4 +1,6 @@
-from typing import Any, Dict, Optional
+from __future__ import annotations
+
+from typing import Any, Optional
 
 """AMOS Brain ↔ Superintelligence Core Bridge
 
@@ -17,31 +19,32 @@ Version: 29.1.0
 
 import asyncio
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
 
-from typing import Optional
+UTC = UTC
 from amos_superintelligence_core import (
     AMOSSuperintelligenceCore,
     superintelligence_process,
 )
+
 
 @dataclass
 class BrainThoughtRequest:
     """Request for brain thinking via superintelligence core."""
 
     input_text: str
-    context: Dict[str, Any] = field(default_factory=dict)
+    context: dict[str, Any] = field(default_factory=dict)
     importance: float = 0.5
     risk_level: float = 0.0
     latency_budget_seconds: float = 2.0
     require_verification: bool = True
 
+
 @dataclass
 class BrainThoughtResult:
     """Result from superintelligence-backed brain thinking."""
 
-    output: Dict[str, Any]
+    output: dict[str, Any]
     cognitive_mode: str
     was_verified: bool
     world_model_entities: int
@@ -51,6 +54,7 @@ class BrainThoughtResult:
     intelligence_score: float
     latency_ms: float
     timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+
 
 class AMOSBrainSuperintelligenceBridge:
     """Bridge connecting AMOS Brain to Superintelligence Core.
@@ -116,9 +120,7 @@ class AMOSBrainSuperintelligenceBridge:
             latency_ms=latency_ms,
         )
 
-    async def think_fast(
-        self, input_text: str, context: Dict[str, Any]  = None
-    ) -> Dict[str, Any]:
+    async def think_fast(self, input_text: str, context: dict[str, Any] = None) -> dict[str, Any]:
         """Fast thinking mode for quick responses.
 
         Forces INTERRUPT or FAST_PATTERN cognitive mode.
@@ -133,9 +135,7 @@ class AMOSBrainSuperintelligenceBridge:
         result = await self.think(request)
         return result.output
 
-    async def think_deep(
-        self, input_text: str, context: Dict[str, Any]  = None
-    ) -> Dict[str, Any]:
+    async def think_deep(self, input_text: str, context: dict[str, Any] = None) -> dict[str, Any]:
         """Deep thinking mode for complex problems.
 
         Forces DEEP_SEARCH or FORMAL_VERIFY cognitive mode.
@@ -152,8 +152,8 @@ class AMOSBrainSuperintelligenceBridge:
         return result.output
 
     async def think_safe(
-        self, input_text: str, risk_level: float = 0.8, context: Dict[str, Any]  = None
-    ) -> Dict[str, Any] :
+        self, input_text: str, risk_level: float = 0.8, context: dict[str, Any] = None
+    ) -> dict[str, Any]:
         """Safe thinking mode for high-risk operations.
 
         Forces FORMAL_VERIFY mode with strict verification.
@@ -174,7 +174,7 @@ class AMOSBrainSuperintelligenceBridge:
 
         return result.output
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get bridge statistics."""
         verification_rate = (
             self.verification_success_count / self.thought_count if self.thought_count > 0 else 0.0
@@ -186,8 +186,10 @@ class AMOSBrainSuperintelligenceBridge:
             "current_intelligence_score": self.si_core.get_intelligence_score(),
         }
 
+
 # Global bridge instance
 _bridge: Optional[AMOSBrainSuperintelligenceBridge] = None
+
 
 def get_brain_superintelligence_bridge() -> AMOSBrainSuperintelligenceBridge:
     """Get the global brain-SI bridge instance."""
@@ -196,10 +198,11 @@ def get_brain_superintelligence_bridge() -> AMOSBrainSuperintelligenceBridge:
         _bridge = AMOSBrainSuperintelligenceBridge()
     return _bridge
 
+
 # Convenience functions
 async def brain_think(
-    input_text: str, importance: float = 0.5, context: Dict[str, Any]  = None
-) -> Dict[str, Any]:
+    input_text: str, importance: float = 0.5, context: dict[str, Any] = None
+) -> dict[str, Any]:
     """Think via superintelligence core."""
     bridge = get_brain_superintelligence_bridge()
     request = BrainThoughtRequest(
@@ -210,20 +213,24 @@ async def brain_think(
     result = await bridge.think(request)
     return result.output
 
-async def brain_think_fast(input_text: str) -> Dict[str, Any]:
+
+async def brain_think_fast(input_text: str) -> dict[str, Any]:
     """Fast thinking."""
     bridge = get_brain_superintelligence_bridge()
     return await bridge.think_fast(input_text)
 
-async def brain_think_deep(input_text: str) -> Dict[str, Any]:
+
+async def brain_think_deep(input_text: str) -> dict[str, Any]:
     """Deep thinking."""
     bridge = get_brain_superintelligence_bridge()
     return await bridge.think_deep(input_text)
 
-async def brain_think_safe(input_text: str, risk_level: float = 0.8) -> Dict[str, Any] :
+
+async def brain_think_safe(input_text: str, risk_level: float = 0.8) -> dict[str, Any]:
     """Safe thinking with verification."""
     bridge = get_brain_superintelligence_bridge()
     return await bridge.think_safe(input_text, risk_level)
+
 
 if __name__ == "__main__":
 

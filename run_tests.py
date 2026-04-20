@@ -21,14 +21,13 @@ import argparse
 import subprocess
 import sys
 from pathlib import Path
-from typing import List
 
 
-def run_command(cmd: List[str], description: str) -> int:
+def run_command(cmd: list[str], description: str) -> int:
     """Run a command and return exit code."""
-    print(f"\n{'='*70}")
+    print(f"\n{'=' * 70}")
     print(f"Running: {description}")
-    print(f"{'='*70}")
+    print(f"{'=' * 70}")
 
     result = subprocess.run(cmd, cwd=Path(__file__).parent)
     return result.returncode
@@ -85,12 +84,12 @@ def main():
     exit_code = run_command(cmd, description)
 
     # Summary
-    print(f"\n{'='*70}")
+    print(f"\n{'=' * 70}")
     if exit_code == 0:
         print("✓ ALL TESTS PASSED")
     else:
         print(f"✗ TESTS FAILED (exit code: {exit_code})")
-    print(f"{'='*70}")
+    print(f"{'=' * 70}")
 
     return exit_code
 

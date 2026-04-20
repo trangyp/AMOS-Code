@@ -14,11 +14,14 @@ from __future__ import annotations
 
 import hashlib
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
-from typing import Any
+from datetime import UTC, datetime, timezone
 
-from .canon_knowledge_engine import get_canon_knowledge_engine, CanonKnowledgeEntry
+UTC = UTC
+
+UTC = timezone.utc
+from typing import Any, Optional
+
+from .canon_knowledge_engine import CanonKnowledgeEntry, get_canon_knowledge_engine
 
 
 @dataclass
@@ -62,7 +65,7 @@ class CanonMemorySystem:
         self,
         content: str,
         domain: str,
-        metadata: Optional[dict[str, Any] ] = None,
+        metadata: Optional[dict[str, Any]] = None,
     ) -> CanonMemory:
         """Store a memory with Canon context.
 

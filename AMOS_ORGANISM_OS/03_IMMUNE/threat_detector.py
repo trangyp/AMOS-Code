@@ -1,8 +1,10 @@
 """Threat Detector — Anomaly detection for AMOS."""
 
 from dataclasses import dataclass
-from datetime import datetime
-from typing import Any, Dict, List
+from datetime import UTC, datetime
+
+UTC = UTC
+from typing import Any
 
 
 @dataclass
@@ -14,22 +16,22 @@ class Threat:
     severity: str  # low, medium, high, critical
     category: str  # execution, access, pattern, anomaly
     description: str
-    evidence: Dict[str, Any]
+    evidence: dict[str, Any]
 
 
 class ThreatDetector:
     """Detects threats and anomalies in organism behavior."""
 
     def __init__(self):
-        self._threats: List[Threat] = []
-        self._pattern_history: List[dict] = []
+        self._threats: list[Threat] = []
+        self._pattern_history: list[dict] = []
         self._anomaly_threshold = 3  # Consecutive anomalies to trigger alert
 
     def detect_anomaly(
         self,
         action: str,
-        context: Dict[str, Any],
-    ) -> List[Threat]:
+        context: dict[str, Any],
+    ) -> list[Threat]:
         """Detect anomalies in an action."""
         threats = []
 
@@ -80,14 +82,14 @@ class ThreatDetector:
         self._threats.extend(threats)
         return threats
 
-    def get_threats(self, severity: str = None, limit: int = 50) -> List[Threat]:
+    def get_threats(self, severity: str = None, limit: int = 50) -> list[Threat]:
         """Get detected threats."""
         threats = self._threats
         if severity:
             threats = [t for t in threats if t.severity == severity]
         return threats[-limit:]
 
-    def status(self) -> Dict[str, Any]:
+    def status(self) -> dict[str, Any]:
         """Get detector status."""
         return {
             "total_threats": len(self._threats),

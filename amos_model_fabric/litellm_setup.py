@@ -3,6 +3,8 @@
 Real implementation for managing LiteLLM proxy with all local LLM backends.
 """
 
+from __future__ import annotations
+
 import json
 import logging
 import os
@@ -10,7 +12,7 @@ import subprocess
 import sys
 import time
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 import yaml
 
@@ -25,9 +27,9 @@ class LiteLLMSetup:
         self.config_dir.mkdir(parents=True, exist_ok=True)
         self.config_file = self.config_dir / "config.yaml"
         self.env_file = self.config_dir / ".env"
-        self.proxy_process: subprocess.Popen | None = None
+        self.proxy_process: subprocess.Optional[Popen] = None
 
-    def detect_ollama_models(self) -> List[dict[str, Any]]:
+    def detect_ollama_models(self) -> list[dict[str, Any]]:
         """Detect available Ollama models."""
         models = []
         try:
@@ -43,24 +45,27 @@ class LiteLLMSetup:
                     parts = line.split()
                     if parts:
                         model_name = parts[0]
-                        models.append({
-                            "model_name": f"ollama/{model_name}",
-                            "litellm_params": {
-                                "model": f"ollama/{model_name}",
-                                "api_base": "http://localhost:11434",
-                            },
-                            "model_info": {
-                                "id": model_name,
-                                "mode": "chat",
-                            },
-                        })
+                        models.append(
+                            {
+                                "model_name": f"ollama/{model_name}",
+                                "litellm_params": {
+                                    "model": f"ollama/{model_name}",
+                                    "api_base": "http://localhost:11434",
+                                },
+                                "model_info": {
+                                    "id": model_name,
+                                    "mode": "chat",
+                                },
+                            }
+                        )
         except (subprocess.TimeoutExpired, FileNotFoundError, Exception) as e:
             logger.warning(f"Could not detect Ollama models: {e}")
         return models
 
-    def detect_lmstudio(self) -> Optional[Dict[str, Any] ]:
+    def detect_lmstudio(self) -> Optional[dict[str, Any]]:
         """Detect if LM Studio is running."""
         import urllib.request
+
         try:
             req = urllib.request.Request(
                 "http://localhost:1234/v1/models",
@@ -85,9 +90,10 @@ class LiteLLMSetup:
             pass
         return None
 
-    def detect_vllm(self) -> Optional[Dict[str, Any] ]:
+    def detect_vllm(self) -> Optional[dict[str, Any]]:
         """Detect if vLLM is running."""
         import urllib.request
+
         try:
             req = urllib.request.Request(
                 "http://localhost:8000/v1/models",
@@ -110,7 +116,7 @@ class LiteLLMSetup:
             pass
         return None
 
-    def generate_config(self) -> Dict[str, Any]:
+    def generate_config(self) -> dict[str, Any]:
         """Generate LiteLLM configuration with detected models."""
         model_list = []
 
@@ -150,7 +156,7 @@ class LiteLLMSetup:
 
         return config
 
-    def write_config(self, config: Optional[Dict[str, Any] ] = None) -> Path:
+    def write_config(self, config: Optional[dict[str, Any]] = None) -> Path:
         """Write LiteLLM configuration to file."""
         config = config or self.generate_config()
         self.config_file.write_text(yaml.dump(config, default_flow_style=False))
@@ -173,6 +179,7 @@ class LiteLLMSetup:
         """Install LiteLLM proxy if not already installed."""
         try:
             import litellm
+
             logger.info(f"LiteLLM already installed: {litellm.__version__}")
             return True
         except ImportError:
@@ -188,13 +195,14 @@ class LiteLLMSetup:
                 logger.error(f"Failed to install LiteLLM: {e}")
                 return False
 
-    def start_proxy(self, port: int = 4000, daemon: bool = False) -> subprocess.Popen | None:
+    def start_proxy(self, port: int = 4000, daemon: bool = False) -> subprocess.Optional[Popen]:
         """Start LiteLLM proxy server."""
         if not self.config_file.exists():
             self.write_config()
 
         # Check if already running
         import urllib.request
+
         try:
             with urllib.request.urlopen(f"http://localhost:{port}/health", timeout=2) as resp:
                 if resp.status == 200:
@@ -205,9 +213,13 @@ class LiteLLMSetup:
 
         # Start proxy
         cmd = [
-            sys.executable, "-m", "litellm",
-            "--config", str(self.config_file),
-            "--port", str(port),
+            sys.executable,
+            "-m",
+            "litellm",
+            "--config",
+            str(self.config_file),
+            "--port",
+            str(port),
         ]
 
         env = {**os.environ, "LITELLM_MASTER_KEY": "sk-amos-local"}
@@ -258,9 +270,10 @@ class LiteLLMSetup:
             self.proxy_process = None
             logger.info("LiteLLM proxy stopped")
 
-    def get_models(self, port: int = 4000) -> List[dict[str, Any]]:
+    def get_models(self, port: int = 4000) -> list[dict[str, Any]]:
         """Get list of available models from proxy."""
         import urllib.request
+
         try:
             headers = {"Authorization": "Bearer sk-amos-local"}
             req = urllib.request.Request(
@@ -277,6 +290,7 @@ class LiteLLMSetup:
     def test_chat_completion(self, model: str, port: int = 4000) -> bool:
         """Test chat completion through proxy."""
         import urllib.request
+
         try:
             payload = {
                 "model": model,
@@ -322,7 +336,7 @@ def main():
         config = setup.generate_config()
         setup.write_config(config)
         setup.setup_environment()
-        print(f"\nLiteLLM configuration:")
+        print("\nLiteLLM configuration:")
         print(f"  Config: {setup.config_file}")
         print(f"  Models: {len(config['model_list'])}")
         for m in config["model_list"]:

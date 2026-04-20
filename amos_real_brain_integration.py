@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 """AMOS Real Brain Integration - Production-Ready Cognitive System
 
@@ -22,8 +22,10 @@ import time
 import uuid
 from collections import defaultdict
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
+
 from pathlib import Path
 
 # Add minimal_real_brain to path
@@ -36,18 +38,20 @@ from minimal_real_brain import (
     Plan,
 )
 
+
 @dataclass
 class CognitiveRequest:
     """Request for cognitive processing."""
 
     query: str
-    context: Dict[str, Any] = field(default_factory=dict)
+    context: dict[str, Any] = field(default_factory=dict)
     mode: str = "auto"  # fast, deep, safe, auto
     importance: float = 0.5
     risk_level: float = 0.0
     latency_budget_ms: float = 2000.0
     require_verification: bool = True
     session_id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
+
 
 @dataclass
 class CognitiveResult:
@@ -61,9 +65,10 @@ class CognitiveResult:
     world_model_entities: int
     branches_explored: int
     verification_grounding: float
-    memory_accessed: List[str]
-    errors_learned: List[str]
+    memory_accessed: list[str]
+    errors_learned: list[str]
     timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+
 
 class AMOSRealBrain:
     """
@@ -77,7 +82,7 @@ class AMOSRealBrain:
     - Mode selection before reasoning (SII05)
     """
 
-    _instance: Optional[AMOSRealBrain] = None
+    _instance: AMOSRealBrain = None
 
     def __new__(cls) -> AMOSRealBrain:
         if cls._instance is None:
@@ -93,7 +98,7 @@ class AMOSRealBrain:
         self.brain = MinimalBrain()
 
         # Session management
-        self.sessions: Dict[str, dict[str, Any]] = {}
+        self.sessions: dict[str, dict[str, Any]] = {}
 
         # Metrics
         self.total_queries: int = 0
@@ -272,7 +277,7 @@ class AMOSRealBrain:
                 errors_learned=[str(e)],
             )
 
-    def _build_response(self, plan: Optional[Plan], query: str, exec_result: Dict[str, Any]) -> str:
+    def _build_response(self, plan: Plan, query: str, exec_result: dict[str, Any]) -> str:
         """Build natural language response from plan execution."""
         if not plan:
             return "Could not process query."
@@ -285,7 +290,7 @@ class AMOSRealBrain:
             failure = exec_result["result"].get("failure_reason", "unknown")
             return f"Processing encountered issue: {failure}. Learning from error."
 
-    async def think_fast(self, query: str, context: Dict[str, Any]  = None) -> str:
+    async def think_fast(self, query: str, context: dict[str, Any] = None) -> str:
         """Fast thinking mode - low latency."""
         request = CognitiveRequest(
             query=query,
@@ -298,7 +303,7 @@ class AMOSRealBrain:
         result = await self.think(request)
         return result.response
 
-    async def think_deep(self, query: str, context: Dict[str, Any]  = None) -> str:
+    async def think_deep(self, query: str, context: dict[str, Any] = None) -> str:
         """Deep thinking mode - thorough analysis."""
         request = CognitiveRequest(
             query=query,
@@ -312,8 +317,8 @@ class AMOSRealBrain:
         return result.response
 
     async def think_safe(
-        self, query: str, risk_level: float = 0.8, context: Dict[str, Any]  = None
-    ) -> Optional[str]:
+        self, query: str, risk_level: float = 0.8, context: dict[str, Any] = None
+    ) -> str:
         """Safe thinking mode - high verification."""
         request = CognitiveRequest(
             query=query,
@@ -332,7 +337,7 @@ class AMOSRealBrain:
 
         return result.response
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get brain statistics."""
         total = self.total_queries
         success_rate = self.successful_queries / total if total > 0 else 0.0
@@ -350,16 +355,18 @@ class AMOSRealBrain:
             "learning_updates": len(self.brain.updater._applied_updates),
         }
 
-    def get_session(self, session_id: str) -> Dict[str, Any] :
+    def get_session(self, session_id: str) -> dict[str, Any]:
         """Get session information."""
         return self.sessions.get(session_id)
 
-    async def consolidate_memory(self) -> Dict[str, Any]:
+    async def consolidate_memory(self) -> dict[str, Any]:
         """Consolidate and persist memory."""
         return await self.brain.updater.apply_pending_updates()
 
+
 # Global instance
-_real_brain: Optional[AMOSRealBrain] = None
+_real_brain: AMOSRealBrain = None
+
 
 def get_amos_real_brain() -> AMOSRealBrain:
     """Get global AMOS real brain instance."""
@@ -367,6 +374,7 @@ def get_amos_real_brain() -> AMOSRealBrain:
     if _real_brain is None:
         _real_brain = AMOSRealBrain()
     return _real_brain
+
 
 async def amos_think(query: str, **kwargs) -> str:
     """Convenience: think with AMOS brain."""
@@ -378,13 +386,14 @@ async def amos_think(query: str, **kwargs) -> str:
     result = await brain.think(request)
     return result.response
 
+
 # Integration with existing AMOS components
 class BrainOrchestratorAdapter:
     """Adapter for brain orchestration integration."""
 
     @staticmethod
     async def on_reasoning_complete(
-        input_data: Dict[str, Any], output_data: Dict[str, Any], metadata: Dict[str, Any]
+        input_data: dict[str, Any], output_data: dict[str, Any], metadata: dict[str, Any]
     ) -> None:
         """Hook for reasoning completion."""
         brain = get_amos_real_brain()
@@ -399,6 +408,7 @@ class BrainOrchestratorAdapter:
             failure_reason=json.dumps(output_data.get("result", {})),
             correction=None,
         )
+
 
 # Demonstration
 if __name__ == "__main__":

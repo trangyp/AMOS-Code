@@ -18,15 +18,15 @@ Version: 8.1.0-PHASE15
 Author: AMOS SuperBrain
 """
 
-
 import json
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Optional
 
 # SuperBrain integration
 try:
     from amos_brain import get_super_brain
+
     SUPERBRAIN_AVAILABLE = True
 except ImportError:
     SUPERBRAIN_AVAILABLE = False
@@ -36,9 +36,10 @@ try:
     from amos_superbrain_equation_bridge import (
         AMOSSuperBrainBridge,
         Domain,
+        ExecutionResult,
         MathematicalPattern,
-        ExecutionResult
     )
+
     BRIDGE_AVAILABLE = True
 except ImportError:
     BRIDGE_AVAILABLE = False
@@ -50,6 +51,7 @@ except ImportError:
 # Audit integration
 try:
     from clawspring.amos_brain.audit_exporter import AuditExporter
+
     AUDIT_AVAILABLE = True
 except ImportError:
     AUDIT_AVAILABLE = False
@@ -57,15 +59,17 @@ except ImportError:
 # Mathematical Framework Integration
 try:
     from clawspring.amos_brain.mathematical_framework_engine import (
-        get_framework_engine,
         MathematicalFrameworkEngine,
+        get_framework_engine,
     )
+
     MATH_FRAMEWORK_AVAILABLE = True
 except ImportError:
     MATH_FRAMEWORK_AVAILABLE = False
 
 try:
     from clawspring.amos_brain.math_audit_logger import get_math_audit_logger
+
     AUDIT_LOGGER_AVAILABLE = True
 except ImportError:
     AUDIT_LOGGER_AVAILABLE = False
@@ -74,15 +78,16 @@ except ImportError:
 @dataclass
 class EquationToolResult:
     """Result from SuperBrain equation tool execution."""
+
     equation_name: str
     domain: str
     pattern: str
-    inputs: Dict[str, Any]
-    outputs: Dict[str, Any]
+    inputs: dict[str, Any]
+    outputs: dict[str, Any]
     invariants_valid: bool
-    invariant_violations: List[str]
+    invariant_violations: list[str]
     execution_time_ms: float
-    cross_domain_links: List[str]
+    cross_domain_links: list[str]
     timestamp: str
     execution_id: str
 
@@ -121,10 +126,8 @@ class AMOSSuperBrainEquationTool:
                 pass
 
     def _validate_via_superbrain(
-        self,
-        equation_name: str,
-        inputs: Dict[str, Any]
-    ) -> Tuple[bool, str]:
+        self, equation_name: str, inputs: dict[str, Any]
+    ) -> tuple[bool, str]:
         """
         Validate equation execution via SuperBrain ActionGate.
 
@@ -135,18 +138,18 @@ class AMOSSuperBrainEquationTool:
             return True, "SuperBrain not available - fail open"
 
         try:
-            if hasattr(self._superbrain, 'action_gate'):
+            if hasattr(self._superbrain, "action_gate"):
                 action_result = self._superbrain.action_gate.validate_action(
                     agent_id="amos_superbrain_equations",
                     action=f"execute_equation_{equation_name}",
                     details={
                         "equation": equation_name,
                         "input_keys": list(inputs.keys()),
-                        "input_types": [type(v).__name__ for v in inputs.values()]
-                    }
+                        "input_types": [type(v).__name__ for v in inputs.values()],
+                    },
                 )
                 return action_result.authorized, getattr(
-                    action_result, 'reason', 'No reason provided'
+                    action_result, "reason", "No reason provided"
                 )
         except Exception as e:
             return True, f"Validation error: {str(e)}"
@@ -168,20 +171,16 @@ class AMOSSuperBrainEquationTool:
                 "invariants_valid": result.invariants_valid,
                 "violations": result.invariant_violations,
                 "execution_time_ms": result.execution_time_ms,
-                "cross_domain_links": len(result.cross_domain_links)
+                "cross_domain_links": len(result.cross_domain_links),
             }
 
             # Use audit exporter if available
-            if hasattr(self._audit, 'export_audit_entry'):
+            if hasattr(self._audit, "export_audit_entry"):
                 self._audit.export_audit_entry(audit_entry)
         except Exception:
             pass
 
-    def execute_equation(
-        self,
-        equation_name: str,
-        inputs: Dict[str, Any]
-    ) -> EquationToolResult:
+    def execute_equation(self, equation_name: str, inputs: dict[str, Any]) -> EquationToolResult:
         """
         Execute a SuperBrain equation with full AMOS governance.
 
@@ -209,7 +208,7 @@ class AMOSSuperBrainEquationTool:
                 execution_time_ms=0.0,
                 cross_domain_links=[],
                 timestamp=datetime.now().isoformat(),
-                execution_id=execution_id
+                execution_id=execution_id,
             )
 
         # Execute via bridge
@@ -225,7 +224,7 @@ class AMOSSuperBrainEquationTool:
                 execution_time_ms=0.0,
                 cross_domain_links=[],
                 timestamp=datetime.now().isoformat(),
-                execution_id=execution_id
+                execution_id=execution_id,
             )
 
         try:
@@ -233,8 +232,12 @@ class AMOSSuperBrainEquationTool:
 
             result = EquationToolResult(
                 equation_name=equation_name,
-                domain=exec_result.pattern_detected.value if exec_result.pattern_detected else "unknown",
-                pattern=exec_result.pattern_detected.value if exec_result.pattern_detected else "unknown",
+                domain=exec_result.pattern_detected.value
+                if exec_result.pattern_detected
+                else "unknown",
+                pattern=exec_result.pattern_detected.value
+                if exec_result.pattern_detected
+                else "unknown",
                 inputs=inputs,
                 outputs=exec_result.outputs,
                 invariants_valid=exec_result.invariants_valid,
@@ -242,7 +245,7 @@ class AMOSSuperBrainEquationTool:
                 execution_time_ms=exec_result.execution_time_ms,
                 cross_domain_links=exec_result.cross_domain_links,
                 timestamp=datetime.now().isoformat(),
-                execution_id=execution_id
+                execution_id=execution_id,
             )
 
             # Record in audit trail
@@ -262,10 +265,10 @@ class AMOSSuperBrainEquationTool:
                 execution_time_ms=0.0,
                 cross_domain_links=[],
                 timestamp=datetime.now().isoformat(),
-                execution_id=execution_id
+                execution_id=execution_id,
             )
 
-    def list_available_equations(self, domain: str  = None) -> List[dict[str, Any]]:
+    def list_available_equations(self, domain: str = None) -> list[dict[str, Any]]:
         """
         List all available equations, optionally filtered by domain.
 
@@ -281,19 +284,21 @@ class AMOSSuperBrainEquationTool:
         equations = []
         for name, meta in self._bridge.registry.metadata.items():
             if domain is None or meta.domain.value == domain:
-                equations.append({
-                    "name": name,
-                    "domain": meta.domain.value,
-                    "pattern": meta.pattern.value,
-                    "formula": meta.formula,
-                    "description": meta.description,
-                    "invariants": meta.invariants,
-                    "phase": meta.phase
-                })
+                equations.append(
+                    {
+                        "name": name,
+                        "domain": meta.domain.value,
+                        "pattern": meta.pattern.value,
+                        "formula": meta.formula,
+                        "description": meta.description,
+                        "invariants": meta.invariants,
+                        "phase": meta.phase,
+                    }
+                )
 
         return equations
 
-    def get_pattern_analysis(self) -> Dict[str, Any]:
+    def get_pattern_analysis(self) -> dict[str, Any]:
         """Get cross-domain pattern analysis from equation executions."""
         if not BRIDGE_AVAILABLE or not self._bridge:
             return {"error": "Bridge not available"}
@@ -301,9 +306,8 @@ class AMOSSuperBrainEquationTool:
         return self._bridge.get_pattern_analysis()
 
     def batch_execute(
-        self,
-        computations: List[tuple[str, dict[str, Any]]]
-    ) -> List[EquationToolResult]:
+        self, computations: list[tuple[str, dict[str, Any]]]
+    ) -> list[EquationToolResult]:
         """
         Execute multiple equations in batch.
 
@@ -319,7 +323,7 @@ class AMOSSuperBrainEquationTool:
             results.append(result)
         return results
 
-    def export_to_dashboard(self) -> Dict[str, Any]:
+    def export_to_dashboard(self) -> dict[str, Any]:
         """
         Export equation system metrics for dashboard visualization.
 
@@ -331,7 +335,7 @@ class AMOSSuperBrainEquationTool:
                 "error": "Equation bridge not available",
                 "version": "8.1.0-PHASE15",
                 "domains": 0,
-                "equations": 0
+                "equations": 0,
             }
 
         pattern_analysis = self._bridge.get_pattern_analysis()
@@ -344,24 +348,16 @@ class AMOSSuperBrainEquationTool:
             "cross_domain_isomorphisms": pattern_analysis.get("cross_domain_isomorphisms", []),
             "execution_count": self._execution_count,
             "last_updated": datetime.now().isoformat(),
-            "available_domains": list(set(
-                meta.domain.value
-                for meta in self._bridge.registry.metadata.values()
-            )),
+            "available_domains": list(
+                set(meta.domain.value for meta in self._bridge.registry.metadata.values())
+            ),
             "equation_sample": [
-                {
-                    "name": name,
-                    "domain": meta.domain.value,
-                    "formula": meta.formula
-                }
+                {"name": name, "domain": meta.domain.value, "formula": meta.formula}
                 for name, meta in list(self._bridge.registry.metadata.items())[:5]
-            ]
+            ],
         }
 
-    def analyze_with_math_framework(
-        self,
-        equation_name: str
-    ) -> Dict[str, Any]:
+    def analyze_with_math_framework(self, equation_name: str) -> dict[str, Any]:
         """Analyze SuperBrain equation using mathematical framework.
 
         Cross-references the equation with the AMOS Mathematical Framework
@@ -377,21 +373,18 @@ class AMOSSuperBrainEquationTool:
             return {
                 "error": "Mathematical Framework Engine not available",
                 "equation": equation_name,
-                "math_framework_enabled": False
+                "math_framework_enabled": False,
             }
 
         if not BRIDGE_AVAILABLE or not self._bridge:
-            return {
-                "error": "SuperBrain bridge not available",
-                "equation": equation_name
-            }
+            return {"error": "SuperBrain bridge not available", "equation": equation_name}
 
         try:
             # Get equation metadata from bridge
             if equation_name not in self._bridge.registry.metadata:
                 return {
                     "error": f"Equation '{equation_name}' not found in registry",
-                    "analysis_status": "failed"
+                    "analysis_status": "failed",
                 }
 
             meta = self._bridge.registry.metadata[equation_name]
@@ -406,26 +399,20 @@ class AMOSSuperBrainEquationTool:
                 "reinforcement_learning": "AI_ML",
                 "distributed_systems": "DISTRIBUTED_SYSTEMS",
                 "security": "SECURITY",
-                "quantum_computing": "PHYSICS"
+                "quantum_computing": "PHYSICS",
             }
 
-            math_domain = domain_map.get(
-                meta.domain.value,
-                "GENERAL"
-            )
+            math_domain = domain_map.get(meta.domain.value, "GENERAL")
 
             # Query math framework for related equations
             related_equations = []
-            if hasattr(math_engine, '_equations'):
+            if hasattr(math_engine, "_equations"):
                 for fw_eq in math_engine._equations.values():
                     # Match by keywords
-                    if any(kw in equation_name.lower()
-                           for kw in fw_eq.name.lower().split('_')):
-                        related_equations.append({
-                            "name": fw_eq.name,
-                            "formula": fw_eq.formula,
-                            "domain": fw_eq.domain
-                        })
+                    if any(kw in equation_name.lower() for kw in fw_eq.name.lower().split("_")):
+                        related_equations.append(
+                            {"name": fw_eq.name, "formula": fw_eq.formula, "domain": fw_eq.domain}
+                        )
 
             # Log analysis to audit
             if AUDIT_LOGGER_AVAILABLE:
@@ -434,7 +421,7 @@ class AMOSSuperBrainEquationTool:
                     audit_logger.log_architecture_analysis(
                         f"superbrain_equation_{equation_name}",
                         [meta.domain.value, math_domain],
-                        ["SuperBrainBridge", "MathematicalFrameworkEngine"]
+                        ["SuperBrainBridge", "MathematicalFrameworkEngine"],
                     )
                 except Exception:
                     pass
@@ -446,17 +433,17 @@ class AMOSSuperBrainEquationTool:
                 "pattern": meta.pattern.value,
                 "related_math_equations": related_equations[:5],
                 "math_framework_enabled": True,
-                "analysis_status": "success"
+                "analysis_status": "success",
             }
 
         except Exception as e:
             return {
                 "error": f"Analysis failed: {str(e)}",
                 "equation": equation_name,
-                "analysis_status": "failed"
+                "analysis_status": "failed",
             }
 
-    def get_domain_coverage_report(self) -> Dict[str, Any]:
+    def get_domain_coverage_report(self) -> dict[str, Any]:
         """Generate comprehensive domain coverage report."""
         if not BRIDGE_AVAILABLE or not self._bridge:
             return {"error": "Bridge not available"}
@@ -466,24 +453,19 @@ class AMOSSuperBrainEquationTool:
             equations = self._bridge.registry.get_by_domain(domain)
             coverage[domain.value] = {
                 "equation_count": len(equations),
-                "equations": equations[:10]  # First 10
+                "equations": equations[:10],  # First 10
             }
 
         return {
             "total_domains": len(Domain),
             "domains_with_equations": sum(1 for v in coverage.values() if v["equation_count"] > 0),
             "coverage": coverage,
-            "fully_covered_domains": [
-                d for d, v in coverage.items() if v["equation_count"] > 0
-            ]
+            "fully_covered_domains": [d for d, v in coverage.items() if v["equation_count"] > 0],
         }
 
 
 # Tool function for amos_tools.py integration
-def _amos_superbrain_equations(
-    params: Dict[str, Any],
-    config: Dict[str, Any]
-) -> str:
+def _amos_superbrain_equations(params: dict[str, Any], config: dict[str, Any]) -> str:
     """
     Execute SuperBrain mathematical equations from 36 technology domains.
 
@@ -517,23 +499,26 @@ def _amos_superbrain_equations(
         ]
 
         if result.invariant_violations:
-            lines.extend([
-                "### Violations:",
-                "\n".join(f"- {v}" for v in result.invariant_violations)
-            ])
+            lines.extend(
+                ["### Violations:", "\n".join(f"- {v}" for v in result.invariant_violations)]
+            )
 
         if result.cross_domain_links:
-            lines.extend([
-                "",
-                "## Cross-Domain Links",
-                "\n".join(f"- {link}" for link in result.cross_domain_links)
-            ])
+            lines.extend(
+                [
+                    "",
+                    "## Cross-Domain Links",
+                    "\n".join(f"- {link}" for link in result.cross_domain_links),
+                ]
+            )
 
-        lines.extend([
-            "",
-            f"Execution Time: {result.execution_time_ms:.2f}ms",
-            f"Timestamp: {result.timestamp}"
-        ])
+        lines.extend(
+            [
+                "",
+                f"Execution Time: {result.execution_time_ms:.2f}ms",
+                f"Timestamp: {result.timestamp}",
+            ]
+        )
 
         return "\n".join(lines)
 
@@ -541,10 +526,7 @@ def _amos_superbrain_equations(
         domain = params.get("domain")
         equations = tool.list_available_equations(domain)
 
-        lines = [
-            f"# Available SuperBrain Equations ({len(equations)} total)",
-            ""
-        ]
+        lines = [f"# Available SuperBrain Equations ({len(equations)} total)", ""]
 
         for eq in equations:
             lines.append(f"## {eq['name']}")
@@ -570,16 +552,16 @@ def _amos_superbrain_equations(
         report = tool.get_domain_coverage_report()
 
         lines = [
-            f"# SuperBrain Domain Coverage Report",
+            "# SuperBrain Domain Coverage Report",
             f"Total Domains: {report['total_domains']}",
             f"Domains with Equations: {report['domains_with_equations']}",
-            ""
+            "",
         ]
 
-        for domain_name, info in report['coverage'].items():
-            if info['equation_count'] > 0:
+        for domain_name, info in report["coverage"].items():
+            if info["equation_count"] > 0:
                 lines.append(f"## {domain_name}: {info['equation_count']} equations")
-                for eq_name in info['equations'][:5]:
+                for eq_name in info["equations"][:5]:
                     lines.append(f"  - {eq_name}")
 
         return "\n".join(lines)
@@ -602,24 +584,15 @@ AMOS_SUPERBRAIN_EQUATION_TOOL = {
             "action": {
                 "type": "string",
                 "enum": ["execute", "list", "patterns", "dashboard", "coverage"],
-                "description": "Action to perform"
+                "description": "Action to perform",
             },
-            "equation": {
-                "type": "string",
-                "description": "Equation name for execute action"
-            },
-            "inputs": {
-                "type": "object",
-                "description": "Equation inputs for execute action"
-            },
-            "domain": {
-                "type": "string",
-                "description": "Optional domain filter for list action"
-            }
+            "equation": {"type": "string", "description": "Equation name for execute action"},
+            "inputs": {"type": "object", "description": "Equation inputs for execute action"},
+            "domain": {"type": "string", "description": "Optional domain filter for list action"},
         },
-        "required": ["action"]
+        "required": ["action"],
     },
-    "handler": _amos_superbrain_equations
+    "handler": _amos_superbrain_equations,
 }
 
 
@@ -632,10 +605,7 @@ if __name__ == "__main__":
     print("=" * 70)
 
     # Execute an equation
-    result = tool.execute_equation(
-        "privacy_budget",
-        {"epsilons": [0.1, 0.2, 0.3]}
-    )
+    result = tool.execute_equation("privacy_budget", {"epsilons": [0.1, 0.2, 0.3]})
 
     print(f"\nExecuted: {result.equation_name}")
     print(f"Domain: {result.domain}")
@@ -645,7 +615,7 @@ if __name__ == "__main__":
 
     # Get dashboard data
     dashboard = tool.export_to_dashboard()
-    print(f"\nDashboard Data:")
+    print("\nDashboard Data:")
     print(f"  Total Equations: {dashboard['total_equations']}")
     print(f"  Domains: {dashboard['domains']}")
     print(f"  Pattern Distribution: {dashboard['pattern_distribution']}")

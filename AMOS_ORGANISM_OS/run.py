@@ -11,15 +11,16 @@ Commands:
     status     Show organism status
 """
 
-import sys
+import importlib.util
 from pathlib import Path
 
-# Add current dir to path
+# Load organism module using importlib
 _HERE = Path(__file__).parent
-if str(_HERE) not in sys.path:
-    sys.path.insert(0, str(_HERE))
-
-from organism import AmosOrganism
+_org_path = _HERE / "organism.py"
+_spec = importlib.util.spec_from_file_location("_organism", _org_path)
+_org_mod = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_org_mod)
+AmosOrganism = _org_mod.AmosOrganism
 from organism import main as organism_main
 
 

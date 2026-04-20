@@ -26,16 +26,18 @@ Layer: 17
 
 from __future__ import annotations
 
-
 import json
 import logging
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
+
 UTC = timezone.utc
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 logger = logging.getLogger(__name__)
 

@@ -7,24 +7,28 @@ Architecture:
 - Chat query → Semantic search → Retrieve top-k chunks → Augment prompt → LLM
 """
 
-import os
-import uuid
-import tempfile
-from pathlib import Path
-from typing import Any, Dict, List, Tuple
-from dataclasses import dataclass
-from datetime import datetime, timezone
-UTC = timezone.utc
+from __future__ import annotations
 
-from flask import Blueprint, request, jsonify
+import os
+import tempfile
+import uuid
+from dataclasses import dataclass
+from datetime import UTC, datetime, timezone
+from pathlib import Path
+from typing import Any
+
+UTC = UTC
+
+from flask import Blueprint, jsonify, request
 
 # RAG Blueprint
-rag_bp = Blueprint('rag', __name__, url_prefix='/rag')
+rag_bp = Blueprint("rag", __name__, url_prefix="/rag")
 
 
 @dataclass
 class DocumentUpload:
     """Document upload metadata."""
+
     document_id: str
     filename: str
     content_type: str
@@ -32,7 +36,7 @@ class DocumentUpload:
     upload_time: str
     chunk_count: int
     status: str  # processing, indexed, error
-    error_message: str  = None
+    error_message: str = None
 
 
 class DocumentProcessor:
@@ -42,7 +46,7 @@ class DocumentProcessor:
         self.chunk_size = chunk_size
         self.chunk_overlap = chunk_overlap
 
-    def process_file(self, file_path: str, filename: str) -> Tuple[list[str], DocumentUpload]:
+    def process_file(self, file_path: str, filename: str) -> tuple[list[str], DocumentUpload]:
         """
         Process uploaded file into chunks.
 
@@ -54,12 +58,12 @@ class DocumentProcessor:
 
         # Read file content
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
         except UnicodeDecodeError:
             # Try binary files with different encoding
             try:
-                with open(file_path, 'r', encoding='latin-1') as f:
+                with open(file_path, encoding="latin-1") as f:
                     content = f.read()
             except Exception as e:
                 return [], DocumentUpload(
@@ -70,7 +74,7 @@ class DocumentProcessor:
                     upload_time=datetime.now(timezone.utc).isoformat(),
                     chunk_count=0,
                     status="error",
-                    error_message=f"Failed to read file: {str(e)}"
+                    error_message=f"Failed to read file: {str(e)}",
                 )
 
         # Chunk the content
@@ -81,15 +85,15 @@ class DocumentProcessor:
             document_id=document_id,
             filename=filename,
             content_type=self._detect_content_type(filename),
-            size_bytes=len(content.encode('utf-8')),
+            size_bytes=len(content.encode("utf-8")),
             upload_time=datetime.now(timezone.utc).isoformat(),
             chunk_count=len(chunks),
-            status="indexed"
+            status="indexed",
         )
 
         return chunks, metadata
 
-    def _chunk_text(self, text: str) -> List[str]:
+    def _chunk_text(self, text: str) -> list[str]:
         """Split text into overlapping chunks."""
         chunks = []
         start = 0
@@ -101,7 +105,7 @@ class DocumentProcessor:
             # Try to break at sentence or paragraph
             if end < len(text):
                 # Look for sentence ending
-                for break_char in ['.\n', '. ', '\n\n', '\n']:
+                for break_char in [".\n", ". ", "\n\n", "\n"]:
                     pos = text.rfind(break_char, start, end + 100)
                     if pos != -1 and pos > start + self.chunk_size * 0.5:
                         end = pos + len(break_char)
@@ -123,20 +127,20 @@ class DocumentProcessor:
         ext = Path(filename).suffix.lower()
 
         content_types = {
-            '.txt': 'text/plain',
-            '.md': 'text/markdown',
-            '.pdf': 'application/pdf',
-            '.doc': 'application/msword',
-            '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            '.py': 'text/x-python',
-            '.js': 'text/javascript',
-            '.html': 'text/html',
-            '.css': 'text/css',
-            '.json': 'application/json',
-            '.csv': 'text/csv',
+            ".txt": "text/plain",
+            ".md": "text/markdown",
+            ".pdf": "application/pdf",
+            ".doc": "application/msword",
+            ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            ".py": "text/x-python",
+            ".js": "text/javascript",
+            ".html": "text/html",
+            ".css": "text/css",
+            ".json": "application/json",
+            ".csv": "text/csv",
         }
 
-        return content_types.get(ext, 'application/octet-stream')
+        return content_types.get(ext, "application/octet-stream")
 
 
 class RAGManager:
@@ -144,13 +148,14 @@ class RAGManager:
 
     def __init__(self):
         self.processor = DocumentProcessor()
-        self.documents: Dict[str, DocumentUpload] = {}
+        self.documents: dict[str, DocumentUpload] = {}
         self._vector_memory = None
 
     def get_vector_memory(self):
         """Get or initialize vector memory."""
         if self._vector_memory is None:
-            from amos_vector_memory import AMOSVectorMemory, get_vector_memory
+            from amos_vector_memory import get_vector_memory
+
             self._vector_memory = get_vector_memory()
             if not self._vector_memory._initialized:
                 self._vector_memory.initialize()
@@ -182,8 +187,8 @@ class RAGManager:
                         "filename": filename,
                         "chunk_index": i,
                         "total_chunks": len(chunks),
-                        "upload_time": metadata.upload_time
-                    }
+                        "upload_time": metadata.upload_time,
+                    },
                 )
 
             self.documents[metadata.document_id] = metadata
@@ -195,7 +200,7 @@ class RAGManager:
             self.documents[metadata.document_id] = metadata
             return metadata
 
-    def retrieve_context(self, query: str, top_k: int = 5) -> List[dict[str, Any]]:
+    def retrieve_context(self, query: str, top_k: int = 5) -> list[dict[str, Any]]:
         """
         Retrieve relevant document chunks for query.
 
@@ -206,22 +211,20 @@ class RAGManager:
             vector_memory = self.get_vector_memory()
 
             # Search for relevant memories
-            results = vector_memory.search_similar(
-                query=query,
-                k=top_k,
-                memory_type="semantic"
-            )
+            results = vector_memory.search_similar(query=query, k=top_k, memory_type="semantic")
 
             # Format results
             formatted_results = []
             for result in results:
-                formatted_results.append({
-                    "content": result.get("content", ""),
-                    "score": result.get("relevance_score", 0.0),
-                    "document_id": result.get("metadata", {}).get("document_id", "unknown"),
-                    "filename": result.get("metadata", {}).get("filename", "unknown"),
-                    "chunk_index": result.get("metadata", {}).get("chunk_index", 0)
-                })
+                formatted_results.append(
+                    {
+                        "content": result.get("content", ""),
+                        "score": result.get("relevance_score", 0.0),
+                        "document_id": result.get("metadata", {}).get("document_id", "unknown"),
+                        "filename": result.get("metadata", {}).get("filename", "unknown"),
+                        "chunk_index": result.get("metadata", {}).get("chunk_index", 0),
+                    }
+                )
 
             return formatted_results
 
@@ -229,13 +232,9 @@ class RAGManager:
             print(f"[RAG] Retrieval error: {e}")
             return []
 
-    def get_documents(self) -> List[DocumentUpload]:
+    def get_documents(self) -> list[DocumentUpload]:
         """Get all uploaded documents."""
-        return sorted(
-            self.documents.values(),
-            key=lambda x: x.upload_time,
-            reverse=True
-        )
+        return sorted(self.documents.values(), key=lambda x: x.upload_time, reverse=True)
 
     def delete_document(self, document_id: str) -> bool:
         """Delete document from RAG system."""
@@ -259,6 +258,7 @@ class RAGManager:
 # Global RAG manager instance
 _rag_manager = None
 
+
 def get_rag_manager() -> RAGManager:
     """Get global RAG manager instance."""
     global _rag_manager
@@ -269,6 +269,7 @@ def get_rag_manager() -> RAGManager:
 
 # API Endpoints
 
+
 @rag_bp.route("/documents", methods=["POST"])
 def upload_document():
     """
@@ -278,15 +279,17 @@ def upload_document():
     Response: {"document_id": "...", "status": "indexed", "chunks": 12}
     """
     try:
-        if 'file' not in request.files:
+        if "file" not in request.files:
             return jsonify({"error": "No file provided"}), 400
 
-        file = request.files['file']
-        if file.filename == '':
+        file = request.files["file"]
+        if file.filename == "":
             return jsonify({"error": "Empty filename"}), 400
 
         # Save to temp file
-        with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix=Path(file.filename).suffix) as tmp:
+        with tempfile.NamedTemporaryFile(
+            mode="w", delete=False, suffix=Path(file.filename).suffix
+        ) as tmp:
             file.save(tmp.name)
             tmp_path = tmp.name
 
@@ -295,15 +298,17 @@ def upload_document():
             rag_manager = get_rag_manager()
             result = rag_manager.upload_document(tmp_path, file.filename)
 
-            return jsonify({
-                "document_id": result.document_id,
-                "filename": result.filename,
-                "status": result.status,
-                "chunks": result.chunk_count,
-                "size_bytes": result.size_bytes,
-                "upload_time": result.upload_time,
-                "error": result.error_message
-            })
+            return jsonify(
+                {
+                    "document_id": result.document_id,
+                    "filename": result.filename,
+                    "status": result.status,
+                    "chunks": result.chunk_count,
+                    "size_bytes": result.size_bytes,
+                    "upload_time": result.upload_time,
+                    "error": result.error_message,
+                }
+            )
 
         finally:
             # Clean up temp file
@@ -321,20 +326,22 @@ def list_documents():
         rag_manager = get_rag_manager()
         documents = rag_manager.get_documents()
 
-        return jsonify({
-            "documents": [
-                {
-                    "document_id": doc.document_id,
-                    "filename": doc.filename,
-                    "content_type": doc.content_type,
-                    "size_bytes": doc.size_bytes,
-                    "chunk_count": doc.chunk_count,
-                    "upload_time": doc.upload_time,
-                    "status": doc.status
-                }
-                for doc in documents
-            ]
-        })
+        return jsonify(
+            {
+                "documents": [
+                    {
+                        "document_id": doc.document_id,
+                        "filename": doc.filename,
+                        "content_type": doc.content_type,
+                        "size_bytes": doc.size_bytes,
+                        "chunk_count": doc.chunk_count,
+                        "upload_time": doc.upload_time,
+                        "status": doc.status,
+                    }
+                    for doc in documents
+                ]
+            }
+        )
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -375,11 +382,7 @@ def retrieve_context():
         rag_manager = get_rag_manager()
         results = rag_manager.retrieve_context(query, top_k=top_k)
 
-        return jsonify({
-            "query": query,
-            "results": results,
-            "count": len(results)
-        })
+        return jsonify({"query": query, "results": results, "count": len(results)})
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -419,10 +422,9 @@ def chat_with_rag():
 
         # Build augmented prompt
         if context_results:
-            context_text = "\n\n".join([
-                f"[From {r['filename']}]: {r['content']}"
-                for r in context_results
-            ])
+            context_text = "\n\n".join(
+                [f"[From {r['filename']}]: {r['content']}" for r in context_results]
+            )
 
             augmented_message = f"""Based on the following context, answer the question:
 
@@ -439,16 +441,19 @@ Provide a comprehensive answer using the information from the context above."""
         # This would integrate with the existing chat system
         # For now, return the augmented message structure
 
-        return jsonify({
-            "message": message,
-            "augmented_prompt": augmented_message,
-            "context_chunks": len(context_results),
-            "sources": [
-                {"filename": r["filename"], "score": r["score"]}
-                for r in context_results
-            ] if include_citations else [],
-            "mode": "rag"
-        })
+        return jsonify(
+            {
+                "message": message,
+                "augmented_prompt": augmented_message,
+                "context_chunks": len(context_results),
+                "sources": [
+                    {"filename": r["filename"], "score": r["score"]} for r in context_results
+                ]
+                if include_citations
+                else [],
+                "mode": "rag",
+            }
+        )
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500

@@ -45,26 +45,26 @@ Author: AMOS Self-Healing Team
 Version: 14.0.0
 """
 
+from __future__ import annotations
 
-import random
 import copy
-import inspect
+import random
 from dataclasses import dataclass
+from datetime import UTC, datetime, timezone
 from enum import Enum, auto
-from typing import Any, Dict, List, Optional
-from datetime import datetime, timezone
-UTC = timezone.utc
+from typing import Any, Optional
 
+UTC = UTC
 try:
     from amos_secure_equation_runner import SecureEquationRunner
+
     SECURE_EXECUTION_AVAILABLE = True
 except ImportError:
     SECURE_EXECUTION_AVAILABLE = False
 
 try:
-    from amos_superbrain_equation_bridge import (
-        AMOSSuperBrainBridge, EquationResult
-    )
+    from amos_superbrain_equation_bridge import AMOSSuperBrainBridge, EquationResult
+
     SUPERBRAIN_AVAILABLE = True
 except ImportError:
     SUPERBRAIN_AVAILABLE = False
@@ -72,26 +72,29 @@ except ImportError:
 
 class MutationType(Enum):
     """Types of equation mutations."""
-    OPERATOR_SWAP = auto()      # + ↔ -, * ↔ /
-    CONSTANT_CHANGE = auto()    # Change numeric constants
-    FUNCTION_WRAP = auto()      # Add abs(), clip(), etc.
-    VARIABLE_RENAME = auto()    # Change variable names
-    ORDER_SWAP = auto()         # Swap operand order
-    IDENTITY_INSERT = auto()    # Insert identity operations
+
+    OPERATOR_SWAP = auto()  # + ↔ -, * ↔ /
+    CONSTANT_CHANGE = auto()  # Change numeric constants
+    FUNCTION_WRAP = auto()  # Add abs(), clip(), etc.
+    VARIABLE_RENAME = auto()  # Change variable names
+    ORDER_SWAP = auto()  # Swap operand order
+    IDENTITY_INSERT = auto()  # Insert identity operations
 
 
 class RepairStrategy(Enum):
     """Strategies for equation repair."""
-    MUTATION = auto()           # Try mutations
-    SIMPLIFICATION = auto()    # Simplify complex expressions
-    BOUNDARY_CLAMP = auto()     # Add boundary checks
-    TYPE_CAST = auto()         # Fix type issues
-    EXCEPTION_WRAP = auto()    # Add try/except
+
+    MUTATION = auto()  # Try mutations
+    SIMPLIFICATION = auto()  # Simplify complex expressions
+    BOUNDARY_CLAMP = auto()  # Add boundary checks
+    TYPE_CAST = auto()  # Fix type issues
+    EXCEPTION_WRAP = auto()  # Add try/except
 
 
 @dataclass
 class Mutant:
     """A mutated equation variant."""
+
     mutant_id: str
     original_name: str
     mutation_type: MutationType
@@ -104,17 +107,19 @@ class Mutant:
 @dataclass
 class GeneticIndividual:
     """Individual in genetic algorithm population."""
+
     individual_id: str
     equation_code: str
     fitness: float
     generation: int
-    parents: List[str]
-    mutations_applied: List[MutationType]
+    parents: list[str]
+    mutations_applied: list[MutationType]
 
 
 @dataclass
 class HealingReport:
     """Report from self-healing operation."""
+
     equation_name: str
     operation: str
     timestamp: str
@@ -124,7 +129,7 @@ class HealingReport:
     mutants_generated: int
     mutants_killed: int
     survival_rate: float
-    repairs_applied: List[str]
+    repairs_applied: list[str]
     final_code: str
 
 
@@ -132,14 +137,14 @@ class MutationEngine:
     """Generate and manage equation mutations."""
 
     OPERATOR_SWAPS = {
-        '+': '-',
-        '-': '+',
-        '*': '/',
-        '/': '*',
-        '**': '*',
+        "+": "-",
+        "-": "+",
+        "*": "/",
+        "/": "*",
+        "**": "*",
     }
 
-    WRAPPER_FUNCTIONS = ['abs', 'np.clip', 'np.nan_to_num', 'float']
+    WRAPPER_FUNCTIONS = ["abs", "np.clip", "np.nan_to_num", "float"]
 
     def __init__(self, mutation_rate: float = 0.1):
         self.mutation_rate = mutation_rate
@@ -164,7 +169,7 @@ class MutationEngine:
             mutation_type=mutation_type,
             code=mutated_code,
             fitness=0.0,
-            killed=False
+            killed=False,
         )
 
     def _swap_operators(self, code: str) -> str:
@@ -184,30 +189,30 @@ class MutationEngine:
             perturbation = random.uniform(0.8, 1.2)
             return str(num * perturbation)
 
-        return re.sub(r'\d+\.?\d*', perturb_match, code)
+        return re.sub(r"\d+\.?\d*", perturb_match, code)
 
     def _wrap_function(self, code: str) -> str:
         """Wrap result in a function."""
         wrapper = random.choice(self.WRAPPER_FUNCTIONS)
         # Simple wrap of return statement
-        if 'return' in code:
-            lines = code.split('\n')
+        if "return" in code:
+            lines = code.split("\n")
             for i, line in enumerate(lines):
-                if line.strip().startswith('return'):
-                    expr = line.replace('return', '').strip()
-                    lines[i] = f'    return {wrapper}({expr})'
+                if line.strip().startswith("return"):
+                    expr = line.replace("return", "").strip()
+                    lines[i] = f"    return {wrapper}({expr})"
                     break
-            return '\n'.join(lines)
+            return "\n".join(lines)
         return code
 
     def _insert_identity(self, code: str) -> str:
         """Insert identity operations."""
         if random.random() < 0.5:
             # Multiply by 1
-            code = code.replace('return ', 'return 1 * ', 1)
+            code = code.replace("return ", "return 1 * ", 1)
         else:
             # Add 0
-            code = code.replace('return ', 'return 0 + ', 1)
+            code = code.replace("return ", "return 0 + ", 1)
         return code
 
 
@@ -247,7 +252,7 @@ class FitnessEvaluator:
 
         return sum(scores)
 
-    def _generate_test_cases(self) -> Dict[str, list]:
+    def _generate_test_cases(self) -> dict[str, list]:
         """Generate test cases for common equations."""
         return {
             "sigmoid": [
@@ -275,9 +280,9 @@ class FitnessEvaluator:
             if SECURE_EXECUTION_AVAILABLE:
                 runner = SecureEquationRunner()
                 result = runner.execute_equation(code)
-                if not result['success']:
+                if not result["success"]:
                     return 0.0
-                namespace = result['namespace']
+                namespace = result["namespace"]
             else:
                 # Fallback: compile and execute (legacy - less secure)
                 namespace = {}
@@ -301,10 +306,12 @@ class FitnessEvaluator:
                     result = func(**inputs)
                     if isinstance(expected, list):
                         import numpy as np
+
                         if np.allclose(result, expected, rtol=0.1):
                             passed += 1
                     else:
                         import math
+
                         if math.isclose(result, expected, rel_tol=0.1):
                             passed += 1
                 except Exception:
@@ -321,7 +328,7 @@ class FitnessEvaluator:
             if SECURE_EXECUTION_AVAILABLE:
                 runner = SecureEquationRunner()
                 result = runner.execute_equation(code)
-                if not result['success']:
+                if not result["success"]:
                     return 0.0
             else:
                 # Fallback: legacy less secure execution
@@ -334,14 +341,15 @@ class FitnessEvaluator:
     def _test_speed(self, code: str) -> float:
         """Test execution speed."""
         import time
+
         try:
             # Secure execution for speed testing
             if SECURE_EXECUTION_AVAILABLE:
                 runner = SecureEquationRunner()
                 result = runner.execute_equation(code)
-                if not result['success']:
+                if not result["success"]:
                     return 0.0
-                namespace = result['namespace']
+                namespace = result["namespace"]
             else:
                 # Fallback: legacy less secure execution
                 namespace = {}
@@ -383,11 +391,11 @@ class FitnessEvaluator:
         score = 1.0
 
         # Penalize long lines
-        if any(len(line) > 100 for line in code.split('\n')):
+        if any(len(line) > 100 for line in code.split("\n")):
             score -= 0.2
 
         # Penalize complexity
-        if code.count('if') > 5:
+        if code.count("if") > 5:
             score -= 0.2
 
         # Reward docstrings
@@ -412,15 +420,15 @@ class SelfHealingEngine:
         self.mutation_rate = mutation_rate
         self.mutation_engine = MutationEngine(mutation_rate)
         self.fitness_evaluator = FitnessEvaluator()
-        self.population: List[GeneticIndividual] = []
-        self.healing_history: List[HealingReport] = []
+        self.population: list[GeneticIndividual] = []
+        self.healing_history: list[HealingReport] = []
 
         if SUPERBRAIN_AVAILABLE:
             self.superbrain = AMOSSuperBrainBridge()
         else:
             self.superbrain = None
 
-    def mutation_test(self, equation_name: str, num_mutants: int = 50) -> Dict[str, Any]:
+    def mutation_test(self, equation_name: str, num_mutants: int = 50) -> dict[str, Any]:
         """
         Perform mutation testing on an equation.
 
@@ -446,7 +454,7 @@ class SelfHealingEngine:
             return {"error": "Could not access equation"}
 
         # Generate mutants
-        mutants: List[Mutant] = []
+        mutants: list[Mutant] = []
         for i in range(num_mutants):
             # Get code representation (simplified)
             code = f"def {equation_name}(x):\n    return x"  # Placeholder
@@ -475,7 +483,7 @@ class SelfHealingEngine:
             "mutants_killed": killed,
             "survival_rate": survival_rate,
             "mutation_score": mutation_score,
-            "assessment": "Good coverage" if mutation_score > 0.7 else "Needs more tests"
+            "assessment": "Good coverage" if mutation_score > 0.7 else "Needs more tests",
         }
 
     def genetic_optimize(
@@ -484,7 +492,7 @@ class SelfHealingEngine:
         generations: int = 100,
         population_size: int = 30,
         crossover_rate: float = 0.7,
-        elite_size: int = 3
+        elite_size: int = 3,
     ) -> Optional[GeneticIndividual]:
         """
         Optimize equation using genetic algorithm.
@@ -502,9 +510,7 @@ class SelfHealingEngine:
             Fittest individual found
         """
         # Initialize population
-        self.population = self._initialize_population(
-            equation_name, population_size
-        )
+        self.population = self._initialize_population(equation_name, population_size)
 
         # Evolution loop
         best_fitness = 0.0
@@ -555,11 +561,7 @@ class SelfHealingEngine:
 
         return best_individual
 
-    def auto_repair(
-        self,
-        equation_name: str,
-        error_cases: List[dict[str, Any]]
-    ) -> HealingReport:
+    def auto_repair(self, equation_name: str, error_cases: list[dict[str, Any]]) -> HealingReport:
         """
         Attempt to auto-repair a failing equation.
 
@@ -577,9 +579,7 @@ class SelfHealingEngine:
 
         # Get original
         original_result = self.superbrain.compute(equation_name, {"x": 1.0})
-        original_fitness = self.fitness_evaluator.evaluate(
-            str(original_result), equation_name
-        )
+        original_fitness = self.fitness_evaluator.evaluate(str(original_result), equation_name)
 
         repairs_tried = []
         best_fitness = original_fitness
@@ -611,8 +611,11 @@ class SelfHealingEngine:
                 repairs_tried.append(f"{strategy.name}: FAILED - {str(e)}")
 
         # Calculate improvement
-        improvement = ((best_fitness - original_fitness) / original_fitness * 100) \
-            if original_fitness > 0 else 0
+        improvement = (
+            ((best_fitness - original_fitness) / original_fitness * 100)
+            if original_fitness > 0
+            else 0
+        )
 
         report = HealingReport(
             equation_name=equation_name,
@@ -625,17 +628,13 @@ class SelfHealingEngine:
             mutants_killed=0,
             survival_rate=0.0,
             repairs_applied=repairs_tried,
-            final_code=best_code
+            final_code=best_code,
         )
 
         self.healing_history.append(report)
         return report
 
-    def _initialize_population(
-        self,
-        equation_name: str,
-        size: int
-    ) -> List[GeneticIndividual]:
+    def _initialize_population(self, equation_name: str, size: int) -> list[GeneticIndividual]:
         """Initialize genetic population."""
         population = []
 
@@ -649,7 +648,7 @@ class SelfHealingEngine:
                 fitness=0.0,
                 generation=0,
                 parents=[],
-                mutations_applied=[]
+                mutations_applied=[],
             )
             population.append(individual)
 
@@ -661,10 +660,7 @@ class SelfHealingEngine:
         return max(tournament, key=lambda x: x.fitness)
 
     def _crossover(
-        self,
-        parent1: GeneticIndividual,
-        parent2: GeneticIndividual,
-        generation: int
+        self, parent1: GeneticIndividual, parent2: GeneticIndividual, generation: int
     ) -> GeneticIndividual:
         """Crossover two parents to create child."""
         # Simple code mixing (simplified)
@@ -676,14 +672,13 @@ class SelfHealingEngine:
             fitness=0.0,
             generation=generation,
             parents=[parent1.individual_id, parent2.individual_id],
-            mutations_applied=[]
+            mutations_applied=[],
         )
 
     def _mutate_individual(self, individual: GeneticIndividual) -> GeneticIndividual:
         """Apply mutation to individual."""
         mutant = self.mutation_engine.generate_mutant(
-            individual.equation_code,
-            f"{individual.individual_id}_mut"
+            individual.equation_code, f"{individual.individual_id}_mut"
         )
         individual.equation_code = mutant.code
         individual.mutations_applied.append(mutant.mutation_type)
@@ -705,7 +700,7 @@ class SelfHealingEngine:
         """Simplify complex equation."""
         return f"def {equation_name}(x):\n    return x"
 
-    def get_healing_stats(self) -> Dict[str, Any]:
+    def get_healing_stats(self) -> dict[str, Any]:
         """Get statistics on healing operations."""
         if not self.healing_history:
             return {"total_operations": 0}
@@ -718,7 +713,7 @@ class SelfHealingEngine:
             "total_operations": total,
             "successful_repairs": improvements,
             "success_rate": improvements / total,
-            "average_improvement_pct": avg_improvement
+            "average_improvement_pct": avg_improvement,
         }
 
 
@@ -726,32 +721,14 @@ def main():
     """CLI for self-healing engine."""
     import argparse
 
-    parser = argparse.ArgumentParser(
-        description="AMOS Self-Healing & Evolutionary Optimization"
-    )
+    parser = argparse.ArgumentParser(description="AMOS Self-Healing & Evolutionary Optimization")
+    parser.add_argument("--mutation-test", help="Run mutation test on equation")
+    parser.add_argument("--genetic-optimize", help="Genetically optimize equation")
+    parser.add_argument("--auto-repair", help="Auto-repair failing equation")
     parser.add_argument(
-        "--mutation-test",
-        help="Run mutation test on equation"
+        "--generations", type=int, default=50, help="Number of generations for optimization"
     )
-    parser.add_argument(
-        "--genetic-optimize",
-        help="Genetically optimize equation"
-    )
-    parser.add_argument(
-        "--auto-repair",
-        help="Auto-repair failing equation"
-    )
-    parser.add_argument(
-        "--generations",
-        type=int,
-        default=50,
-        help="Number of generations for optimization"
-    )
-    parser.add_argument(
-        "--demo",
-        action="store_true",
-        help="Run demonstration"
-    )
+    parser.add_argument("--demo", action="store_true", help="Run demonstration")
 
     args = parser.parse_args()
 
@@ -794,10 +771,7 @@ def main():
         print(f"Assessment: {report.get('assessment')}")
 
     elif args.genetic_optimize:
-        best = engine.genetic_optimize(
-            args.genetic_optimize,
-            generations=args.generations
-        )
+        best = engine.genetic_optimize(args.genetic_optimize, generations=args.generations)
         if best:
             print(f"Optimized fitness: {best.fitness:.2%}")
 

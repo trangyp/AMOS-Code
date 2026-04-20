@@ -11,9 +11,11 @@ Version: 1.0.0
 
 import json
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import UTC, datetime
+
+UTC = UTC, timedelta
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 
 @dataclass
@@ -63,9 +65,9 @@ class FinancialEngine:
         self.data_dir = self.blood_dir / "data"
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
-        self.budgets: Dict[str, BudgetLine] = {}
-        self.cashflow: List[CashflowEntry] = []
-        self.allocations: Dict[str, ResourceAllocation] = {}
+        self.budgets: dict[str, BudgetLine] = {}
+        self.cashflow: list[CashflowEntry] = []
+        self.allocations: dict[str, ResourceAllocation] = {}
 
         self._load_state()
 
@@ -191,7 +193,7 @@ class FinancialEngine:
 
         return actual_cost
 
-    def get_budget_status(self, category: str) -> Dict[str, Any]:
+    def get_budget_status(self, category: str) -> dict[str, Any]:
         """Get budget status for a category."""
         if category not in self.budgets:
             return None
@@ -214,7 +216,7 @@ class FinancialEngine:
             ),
         }
 
-    def get_cashflow_summary(self, days: int = 30) -> Dict[str, Any]:
+    def get_cashflow_summary(self, days: int = 30) -> dict[str, Any]:
         """Get cashflow summary for period."""
         cutoff = datetime.now(UTC) - timedelta(days=days)
         cutoff_str = cutoff.isoformat()
@@ -235,7 +237,7 @@ class FinancialEngine:
 
     def estimate_task_cost(
         self, complexity: str = "medium", duration_minutes: float = 5.0
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """Estimate cost for a task."""
         # Complexity multipliers
         multipliers = {"low": 0.5, "medium": 1.0, "high": 2.0, "very_high": 4.0}
@@ -252,7 +254,7 @@ class FinancialEngine:
             "duration_minutes": duration_minutes,
         }
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get overall financial status."""
         budget_statuses = {cat: self.get_budget_status(cat) for cat in self.budgets.keys()}
 

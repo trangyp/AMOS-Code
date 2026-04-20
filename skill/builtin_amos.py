@@ -1,7 +1,6 @@
 """AMOS Brain built-in skill for cognitive analysis."""
 
 from .loader import SkillDef, register_builtin_skill
-from typing import Any
 
 # ── /amos analyze ──────────────────────────────────────────────────────────
 

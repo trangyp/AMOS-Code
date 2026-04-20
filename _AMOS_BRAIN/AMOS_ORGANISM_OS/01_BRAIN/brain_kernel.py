@@ -9,15 +9,16 @@ Responsible for:
 - Cognitive engine orchestration
 """
 
-
 import json
 import logging
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
+from collections.abc import Callable
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -39,9 +40,9 @@ class CognitiveEvent:
     timestamp: str
     event_type: str
     source: str
-    payload: Dict[str, Any]
+    payload: dict[str, Any]
     trace_id: str = ""
-    parent_id: str  = None
+    parent_id: str = None
 
 
 @dataclass
@@ -50,8 +51,8 @@ class ReasoningThread:
 
     thread_id: str
     mode: ReasoningMode
-    assumptions: List[str] = field(default_factory=list)
-    evidence_refs: List[str] = field(default_factory=list)
+    assumptions: list[str] = field(default_factory=list)
+    evidence_refs: list[str] = field(default_factory=list)
     status: str = "open"  # open, closed, suspended
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
@@ -62,9 +63,9 @@ class EngineResponse:
 
     engine_name: str
     status: str
-    output: Dict[str, Any]
+    output: dict[str, Any]
     confidence: float = 0.0
-    risk_flags: List[str] = field(default_factory=list)
+    risk_flags: list[str] = field(default_factory=list)
 
 
 class BrainKernel:
@@ -81,20 +82,20 @@ class BrainKernel:
         self.logs_path.mkdir(parents=True, exist_ok=True)
 
         # Working memory (short-term buffer)
-        self.working_memory: List[CognitiveEvent] = []
+        self.working_memory: list[CognitiveEvent] = []
         self.working_memory_capacity = 16
 
         # Canonical memory (stable laws and frameworks)
-        self.canonical_memory: Dict[str, Any] = {}
+        self.canonical_memory: dict[str, Any] = {}
 
         # Case memory (patterns and resolved examples)
         self.case_memory: list[dict[str, Any]] = []
 
         # Active reasoning threads
-        self.active_threads: Dict[str, ReasoningThread] = {}
+        self.active_threads: dict[str, ReasoningThread] = {}
 
         # Registered engines
-        self.engines: Dict[str, Callable] = {}
+        self.engines: dict[str, Callable] = {}
 
         # Load canonical memory
         self._load_canonical_memory()
@@ -120,7 +121,7 @@ class BrainKernel:
         self.engines[name] = engine_fn
         logger.info(f"Registered engine: {name}")
 
-    def create_thread(self, mode: ReasoningMode, assumptions: List[str] = None) -> ReasoningThread:
+    def create_thread(self, mode: ReasoningMode, assumptions: list[str] = None) -> ReasoningThread:
         """Create a new reasoning thread."""
 
         thread_id = str(uuid.uuid4())[:8]
@@ -154,10 +155,10 @@ class BrainKernel:
 
     def process(
         self,
-        input_data: Dict[str, Any],
+        input_data: dict[str, Any],
         mode: ReasoningMode = ReasoningMode.EXPLORATORY,
-        engines: List[str] = None,
-    ) -> Dict[str, Any]:
+        engines: list[str] = None,
+    ) -> dict[str, Any]:
         """Main processing pipeline.
 
         Args:
@@ -227,7 +228,7 @@ class BrainKernel:
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
-    def get_state(self) -> Dict[str, Any]:
+    def get_state(self) -> dict[str, Any]:
         """Get current brain state."""
         return {
             "working_memory_size": len(self.working_memory),
@@ -239,7 +240,7 @@ class BrainKernel:
 
 
 # Default engines
-def meta_logic_engine(input_data: Dict[str, Any], thread: ReasoningThread) -> Dict[str, Any]:
+def meta_logic_engine(input_data: dict[str, Any], thread: ReasoningThread) -> dict[str, Any]:
     """Apply meta-logic rules to input."""
     return {
         "rule_of_2_applied": True,
@@ -251,8 +252,8 @@ def meta_logic_engine(input_data: Dict[str, Any], thread: ReasoningThread) -> Di
 
 
 def structural_reasoning_engine(
-    input_data: Dict[str, Any], thread: ReasoningThread
-) -> Dict[str, Any]:
+    input_data: dict[str, Any], thread: ReasoningThread
+) -> dict[str, Any]:
     """Apply structural reasoning."""
     return {
         "problem_decomposition": "mece_complete",
@@ -262,7 +263,7 @@ def structural_reasoning_engine(
     }
 
 
-def scenario_engine(input_data: Dict[str, Any], thread: ReasoningThread) -> Dict[str, Any]:
+def scenario_engine(input_data: dict[str, Any], thread: ReasoningThread) -> dict[str, Any]:
     """Generate and evaluate scenarios."""
     goal = input_data.get("goal", "unknown")
     return {

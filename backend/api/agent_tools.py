@@ -7,27 +7,24 @@ Production-ready tool use implementation:
 - Result streaming and caching
 """
 
+from __future__ import annotations
+
 import asyncio
 import json
-import sys
 import time
 from collections.abc import Callable
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+from typing import Any, Optional
 
-UTC = timezone.utc
-from pathlib import Path
+UTC = UTC
 
+from amos_kernel_runtime import AMOSKernelRuntime  # noqa: E402
 from fastapi import APIRouter
 from pydantic import BaseModel
 
-AMOS_BRAIN_PATH = Path(__file__).parent.parent.parent / "clawspring" / "amos_brain"
-if str(AMOS_BRAIN_PATH) not in sys.path:
-    sys.path.insert(0, str(AMOS_BRAIN_PATH))
-
-from typing import Any, Dict, List, Optional
-
-from amos_kernel_runtime import AMOSKernelRuntime  # noqa: E402
+# Import alias modules to set up paths
+import clawspring.amos_brain  # noqa: F401
 
 router = APIRouter(tags=["Agent Tools"])
 
@@ -37,18 +34,18 @@ class ToolDefinition(BaseModel):
 
     name: str
     description: str
-    parameters: Dict[str, Any]
-    required: List[str] = []
+    parameters: dict[str, Any]
+    required: list[str] = []
 
 
 class ToolCallRequest(BaseModel):
     """Request to call a tool."""
 
     tool_name: str
-    parameters: Dict[str, Any]
+    parameters: dict[str, Any]
     use_brain_validation: bool = True
-    request_id: Optional[str] = None
-    context: Dict[str, Any] = {}
+    request_id: str = None
+    context: dict[str, Any] = {}
 
 
 class ToolCallResult(BaseModel):
@@ -57,18 +54,18 @@ class ToolCallResult(BaseModel):
     tool_name: str
     success: bool
     result: Any
-    error: Optional[str] = None
+    error: str = None
     execution_time_ms: float
     brain_validated: bool
-    brain_legality: Optional[float] = None
+    brain_legality: float = None
 
 
 class ToolSelectRequest(BaseModel):
     """Request for brain to select appropriate tool."""
 
     user_intent: str
-    available_tools: Optional[List[str] ] = None
-    context: Dict[str, Any] = {}
+    available_tools: list[Optional[str]] = None
+    context: dict[str, Any] = {}
 
 
 class ToolSelectResponse(BaseModel):
@@ -77,8 +74,8 @@ class ToolSelectResponse(BaseModel):
     selected_tool: str
     confidence: float
     reasoning: str
-    parameters: Dict[str, Any]
-    alternatives: List[dict[str, Any]]
+    parameters: dict[str, Any]
+    alternatives: list[dict[str, Any]]
 
 
 @dataclass
@@ -96,17 +93,17 @@ class AMOSToolRegistry:
     """Registry for agent tools with brain integration."""
 
     def __init__(self):
-        self._tools: Dict[str, ToolRegistryEntry] = {}
+        self._tools: dict[str, ToolRegistryEntry] = {}
         self._kernel = AMOSKernelRuntime()
-        self._result_cache: Dict[str, Any] = {}
+        self._result_cache: dict[str, Any] = {}
 
     def register(
         self,
         name: str,
         description: str,
-        parameters: Dict[str, Any],
+        parameters: dict[str, Any],
         handler: Callable[..., Any],
-        required: Optional[List[str] ] = None,
+        required: list[Optional[str]] = None,
         async_handler: bool = False,
         cache_results: bool = False,
         timeout_seconds: float = 30.0,
@@ -123,11 +120,11 @@ class AMOSToolRegistry:
             timeout_seconds=timeout_seconds,
         )
 
-    def get_tool(self, name: str) -> Optional[ToolRegistryEntry]:
+    def get_tool(self, name: str) -> ToolRegistryEntry:
         """Get tool by name."""
         return self._tools.get(name)
 
-    def list_tools(self) -> List[ToolDefinition]:
+    def list_tools(self) -> list[ToolDefinition]:
         """List all registered tools."""
         return [entry.definition for entry in self._tools.values()]
 
@@ -279,7 +276,7 @@ class AMOSToolRegistry:
 
 
 # Global registry
-_tool_registry: Optional[AMOSToolRegistry] = None
+_tool_registry: AMOSToolRegistry = None
 
 
 def get_tool_registry() -> AMOSToolRegistry:
@@ -380,7 +377,7 @@ def _register_default_tools(registry: AMOSToolRegistry) -> None:
         print(f"⚠️ MCP tools not available: {e}")
 
     # Tool: search_knowledge_base
-    def search_knowledge_base(query: str, top_k: int = 5) -> Dict[str, Any]:
+    def search_knowledge_base(query: str, top_k: int = 5) -> dict[str, Any]:
         """Search AMOS knowledge base."""
         return {
             "query": query,
@@ -404,7 +401,7 @@ def _register_default_tools(registry: AMOSToolRegistry) -> None:
     )
 
     # Tool: execute_equation
-    def execute_equation(name: str, inputs: Dict[str, Any]) -> Dict[str, Any]:
+    def execute_equation(name: str, inputs: dict[str, Any]) -> dict[str, Any]:
         """Execute an AMOS equation."""
         return {
             "equation": name,
@@ -428,7 +425,7 @@ def _register_default_tools(registry: AMOSToolRegistry) -> None:
     )
 
     # Tool: get_system_status
-    async def get_system_status(component: Optional[str] = None) -> Dict[str, Any]:
+    async def get_system_status(component: str = None) -> dict[str, Any]:
         """Get AMOS system status."""
         await asyncio.sleep(0.01)  # Simulate async work
         return {
@@ -456,7 +453,7 @@ def _register_default_tools(registry: AMOSToolRegistry) -> None:
 
 
 @router.get("/list", response_model=list[ToolDefinition])
-async def list_tools() -> List[ToolDefinition]:
+async def list_tools() -> list[ToolDefinition]:
     """List all available tools."""
     registry = get_tool_registry()
     return registry.list_tools()
@@ -477,7 +474,7 @@ async def select_tool(request: ToolSelectRequest) -> ToolSelectResponse:
 
 
 @router.post("/select-fast")
-async def select_tool_fast(request: ToolSelectRequest) -> Dict[str, Any]:
+async def select_tool_fast(request: ToolSelectRequest) -> dict[str, Any]:
     """Fast tool selection using dual-process brain (<100ms)."""
 
     start = time.perf_counter()
@@ -535,7 +532,7 @@ async def select_tool_fast(request: ToolSelectRequest) -> Dict[str, Any]:
 
 
 @router.post("/batch", response_model=list[ToolCallResult])
-async def batch_call(requests: List[ToolCallRequest]) -> List[ToolCallResult]:
+async def batch_call(requests: list[ToolCallRequest]) -> list[ToolCallResult]:
     """Execute multiple tools in parallel."""
     registry = get_tool_registry()
     results = await asyncio.gather(*[registry.execute(req) for req in requests])

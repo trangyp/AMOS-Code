@@ -11,10 +11,6 @@ Usage: python amos_activate_full_system.py [--demo] [--operational]
 """
 
 import sys
-from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).parent))
-sys.path.insert(0, str(Path(__file__).parent / "AMOS_ORGANISM_OS"))
 
 
 class FullSystemActivator:

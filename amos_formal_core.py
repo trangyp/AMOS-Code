@@ -18,7 +18,6 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
-
 from typing import Any
 
 import numpy as np
@@ -49,9 +48,9 @@ class IntentSpace:
     """ℐ - Intent space: what the system aims to achieve."""
 
     goal: str = ""
-    constraints: List[str] = field(default_factory=list)
+    constraints: list[str] = field(default_factory=list)
     priority: float = 1.0
-    context: Dict[str, Any] = field(default_factory=dict)
+    context: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -60,7 +59,7 @@ class SyntaxSpace:
 
     source: str = ""
     ast: dict = None
-    tokens: List[str] = field(default_factory=list)
+    tokens: list[str] = field(default_factory=list)
     encoding: str = "utf-8"
 
 
@@ -68,10 +67,10 @@ class SyntaxSpace:
 class OntologySpace:
     """𝒪 - Ontology space: graded algebra ⊕ₖ₌₀³ 𝒪⁽ᵏ⁾."""
 
-    primitives: List[str] = field(default_factory=list)  # grade 0
-    entities: List[str] = field(default_factory=list)  # grade 1
-    relations: List[str] = field(default_factory=list)  # grade 2
-    meta_laws: List[str] = field(default_factory=list)  # grade 3
+    primitives: list[str] = field(default_factory=list)  # grade 0
+    entities: list[str] = field(default_factory=list)  # grade 1
+    relations: list[str] = field(default_factory=list)  # grade 2
+    meta_laws: list[str] = field(default_factory=list)  # grade 3
     substrate: Substrate = Substrate.CLASSICAL
 
 
@@ -103,7 +102,7 @@ class QuantumState:
     amplitudes: np.ndarray = field(default_factory=lambda: np.array([1.0, 0.0]))
     density_matrix: np.ndarray | None = None
     num_qubits: int = 1
-    basis_states: List[str] = field(default_factory=lambda: ["|0⟩", "|1⟩"])
+    basis_states: list[str] = field(default_factory=lambda: ["|0⟩", "|1⟩"])
 
     def __post_init__(self):
         """Initialize density matrix if not provided."""
@@ -112,7 +111,7 @@ class QuantumState:
             psi = self.amplitudes.reshape(-1, 1)
             self.density_matrix = psi @ psi.conj().T
 
-    def normalize(self) -> "QuantumState":
+    def normalize(self) -> QuantumState:
         """Normalize state to ensure Σ|α_i|² = 1."""
         if self.amplitudes is not None:
             norm = np.sqrt(np.sum(np.abs(self.amplitudes) ** 2))
@@ -123,7 +122,7 @@ class QuantumState:
                 self.density_matrix = psi @ psi.conj().T
         return self
 
-    def measure(self, observable: np.ndarray | None = None) -> Tuple[int, "QuantumState"]:
+    def measure(self, observable: np.ndarray | None = None) -> Tuple[int, QuantumState]:
         """Perform quantum measurement with Born rule.
 
         Args:
@@ -165,7 +164,7 @@ class QuantumState:
             return (psi.conj().T @ operator @ psi).item()
         return 0j
 
-    def apply_gate(self, gate: np.ndarray) -> "QuantumState":
+    def apply_gate(self, gate: np.ndarray) -> QuantumState:
         """Apply unitary quantum gate: |ψ'⟩ = Û|ψ⟩."""
         if self.amplitudes is not None:
             new_amplitudes = gate @ self.amplitudes
@@ -202,52 +201,50 @@ class QuantumState:
         return np.concatenate([real_parts, imag_parts, probs])[:6]
 
     @staticmethod
-    def zero(num_qubits: int = 1) -> "QuantumState":
+    def zero(num_qubits: int = 1) -> QuantumState:
         """Create |0⟩^⊗n state (all qubits in ground state)."""
-        dim = 2 ** num_qubits
+        dim = 2**num_qubits
         amplitudes = np.zeros(dim)
         amplitudes[0] = 1.0
         basis = [f"|{i:0{num_qubits}b}⟩" for i in range(dim)]
         return QuantumState(amplitudes=amplitudes, num_qubits=num_qubits, basis_states=basis)
 
     @staticmethod
-    def one(num_qubits: int = 1) -> "QuantumState":
+    def one(num_qubits: int = 1) -> QuantumState:
         """Create |1⟩^⊗n state (all qubits in excited state)."""
-        dim = 2 ** num_qubits
+        dim = 2**num_qubits
         amplitudes = np.zeros(dim)
         amplitudes[-1] = 1.0
         basis = [f"|{i:0{num_qubits}b}⟩" for i in range(dim)]
         return QuantumState(amplitudes=amplitudes, num_qubits=num_qubits, basis_states=basis)
 
     @staticmethod
-    def superposition(num_qubits: int = 1) -> "QuantumState":
+    def superposition(num_qubits: int = 1) -> QuantumState:
         """Create |+⟩^⊗n state (equal superposition of all basis states)."""
-        dim = 2 ** num_qubits
+        dim = 2**num_qubits
         amplitudes = np.ones(dim) / np.sqrt(dim)
         basis = [f"|{i:0{num_qubits}b}⟩" for i in range(dim)]
         return QuantumState(amplitudes=amplitudes, num_qubits=num_qubits, basis_states=basis)
 
     @staticmethod
-    def bell() -> "QuantumState":
+    def bell() -> QuantumState:
         """Create Bell state |Φ⁺⟩ = (|00⟩ + |11⟩)/√2."""
         amplitudes = np.array([1 / np.sqrt(2), 0, 0, 1 / np.sqrt(2)])
         return QuantumState(
-            amplitudes=amplitudes,
-            num_qubits=2,
-            basis_states=["|00⟩", "|01⟩", "|10⟩", "|11⟩"]
+            amplitudes=amplitudes, num_qubits=2, basis_states=["|00⟩", "|01⟩", "|10⟩", "|11⟩"]
         )
 
     @staticmethod
-    def ghz(num_qubits: int = 3) -> "QuantumState":
+    def ghz(num_qubits: int = 3) -> QuantumState:
         """Create GHZ state (|0...0⟩ + |1...1⟩)/√2."""
-        dim = 2 ** num_qubits
+        dim = 2**num_qubits
         amplitudes = np.zeros(dim)
         amplitudes[0] = 1 / np.sqrt(2)
         amplitudes[-1] = 1 / np.sqrt(2)
         basis = [f"|{i:0{num_qubits}b}⟩" for i in range(dim)]
         return QuantumState(amplitudes=amplitudes, num_qubits=num_qubits, basis_states=basis)
 
-    def tensor_product(self, other: "QuantumState") -> "QuantumState":
+    def tensor_product(self, other: QuantumState) -> QuantumState:
         """Compute tensor product of two quantum states: |ψ⟩ ⊗ |φ⟩."""
         if self.amplitudes is None or other.amplitudes is None:
             raise ValueError("Cannot tensor product with None amplitudes")
@@ -256,18 +253,18 @@ class QuantumState:
         return QuantumState(
             amplitudes=new_amplitudes,
             num_qubits=self.num_qubits + other.num_qubits,
-            basis_states=new_basis
+            basis_states=new_basis,
         )
 
 
 class StateBundle:
     """𝒳 - Total state universe as fiber bundle π: 𝕏 → 𝔹."""
 
-    classical: Dict[str, Any] = field(default_factory=dict)  # 𝒳_c
+    classical: dict[str, Any] = field(default_factory=dict)  # 𝒳_c
     quantum: QuantumState = field(default_factory=QuantumState)  # 𝒳_q
-    biological: Dict[str, Any] = field(default_factory=dict)  # 𝒳_b
-    hybrid: Dict[str, Any] = field(default_factory=dict)  # 𝒳_h
-    environment: Dict[str, Any] = field(default_factory=dict)  # 𝒳_e
+    biological: dict[str, Any] = field(default_factory=dict)  # 𝒳_b
+    hybrid: dict[str, Any] = field(default_factory=dict)  # 𝒳_h
+    environment: dict[str, Any] = field(default_factory=dict)  # 𝒳_e
     timestamp: float = field(default_factory=lambda: datetime.now().timestamp())  # 𝒳_t
 
     def as_vector(self) -> np.ndarray:
@@ -291,7 +288,7 @@ class ActionUniverse:
 
     operation: str = ""
     target: str = ""
-    parameters: Dict[str, Any] = field(default_factory=dict)
+    parameters: dict[str, Any] = field(default_factory=dict)
     substrate: Substrate = Substrate.CLASSICAL
 
 
@@ -301,7 +298,7 @@ class ObservationUniverse:
 
     value: Any = None
     uncertainty: float = 0.0
-    perturbation: Optional[Callable] = None
+    perturbation: Callable = None
     substrate: Substrate = Substrate.CLASSICAL
 
 
@@ -341,7 +338,7 @@ class BridgeMorphism:
     target: Substrate
     transformation: Callable[[Any, Any]] = None
     uncertainty_propagation: Callable[[float, float]] = None
-    legality_checks: List[str] = field(
+    legality_checks: list[str] = field(
         default_factory=lambda: [
             "TypeCompat",
             "UnitCompat",
@@ -423,10 +420,10 @@ class MeasurementOperator:
 class UncertaintyStructure:
     """𝒬 - Uncertainty geometry: (p, γ, δ, κ, ν)."""
 
-    probability_law: Optional[Callable] = None  # p
+    probability_law: Callable = None  # p
     confidence: float = 1.0  # γ ∈ [0, 1]
     interval: Tuple[float, float] = field(default_factory=lambda: (0.0, 1.0))  # δ = [ℓ, u]
-    context_dependence: Dict[str, float] = field(default_factory=dict)  # κ
+    context_dependence: dict[str, float] = field(default_factory=dict)  # κ
     noise_structure: str = "gaussian"  # ν
 
     def information_metric(self, params: np.ndarray) -> np.ndarray:
@@ -465,7 +462,7 @@ class ObjectiveFunctional:
 
     name: str = ""
     functional: Callable[[StateBundle, float]] = None
-    weights: Dict[str, float] = field(default_factory=dict)
+    weights: dict[str, float] = field(default_factory=dict)
 
     def evaluate(self, state: StateBundle) -> float:
         """Evaluate objective 𝒢(x)."""
@@ -479,7 +476,7 @@ class PolicyAlgebra:
     """𝒫 - Policy/permission algebra."""
 
     allowed_actions: Set[str] = field(default_factory=set)
-    forbidden_patterns: List[str] = field(default_factory=list)
+    forbidden_patterns: list[str] = field(default_factory=list)
     default_policy: str = "deny"  # or "allow"
 
     def is_permitted(self, action: ActionUniverse) -> bool:
@@ -513,7 +510,7 @@ class AdaptationOperator:
 class VerificationSystem:
     """𝒱 - Verification system."""
 
-    checkers: List[Callable[[StateBundle], tuple[bool, str]]] = field(default_factory=list)
+    checkers: list[Callable[[StateBundle], tuple[bool, str]]] = field(default_factory=list)
 
     def verify(self, state: StateBundle) -> Tuple[bool, list[str]]:
         """Verify state satisfies all conditions."""
@@ -529,7 +526,7 @@ class VerificationSystem:
 class CompilerMorphisms:
     """𝒦 - Compiler/semantic morphisms."""
 
-    stages: List[str] = field(
+    stages: list[str] = field(
         default_factory=lambda: [
             "lex",
             "parse",
@@ -583,7 +580,7 @@ class LedgerEntry:
 class HistoryHomology:
     """ℋ - History/homology of transformations."""
 
-    ledger: List[LedgerEntry] = field(default_factory=list)
+    ledger: list[LedgerEntry] = field(default_factory=list)
 
     def boundary(self, entry: LedgerEntry) -> StateBundle:
         """∂ℓ_t = x_{t+1} - x_t."""
@@ -595,7 +592,7 @@ class HistoryHomology:
             }
         )
 
-    def explain(self, outcome: Any) -> List[LedgerEntry]:
+    def explain(self, outcome: Any) -> list[LedgerEntry]:
         """∃ Λ ⊆ ℒ : Explain(Λ) = outcome."""
         # Find ledger entries that lead to outcome
         relevant = [e for e in self.ledger if e.y_t == outcome or str(outcome) in str(e.y_t)]
@@ -606,8 +603,8 @@ class HistoryHomology:
 class MetaSemanticClosure:
     """𝒵 - Meta-semantic closure conditions."""
 
-    consistency_axioms: List[str] = field(default_factory=list)
-    completeness_checks: List[Callable[[], bool]] = field(default_factory=list)
+    consistency_axioms: list[str] = field(default_factory=list)
+    completeness_checks: list[Callable[[], bool]] = field(default_factory=list)
 
     def is_closed(self) -> bool:
         """Check if system satisfies meta-semantic closure."""
@@ -634,17 +631,17 @@ class AMOSFormalSystem:
 
     # Operators and algebras
     dynamics: LawfulDynamics = field(default_factory=LawfulDynamics)
-    bridges: Dict[tuple[Substrate, Substrate], BridgeMorphism] = field(default_factory=dict)
-    measurements: Dict[str, MeasurementOperator] = field(default_factory=dict)
+    bridges: dict[tuple[Substrate, Substrate], BridgeMorphism] = field(default_factory=dict)
+    measurements: dict[str, MeasurementOperator] = field(default_factory=dict)
     uncertainty: UncertaintyStructure = field(default_factory=UncertaintyStructure)
-    constraints: List[ConstraintField] = field(default_factory=list)
-    objectives: List[ObjectiveFunctional] = field(default_factory=list)
+    constraints: list[ConstraintField] = field(default_factory=list)
+    objectives: list[ObjectiveFunctional] = field(default_factory=list)
     policy: PolicyAlgebra = field(default_factory=PolicyAlgebra)
     adaptation: AdaptationOperator = field(default_factory=AdaptationOperator)
     verification: VerificationSystem = field(default_factory=VerificationSystem)
     compiler: CompilerMorphisms = field(default_factory=CompilerMorphisms)
     runtime: RuntimeAlgebra = field(default_factory=RuntimeAlgebra)
-    ledger: List[LedgerEntry] = field(default_factory=list)
+    ledger: list[LedgerEntry] = field(default_factory=list)
     history: HistoryHomology = field(default_factory=HistoryHomology)
     closure: MetaSemanticClosure = field(default_factory=MetaSemanticClosure)
 

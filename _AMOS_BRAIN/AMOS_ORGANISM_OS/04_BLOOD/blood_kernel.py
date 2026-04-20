@@ -18,7 +18,9 @@ import uuid
 from collections import defaultdict
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from enum import Enum, auto
 from pathlib import Path
 from typing import Any
@@ -57,7 +59,7 @@ class Signal:
     source: str = field(compare=False, default="")
     target: str = field(compare=False, default="")
     signal_type: SignalType = field(compare=False, default=SignalType.EVENT)
-    payload: Dict[str, Any] = field(compare=False, default_factory=dict)
+    payload: dict[str, Any] = field(compare=False, default_factory=dict)
     priority: Priority = field(compare=False, default=Priority.NORMAL)
     timestamp: str = field(compare=False, default="")
     ttl: int = field(compare=False, default=60)
@@ -83,7 +85,7 @@ class Resource:
     amount: float
     unit: str
     source: str
-    constraints: Dict[str, Any] = field(default_factory=dict)
+    constraints: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -125,10 +127,10 @@ class BloodKernel:
         self.subscribers: dict[str, list[tuple[Callable, Callable]]] = defaultdict(list)
 
         # Active channels between subsystems
-        self.channels: Dict[str, Channel] = {}
+        self.channels: dict[str, Channel] = {}
 
         # Resource pools
-        self.resources: Dict[str, float] = {
+        self.resources: dict[str, float] = {
             "energy": 100.0,
             "compute_cycles": 1000.0,
             "memory_mb": 512.0,
@@ -139,7 +141,7 @@ class BloodKernel:
         self.allocations: dict[str, dict[str, float]] = defaultdict(lambda: defaultdict(float))
 
         # Signal history for analysis
-        self.signal_history: List[Signal] = []
+        self.signal_history: list[Signal] = []
         self.max_history = 10000
 
         # Threading
@@ -228,7 +230,7 @@ class BloodKernel:
         source: str,
         target: str,
         signal_type: SignalType,
-        payload: Dict[str, Any],
+        payload: dict[str, Any],
         priority: Priority = Priority.NORMAL,
         ttl: int = 60,
     ) -> str:
@@ -365,7 +367,7 @@ class BloodKernel:
         self.resources[resource_type] = self.resources.get(resource_type, 0.0) + amount
         logger.info(f"Resource added: {amount} {resource_type}")
 
-    def get_channel_stats(self) -> Dict[str, Any]:
+    def get_channel_stats(self) -> dict[str, Any]:
         """Get statistics for all channels."""
         return {
             channel_id: {
@@ -378,7 +380,7 @@ class BloodKernel:
             for channel_id, ch in self.channels.items()
         }
 
-    def get_signal_flow(self, minutes: int = 5) -> Dict[str, Any]:
+    def get_signal_flow(self, minutes: int = 5) -> dict[str, Any]:
         """Analyze signal flow over recent period."""
         cutoff = datetime.now(UTC).timestamp() - (minutes * 60)
         recent_signals = [
@@ -407,7 +409,7 @@ class BloodKernel:
             else 0,
         }
 
-    def get_resource_status(self) -> Dict[str, Any]:
+    def get_resource_status(self) -> dict[str, Any]:
         """Get current resource status."""
         return {
             resource_type: {
@@ -424,7 +426,7 @@ class BloodKernel:
             for resource_type, total in self.resources.items()
         }
 
-    def get_state(self) -> Dict[str, Any]:
+    def get_state(self) -> dict[str, Any]:
         """Get current blood system state."""
         return {
             "circulation_active": self._running,
@@ -437,7 +439,7 @@ class BloodKernel:
             "timestamp": datetime.now(UTC).isoformat(),
         }
 
-    def health_check(self) -> Dict[str, Any]:
+    def health_check(self) -> dict[str, Any]:
         """Perform health check on circulatory system."""
         issues = []
 

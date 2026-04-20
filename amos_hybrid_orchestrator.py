@@ -16,14 +16,17 @@ Author: Trang Phan
 Version: 1.0.0
 """
 
+from __future__ import annotations
+
 import time
 import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 from enum import Enum, auto
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class Paradigm(Enum):
@@ -39,10 +42,10 @@ class AgentCapability:
     """Capability profile for a hybrid agent."""
 
     paradigm: Paradigm
-    strengths: List[str]
-    constraints: List[str]
+    strengths: list[str]
+    constraints: list[str]
     llm_provider: Optional[str] = None  # For neural components
-    law_enforcement: List[str] = field(default_factory=list)  # L1-L6 for symbolic
+    law_enforcement: list[str] = field(default_factory=list)  # L1-L6 for symbolic
 
 
 @dataclass
@@ -179,10 +182,10 @@ class AgentResult:
     success: bool
     output: str
     paradigm: Paradigm
-    law_compliance: Dict[str, Any]
+    law_compliance: dict[str, Any]
     confidence: float
     execution_time: float = field(default_factory=time.time)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -190,10 +193,10 @@ class OrchestrationPlan:
     """Plan for orchestrating multiple agents."""
 
     task: str
-    required_paradigms: List[Paradigm]
-    agent_assignments: List[tuple[str, str]]  # (role, paradigm)
+    required_paradigms: list[Paradigm]
+    agent_assignments: list[tuple[str, str]]  # (role, paradigm)
     consensus_required: bool
-    steps: List[dict[str, Any]]
+    steps: list[dict[str, Any]]
 
 
 class HybridNeuralSymbolicOrchestrator:
@@ -207,10 +210,10 @@ class HybridNeuralSymbolicOrchestrator:
 
     def __init__(self, max_workers: int = 4):
         self.max_workers = max_workers
-        self.agents: Dict[str, HybridAgent] = {}
+        self.agents: dict[str, HybridAgent] = {}
         self.neural_engine = self._init_neural_engine()
         self.symbolic_engine = self._init_symbolic_engine()
-        self.execution_history: List[AgentResult] = []
+        self.execution_history: list[AgentResult] = []
 
     def _init_neural_engine(self) -> Any:
         """Initialize neural substrate (LLM provider manager)."""
@@ -302,7 +305,7 @@ class HybridNeuralSymbolicOrchestrator:
     def orchestrate(
         self,
         task: str,
-        agents: List[HybridAgent] = None,
+        agents: list[HybridAgent] = None,
         require_consensus: bool = True,
     ) -> OrchestrationResult:
         """Orchestrate multiple agents on a task."""
@@ -349,7 +352,7 @@ class HybridNeuralSymbolicOrchestrator:
             },
         )
 
-    def _execute_parallel(self, task: str, agents: List[HybridAgent]) -> List[AgentResult]:
+    def _execute_parallel(self, task: str, agents: list[HybridAgent]) -> list[AgentResult]:
         """Execute tasks across agents in parallel."""
         results = []
 
@@ -383,7 +386,7 @@ class HybridNeuralSymbolicOrchestrator:
 
         return results
 
-    def _build_consensus(self, results: List[AgentResult], task: str) -> AgentResult:
+    def _build_consensus(self, results: list[AgentResult], task: str) -> AgentResult:
         """Build consensus from multiple agent outputs."""
         # Use synthesizer agent or create one temporarily
         synthesizer = self.spawn_agent("synthesizer", Paradigm.HYBRID)
@@ -402,7 +405,7 @@ Agent Outputs:
 
         return synthesizer.execute(synthesis_task, self.neural_engine, self.symbolic_engine)
 
-    def _identify_conflicts(self, results: List[AgentResult]) -> List[str]:
+    def _identify_conflicts(self, results: list[AgentResult]) -> list[str]:
         """Identify conflicts between agent outputs."""
         conflicts = []
 
@@ -457,13 +460,9 @@ class NeuralEngine:
 
     def _init_brain(self):
         """Initialize real AMOS brain."""
-        import sys
-        from pathlib import Path
-
-        amos_root = Path(__file__).parent.resolve()
-        sys.path.insert(0, str(amos_root / "clawspring" / "amos_brain"))
         try:
-            from amos_brain_working import think as brain_think
+            # Import from proper package (no sys.path hack needed)
+            from clawspring.amos_brain_working import think as brain_think
 
             self._brain_think = brain_think
         except ImportError:
@@ -510,7 +509,7 @@ class SymbolicEngine:
             "invariants": [],
         }
 
-    def repair(self, content: str, issues: List[str]) -> str:
+    def repair(self, content: str, issues: list[str]) -> str:
         """Attempt to repair content based on symbolic issues."""
         # Simplified repair - would use more sophisticated logic
         repaired = f"[Repaired content - fixed {len(issues)} issues]\n{content[:500]}"
@@ -523,10 +522,10 @@ class OrchestrationResult:
 
     orchestration_id: str
     task: str
-    agents_used: List[str]
-    agent_results: List[AgentResult]
+    agents_used: list[str]
+    agent_results: list[AgentResult]
     consensus: str
-    conflicts: List[str]
+    conflicts: list[str]
     final_decision: str
     timestamp: str
     metadata: dict = field(default_factory=dict)
@@ -564,7 +563,7 @@ def main():
         require_consensus=True,
     )
 
-    print(f"\n[Results]")
+    print("\n[Results]")
     print(f"  Orchestration ID: {result.orchestration_id}")
     print(f"  Agents used: {len(result.agents_used)}")
     print(f"  Conflicts: {len(result.conflicts)}")

@@ -1,8 +1,9 @@
 """Git Service for Axiom One"""
 
 import subprocess
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 from pathlib import Path
 
 from fastapi import HTTPException

@@ -4,14 +4,13 @@ Connects Repo Doctor's architectural integrity engine to the AMOS brain,
 enabling architecture-aware decision making and invariant validation.
 """
 
-import sys
+from __future__ import annotations
+
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Optional, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Optional
 
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
-
+# Import from proper package (no sys.path hack needed)
 from repo_doctor.arch_invariants import ArchitectureInvariantEngine
 from repo_doctor.architecture import build_architecture_graph
 from repo_doctor.entanglement import EntanglementMatrix
@@ -33,13 +32,13 @@ class ArchitecturalContext:
     total_score: float
     node_count: int
     edge_count: int
-    boundary_violations: List[dict]
-    authority_issues: List[dict]
-    hidden_interfaces: List[dict]
-    high_entanglement_pairs: List[tuple[str, str, float]]
-    critical_modules: List[str]
-    failed_invariants: List["ArchInvariantResult"]
-    repair_actions: List["RepairAction"]
+    boundary_violations: list[dict]
+    authority_issues: list[dict]
+    hidden_interfaces: list[dict]
+    high_entanglement_pairs: list[tuple[str, str, float]]
+    critical_modules: list[str]
+    failed_invariants: list[ArchInvariantResult]
+    repair_actions: list[RepairAction]
     trend: str = "stable"
 
 
@@ -49,12 +48,12 @@ class ArchitectureValidationResult:
 
     approved: bool
     arch_impact_score: float
-    invariant_violations: List[str]
-    boundary_risks: List[str]
-    authority_risks: List[str]
-    coupling_impacts: List[str]
-    suggested_constraints: List[str]
-    alternative_actions: List[str]
+    invariant_violations: list[str]
+    boundary_risks: list[str]
+    authority_risks: list[str]
+    coupling_impacts: list[str]
+    suggested_constraints: list[str]
+    alternative_actions: list[str]
 
 
 class ArchitecturalCognitionBridge:
@@ -63,7 +62,7 @@ class ArchitecturalCognitionBridge:
     ARCH_SCORE_THRESHOLD = 0.7
     ENTANGLEMENT_THRESHOLD = 0.5
 
-    def __init__(self, repo_path: Optional[Union[str, Path]] = None):
+    def __init__(self, repo_path: Optional[str | Path] = None):
         self.repo_path = Path(repo_path) if repo_path else Path.cwd()
         self._arch_engine: Optional[ArchitectureInvariantEngine] = None
         self._arch_graph: Optional[ArchitectureGraph] = None
@@ -147,7 +146,7 @@ class ArchitecturalCognitionBridge:
         self._cached_context = context
         return context
 
-    def validate(self, action: str, target_files: List[str]) -> ArchitectureValidationResult:
+    def validate(self, action: str, target_files: list[str]) -> ArchitectureValidationResult:
         """Validate a proposed brain decision against architectural constraints."""
         context = self.get_context()
 
@@ -207,6 +206,6 @@ class ArchitecturalCognitionBridge:
         )
 
 
-def get_architecture_bridge(repo_path: Optional[Union[str, Path]] = None) -> ArchitecturalCognitionBridge:
+def get_architecture_bridge(repo_path: Optional[str | Path] = None) -> ArchitecturalCognitionBridge:
     """Factory function to get architecture bridge instance."""
     return ArchitecturalCognitionBridge(repo_path)

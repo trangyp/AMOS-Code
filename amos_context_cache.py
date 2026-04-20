@@ -1,4 +1,6 @@
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
+
+from typing import Any, Optional
 
 """AMOS Context Cache - Prompt Caching Optimization
 
@@ -24,9 +26,9 @@ class CacheEntry:
     """A cached context entry."""
 
     key: str
-    context: Dict[str, Any]
+    context: dict[str, Any]
     response: str
-    embedding: Optional[List[float] ]
+    embedding: list[Optional[float]]
     timestamp: float
     access_count: int = 0
     ttl_seconds: float = 300.0
@@ -61,14 +63,14 @@ class ContextCacheManager:
 
     def __init__(self):
         # L1: In-memory exact match cache
-        self._l1_cache: Dict[str, CacheEntry] = {}
+        self._l1_cache: dict[str, CacheEntry] = {}
 
         # L2: Semantic hash cache
-        self._l2_cache: Dict[str, CacheEntry] = {}
+        self._l2_cache: dict[str, CacheEntry] = {}
 
         # L3: Partial context index
-        self._prefix_index: Dict[str, list[CacheEntry]] = {}
-        self._suffix_index: Dict[str, list[CacheEntry]] = {}
+        self._prefix_index: dict[str, list[CacheEntry]] = {}
+        self._suffix_index: dict[str, list[CacheEntry]] = {}
 
         # Statistics
         self.stats = {
@@ -95,7 +97,7 @@ class ContextCacheManager:
         semantic = " ".join(words)
         return hashlib.sha256(semantic.encode()).hexdigest()[:32]
 
-    def _extract_prefixes(self, query: str, n: int = 3) -> List[str]:
+    def _extract_prefixes(self, query: str, n: int = 3) -> list[str]:
         """Extract n-gram prefixes for partial matching."""
         words = query.lower().split()
         prefixes = []
@@ -104,7 +106,7 @@ class ContextCacheManager:
             prefixes.append(prefix[:50])  # Limit length
         return prefixes[-n:]  # Return last n prefixes (most specific)
 
-    async def get(self, query: str, context: Dict[str, Any], vector_service=None) -> CacheHit:
+    async def get(self, query: str, context: dict[str, Any], vector_service=None) -> CacheHit:
         """
         Multi-tier cache lookup.
 
@@ -185,9 +187,9 @@ class ContextCacheManager:
     async def set(
         self,
         query: str,
-        context: Dict[str, Any],
+        context: dict[str, Any],
         response: str,
-        embedding: Optional[List[float] ] = None,
+        embedding: list[Optional[float]] = None,
         ttl: float = 300.0,
     ) -> None:
         """
@@ -268,7 +270,7 @@ class ContextCacheManager:
 
         return None
 
-    def _cosine_similarity(self, a: List[float], b: List[float]) -> float:
+    def _cosine_similarity(self, a: list[float], b: list[float]) -> float:
         """Calculate cosine similarity between two vectors."""
         dot_product = sum(x * y for x, y in zip(a, b))
         norm_a = sum(x * x for x in a) ** 0.5
@@ -279,7 +281,7 @@ class ContextCacheManager:
 
         return dot_product / (norm_a * norm_b)
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get cache statistics."""
         total = self.stats["total_requests"]
         if total == 0:

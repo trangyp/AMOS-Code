@@ -17,17 +17,18 @@ Owner: Trang
 Version: 9.1.0
 """
 
+from __future__ import annotations
 
-import time
-import json
-import threading
 import hashlib
-from typing import Any, Callable, Dict, List, Optional
-from dataclasses import dataclass, field
-from datetime import datetime, timedelta
-from enum import Enum
-from collections import defaultdict
+import json
 import queue
+import threading
+import time
+from collections import defaultdict
+from dataclasses import dataclass, field
+from datetime import datetime
+from enum import Enum
+from typing import Any, Optional
 
 
 class AlertSeverity(Enum):
@@ -48,21 +49,22 @@ class AlertChannel(Enum):
 @dataclass
 class Alert:
     """Production alert with full context."""
+
     id: str
     severity: AlertSeverity
     title: str
     message: str
     source: str
     timestamp: datetime
-    context: Dict[str, Any] = field(default_factory=dict)
+    context: dict[str, Any] = field(default_factory=dict)
     correlation_id: Optional[str] = None
     auto_resolve_after: Optional[int] = None  # seconds
     escalation_level: int = 0
     acknowledged: bool = False
     resolved: bool = False
-    resolved_at: Optional[datetime] = None
+    resolved_at: datetime | None = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "id": self.id,
             "severity": self.severity.value,
@@ -81,10 +83,11 @@ class Alert:
 @dataclass
 class AlertRule:
     """Alert routing rule."""
+
     name: str
-    severity_filter: List[AlertSeverity]
-    source_filter: List[str]
-    channels: List[AlertChannel]
+    severity_filter: list[AlertSeverity]
+    source_filter: list[str]
+    channels: list[AlertChannel]
     cooldown_seconds: int = 300
     max_alerts_per_hour: int = 10
     enabled: bool = True
@@ -93,9 +96,9 @@ class AlertRule:
 class ChannelHandler:
     """Base class for alert channel handlers."""
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: dict[str, Any]):
         self.config = config
-        self._last_send: Dict[str, float] = {}
+        self._last_send: dict[str, float] = {}
         self._rate_limit_lock = threading.Lock()
 
     def can_send(self, alert_id: str, cooldown: int) -> bool:
@@ -122,13 +125,9 @@ class WebhookHandler(ChannelHandler):
             return False
 
         try:
-
             payload = json.dumps(alert.to_dict()).encode()
             req = urllib.request.Request(
-                url,
-                data=payload,
-                headers={"Content-Type": "application/json"},
-                method="POST"
+                url, data=payload, headers={"Content-Type": "application/json"}, method="POST"
             )
             with urllib.request.urlopen(req, timeout=10) as response:
                 return response.status == 200
@@ -141,9 +140,9 @@ class ConsoleHandler(ChannelHandler):
 
     def send(self, alert: Alert) -> bool:
         severity_colors = {
-            AlertSeverity.INFO: "\033[94m",      # Blue
-            AlertSeverity.WARNING: "\033[93m",   # Yellow
-            AlertSeverity.ERROR: "\033[91m",     # Red
+            AlertSeverity.INFO: "\033[94m",  # Blue
+            AlertSeverity.WARNING: "\033[93m",  # Yellow
+            AlertSeverity.ERROR: "\033[91m",  # Red
             AlertSeverity.CRITICAL: "\033[95m",  # Magenta
         }
         reset = "\033[0m"
@@ -163,14 +162,14 @@ class AlertManager:
     """Production alert manager with correlation and routing."""
 
     def __init__(self):
-        self._alerts: Dict[str, Alert] = {}
+        self._alerts: dict[str, Alert] = {}
         self._alert_queue: queue.Queue[Alert] = queue.Queue()
-        self._handlers: Dict[AlertChannel, ChannelHandler] = {}
-        self._rules: List[AlertRule] = []
-        self._correlation_window: Dict[str, list[Alert]] = defaultdict(list)
+        self._handlers: dict[AlertChannel, ChannelHandler] = {}
+        self._rules: list[AlertRule] = []
+        self._correlation_window: dict[str, list[Alert]] = defaultdict(list)
         self._lock = threading.RLock()
         self._running = False
-        self._worker_thread: Optional[threading.Thread] = None
+        self._worker_thread: threading.Optional[Thread] = None
 
         # Default console handler
         self.register_handler(AlertChannel.CONSOLE, ConsoleHandler({}))
@@ -194,13 +193,11 @@ class AlertManager:
         title: str,
         message: str,
         source: str,
-        context: Optional[dict[str, Any]] = None,
+        context: dict[str, Optional[Any]] = None,
         correlation_id: Optional[str] = None,
     ) -> Alert:
         """Create and queue a new alert."""
-        alert_id = hashlib.sha256(
-            f"{source}:{title}:{time.time()}".encode()
-        ).hexdigest()[:16]
+        alert_id = hashlib.sha256(f"{source}:{title}:{time.time()}".encode()).hexdigest()[:16]
 
         alert = Alert(
             id=alert_id,
@@ -265,7 +262,7 @@ class AlertManager:
         severity: Optional[AlertSeverity] = None,
         source: Optional[str] = None,
         unresolved_only: bool = False,
-    ) -> List[Alert]:
+    ) -> list[Alert]:
         """Get alerts with optional filtering."""
         with self._lock:
             alerts = list(self._alerts.values())
@@ -346,27 +343,19 @@ def get_alert_manager() -> AlertManager:
 # Convenience functions
 def alert_info(title: str, message: str, source: str = "system", **context) -> Alert:
     """Create info alert."""
-    return get_alert_manager().create_alert(
-        AlertSeverity.INFO, title, message, source, context
-    )
+    return get_alert_manager().create_alert(AlertSeverity.INFO, title, message, source, context)
 
 
 def alert_warning(title: str, message: str, source: str = "system", **context) -> Alert:
     """Create warning alert."""
-    return get_alert_manager().create_alert(
-        AlertSeverity.WARNING, title, message, source, context
-    )
+    return get_alert_manager().create_alert(AlertSeverity.WARNING, title, message, source, context)
 
 
 def alert_error(title: str, message: str, source: str = "system", **context) -> Alert:
     """Create error alert."""
-    return get_alert_manager().create_alert(
-        AlertSeverity.ERROR, title, message, source, context
-    )
+    return get_alert_manager().create_alert(AlertSeverity.ERROR, title, message, source, context)
 
 
 def alert_critical(title: str, message: str, source: str = "system", **context) -> Alert:
     """Create critical alert."""
-    return get_alert_manager().create_alert(
-        AlertSeverity.CRITICAL, title, message, source, context
-    )
+    return get_alert_manager().create_alert(AlertSeverity.CRITICAL, title, message, source, context)

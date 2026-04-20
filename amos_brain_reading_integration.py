@@ -1,4 +1,6 @@
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
+
+from typing import Any, Optional
 
 """
 AMOS Brain-Reading Integration Layer
@@ -12,9 +14,9 @@ Connects the Brain-Reading Kernel to the AMOS ecosystem:
 
 import asyncio
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
 
+UTC = UTC
 from amos_brain_reading_kernel import (
     IntentType,
     StableRead,
@@ -27,8 +29,8 @@ class IntegratedBrainRead:
     """Brain read result integrated with AMOS ecosystem."""
 
     stable_read: StableRead
-    amos_context: Dict[str, Any] = field(default_factory=dict)
-    execution_plan: Dict[str, Any] = None
+    amos_context: dict[str, Any] = field(default_factory=dict)
+    execution_plan: dict[str, Any] = None
     priority_score: float = 0.0
     routing_decision: str = ""  # brain, agent, equation, clarification
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
@@ -47,10 +49,10 @@ class BrainReadingIntegrator:
 
     def __init__(self):
         self.kernel = get_brain_reading_kernel()
-        self.reading_history: List[IntegratedBrainRead] = []
+        self.reading_history: list[IntegratedBrainRead] = []
 
     async def process_input(
-        self, text: str, amos_context: Dict[str, Any] = None, **kwargs
+        self, text: str, amos_context: dict[str, Any] = None, **kwargs
     ) -> IntegratedBrainRead:
         """
         Process input through brain-reading and integrate with AMOS.
@@ -93,7 +95,7 @@ class BrainReadingIntegrator:
 
         return integrated
 
-    def _compute_priority(self, stable_read: StableRead, amos_context: Dict[str, Any]) -> float:
+    def _compute_priority(self, stable_read: StableRead, amos_context: dict[str, Any]) -> float:
         """
         Compute priority score for this reading.
 
@@ -177,7 +179,7 @@ class BrainReadingIntegrator:
 
         return "brain"  # Default to brain for complex processing
 
-    def _build_execution_plan(self, stable_read: StableRead, routing: str) -> Dict[str, Any]:
+    def _build_execution_plan(self, stable_read: StableRead, routing: str) -> dict[str, Any]:
         """Build execution plan based on routing decision."""
 
         plans = {
@@ -220,7 +222,7 @@ class BrainReadingIntegrator:
 
         return plans.get(routing, plans["brain"])
 
-    def get_reading_stats(self) -> Dict[str, Any]:
+    def get_reading_stats(self) -> dict[str, Any]:
         """Get statistics on reading history."""
         if not self.reading_history:
             return {"total_reads": 0}
@@ -235,9 +237,9 @@ class BrainReadingIntegrator:
             "routing_distribution": self._compute_routing_distribution(),
         }
 
-    def _compute_routing_distribution(self) -> Dict[str, int]:
+    def _compute_routing_distribution(self) -> dict[str, int]:
         """Compute distribution of routing decisions."""
-        distribution: Dict[str, int] = {}
+        distribution: dict[str, int] = {}
         for read in self.reading_history:
             routing = read.routing_decision
             distribution[routing] = distribution.get(routing, 0) + 1
@@ -248,7 +250,6 @@ class BrainReadingIntegrator:
 # FASTAPI INTEGRATION
 # ============================================================================
 
-from typing import Any
 
 try:
     from fastapi import APIRouter, HTTPException
@@ -256,8 +257,8 @@ try:
 
     class ReadRequest(BaseModel):
         text: str
-        context: Dict[str, Any] = None
-        goals: Optional[list[str]] = None
+        context: dict[str, Any] = None
+        goals: list[Optional[str]] = None
 
     class ReadResponse(BaseModel):
         utterance_id: str
@@ -267,9 +268,9 @@ try:
         coherence: float
         routing: str
         priority: float
-        chunks: List[dict[str, Any]]
-        conflicts: List[dict[str, Any]]
-        execution_plan: Dict[str, Any] = None
+        chunks: list[dict[str, Any]]
+        conflicts: list[dict[str, Any]]
+        execution_plan: dict[str, Any] = None
 
     def create_brain_reading_router() -> APIRouter:
         """Create FastAPI router for brain-reading endpoints."""
@@ -315,7 +316,7 @@ try:
                 raise HTTPException(status_code=500, detail=str(e))
 
         @router.get("/stats")
-        async def stats_endpoint() -> Dict[str, Any]:
+        async def stats_endpoint() -> dict[str, Any]:
             """Get brain-reading statistics."""
             return integrator.get_reading_stats()
 

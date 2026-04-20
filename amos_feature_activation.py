@@ -24,11 +24,13 @@ Owner: Trang
 Version: 1.0.0
 """
 
+from __future__ import annotations
+
 import json
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 @dataclass
@@ -40,7 +42,7 @@ class DiscoveredFeature:
     path: str
     size_bytes: int
     status: str = "discovered"  # discovered, activated, integrated
-    capabilities: List[str] = field(default_factory=list)
+    capabilities: list[str] = field(default_factory=list)
     activation_time: str = None
 
 
@@ -61,11 +63,11 @@ class FeatureActivationSystem:
 
     def __init__(self, repo_root: Optional[Path] = None):
         self.repo_root = repo_root or Path(__file__).parent
-        self.discovered: Dict[str, DiscoveredFeature] = {}
-        self.activated: Dict[str, DiscoveredFeature] = {}
-        self.integrated: Dict[str, DiscoveredFeature] = {}
-        self.knowledge_index: Dict[str, Any] = {}
-        self.engine_registry: Dict[str, Any] = {}
+        self.discovered: dict[str, DiscoveredFeature] = {}
+        self.activated: dict[str, DiscoveredFeature] = {}
+        self.integrated: dict[str, DiscoveredFeature] = {}
+        self.knowledge_index: dict[str, Any] = {}
+        self.engine_registry: dict[str, Any] = {}
         self.stats = {
             "total_files": 0,
             "total_size_mb": 0,
@@ -75,7 +77,7 @@ class FeatureActivationSystem:
             "activated_count": 0,
         }
 
-    def discover_all(self) -> Dict[str, Any]:
+    def discover_all(self) -> dict[str, Any]:
         """Discover all 1,500+ components in the ecosystem.
 
         Returns:
@@ -364,7 +366,7 @@ class FeatureActivationSystem:
         print(f"   ✓ Activated {count} knowledge files")
         return count
 
-    def get_activation_summary(self) -> Dict[str, Any]:
+    def get_activation_summary(self) -> dict[str, Any]:
         """Get summary of activation status."""
         by_category = {}
         for feature in self.discovered.values():

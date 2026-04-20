@@ -12,15 +12,10 @@ Provides endpoints for:
 Architecture: FastAPI + AMOS equation systems integration
 """
 
-import sys
-from pathlib import Path
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
 
-# Add AMOS paths
-sys.path.insert(0, str(Path(__file__).parent / "AMOS_ORGANISM_OS"))
-sys.path.insert(0, str(Path(__file__).parent / "AMOS_ORGANISM_OS" / "01_BRAIN"))
-sys.path.insert(0, str(Path(__file__).parent / "AMOS_ORGANISM_OS" / "03_IMMUNE"))
-sys.path.insert(0, str(Path(__file__).parent / "AMOS_ORGANISM_OS" / "06_MUSCLE"))
+import sys
+from typing import Any, Optional
 
 try:
     from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
@@ -40,7 +35,7 @@ except ImportError:
     PROMETHEUS_AVAILABLE = False
 
 try:
-    from unified_equation_api import UnifiedEquationAPI
+    from AMOS_ORGANISM_OS.unified_equation_api import UnifiedEquationAPI
 
     API_AVAILABLE = True
 except ImportError:
@@ -87,12 +82,12 @@ if FASTAPI_AVAILABLE:
 
     class StatusResponse(BaseModel):
         total_equations: int
-        by_source: Dict[str, int]
+        by_source: dict[str, int]
         sources_active: int
-        coverage: Dict[str, Any]
+        coverage: dict[str, Any]
 
     @app.get("/api/equations/status")
-    async def get_status() -> Dict[str, Any]:
+    async def get_status() -> dict[str, Any]:
         """Get equation system status."""
         eq_api = get_equation_api()
         if eq_api:
@@ -109,7 +104,7 @@ if FASTAPI_AVAILABLE:
         }
 
     @app.post("/api/equations/verify")
-    async def verify_code(request: VerificationRequest) -> Dict[str, Any]:
+    async def verify_code(request: VerificationRequest) -> dict[str, Any]:
         """Verify code for invariant violations."""
         eq_api = get_equation_api()
         if not eq_api:
@@ -122,7 +117,7 @@ if FASTAPI_AVAILABLE:
     async def query_equations(
         domain: str = None,
         language: str = None,
-    ) -> List[dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Query equations by domain or language."""
         eq_api = get_equation_api()
         if not eq_api:

@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any
 
 """
 AMOS Signal-Noise Kernel API
@@ -23,7 +23,7 @@ class SignalNoiseRequest(BaseModel):
     """Request for signal-noise analysis."""
 
     text: str = Field(..., description="Input text to analyze")
-    context: Dict[str, Any] = Field(default_factory=dict)
+    context: dict[str, Any] = Field(default_factory=dict)
 
 
 class SignalUnitOutput(BaseModel):
@@ -46,7 +46,7 @@ class AmbiguityOutput(BaseModel):
     """Detected ambiguity."""
 
     ambiguity_type: str
-    references: List[str]
+    references: list[str]
     severity: float
 
 
@@ -58,9 +58,9 @@ class SignalNoiseResponse(BaseModel):
     noise_distortion: float
     ambiguity_count: int
     execution_safe: bool
-    signals: List[SignalUnitOutput]
-    noise_units: List[NoiseUnitOutput]
-    ambiguities: List[AmbiguityOutput]
+    signals: list[SignalUnitOutput]
+    noise_units: list[NoiseUnitOutput]
+    ambiguities: list[AmbiguityOutput]
 
 
 @router.post("/analyze", response_model=SignalNoiseResponse)
@@ -126,7 +126,7 @@ async def analyze_signal_noise(request: SignalNoiseRequest) -> SignalNoiseRespon
 
 
 @router.get("/status")
-async def signal_noise_status() -> Dict[str, Any]:
+async def signal_noise_status() -> dict[str, Any]:
     """Get Signal-Noise Kernel status."""
     try:
         translator = get_translation_layer()

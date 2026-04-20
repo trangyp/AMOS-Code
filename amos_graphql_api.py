@@ -47,10 +47,12 @@ Author: Trang Phan
 Version: 2.3.0
 """
 
+from __future__ import annotations
+
 import asyncio
 from collections.abc import AsyncGenerator
 from datetime import datetime
-from typing import Any, List, Optional
+from typing import Any, Optional
 
 # Try to import Strawberry
 try:
@@ -145,8 +147,8 @@ if STRAWBERRY_AVAILABLE:
     class Capabilities:
         """Agent capabilities."""
 
-        strengths: List[str]
-        constraints: List[str]
+        strengths: list[str]
+        constraints: list[str]
 
     @strawberry.type
     class User:
@@ -162,7 +164,7 @@ if STRAWBERRY_AVAILABLE:
         last_login: datetime
 
         @classmethod
-        def from_model(cls, model: Any) -> "User":
+        def from_model(cls, model: Any) -> User:
             """Convert SQLAlchemy model to GraphQL type."""
             return cls(
                 id=model.id,
@@ -191,7 +193,7 @@ if STRAWBERRY_AVAILABLE:
         terminated_at: datetime
 
         @strawberry.field
-        async def tasks(self, info: Info) -> List["Task"]:
+        async def tasks(self, info: Info) -> list[Task]:
             """Get agent tasks."""
             # Use DataLoader to prevent N+1
             loader = info.context["task_loader"]
@@ -201,7 +203,7 @@ if STRAWBERRY_AVAILABLE:
         @strawberry.field
         async def memories(
             self, info: Info, memory_type: Optional[MemoryTypeEnum] = None
-        ) -> List["Memory"]:
+        ) -> list[Memory]:
             """Get agent memories."""
             loader = info.context["memory_loader"]
             memories = await loader.load(self.id)
@@ -210,7 +212,7 @@ if STRAWBERRY_AVAILABLE:
             return [Memory.from_model(m) for m in memories]
 
         @classmethod
-        def from_model(cls, model: Any) -> "Agent":
+        def from_model(cls, model: Any) -> Agent:
             """Convert SQLAlchemy model to GraphQL type."""
             return cls(
                 id=model.id,
@@ -255,7 +257,7 @@ if STRAWBERRY_AVAILABLE:
             return Agent.from_model(agent) if agent else None
 
         @classmethod
-        def from_model(cls, model: Any) -> "Task":
+        def from_model(cls, model: Any) -> Task:
             """Convert SQLAlchemy model to GraphQL type."""
             return cls(
                 id=model.id,
@@ -294,7 +296,7 @@ if STRAWBERRY_AVAILABLE:
         last_accessed: datetime
 
         @classmethod
-        def from_model(cls, model: Any) -> "Memory":
+        def from_model(cls, model: Any) -> Memory:
             """Convert SQLAlchemy model to GraphQL type."""
             return cls(
                 id=model.id,
@@ -333,7 +335,7 @@ if STRAWBERRY_AVAILABLE:
             return User.from_model(user) if user else None
 
         @classmethod
-        def from_model(cls, model: Any) -> "AuditLog":
+        def from_model(cls, model: Any) -> AuditLog:
             """Convert SQLAlchemy model to GraphQL type."""
             return cls(
                 id=model.id,
@@ -424,7 +426,7 @@ if STRAWBERRY_AVAILABLE:
         """Root query type."""
 
         @strawberry.field
-        async def users(self, info: Info, limit: int = 10, offset: int = 0) -> List[User]:
+        async def users(self, info: Info, limit: int = 10, offset: int = 0) -> list[User]:
             """Get all users."""
             if not MODELS_AVAILABLE:
                 return []
@@ -439,7 +441,7 @@ if STRAWBERRY_AVAILABLE:
             return User.from_model(user) if user else None
 
         @strawberry.field
-        async def agents(self, info: Info, limit: int = 10, offset: int = 0) -> List[Agent]:
+        async def agents(self, info: Info, limit: int = 10, offset: int = 0) -> list[Agent]:
             """Get all agents."""
             # Implementation would query database
             return []
@@ -451,13 +453,13 @@ if STRAWBERRY_AVAILABLE:
             return None
 
         @strawberry.field
-        async def agents_by_role(self, info: Info, role: AgentRoleEnum) -> List[Agent]:
+        async def agents_by_role(self, info: Info, role: AgentRoleEnum) -> list[Agent]:
             """Get agents by role."""
             # Implementation would query database
             return []
 
         @strawberry.field
-        async def tasks(self, info: Info, limit: int = 10, offset: int = 0) -> List[Task]:
+        async def tasks(self, info: Info, limit: int = 10, offset: int = 0) -> list[Task]:
             """Get all tasks."""
             return []
 
@@ -467,29 +469,29 @@ if STRAWBERRY_AVAILABLE:
             return None
 
         @strawberry.field
-        async def tasks_by_status(self, info: Info, status: TaskStatusEnum) -> List[Task]:
+        async def tasks_by_status(self, info: Info, status: TaskStatusEnum) -> list[Task]:
             """Get tasks by status."""
             return []
 
         @strawberry.field
-        async def memories(self, info: Info, limit: int = 10, offset: int = 0) -> List[Memory]:
+        async def memories(self, info: Info, limit: int = 10, offset: int = 0) -> list[Memory]:
             """Get all memories."""
             return []
 
         @strawberry.field
-        async def memories_by_type(self, info: Info, memory_type: MemoryTypeEnum) -> List[Memory]:
+        async def memories_by_type(self, info: Info, memory_type: MemoryTypeEnum) -> list[Memory]:
             """Get memories by type."""
             return []
 
         @strawberry.field
-        async def audit_logs(self, info: Info, limit: int = 10, offset: int = 0) -> List[AuditLog]:
+        async def audit_logs(self, info: Info, limit: int = 10, offset: int = 0) -> list[AuditLog]:
             """Get audit logs."""
             return []
 
         @strawberry.field
         async def law_violations(
             self, info: Info, limit: int = 10, offset: int = 0
-        ) -> List[LawViolation]:
+        ) -> list[LawViolation]:
             """Get law violations."""
             return []
 

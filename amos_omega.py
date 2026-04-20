@@ -24,11 +24,15 @@ Usage:
     new_state = omega.runtime_step(state, action, world_context={})
 """
 
+from __future__ import annotations
+
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
 from enum import Enum, auto
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
+
+UTC = UTC
 
 # ============================================================================
 # 1. PRIMITIVE UNIVERSE
@@ -107,12 +111,12 @@ class Action:
 
     name: str
     substrate: Substrate
-    effect: Dict[str, Any] = field(default_factory=dict)
+    effect: dict[str, Any] = field(default_factory=dict)
     energy_cost: float = 0.0
     time_scale: float = 1.0
     pure: bool = False
 
-    def get_effect(self) -> Dict[str, Any]:
+    def get_effect(self) -> dict[str, Any]:
         """Eff(f) — explicit effect annotation (Axiom 3)."""
         if self.pure:
             return {}
@@ -139,7 +143,7 @@ class Bridge:
 
     source: Substrate
     target: Substrate
-    bridge_map: Dict[str, Any]
+    bridge_map: dict[str, Any]
     uncertainty_transport: float
     time_rescaling: float
     error_budget: float
@@ -210,11 +214,11 @@ class AMOSOmega:
     """
 
     def __init__(self):
-        self.constraints: List[Constraint] = []
-        self.ledger: List[LedgerEntry] = []
+        self.constraints: list[Constraint] = []
+        self.ledger: list[LedgerEntry] = []
         self.energy_budget: float = 1000.0
         self.energy_consumed: float = 0.0
-        self.identity_history: List[tuple[State, State]] = []
+        self.identity_history: list[tuple[State, State]] = []
 
     # --------------------------------------------------------------------
     # AXIOM 1: Substrate Partition
@@ -265,7 +269,7 @@ class AMOSOmega:
     # AXIOM 3: Effect Explicitness
     # --------------------------------------------------------------------
 
-    def effect_of(self, action: Action) -> Dict[str, Any]:
+    def effect_of(self, action: Action) -> dict[str, Any]:
         """Transforms(f) → ∃ε Eff(f) = ε
         Pure(f) ↔ Eff(f) = ∅
         Eff(f ∘ g) = Eff(g) ∪ Eff(f)
@@ -276,7 +280,7 @@ class AMOSOmega:
         """Pure(f) ↔ Eff(f) = ∅"""
         return action.pure or len(action.get_effect()) == 0
 
-    def compose_effects(self, action1: Action, action2: Action) -> Dict[str, Any]:
+    def compose_effects(self, action1: Action, action2: Action) -> dict[str, Any]:
         """Eff(f ∘ g) = Eff(g) ∪ Eff(f)"""
         eff1 = self.effect_of(action1)
         eff2 = self.effect_of(action2)
@@ -293,7 +297,7 @@ class AMOSOmega:
         """
         return state.project(substrate)
 
-    def decompose_state(self, state: State) -> Dict[Substrate, dict]:
+    def decompose_state(self, state: State) -> dict[Substrate, dict]:
         """Decompose into substrate components."""
         return {
             Substrate.CLASSICAL: state.classical,
@@ -333,7 +337,7 @@ class AMOSOmega:
     # AXIOM 6: Adaptation (A)
     # --------------------------------------------------------------------
 
-    def A(self, x: State, ledger: List[LedgerEntry], w: dict) -> State:
+    def A(self, x: State, ledger: list[LedgerEntry], w: dict) -> State:
         """A : X × L × W → X
         A(x, ℓ, w) = x' → PreservesId(x, x') ∨ ExplicitReplacement(x, x')
         """
@@ -415,7 +419,7 @@ class AMOSOmega:
         """Add constraint to the system."""
         self.constraints.append(constraint)
 
-    def check_constraints(self, x: State) -> Dict[str, bool]:
+    def check_constraints(self, x: State) -> dict[str, bool]:
         """C = {c_α}_{α∈A}, c_α : X → 𝔹_Q
         Valid(x) ↔ ∀α ∈ Hard, c_α(x) = ⊤
         """
@@ -547,18 +551,18 @@ class AMOSOmega:
     # AXIOM 30: Ledger Chain
     # --------------------------------------------------------------------
 
-    def get_ledger(self) -> List[LedgerEntry]:
+    def get_ledger(self) -> list[LedgerEntry]:
         """ℒ = Σ_t ℓ_t"""
         return self.ledger
 
-    def explain_outcome(self, outcome: Any) -> List[LedgerEntry]:
+    def explain_outcome(self, outcome: Any) -> list[LedgerEntry]:
         """Outcome(o) → ∃Λ ⊆ L : Explains(Λ, o)
         Explain(ℒ) = Outcome
         """
         # Return relevant ledger entries that explain outcome
         return [e for e in self.ledger if e.y_t == outcome]
 
-    def replay(self, ledger_subset: List[LedgerEntry]) -> State:
+    def replay(self, ledger_subset: list[LedgerEntry]) -> State:
         """Replay(Λ) = x_n"""
         if not ledger_subset:
             return State()

@@ -7,10 +7,12 @@ Owner: Trang
 Version: 1.0.0
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class ArchivePriority(Enum):
@@ -47,14 +49,14 @@ class ArchivedMemory:
     """An archived memory record."""
 
     memory_id: str
-    content: Dict[str, Any]
+    content: dict[str, Any]
     archived_at: datetime
     priority: ArchivePriority
     status: ArchiveStatus
     size_bytes: int
     compressed: bool
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    tags: list[str] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class MemoryArchiver:
@@ -66,15 +68,15 @@ class MemoryArchiver:
 
     def __init__(self, config: Optional[ArchiveConfig] = None):
         self.config = config or ArchiveConfig()
-        self.archives: Dict[str, ArchivedMemory] = {}
-        self.pending_queue: List[str] = []
+        self.archives: dict[str, ArchivedMemory] = {}
+        self.pending_queue: list[str] = []
 
     def queue_for_archive(
         self,
         memory_id: str,
-        content: Dict[str, Any],
+        content: dict[str, Any],
         priority: ArchivePriority = ArchivePriority.NORMAL,
-        tags: List[str] = None,
+        tags: list[str] = None,
     ) -> bool:
         """Queue a memory for archival."""
         if memory_id in self.archives:
@@ -95,7 +97,7 @@ class MemoryArchiver:
         self.pending_queue.append(memory_id)
         return True
 
-    def _estimate_size(self, content: Dict[str, Any]) -> int:
+    def _estimate_size(self, content: dict[str, Any]) -> int:
         """Estimate memory size in bytes."""
         import json
 
@@ -159,11 +161,11 @@ class MemoryArchiver:
             self.pending_queue.remove(memory_id)
         return True
 
-    def get_archives_by_tag(self, tag: str) -> List[ArchivedMemory]:
+    def get_archives_by_tag(self, tag: str) -> list[ArchivedMemory]:
         """Get all archives with a specific tag."""
         return [a for a in self.archives.values() if tag in a.tags]
 
-    def get_storage_stats(self) -> Dict[str, Any]:
+    def get_storage_stats(self) -> dict[str, Any]:
         """Get archival storage statistics."""
         total_size = sum(a.size_bytes for a in self.archives.values())
         compressed_size = sum(a.size_bytes for a in self.archives.values() if a.compressed)
@@ -186,7 +188,7 @@ class MemoryArchiver:
 
         return len(expired)
 
-    def queue_for_archival(self, result: Dict[str, Any]) -> bool:
+    def queue_for_archival(self, result: dict[str, Any]) -> bool:
         """Queue a result for archival (alias for queue_for_archive)."""
         memory_id = result.get("id", f"result_{datetime.now(UTC).timestamp()}")
         return self.queue_for_archive(

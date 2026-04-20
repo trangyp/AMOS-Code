@@ -9,10 +9,11 @@ Provides a unified API for accessing brain cognitive capabilities.
 
 
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 
 UTC = timezone.utc
-
 from .facade import BrainClient
 
 

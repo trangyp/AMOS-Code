@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from typing import Any, Dict, List
+from typing import Any
 
 """
 AMOS-OpenClaw Unified Connector
@@ -35,7 +35,7 @@ import asyncio
 import json
 import sys
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 
 # AMOS Imports
@@ -70,7 +70,7 @@ class StateSynchronizer:
         self.state_dir = config.state_dir / "state"
         self.state_dir.mkdir(parents=True, exist_ok=True)
 
-    async def export_amos_state(self) -> Dict[str, Any]:
+    async def export_amos_state(self) -> dict[str, Any]:
         """Export AMOS brain state for OpenClaw consumption."""
         amos = get_amos_integration()
 
@@ -98,7 +98,7 @@ class StateSynchronizer:
 
         return state
 
-    async def import_openclaw_state(self) -> Dict[str, Any]:
+    async def import_openclaw_state(self) -> dict[str, Any]:
         """Import OpenClaw state if available."""
         openclaw_state_file = self.state_dir / "openclaw_state.json"
 
@@ -152,7 +152,7 @@ class MCPBridge:
             app = Server("amos-openclaw-bridge")
 
             @app.call_tool()
-            async def handle_tool(name: str, arguments: dict) -> List[TextContent]:
+            async def handle_tool(name: str, arguments: dict) -> list[TextContent]:
                 """Handle tool calls from OpenClaw."""
                 result = await self._execute_tool(name, arguments)
                 return [TextContent(type="text", text=json.dumps(result, indent=2))]

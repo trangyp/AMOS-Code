@@ -1,9 +1,10 @@
 """AMOS Deterministic Logic & Law Engine - Formal reasoning and legal analysis."""
 
+from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class TruthValue(Enum):
@@ -60,7 +61,7 @@ class LegalRelation:
     relation_type: str
     source: str
     target: str
-    conditions: List[str] = field(default_factory=list)
+    conditions: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -70,8 +71,8 @@ class LogicStatement:
     subject: str
     predicate: str
     truth_value: TruthValue = TruthValue.UNKNOWN
-    modality: Optional[Modality] = None
-    conditions: List[str] = field(default_factory=list)
+    modality: Modality | None = None
+    conditions: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -80,7 +81,7 @@ class RulePriority:
 
     layer_name: str
     priority: int
-    rules: List[str] = field(default_factory=list)
+    rules: list[str] = field(default_factory=list)
 
 
 class FormalLogicKernel:
@@ -90,14 +91,14 @@ class FormalLogicKernel:
     QUANTIFIERS = ["FOR_ALL", "EXISTS", "FOR_MAJORITY", "FOR_MINORITY"]
 
     def __init__(self):
-        self.statements: List[LogicStatement] = []
+        self.statements: list[LogicStatement] = []
 
     def add_statement(
         self,
         subject: str,
         predicate: str,
         truth_value: TruthValue = TruthValue.TRUE,
-        modality: Optional[Modality] = None,
+        modality: Modality | None = None,
     ) -> LogicStatement:
         """Add a logical statement."""
         stmt = LogicStatement(
@@ -109,7 +110,7 @@ class FormalLogicKernel:
         self.statements.append(stmt)
         return stmt
 
-    def evaluate_conjunction(self, statements: List[LogicStatement]) -> TruthValue:
+    def evaluate_conjunction(self, statements: list[LogicStatement]) -> TruthValue:
         """Evaluate AND of statements (Rule of 2)."""
         if not statements:
             return TruthValue.UNKNOWN
@@ -123,7 +124,7 @@ class FormalLogicKernel:
             return TruthValue.UNKNOWN
         return TruthValue.TRUE
 
-    def evaluate_disjunction(self, statements: List[LogicStatement]) -> TruthValue:
+    def evaluate_disjunction(self, statements: list[LogicStatement]) -> TruthValue:
         """Evaluate OR of statements."""
         if not statements:
             return TruthValue.UNKNOWN
@@ -156,7 +157,7 @@ class FormalLogicKernel:
             "details": contradictions,
         }
 
-    def _get_principles(self) -> List[str]:
+    def _get_principles(self) -> list[str]:
         """Return kernel principles."""
         return [
             "Formal logic: AND, OR, NOT, XOR, IMPLIES, IFF",
@@ -180,9 +181,9 @@ class LegalReasoningKernel:
     ]
 
     def __init__(self):
-        self.entities: Dict[str, LegalEntity] = {}
-        self.relations: List[LegalRelation] = []
-        self.rules: List[RulePriority] = [
+        self.entities: dict[str, LegalEntity] = {}
+        self.relations: list[LegalRelation] = []
+        self.rules: list[RulePriority] = [
             RulePriority(layer, i, []) for i, layer in enumerate(self.PRIORITY_LAYERS)
         ]
 
@@ -201,7 +202,7 @@ class LegalReasoningKernel:
         relation_type: str,
         source: str,
         target: str,
-        conditions: Optional[List[str]] = None,
+        conditions: list[str | None] = None,
     ) -> LegalRelation:
         """Add a legal relation."""
         relation = LegalRelation(
@@ -213,7 +214,7 @@ class LegalReasoningKernel:
         self.relations.append(relation)
         return relation
 
-    def resolve_conflict(self, rule1: str, rule2: str) -> str :
+    def resolve_conflict(self, rule1: str, rule2: str) -> str:
         """Apply conflict resolution principles."""
         # Find priority of each rule
         p1 = next((r.priority for r in self.rules if rule1 in r.rules), 999)
@@ -258,7 +259,7 @@ class LegalReasoningKernel:
 
         return {"compliant": None, "reason": "No compliance data"}
 
-    def analyze_contract_clauses(self, clauses: List[str]) -> dict:
+    def analyze_contract_clauses(self, clauses: list[str]) -> dict:
         """Analyze contract clauses for consistency."""
         issues = []
 
@@ -280,7 +281,7 @@ class LegalReasoningKernel:
             "consistent": len(issues) == 0,
         }
 
-    def _get_principles(self) -> List[str]:
+    def _get_principles(self) -> list[str]:
         """Return kernel principles."""
         return [
             "Priority layers: Constitutional to Internal Procedures",
@@ -294,12 +295,12 @@ class ArgumentationKernel:
     """Kernel for structured argumentation."""
 
     def __init__(self):
-        self.arguments: List[dict] = []
+        self.arguments: list[dict] = []
 
     def add_argument(
         self,
         claim: str,
-        premises: List[str],
+        premises: list[str],
         conclusion: str,
         strength: str = "medium",
     ) -> dict:
@@ -332,7 +333,7 @@ class ArgumentationKernel:
             "strength": argument["strength"],
         }
 
-    def identify_fallacies(self, argument: dict) -> List[str]:
+    def identify_fallacies(self, argument: dict) -> list[str]:
         """Identify potential fallacies."""
         fallacies = []
 
@@ -346,7 +347,7 @@ class ArgumentationKernel:
 
         return fallacies
 
-    def _get_principles(self) -> List[str]:
+    def _get_principles(self) -> list[str]:
         """Return kernel principles."""
         return [
             "Clear reasoning path required",
@@ -360,13 +361,13 @@ class PolicyDesignKernel:
     """Kernel for policy design and analysis."""
 
     def __init__(self):
-        self.policies: List[dict] = []
+        self.policies: list[dict] = []
 
     def design_policy(
         self,
         objective: str,
-        constraints: List[str],
-        principles: List[str],
+        constraints: list[str],
+        principles: list[str],
     ) -> dict:
         """Design a policy with operational rules."""
         policy = {
@@ -380,7 +381,7 @@ class PolicyDesignKernel:
         self.policies.append(policy)
         return policy
 
-    def _generate_rules(self, principles: List[str]) -> List[str]:
+    def _generate_rules(self, principles: list[str]) -> list[str]:
         """Convert principles to operational rules."""
         rules = []
         for p in principles:
@@ -399,7 +400,7 @@ class PolicyDesignKernel:
                 }
             )
 
-    def _get_principles(self) -> List[str]:
+    def _get_principles(self) -> list[str]:
         """Return kernel principles."""
         return [
             "Define clear objectives",
@@ -425,11 +426,11 @@ class LogicLawEngine:
     def analyze(
         self,
         query: str,
-        domains: Optional[List[str]] = None,
-    ) -> Dict[str, Any]:
+        domains: list[str | None] = None,
+    ) -> dict[str, Any]:
         """Run logic/law analysis across specified domains."""
         domains = domains or ["logic", "legal", "argumentation", "policy"]
-        results: Dict[str, Any] = {}
+        results: dict[str, Any] = {}
 
         if "logic" in domains:
             results["logic"] = self._analyze_logic(query)
@@ -558,7 +559,7 @@ class LogicLawEngine:
 
 
 # Singleton
-_logic_law_engine: Optional[LogicLawEngine] = None
+_logic_law_engine: LogicLawEngine | None = None
 
 
 def get_logic_law_engine() -> LogicLawEngine:

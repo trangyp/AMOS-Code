@@ -27,12 +27,16 @@ Version: 1.0.0
 Phase: 16
 """
 
+from __future__ import annotations
+
 import asyncio
 import os
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from datetime import datetime
-from typing import Any, Dict, Optional
+from datetime import UTC, datetime
+
+UTC = UTC
+from typing import Any, Optional
 
 # SQLAlchemy imports
 try:
@@ -120,8 +124,8 @@ class User(Base):
     last_login: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
 
     # Relationships
-    api_keys: Mapped[list["APIKey"]] = relationship(back_populates="user", lazy="selectin")
-    audit_logs: Mapped[list["AuditLog"]] = relationship(back_populates="user", lazy="selectin")
+    api_keys: Mapped[list[APIKey]] = relationship(back_populates="user", lazy="selectin")
+    audit_logs: Mapped[list[AuditLog]] = relationship(back_populates="user", lazy="selectin")
 
 
 class APIKey(Base):
@@ -152,8 +156,8 @@ class APIKey(Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
 
     # Relationships
-    user: Mapped["User"] = relationship(back_populates="api_keys")
-    audit_logs: Mapped[list["AuditLog"]] = relationship(back_populates="api_key", lazy="selectin")
+    user: Mapped[User] = relationship(back_populates="api_keys")
+    audit_logs: Mapped[list[AuditLog]] = relationship(back_populates="api_key", lazy="selectin")
 
 
 class AuditLog(Base):
@@ -186,8 +190,8 @@ class AuditLog(Base):
     details: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=True)
 
     # Relationships
-    user: Mapped["User"] = relationship(back_populates="audit_logs")
-    api_key: Mapped["APIKey"] = relationship(back_populates="audit_logs")
+    user: Mapped[User] = relationship(back_populates="audit_logs")
+    api_key: Mapped[APIKey] = relationship(back_populates="audit_logs")
 
 
 class EquationExecution(Base):
@@ -339,7 +343,7 @@ class AMOSDatabase:
         finally:
             await session.close()
 
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """Check database health."""
         if not self._initialized or not self._engine:
             return {"status": "unhealthy", "error": "Database not initialized"}
@@ -427,7 +431,7 @@ class AMOSDatabase:
         resource: str = None,
         action: str = None,
         success: bool = True,
-        details: Dict[str, Any] = None,
+        details: dict[str, Any] = None,
     ) -> AuditLog:
         """Log an audit event."""
         async with self.session() as session:
@@ -453,8 +457,8 @@ class AMOSDatabase:
         duration_ms: float,
         user_id: int = None,
         api_key_id: int = None,
-        parameters: Dict[str, Any] = None,
-        result: Dict[str, Any] = None,
+        parameters: dict[str, Any] = None,
+        result: dict[str, Any] = None,
         success: bool = True,
         error_message: str = None,
         ip_address: str = None,
@@ -478,7 +482,7 @@ class AMOSDatabase:
             return execution
 
     async def record_health_metric(
-        self, metric_name: str, value: float, labels: Dict[str, str] = None
+        self, metric_name: str, value: float, labels: dict[str, str] = None
     ) -> HealthMetric:
         """Record health metric."""
         async with self.session() as session:

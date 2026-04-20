@@ -12,8 +12,10 @@ Version: 2.0.0
 """
 
 from dataclasses import dataclass
-from datetime import datetime
-from typing import Any, Dict, List, Tuple
+from datetime import UTC, datetime
+
+UTC = UTC
+from typing import Any
 
 from elasticsearch import AsyncElasticsearch
 from elasticsearch.helpers import async_bulk
@@ -28,10 +30,10 @@ class SearchResult:
     name: str
     formula: str
     description: str
-    tags: List[str]
+    tags: list[str]
     author: str
     created_at: datetime
-    highlight: Dict[str, list[str]]  # Matched text snippets
+    highlight: dict[str, list[str]]  # Matched text snippets
 
 
 @dataclass
@@ -40,9 +42,9 @@ class SearchResponse:
 
     total: int
     took_ms: int
-    results: List[SearchResult]
-    facets: Dict[str, dict[str, int]]  # Tag counts, category counts
-    suggestions: List[str]  # Auto-suggest completions
+    results: list[SearchResult]
+    facets: dict[str, dict[str, int]]  # Tag counts, category counts
+    suggestions: list[str]  # Auto-suggest completions
 
 
 class EquationSearchEngine:
@@ -134,7 +136,7 @@ class EquationSearchEngine:
         if not await self.es.indices.exists(index=self.INDEX_NAME):
             await self.es.indices.create(index=self.INDEX_NAME, body=mapping)
 
-    async def index_equation(self, equation: Dict[str, Any]) -> None:
+    async def index_equation(self, equation: dict[str, Any]) -> None:
         """Index a single equation."""
         doc = {
             "id": str(equation["id"]),
@@ -162,7 +164,7 @@ class EquationSearchEngine:
             document=doc,
         )
 
-    async def bulk_index(self, equations: List[dict[str, Any]]) -> Tuple[int, int]:
+    async def bulk_index(self, equations: list[dict[str, Any]]) -> tuple[int, int]:
         """Bulk index multiple equations."""
         actions = []
         for eq in equations:
@@ -196,7 +198,7 @@ class EquationSearchEngine:
     async def search(
         self,
         query: str,
-        filters: Dict[str, Any] = None,
+        filters: dict[str, Any] = None,
         sort_by: str = "relevance",
         page: int = 1,
         per_page: int = 20,
@@ -319,7 +321,7 @@ class EquationSearchEngine:
             suggestions=suggestions,
         )
 
-    def _build_sort(self, sort_by: str) -> List[dict[str, Any]]:
+    def _build_sort(self, sort_by: str) -> list[dict[str, Any]]:
         """Build sort configuration."""
         if sort_by == "relevance":
             return [{"_score": {"order": "desc"}}]
@@ -338,7 +340,7 @@ class EquationSearchEngine:
         else:
             return [{"_score": {"order": "desc"}}]
 
-    async def get_suggestions(self, query: str, size: int = 5) -> List[str]:
+    async def get_suggestions(self, query: str, size: int = 5) -> list[str]:
         """Get auto-complete suggestions."""
         if not query or len(query) < 2:
             return []
@@ -367,7 +369,7 @@ class EquationSearchEngine:
 
         return suggestions
 
-    async def get_similar(self, equation_id: str, size: int = 5) -> List[SearchResult]:
+    async def get_similar(self, equation_id: str, size: int = 5) -> list[SearchResult]:
         """Find similar equations using More Like This query."""
         mlt_body = {
             "query": {
@@ -412,7 +414,7 @@ class EquationSearchEngine:
         """Remove equation from index."""
         await self.es.delete(index=self.INDEX_NAME, id=equation_id)
 
-    async def reindex_all(self, equations: List[dict[str, Any]]) -> Tuple[int, int]:
+    async def reindex_all(self, equations: list[dict[str, Any]]) -> tuple[int, int]:
         """Delete and reindex all equations."""
         # Delete existing index
         if await self.es.indices.exists(index=self.INDEX_NAME):
@@ -424,7 +426,7 @@ class EquationSearchEngine:
         # Bulk index
         return await self.bulk_index(equations)
 
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """Check Elasticsearch health."""
         health = await self.es.cluster.health()
         return {
@@ -447,11 +449,11 @@ class IndexSync:
     def __init__(self, search_engine: EquationSearchEngine):
         self.search = search_engine
 
-    async def on_equation_created(self, equation: Dict[str, Any]) -> None:
+    async def on_equation_created(self, equation: dict[str, Any]) -> None:
         """Handle equation creation."""
         await self.search.index_equation(equation)
 
-    async def on_equation_updated(self, equation: Dict[str, Any]) -> None:
+    async def on_equation_updated(self, equation: dict[str, Any]) -> None:
         """Handle equation update."""
         await self.search.index_equation(equation)
 

@@ -10,7 +10,6 @@ Key formulas:
 - dS/dt = drift rate indicating system instability
 """
 
-
 import math
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
@@ -43,7 +42,7 @@ class EntanglementMatrix:
         dim_i: StateDimension,
         dim_j: StateDimension,
         coupling: float,
-        metadata: dict  = None,
+        metadata: dict = None,
     ) -> None:
         """Set coupling between two dimensions."""
         key = (dim_i.value, dim_j.value)

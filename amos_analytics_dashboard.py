@@ -23,12 +23,16 @@ Creator: Trang Phan
 System: AMOS vInfinity - Layer 26
 """
 
+from __future__ import annotations
+
 import argparse
 import json
 import time
 from dataclasses import dataclass, field
-from datetime import datetime
-from typing import Any, Dict, List, Optional
+from datetime import UTC, datetime
+
+UTC = UTC
+from typing import Any, Optional
 
 
 @dataclass
@@ -79,9 +83,9 @@ class AnalyticsDashboard:
 
     def __init__(self):
         self.start_time = time.time()
-        self.layer_metrics: Dict[int, LayerMetrics] = {}
+        self.layer_metrics: dict[int, LayerMetrics] = {}
         self.system_metrics = SystemMetrics()
-        self.historical_data: List[SystemMetrics] = []
+        self.historical_data: list[SystemMetrics] = []
         self._initialize_layer_tracking()
 
     def _initialize_layer_tracking(self) -> None:
@@ -150,7 +154,7 @@ class AnalyticsDashboard:
         """Update loaded engine count."""
         self.system_metrics.engines_loaded = count
 
-    def get_system_health(self) -> Dict[str, Any]:
+    def get_system_health(self) -> dict[str, Any]:
         """Get overall system health status."""
         uptime = time.time() - self.start_time
         error_rate = (
@@ -187,7 +191,7 @@ class AnalyticsDashboard:
         secs = int(seconds % 60)
         return f"{hours}h {minutes}m {secs}s"
 
-    def get_layer_performance(self) -> List[dict[str, Any]]:
+    def get_layer_performance(self) -> list[dict[str, Any]]:
         """Get performance metrics for all layers."""
         return [
             {
@@ -202,7 +206,7 @@ class AnalyticsDashboard:
             for m in self.layer_metrics.values()
         ]
 
-    def get_cognitive_analytics(self) -> Dict[str, Any]:
+    def get_cognitive_analytics(self) -> dict[str, Any]:
         """Get cognitive operation analytics."""
         # Aggregate cognitive layer metrics (L10)
         cognitive = self.layer_metrics.get(10)
@@ -225,7 +229,7 @@ class AnalyticsDashboard:
             "cache_efficiency": f"{self.system_metrics.cache_hit_rate:.1%}",
         }
 
-    def get_top_performers(self, n: int = 5) -> List[dict[str, Any]]:
+    def get_top_performers(self, n: int = 5) -> list[dict[str, Any]]:
         """Get top N performing layers by request count."""
         sorted_layers = sorted(self.layer_metrics.values(), key=lambda m: m.requests, reverse=True)
 
@@ -239,7 +243,7 @@ class AnalyticsDashboard:
             for m in sorted_layers[:n]
         ]
 
-    def generate_report(self) -> Dict[str, Any]:
+    def generate_report(self) -> dict[str, Any]:
         """Generate comprehensive analytics report."""
         return {
             "report_id": f"RPT-{datetime.now(UTC).strftime('%Y%m%d-%H%M%S')}",
@@ -282,7 +286,7 @@ class AnalyticsDashboard:
         if len(self.historical_data) > 100:
             self.historical_data = self.historical_data[-100:]
 
-    def get_trends(self) -> Dict[str, list[Any]]:
+    def get_trends(self) -> dict[str, list[Any]]:
         """Get metric trends over time."""
         if not self.historical_data:
             return {}
@@ -294,7 +298,7 @@ class AnalyticsDashboard:
             "active_layers": [s.active_layers for s in self.historical_data],
         }
 
-    def status(self) -> Dict[str, Any]:
+    def status(self) -> dict[str, Any]:
         """Get dashboard status."""
         return {
             "dashboard": "AnalyticsDashboard",
@@ -323,7 +327,7 @@ def record_metric(layer: int, response_time: float, error: bool = False) -> None
     get_dashboard().record_request(layer, response_time, error)
 
 
-def get_health_report() -> Dict[str, Any]:
+def get_health_report() -> dict[str, Any]:
     """Quick health report."""
     return get_dashboard().get_system_health()
 

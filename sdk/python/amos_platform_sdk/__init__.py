@@ -5,11 +5,11 @@ to the AMOS Platform API Gateway (amos-platform).
 
 Usage:
     from amos_platform_sdk import AMOSClient
-    
+
     # Synchronous
     client = AMOSClient(api_key="your_key", base_url="http://localhost:8000")
     response = client.chat("Hello, AMOS!")
-    
+
     # Asynchronous
     async with AMOSClient(api_key="your_key") as client:
         response = await client.chat("Hello, AMOS!")
@@ -21,9 +21,9 @@ from amos_platform_sdk.client import AMOSClient, AsyncAMOSClient
 from amos_platform_sdk.exceptions import (
     AMOSAPIError,
     AMOSAuthenticationError,
-    AMOSValidationError,
     AMOSNotFoundError,
     AMOSRateLimitError,
+    AMOSValidationError,
 )
 
 __all__ = [

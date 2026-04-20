@@ -1,5 +1,4 @@
 from dataclasses import dataclass, field
-from typing import List
 
 
 @dataclass(frozen=True)
@@ -39,9 +38,9 @@ class UsageSummary:
 @dataclass
 class PortingBacklog:
     title: str
-    modules: List[PortingModule] = field(default_factory=list)
+    modules: list[PortingModule] = field(default_factory=list)
 
-    def summary_lines(self) -> List[str]:
+    def summary_lines(self) -> list[str]:
         return [
             f"- {module.name} [{module.status}] — {module.responsibility} (from {module.source_hint})"
             for module in self.modules

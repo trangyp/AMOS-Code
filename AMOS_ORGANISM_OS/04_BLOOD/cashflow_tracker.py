@@ -6,11 +6,12 @@ Tracks cash movements, balances, and flow analysis over time.
 import json
 import uuid
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timedelta, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timedelta, timezone
+
+UTC = UTC
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class CashflowType(Enum):
@@ -45,13 +46,13 @@ class CashflowRecord:
     status: CashflowStatus = CashflowStatus.COMPLETED
     source: str = ""  # Where it came from
     destination: str = ""  # Where it went
-    tags: List[str] = field(default_factory=list)
+    tags: list[str] = field(default_factory=list)
     recurring: bool = False
-    recurrence_period: Optional[str] = None  # daily, weekly, monthly
-    related_record_id: Optional[str] = None  # For transfers
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    recurrence_period: str = None  # daily, weekly, monthly
+    related_record_id: str = None  # For transfers
+    metadata: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "cashflow_type": self.cashflow_type.value,
@@ -77,13 +78,13 @@ class CashflowTracker:
     trend analysis and forecasting input.
     """
 
-    def __init__(self, data_dir: Optional[Path] = None):
+    def __init__(self, data_dir: Path = None):
         if data_dir is None:
             data_dir = Path(__file__).parent / "data"
         self.data_dir = data_dir
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
-        self.records: List[CashflowRecord] = []
+        self.records: list[CashflowRecord] = []
         self.initial_balance: float = 0.0
         self.currency: str = "USD"
 
@@ -139,7 +140,7 @@ class CashflowTracker:
         category: str = "",
         source: str = "",
         destination: str = "",
-        tags: Optional[list] = None,
+        tags: list = None,
     ) -> CashflowRecord:
         """Record a cashflow entry."""
         record = CashflowRecord(
@@ -179,7 +180,7 @@ class CashflowTracker:
             CashflowType.EXPENSE, amount, description, category, destination=destination
         )
 
-    def get_balance(self, include_pending: bool = False) -> Dict[str, float]:
+    def get_balance(self, include_pending: bool = False) -> dict[str, float]:
         """Calculate current balance."""
         completed = [r for r in self.records if r.status == CashflowStatus.COMPLETED]
 
@@ -205,7 +206,7 @@ class CashflowTracker:
 
         return result
 
-    def get_flow_summary(self, days: int = 30) -> Dict[str, Any]:
+    def get_flow_summary(self, days: int = 30) -> dict[str, Any]:
         """Get cashflow summary for a period."""
         cutoff = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
         recent = [
@@ -239,7 +240,7 @@ class CashflowTracker:
             "by_category": by_category,
         }
 
-    def get_trend(self, periods: int = 6, period_days: int = 30) -> List[dict]:
+    def get_trend(self, periods: int = 6, period_days: int = 30) -> list[dict]:
         """Get cashflow trend over multiple periods."""
         trends = []
         now = datetime.now(timezone.utc)
@@ -273,7 +274,7 @@ class CashflowTracker:
 
         return list(reversed(trends))
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get overall cashflow status."""
         balance = self.get_balance(include_pending=True)
         summary_30 = self.get_flow_summary(30)
@@ -288,10 +289,10 @@ class CashflowTracker:
 
 
 # Global instance
-_TRACKER: Optional[CashflowTracker] = None
+_TRACKER: CashflowTracker = None
 
 
-def get_cashflow_tracker(data_dir: Optional[Path] = None) -> CashflowTracker:
+def get_cashflow_tracker(data_dir: Path = None) -> CashflowTracker:
     """Get or create global cashflow tracker."""
     global _TRACKER
     if _TRACKER is None:

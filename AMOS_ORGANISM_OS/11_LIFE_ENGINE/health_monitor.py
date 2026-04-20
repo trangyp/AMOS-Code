@@ -4,13 +4,15 @@ Monitors organism health metrics and triggers self-healing actions.
 Tracks vital signs and detects health issues.
 """
 
+from __future__ import annotations
+
 import json
 import uuid
 from dataclasses import asdict, dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class HealthStatus(Enum):
@@ -54,7 +56,7 @@ class HealthMetric:
             return HealthStatus.WARNING
         return HealthStatus.HEALTHY
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "metric_type": self.metric_type.value,
@@ -70,13 +72,13 @@ class HealingAction:
     trigger_metric: str = ""
     action_type: str = ""  # restart, scale, reconfigure, isolate
     target_subsystem: str = ""
-    parameters: Dict[str, Any] = field(default_factory=dict)
+    parameters: dict[str, Any] = field(default_factory=dict)
     executed: bool = False
     successful: bool = None
     created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     executed_at: str = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
@@ -93,10 +95,10 @@ class HealthMonitor:
         self.data_dir = data_dir
         self.data_dir.mkdir(exist_ok=True)
 
-        self.metrics: Dict[str, list[HealthMetric]] = {}
-        self.healing_actions: Dict[str, HealingAction] = {}
-        self.healing_log: List[dict[str, Any]] = []
-        self.health_history: List[dict[str, Any]] = []
+        self.metrics: dict[str, list[HealthMetric]] = {}
+        self.healing_actions: dict[str, HealingAction] = {}
+        self.healing_log: list[dict[str, Any]] = []
+        self.health_history: list[dict[str, Any]] = []
 
         self._init_default_metrics()
 
@@ -222,7 +224,7 @@ class HealthMonitor:
             return HealthStatus.WARNING
         return HealthStatus.HEALTHY
 
-    def get_subsystem_health(self, subsystem: str) -> Dict[str, Any]:
+    def get_subsystem_health(self, subsystem: str) -> dict[str, Any]:
         """Get health metrics for a specific subsystem."""
         subsystem_metrics = {}
         for metric_type, metric_list in self.metrics.items():
@@ -266,7 +268,7 @@ class HealthMonitor:
         }
         health_file.write_text(json.dumps(data, indent=2))
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get health monitor status."""
         total_actions = len(self.healing_actions)
         executed = sum(1 for a in self.healing_actions.values() if a.executed)

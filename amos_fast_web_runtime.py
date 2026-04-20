@@ -1,4 +1,6 @@
-from typing import Any, Dict, List, Optional, Set
+from __future__ import annotations
+
+from typing import Any, Optional
 
 """AMOS Fast Web Runtime - High-precision web retrieval under tight budgets.
 
@@ -16,8 +18,9 @@ import re
 import time
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timezone, timedelta, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timedelta, timezone
+
+UTC = UTC
 from enum import Enum, auto
 from urllib.parse import urlparse
 
@@ -56,7 +59,7 @@ class WebBudgets:
     max_verification_reads: int = 2
     max_total_time_ms: float = 5000.0
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "max_search_queries": self.max_search_queries,
             "max_page_opens": self.max_page_opens,
@@ -101,7 +104,7 @@ class WebResult:
     confidence: float = 0.0
     timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))  # noqa: UP017
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "url": self.url,
             "title": self.title,
@@ -135,25 +138,25 @@ class WebCache:
     """Aggressive multi-tier caching for web content."""
 
     def __init__(self, ttl_seconds: int = 3600) -> None:
-        self._domain_cache: Dict[str, list[WebResult]] = {}
-        self._page_cache: Dict[str, WebResult] = {}
-        self._extract_cache: Dict[str, str] = {}
-        self._query_cache: Dict[str, list[WebResult]] = {}
-        self._timestamps: Dict[str, datetime] = {}
+        self._domain_cache: dict[str, list[WebResult]] = {}
+        self._page_cache: dict[str, WebResult] = {}
+        self._extract_cache: dict[str, str] = {}
+        self._query_cache: dict[str, list[WebResult]] = {}
+        self._timestamps: dict[str, datetime] = {}
         self._ttl = timedelta(seconds=ttl_seconds)
 
     def _make_key(self, *parts: str) -> str:
         combined = "|".join(parts)
         return hashlib.sha256(combined.encode()).hexdigest()[:32]
 
-    def get_query_results(self, query: str) -> Optional[List[WebResult] ]:
+    def get_query_results(self, query: str) -> list[Optional[WebResult]]:
         key = self._make_key("query", query.lower().strip())
         if key in self._query_cache and not self._is_expired(key):
             logger.debug(f"Cache hit for query: {query[:50]}...")
             return self._query_cache[key]
         return None
 
-    def set_query_results(self, query: str, results: List[WebResult]) -> None:
+    def set_query_results(self, query: str, results: list[WebResult]) -> None:
         key = self._make_key("query", query.lower().strip())
         self._query_cache[key] = results
         self._timestamps[key] = datetime.now(UTC)
@@ -205,7 +208,7 @@ class FastWebRuntime:
         self.budgets = budgets or WebBudgets()
         self.sufficiency = sufficiency or SufficiencyGate()
         self.cache = cache or WebCache()
-        self._authority_domains: Set[str] = {
+        self._authority_domains: set[str] = {
             "docs.python.org",
             "github.com",
             "stackoverflow.com",
@@ -220,7 +223,7 @@ class FastWebRuntime:
             "mozilla.org",
             "apache.org",
         }
-        self._client: httpx.AsyncClient | None = None
+        self._client: httpx.Optional[AsyncClient] = None
 
     async def _get_client(self) -> httpx.AsyncClient:
         if self._client is None or self._client.is_closed:
@@ -293,7 +296,7 @@ class FastWebRuntime:
         self,
         query: str,
         num_results: int = 10,
-    ) -> List[WebResult]:
+    ) -> list[WebResult]:
         """Search and return ranked results (cache-aware)."""
         # Check cache first
         cached = self.cache.get_query_results(query)
@@ -325,7 +328,7 @@ class FastWebRuntime:
             logger.error(f"Search failed for '{query}': {e}")
             return []
 
-    def _parse_search_results(self, html: str, query: str) -> List[WebResult]:
+    def _parse_search_results(self, html: str, query: str) -> list[WebResult]:
         """Parse search result page."""
         results = []
         soup = BeautifulSoup(html, "html.parser")
@@ -470,7 +473,7 @@ class FastWebRuntime:
         self,
         query: str,
         answer_callback: Callable[[str, float], Awaitable[None]] = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Fast path: query → search → top 3 → snippet rank → open 1-2 → answer."""
         start_time = time.time()
         total_time_ms = self.budgets.max_total_time_ms
@@ -548,7 +551,7 @@ class FastWebRuntime:
         self,
         query: str,
         answer_callback: Callable[[str, float], Awaitable[None]] = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Deep path: search authoritative sources with verification."""
         start_time = time.time()
 
@@ -598,7 +601,7 @@ class FastWebRuntime:
             "confidence": round(confidence, 2),
         }
 
-    def _snippet_sufficiency(self, snippets: List[str], query: str) -> bool:
+    def _snippet_sufficiency(self, snippets: list[str], query: str) -> bool:
         """Check if snippets alone are sufficient to answer."""
         combined = " ".join(snippets).lower()
         query_terms = set(query.lower().split())
@@ -613,7 +616,7 @@ class FastWebRuntime:
 
         return coverage_ratio >= 0.7 and has_answer_form
 
-    def _synthesize_from_snippets(self, snippets: List[str], sources: List[WebResult]) -> str:
+    def _synthesize_from_snippets(self, snippets: list[str], sources: list[WebResult]) -> str:
         """Create answer from search snippets."""
         if not snippets:
             return "No information available."
@@ -629,7 +632,7 @@ class FastWebRuntime:
 
         return " ".join(unique)[:1000]
 
-    def _synthesize_from_content(self, pages: List[WebResult], query: str) -> str:
+    def _synthesize_from_content(self, pages: list[WebResult], query: str) -> str:
         """Create answer from page content."""
         if not pages:
             return "No content available."
@@ -654,7 +657,7 @@ class FastWebRuntime:
 
     def _cross_validate(
         self,
-        content: List[tuple[WebResult, WebResult]],
+        content: list[tuple[WebResult, WebResult]],
         query: str,
     ) -> float:
         """Cross-validate content from multiple sources."""
@@ -688,7 +691,7 @@ class FastWebRuntime:
         query: str,
         path: str = "auto",
         answer_callback: Callable[[str, float], Awaitable[None]] = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Main query entry point. Path: 'fast', 'deep', or 'auto'."""
         if path == "fast":
             return await self.query_fast(query, answer_callback)
@@ -723,7 +726,7 @@ async def web_query(
     query: str,
     path: str = "auto",
     budgets: Optional[WebBudgets] = None,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """One-shot web query with automatic cleanup."""
     runtime = FastWebRuntime(budgets=budgets) if budgets else get_fast_web_runtime()
     try:

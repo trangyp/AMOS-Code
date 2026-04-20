@@ -18,6 +18,8 @@ Owner: Trang Phan
 Version: 2.0.0
 """
 
+from __future__ import annotations
+
 import asyncio
 import json
 import time
@@ -25,7 +27,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Dict, List, Optional, TypeVar
+from typing import Any, Optional, TypeVar
 
 T = TypeVar("T")
 
@@ -76,8 +78,8 @@ class ServiceConfig:
     health_check_interval: float = 30.0
     circuit_breaker: CircuitBreakerConfig = field(default_factory=CircuitBreakerConfig)
     retry_policy: RetryConfig = field(default_factory=RetryConfig)
-    env_vars: Dict[str, str] = field(default_factory=dict)
-    resource_limits: Dict[str, Any] = field(default_factory=dict)
+    env_vars: dict[str, str] = field(default_factory=dict)
+    resource_limits: dict[str, Any] = field(default_factory=dict)
 
 
 class CircuitBreaker:
@@ -203,7 +205,7 @@ class CircuitBreaker:
                     },
                 )
 
-    def get_state(self) -> Dict[str, Any]:
+    def get_state(self) -> dict[str, Any]:
         """Get current circuit state."""
         return {
             "name": self.name,
@@ -255,8 +257,8 @@ class ConfigWatcher:
     def __init__(self, config_path: Path, poll_interval: float = 5.0) -> None:
         self.config_path = config_path
         self.poll_interval = poll_interval
-        self._configs: Dict[str, ServiceConfig] = {}
-        self._callbacks: List[Callable[[str, ServiceConfig], None]] = []
+        self._configs: dict[str, ServiceConfig] = {}
+        self._callbacks: list[Callable[[str, ServiceConfig], None]] = []
         self._running = False
         self._task: asyncio.Task = None
         self._last_modified: float = None
@@ -301,7 +303,7 @@ class ConfigWatcher:
             with open(self.config_path) as f:
                 data = json.load(f)
 
-            new_configs: Dict[str, ServiceConfig] = {}
+            new_configs: dict[str, ServiceConfig] = {}
             for layer_id, cfg in data.items():
                 new_configs[layer_id] = ServiceConfig(
                     enabled=cfg.get("enabled", True),
@@ -359,8 +361,8 @@ class AMOSResilienceEngine:
     def __init__(self, config_path: Optional[Path] = None) -> None:
         self.config_path = config_path or Path("_AMOS_BRAIN/service_config.json")
         self.watcher = ConfigWatcher(self.config_path)
-        self.circuit_breakers: Dict[str, CircuitBreaker] = {}
-        self.retry_policies: Dict[str, RetryPolicy] = {}
+        self.circuit_breakers: dict[str, CircuitBreaker] = {}
+        self.retry_policies: dict[str, RetryPolicy] = {}
         self._running = False
 
         # Register for config changes
@@ -418,7 +420,7 @@ class AMOSResilienceEngine:
 
         return await cb.call(retry_operation)
 
-    def get_circuit_states(self) -> Dict[str, dict[str, Any]]:
+    def get_circuit_states(self) -> dict[str, dict[str, Any]]:
         """Get all circuit breaker states."""
         return {name: cb.get_state() for name, cb in self.circuit_breakers.items()}
 
@@ -449,8 +451,8 @@ class SelfHealingManager:
 
     def __init__(self, resilience_engine: AMOSResilienceEngine) -> None:
         self.resilience_engine = resilience_engine
-        self.incidents: List[Incident] = []
-        self.healing_actions: Dict[str, Callable[[str], Any]] = {
+        self.incidents: list[Incident] = []
+        self.healing_actions: dict[str, Callable[[str], Any]] = {
             "restart": self._action_restart,
             "reload_config": self._action_reload_config,
             "isolate": self._action_isolate,
@@ -567,7 +569,7 @@ class SelfHealingManager:
 
         if similar_incidents:
             # Find most successful resolution
-            resolutions: Dict[str, int] = {}
+            resolutions: dict[str, int] = {}
             for inc in similar_incidents:
                 if inc.resolution:
                     resolutions[inc.resolution] = resolutions.get(inc.resolution, 0) + 1
@@ -606,7 +608,7 @@ class SelfHealingManager:
         print(f"[SelfHealing] ESCALATING {component} - Critical failure")
         # Could send alert, create ticket, etc.
 
-    def get_healing_stats(self) -> Dict[str, Any]:
+    def get_healing_stats(self) -> dict[str, Any]:
         """Get self-healing statistics."""
         resolved = sum(1 for inc in self.incidents if inc.resolution)
         escalated = sum(1 for inc in self.incidents if inc.resolution == "escalate")
@@ -636,7 +638,7 @@ class ChaosEngineering:
 
     def __init__(self, resilience_engine: AMOSResilienceEngine) -> None:
         self.resilience_engine = resilience_engine
-        self._experiments: List[dict[str, Any]] = []
+        self._experiments: list[dict[str, Any]] = []
         self._running = False
 
     async def run_experiment(
@@ -645,7 +647,7 @@ class ChaosEngineering:
         failure_type: str,
         duration: float = 30.0,
         intensity: float = 0.5,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Run a chaos experiment."""
         print(f"[Chaos] Starting experiment on {target_component}: {failure_type}")
 
@@ -687,7 +689,7 @@ class ChaosEngineering:
 
     async def _inject_errors(self, component: str, intensity: float) -> None:
         """Inject random errors."""
-        print(f"[Chaos] Injecting {intensity*100:.0f}% error rate into {component}")
+        print(f"[Chaos] Injecting {intensity * 100:.0f}% error rate into {component}")
 
     async def _inject_crash(self, component: str) -> None:
         """Simulate component crash."""
@@ -706,7 +708,7 @@ class ChaosEngineering:
         return -1  # Did not recover
 
 
-def generate_default_config() -> Dict[str, Any]:
+def generate_default_config() -> dict[str, Any]:
     """Generate default service configuration."""
     layers = [
         "00_ROOT",

@@ -17,12 +17,9 @@ Owner: AMOS Brain (Canonical Runtime)
 Version: 1.0.0
 """
 
-
 import sys
-import time
 import unittest
 from pathlib import Path
-from typing import Any
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -41,19 +38,20 @@ class TestArchitectureIntegration(unittest.TestCase):
         cls.evolution_available = cls._check_evolution()
         cls.governance_available = cls._check_governance()
 
-        print(f"\n{'='*70}")
+        print(f"\n{'=' * 70}")
         print("AMOS ARCHITECTURE INTEGRATION TEST SUITE")
-        print(f"{'='*70}")
+        print(f"{'=' * 70}")
         print(f"Omega available: {cls.omega_available}")
         print(f"Evolution available: {cls.evolution_available}")
         print(f"Governance available: {cls.governance_available}")
-        print(f"{'='*70}\n")
+        print(f"{'=' * 70}\n")
 
     @staticmethod
     def _check_omega() -> bool:
         """Check if Repo Doctor Omega is available."""
         try:
             from repo_doctor_omega.state.basis import BasisVector
+
             return True
         except ImportError:
             return False
@@ -64,6 +62,7 @@ class TestArchitectureIntegration(unittest.TestCase):
         try:
             from amos_self_evolution.evolution_contract_registry import EvolutionContract
             from amos_self_evolution.evolution_execution_engine import EvolutionExecutionEngine
+
             return True
         except ImportError:
             return False
@@ -73,6 +72,7 @@ class TestArchitectureIntegration(unittest.TestCase):
         """Check if governance is available."""
         try:
             from amos_brain.governance_bridge import GovernanceBridge
+
             return True
         except ImportError:
             return False
@@ -154,12 +154,12 @@ class TestArchitectureIntegration(unittest.TestCase):
         if not self.omega_available or not self.evolution_available:
             self.skipTest("Omega or Evolution not available")
 
+        from amos_self_evolution.evolution_contract_registry import EvolutionContract
         from repo_doctor_omega.omega_evolution_bridge import (
             OmegaEvolutionBridge,
             StateEvolutionTrigger,
             StateTriggerThreshold,
         )
-        from amos_self_evolution.evolution_contract_registry import EvolutionContract
 
         bridge = OmegaEvolutionBridge(str(self.repo_root))
 
@@ -188,8 +188,8 @@ class TestArchitectureIntegration(unittest.TestCase):
             self.skipTest("Governance or Evolution not available")
 
         from amos_self_evolution.governance_evolution_bridge import (
-            GovernanceEvolutionBridge,
             BridgeMode,
+            GovernanceEvolutionBridge,
         )
 
         bridge = GovernanceEvolutionBridge(str(self.repo_root))
@@ -230,11 +230,11 @@ class TestArchitectureIntegration(unittest.TestCase):
         if not self.evolution_available:
             self.skipTest("Evolution not available")
 
+        from amos_self_evolution.evolution_contract_registry import EvolutionContract
         from amos_self_evolution.evolution_execution_engine import (
             EvolutionExecutionEngine,
             ExecutionPhase,
         )
-        from amos_self_evolution.evolution_contract_registry import EvolutionContract
 
         engine = EvolutionExecutionEngine(str(self.repo_root))
 
@@ -310,9 +310,11 @@ class TestArchitectureIntegration(unittest.TestCase):
         if not (self.omega_available and self.evolution_available):
             self.skipTest("Required systems not available")
 
+        from amos_self_evolution.governance_evolution_bridge import (
+            BridgeMode,
+            GovernanceEvolutionBridge,
+        )
         from repo_doctor_omega.omega_evolution_bridge import OmegaEvolutionBridge
-        from amos_self_evolution.governance_evolution_bridge import GovernanceEvolutionBridge
-        from amos_self_evolution.governance_evolution_bridge import BridgeMode
 
         omega_bridge = OmegaEvolutionBridge(str(self.repo_root))
         gov_bridge = GovernanceEvolutionBridge(str(self.repo_root))
@@ -367,15 +369,16 @@ class TestEndToEndAutonomousFlow(unittest.TestCase):
     def test_full_detect_decide_execute_learn_cycle(self) -> None:
         """Test complete autonomous self-improvement cycle."""
         # This test simulates the full cycle without actual mutations
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("END-TO-END AUTONOMOUS FLOW TEST")
-        print("="*70)
+        print("=" * 70)
 
         steps = []
 
         # Step 1: Detect (Omega State)
         try:
             from repo_doctor_omega.omega_evolution_bridge import OmegaEvolutionBridge
+
             bridge = OmegaEvolutionBridge(".")
             state = bridge.get_state_health_summary()
             steps.append(("Detect", "✓ Omega state retrieved", state.get("overall_health", 0)))
@@ -385,9 +388,10 @@ class TestEndToEndAutonomousFlow(unittest.TestCase):
         # Step 2: Decide (Governance)
         try:
             from amos_self_evolution.governance_evolution_bridge import (
-                GovernanceEvolutionBridge,
                 BridgeMode,
+                GovernanceEvolutionBridge,
             )
+
             bridge = GovernanceEvolutionBridge(".")
             bridge.set_mode(BridgeMode.OBSERVE)  # Safe mode
             steps.append(("Decide", "✓ Governance ready", 1))
@@ -397,6 +401,7 @@ class TestEndToEndAutonomousFlow(unittest.TestCase):
         # Step 3: Safety Check (E003)
         try:
             from amos_self_evolution.regression_guard import RegressionGuard
+
             guard = RegressionGuard(".")
             steps.append(("Safety", "✓ Regression guard ready", 1))
         except Exception as e:
@@ -405,6 +410,7 @@ class TestEndToEndAutonomousFlow(unittest.TestCase):
         # Step 4: Execute Capability (E012)
         try:
             from amos_self_evolution.evolution_execution_engine import EvolutionExecutionEngine
+
             engine = EvolutionExecutionEngine(".")
             steps.append(("Execute", "✓ Evolution engine ready", 1))
         except Exception as e:
@@ -413,6 +419,7 @@ class TestEndToEndAutonomousFlow(unittest.TestCase):
         # Step 5: Rollback Capability (E004)
         try:
             from amos_self_evolution.rollback_guard import RollbackGuard
+
             guard = RollbackGuard(".")
             steps.append(("Rollback", "✓ Rollback guard ready", 1))
         except Exception as e:
@@ -427,7 +434,7 @@ class TestEndToEndAutonomousFlow(unittest.TestCase):
         total_count = len(steps)
 
         print(f"\nResult: {success_count}/{total_count} steps operational")
-        print("="*70)
+        print("=" * 70)
 
         # Test passes if at least 4/5 steps are ready
         self.assertGreaterEqual(success_count, 4, f"Only {success_count}/5 steps operational")
@@ -448,14 +455,14 @@ def run_integration_tests() -> None:
     result = runner.run(suite)
 
     # Summary
-    print(f"\n{'='*70}")
+    print(f"\n{'=' * 70}")
     print("INTEGRATION TEST SUMMARY")
-    print(f"{'='*70}")
+    print(f"{'=' * 70}")
     print(f"Tests run: {result.testsRun}")
     print(f"Successes: {result.testsRun - len(result.failures) - len(result.errors)}")
     print(f"Failures: {len(result.failures)}")
     print(f"Errors: {len(result.errors)}")
-    print(f"{'='*70}")
+    print(f"{'=' * 70}")
 
     if result.wasSuccessful():
         print("✓ ALL INTEGRATION TESTS PASSED")

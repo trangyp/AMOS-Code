@@ -10,6 +10,8 @@ State-of-the-art async patterns for production reliability:
 - Async semaphore-based throttling
 """
 
+from __future__ import annotations
+
 import asyncio
 import functools
 import random
@@ -17,7 +19,7 @@ import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, Optional, Tuple, TypeVar
+from typing import Any, Optional, TypeVar
 
 T = TypeVar("T")
 
@@ -132,7 +134,7 @@ class RetryConfig:
     max_delay: float = 60.0
     exponential_base: float = 2.0
     jitter: bool = True
-    retryable_exceptions: Tuple[type[Exception], ...] = field(default_factory=lambda: (Exception,))
+    retryable_exceptions: tuple[type[Exception], ...] = field(default_factory=lambda: (Exception,))
 
 
 class AsyncRetry:
@@ -253,9 +255,9 @@ class AsyncSafetyManager:
     """
 
     def __init__(self):
-        self.circuit_breakers: Dict[str, CircuitBreaker] = {}
-        self.bulkheads: Dict[str, AsyncBulkhead] = {}
-        self.retry_policies: Dict[str, AsyncRetry] = {}
+        self.circuit_breakers: dict[str, CircuitBreaker] = {}
+        self.bulkheads: dict[str, AsyncBulkhead] = {}
+        self.retry_policies: dict[str, AsyncRetry] = {}
 
     def get_circuit_breaker(
         self, name: str, config: Optional[CircuitBreakerConfig] = None

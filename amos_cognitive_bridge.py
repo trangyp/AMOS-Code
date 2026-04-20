@@ -14,22 +14,17 @@ Owner: Trang
 Version: 1.0.0
 """
 
+from __future__ import annotations
+
 import asyncio
 import json
-import sys
 import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
-from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
-# Add paths for imports
-_AMOS_ROOT = Path(__file__).parent.resolve()
-sys.path.insert(0, str(_AMOS_ROOT))
-sys.path.insert(0, str(_AMOS_ROOT / "AMOS_ORGANISM_OS"))
-sys.path.insert(0, str(_AMOS_ROOT / "clawspring"))
-
+UTC = timezone.utc
 # Kernel imports
 # Organism imports
 from AMOS_ORGANISM_OS.organism import AmosOrganism
@@ -48,7 +43,7 @@ class CognitiveRequest:
 
     request_id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     tool_name: str = ""
-    arguments: Dict[str, Any] = field(default_factory=dict)
+    arguments: dict[str, Any] = field(default_factory=dict)
     timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     source: str = "mcp"  # mcp, api, cli, internal
 
@@ -59,9 +54,9 @@ class CognitiveResponse:
 
     request_id: str = ""
     success: bool = False
-    result: Dict[str, Any] = field(default_factory=dict)
+    result: dict[str, Any] = field(default_factory=dict)
     selected_branch_id: str = None
-    morphs_executed: List[str] = field(default_factory=list)
+    morphs_executed: list[str] = field(default_factory=list)
     execution_time_ms: float = 0.0
     state_hash: str = ""
     timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
@@ -112,9 +107,9 @@ class AMOSCognitiveBridge:
         self._initialized = False
         self._kernel: Optional[AMOSKernelRuntime] = None
         self._organism: Optional[AmosOrganism] = None
-        self._tool_registry: Dict[str, SubsystemTool] = {}
-        self._request_history: List[CognitiveRequest] = []
-        self._response_history: List[CognitiveResponse] = []
+        self._tool_registry: dict[str, SubsystemTool] = {}
+        self._request_history: list[CognitiveRequest] = []
+        self._response_history: list[CognitiveResponse] = []
 
     async def initialize(self) -> bool:
         """Initialize the cognitive bridge.
@@ -263,7 +258,7 @@ class AMOSCognitiveBridge:
         # Add more tool mappings as needed...
 
     async def process_tool_call(
-        self, tool_name: str, arguments: Dict[str, Any]
+        self, tool_name: str, arguments: dict[str, Any]
     ) -> CognitiveResponse:
         """Process an MCP tool call through the cognitive pipeline.
 
@@ -371,7 +366,7 @@ class AMOSCognitiveBridge:
 
     async def _generate_branches(
         self, request: CognitiveRequest, tool_def: SubsystemTool
-    ) -> List[Branch]:
+    ) -> list[Branch]:
         """Generate candidate execution branches for a request."""
         # For now, create a single direct branch
         # In full implementation, this would create multiple strategies
@@ -394,7 +389,7 @@ class AMOSCognitiveBridge:
 
         return [branch]
 
-    async def _simulate_branches(self, branches: List[Branch]) -> List[Branch]:
+    async def _simulate_branches(self, branches: list[Branch]) -> list[Branch]:
         """Simulate and score candidate branches."""
         for branch in branches:
             # Compute AMOS scores
@@ -409,7 +404,7 @@ class AMOSCognitiveBridge:
             )
         return branches
 
-    async def _filter_branches(self, branches: List[Branch]) -> List[Branch]:
+    async def _filter_branches(self, branches: list[Branch]) -> list[Branch]:
         """Apply constitution/legality filter to branches."""
         legal = []
         for branch in branches:
@@ -425,7 +420,7 @@ class AMOSCognitiveBridge:
                 legal.append(branch)
         return legal
 
-    async def _collapse_select(self, branches: List[Branch]) -> Optional[Branch]:
+    async def _collapse_select(self, branches: list[Branch]) -> Optional[Branch]:
         """Collapse to select optimal branch using constrained optimization."""
         if not branches:
             return None
@@ -494,7 +489,7 @@ class AMOSCognitiveBridge:
 
         return traceback.format_exc()
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get bridge statistics."""
         return {
             "initialized": self._initialized,

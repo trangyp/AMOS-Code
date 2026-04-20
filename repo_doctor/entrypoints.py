@@ -41,7 +41,7 @@ class EntrypointAnalyzer:
     Analyzes entrypoints for validity.
     """
 
-    def __init__(self, repo_path: str | Path):
+    def __init__(self, repo_path: Union[str, Path]):
         self.repo_path = Path(repo_path).resolve()
         self.issues: List[EntrypointIssue] = []
         self.entrypoints: dict[str, tuple[str, str]] = {}  # name -> (module, function)

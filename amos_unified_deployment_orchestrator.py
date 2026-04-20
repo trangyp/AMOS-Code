@@ -37,7 +37,9 @@ import signal
 import sys
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from enum import Enum, auto
 from pathlib import Path
 
@@ -48,7 +50,6 @@ from amos_mcp_production_integration import (
 
 # Core AMOS imports
 from amos_production_runtime import AMOSProductionRuntime, get_production_runtime
-from typing import List, Optional
 
 
 class DeploymentPhase(Enum):
@@ -123,8 +124,8 @@ class DeploymentStatus:
     error_count: int = 0
 
     # Issues
-    warnings: List[str] = field(default_factory=list)
-    errors: List[str] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
 
 
 class AMOSDeploymentOrchestrator:

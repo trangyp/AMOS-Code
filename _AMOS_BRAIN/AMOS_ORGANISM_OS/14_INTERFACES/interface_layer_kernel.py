@@ -16,7 +16,9 @@ import queue
 import threading
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from enum import Enum, auto
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
@@ -53,8 +55,8 @@ class Command:
 
     command_type: CommandType
     raw_input: str
-    args: List[str] = field(default_factory=list)
-    kwargs: Dict[str, Any] = field(default_factory=dict)
+    args: list[str] = field(default_factory=list)
+    kwargs: dict[str, Any] = field(default_factory=dict)
     timestamp: str = ""
     session_id: str = ""
 
@@ -69,7 +71,7 @@ class Response:
 
     success: bool
     message: str
-    data: Dict[str, Any] = field(default_factory=dict)
+    data: dict[str, Any] = field(default_factory=dict)
     timestamp: str = ""
     response_type: str = "text"
 
@@ -77,7 +79,7 @@ class Response:
         if not self.timestamp:
             self.timestamp = datetime.now(UTC).isoformat()
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "success": self.success,
             "message": self.message,
@@ -94,7 +96,7 @@ class Session:
     session_id: str
     user_id: str
     interface_type: InterfaceType
-    context: Dict[str, Any] = field(default_factory=dict)
+    context: dict[str, Any] = field(default_factory=dict)
     message_history: list[dict[str, Any]] = field(default_factory=list)
     created_at: str = ""
     last_active: str = ""
@@ -125,7 +127,7 @@ class InterfaceLayerKernel:
         self.organism = organism_instance
 
         # Active sessions
-        self.sessions: Dict[str, Session] = {}
+        self.sessions: dict[str, Session] = {}
 
         # Command handlers
         self.command_handlers: dict[CommandType, Callable] = {}
@@ -135,7 +137,7 @@ class InterfaceLayerKernel:
         self.output_queue: queue.Queue = queue.Queue()
 
         # API server
-        self.api_server: Optional[HTTPServer] = None
+        self.api_server: HTTPServer = None
         self.api_thread: threading.Thread = None
 
         # Statistics
@@ -293,7 +295,7 @@ Examples:
         logger.info(f"Created session {session_id} for user {user_id}")
         return session
 
-    def get_session(self, session_id: str) -> Optional[Session]:
+    def get_session(self, session_id: str) -> Session:
         """Get a session by ID."""
         return self.sessions.get(session_id)
 
@@ -462,7 +464,7 @@ Examples:
             self.api_server.shutdown()
             logger.info("API server stopped")
 
-    def get_state(self) -> Dict[str, Any]:
+    def get_state(self) -> dict[str, Any]:
         """Get current interface layer state."""
         return {
             "active_sessions": len(self.sessions),

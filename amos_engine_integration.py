@@ -1,7 +1,7 @@
 """AMOS Engine Integration - Unified API."""
 
 from dataclasses import dataclass
-from typing import Any, Dict
+from typing import Any
 
 from amos_field_dynamics import create_scalar_field
 from amos_self_evolution_test_suite import get_self_evolution_test_suite
@@ -11,7 +11,7 @@ from amos_temporal_engine import get_temporal_engine
 @dataclass
 class EngineResult:
     success: bool
-    data: Dict[str, Any]
+    data: dict[str, Any]
 
 
 class AMOSEngineIntegration:
@@ -22,7 +22,7 @@ class AMOSEngineIntegration:
         self.safety = get_self_evolution_test_suite()
         self.field = create_scalar_field()
 
-    async def get_system_status(self) -> Dict[str, Any]:
+    async def get_system_status(self) -> dict[str, Any]:
         return {
             "temporal": self.temporal.get_metrics(),
             "field": self.field.get_metrics(),

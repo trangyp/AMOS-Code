@@ -1,0 +1,136 @@
+name: AMOS Kernel CI
+
+on:
+  push:
+    paths:
+      - 'amos_kernel/**'
+      - 'tests/kernel/**'
+  pull_request:
+    paths:
+      - 'amos_kernel/**'
+      - 'tests/kernel/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.9', '3.10', '3.11', '3.12']
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt', '**/pyproject.toml') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install numpy pytest pytest-cov flake8 mypy
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        pip install -e .
+
+    - name: Lint with flake8
+      run: |
+        # Stop on syntax errors or undefined names
+        flake8 amos_kernel --count --select=E9,F63,F7,F82 --show-source --statistics
+        # Treat all errors as warnings
+        flake8 amos_kernel --count --exit-zero --max-complexity=10 --max-line-length=100 --statistics
+
+    - name: Type check with mypy
+      run: |
+        mypy amos_kernel --ignore-missing-imports --no-strict-optional
+
+    - name: Run kernel tests
+      run: |
+        pytest tests/kernel/ -v --cov=amos_kernel --cov-report=xml --cov-report=term
+
+    - name: Test CLI commands
+      run: |
+        python -m amos_kernel version
+        python -m amos_kernel doctor
+
+    - name: Upload coverage
+      uses: codecov/codecov-action@v3
+      with:
+        files: ./coverage.xml
+        flags: kernel
+        name: kernel-py${{ matrix.python-version }}
+
+  integration:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install numpy pytest
+        pip install -e .
+
+    - name: Run integration tests
+      run: |
+        python3 -c "
+        from amos_kernel import get_kernel
+        from amos_kernel.equations import get_executor
+        kernel = get_kernel()
+        executor = get_executor()
+        result = executor.execute('softmax', {'logits': [1.0, 2.0, 3.0]})
+        assert result.success
+        assert result.law_passed
+        assert result.collapse_risk < 0.5
+        print('Integration test passed')
+        "
+
+  performance:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install numpy pytest
+        pip install -e .
+
+    - name: Performance benchmarks
+      run: |
+        python3 -c "
+        import time
+        from amos_kernel.workflows import get_workflow_engine
+        engine = get_workflow_engine()
+        start = time.time()
+        for i in range(100):
+            result = engine.execute(
+                workflow_id='bench-' + str(i),
+                raw_input={'biological': {'load': 0.5}, 'cognitive': {'focus': 0.8}, 'system': {'cpu': 0.3}, 'environment': {'risk': 0.1}},
+            )
+        elapsed = time.time() - start
+        print('Executed 100 workflows in ' + str(round(elapsed, 2)) + 's')
+        assert elapsed < 30
+        print('Performance benchmark passed')
+        "

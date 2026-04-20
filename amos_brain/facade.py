@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import asyncio
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Optional
 
 from .agent_bridge import get_agent_bridge
 
@@ -30,11 +30,11 @@ class BrainResponse:
 
     success: bool
     content: str
-    reasoning: List[str]
+    reasoning: list[str]
     confidence: str
     law_compliant: bool
-    violations: List[str]
-    metadata: Dict[str, Any]
+    violations: list[str]
+    metadata: dict[str, Any]
     domain: str = "general"
 
 
@@ -46,8 +46,8 @@ class Decision:
     decision_id: str
     reasoning: str
     risk_level: str
-    law_violations: List[str]
-    alternative_actions: List[str]
+    law_violations: list[str]
+    alternative_actions: list[str]
 
 
 class BrainClient:
@@ -99,6 +99,7 @@ class BrainClient:
         """Lazy initialization of execution bridge."""
         if self._execution_bridge is None:
             from .execution_bridge import get_execution_bridge
+
             self._execution_bridge = await get_execution_bridge()
         return self._execution_bridge
 
@@ -117,7 +118,7 @@ class BrainClient:
         return self.arch_bridge.get_context()
 
     def validate_architecture(
-        self, action: str, target_files: List[str]
+        self, action: str, target_files: list[str]
     ) -> ArchitectureValidationResult:
         """Validate a proposed action against architectural constraints.
 
@@ -131,8 +132,11 @@ class BrainClient:
         return self.arch_bridge.validate(action, target_files)
 
     async def think(
-        self, query: str, domain: str = "general", require_law_compliance: bool = True,
-        use_canon_context: bool = True
+        self,
+        query: str,
+        domain: str = "general",
+        require_law_compliance: bool = True,
+        use_canon_context: bool = True,
     ) -> BrainResponse:
         """Process a cognitive query through the full brain with Canon integration.
 
@@ -199,7 +203,7 @@ class BrainClient:
         )
 
     def decide(
-        self, question: str, options: List[str]  = None, context: str = ""
+        self, question: str, options: Optional[list[str]] = None, context: str = ""
     ) -> Decision:
         """Make a decision with full cognitive analysis.
 
@@ -253,7 +257,7 @@ class BrainClient:
 
     def validate_action(
         self, action_description: str, action_type: str = "general"
-    ) -> Tuple[bool, list[str]]:
+    ) -> tuple[bool, list[str]]:
         """Quick validation if an action complies with global laws.
 
         Args:
@@ -292,7 +296,7 @@ class BrainClient:
 
         return is_valid, violations
 
-    def orchestrate(self, goal: str, max_iterations: int = 10) -> Dict[str, Any]:
+    def orchestrate(self, goal: str, max_iterations: int = 10) -> dict[str, Any]:
         """Orchestrate a complex goal through meta-cognitive control.
 
         Args:
@@ -326,7 +330,7 @@ class BrainClient:
         except ImportError:
             return None
 
-    def get_auto_fixes(self, max_fixes: int = 10) -> List[Any]:
+    def get_auto_fixes(self, max_fixes: int = 10) -> list[Any]:
         """Get repairs that can be safely applied automatically."""
         try:
             from .repair_bridge import get_repair_bridge
@@ -346,7 +350,7 @@ class BrainClient:
         except ImportError:
             return None
 
-    def check_meta_invariants(self) -> Dict[str, bool]:
+    def check_meta_invariants(self) -> dict[str, bool]:
         """Check all meta-architecture invariants (semantic, temporal, trust, recovery, self-integrity)."""
         try:
             from .meta_architecture_bridge import get_meta_architecture_bridge
@@ -356,7 +360,7 @@ class BrainClient:
         except ImportError:
             return {}
 
-    def get_critical_meta_issues(self) -> List[Any]:
+    def get_critical_meta_issues(self) -> list[Any]:
         """Get critical meta-architecture issues (failures of meaning, time, trust, recovery)."""
         try:
             from .meta_architecture_bridge import get_meta_architecture_bridge
@@ -366,7 +370,7 @@ class BrainClient:
         except ImportError:
             return []
 
-    def get_architecture_health(self) -> Dict[str, Any]:
+    def get_architecture_health(self) -> dict[str, Any]:
         """Get complete architecture health snapshot for dashboard."""
         try:
             from .monitoring_bridge import get_monitoring_bridge
@@ -385,7 +389,7 @@ class BrainClient:
         agent_class: str,
         task_objective: str,
         authorized_by: str = "brain_client",
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Spawn bounded AI agent for deterministic task execution.
 
         Args:
@@ -425,7 +429,7 @@ class BrainClient:
             },
         }
 
-    def get_agent_run(self, run_id: str) -> Dict[str, Any] :
+    def get_agent_run(self, run_id: str) -> dict[str, Any]:
         """Get status of agent run."""
         from .agent_fabric_kernel import get_agent_fabric_kernel
 
@@ -457,7 +461,7 @@ class BrainClient:
         self,
         failure_type: str,
         priority: str = "p2",
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Start automatic repo debugging (Repo Autopsy).
 
         Args:
@@ -489,9 +493,7 @@ class BrainClient:
             priority=priority,
         )
 
-        session = asyncio.get_event_loop().run_until_complete(
-            engine.start_autopsy(request)
-        )
+        session = asyncio.get_event_loop().run_until_complete(engine.start_autopsy(request))
 
         return {
             "session_id": session.request.id,
@@ -501,7 +503,7 @@ class BrainClient:
             "fault_locations": len(session.fault_locations),
         }
 
-    def get_autopsy_report(self, session_id: str) -> Dict[str, Any] :
+    def get_autopsy_report(self, session_id: str) -> dict[str, Any]:
         """Get autopsy report for completed session."""
         from .repo_autopsy_engine import get_repo_autopsy_engine
 
@@ -527,7 +529,9 @@ class BrainClient:
                 for loc in report.fault_locations
             ],
             "proposed_fixes_count": len(report.proposed_fixes),
-            "recommended_fix": report.recommended_fix.description if report.recommended_fix else None,
+            "recommended_fix": report.recommended_fix.description
+            if report.recommended_fix
+            else None,
             "requires_human_review": report.requires_human_review,
             "estimated_repair_time": report.estimated_repair_time,
             "markdown": report.to_markdown(),
@@ -536,8 +540,8 @@ class BrainClient:
     def simulate_deployment(
         self,
         target: str,
-        scenarios: List[dict]  = None,
-    ) -> Dict[str, Any]:
+        scenarios: list[dict] = None,
+    ) -> dict[str, Any]:
         """Run deployment impact simulation.
 
         Args:
@@ -581,12 +585,11 @@ class BrainClient:
             requested_by="brain_client",
         )
 
-        result = asyncio.get_event_loop().run_until_complete(
-            engine.run_simulation(request)
-        )
+        result = asyncio.get_event_loop().run_until_complete(engine.run_simulation(request))
 
         # Wait briefly for initial processing
         import time
+
         time.sleep(0.5)
 
         return {
@@ -597,7 +600,7 @@ class BrainClient:
             "confidence": result.confidence_score,
         }
 
-    def get_simulation_result(self, simulation_id: str) -> Dict[str, Any] :
+    def get_simulation_result(self, simulation_id: str) -> dict[str, Any]:
         """Get full simulation results."""
         from .simulation_engine import get_simulation_engine
 
@@ -632,7 +635,7 @@ class BrainClient:
             "markdown": result.to_markdown() if result.status == "completed" else None,
         }
 
-    def validate_pre_commit(self) -> Dict[str, Any]:
+    def validate_pre_commit(self) -> dict[str, Any]:
         """Validate staged files for pre-commit hook integration."""
         try:
             from .monitoring_bridge import get_monitoring_bridge
@@ -642,7 +645,7 @@ class BrainClient:
         except ImportError:
             return {"valid": True, "message": "monitoring not available"}
 
-    def predict_architecture_failures(self) -> Dict[str, Any]:
+    def predict_architecture_failures(self) -> dict[str, Any]:
         """Predict future architecture failures from current health data."""
         try:
             from .monitoring_bridge import get_monitoring_bridge
@@ -658,7 +661,7 @@ class BrainClient:
         except ImportError:
             return {"error": "predictive_bridge not available"}
 
-    def assess_change_risk(self, files: List[str]) -> Dict[str, Any]:
+    def assess_change_risk(self, files: list[str]) -> dict[str, Any]:
         """Assess risk of proposed code changes before committing."""
         try:
             from .predictive_bridge import get_predictive_bridge
@@ -668,7 +671,7 @@ class BrainClient:
         except ImportError:
             return {"error": "predictive_bridge not available"}
 
-    def get_predictive_warnings(self) -> List[dict[str, Any]]:
+    def get_predictive_warnings(self) -> list[dict[str, Any]]:
         """Get active early warnings about impending architecture issues."""
         try:
             from .predictive_bridge import get_predictive_bridge
@@ -678,7 +681,7 @@ class BrainClient:
         except ImportError:
             return []
 
-    def evaluate_for_autonomous_action(self, prediction: Dict[str, Any]) -> Dict[str, Any]:
+    def evaluate_for_autonomous_action(self, prediction: dict[str, Any]) -> dict[str, Any]:
         """Evaluate prediction for autonomous action."""
         try:
             from .governance_bridge import get_governance_bridge
@@ -688,7 +691,7 @@ class BrainClient:
         except ImportError:
             return {"decision": "recommend", "error": "governance not available"}
 
-    def evaluate_repair_for_auto_apply(self, repair: Dict[str, Any]) -> Dict[str, Any]:
+    def evaluate_repair_for_auto_apply(self, repair: dict[str, Any]) -> dict[str, Any]:
         """Evaluate repair for autonomous application."""
         try:
             from .governance_bridge import get_governance_bridge
@@ -698,7 +701,7 @@ class BrainClient:
         except ImportError:
             return {"decision": "recommend", "error": "governance not available"}
 
-    def get_governance_audit(self) -> List[dict[str, Any]]:
+    def get_governance_audit(self) -> list[dict[str, Any]]:
         """Get autonomous governance decision audit log."""
         try:
             from .governance_bridge import get_governance_bridge
@@ -708,7 +711,7 @@ class BrainClient:
         except ImportError:
             return []
 
-    def get_autonomy_stats(self) -> Dict[str, Any]:
+    def get_autonomy_stats(self) -> dict[str, Any]:
         """Get statistics on autonomous decisions."""
         try:
             from .governance_bridge import get_governance_bridge
@@ -718,7 +721,7 @@ class BrainClient:
         except ImportError:
             return {}
 
-    def discover_fleet(self, max_depth: int = 2) -> Dict[str, Any]:
+    def discover_fleet(self, max_depth: int = 2) -> dict[str, Any]:
         """Auto-discover repositories under root path."""
         try:
             from .fleet_bridge import get_fleet_bridge
@@ -728,7 +731,7 @@ class BrainClient:
         except ImportError:
             return {"error": "fleet_bridge not available"}
 
-    def get_fleet_health(self, fleet_name: str = "default") -> Dict[str, Any]:
+    def get_fleet_health(self, fleet_name: str = "default") -> dict[str, Any]:
         """Get aggregated health across fleet."""
         try:
             from .fleet_bridge import get_fleet_bridge
@@ -738,7 +741,7 @@ class BrainClient:
         except ImportError:
             return {"error": "fleet_bridge not available"}
 
-    def find_cross_repo_patterns(self, fleet_name: str = "default") -> Dict[str, Any]:
+    def find_cross_repo_patterns(self, fleet_name: str = "default") -> dict[str, Any]:
         """Find patterns common across multiple repos."""
         try:
             from .fleet_bridge import get_fleet_bridge
@@ -748,7 +751,7 @@ class BrainClient:
         except ImportError:
             return {"error": "fleet_bridge not available"}
 
-    def analyze_shared_contracts(self, fleet_name: str = "default") -> Dict[str, Any]:
+    def analyze_shared_contracts(self, fleet_name: str = "default") -> dict[str, Any]:
         """Analyze contracts shared across fleet."""
         try:
             from .fleet_bridge import get_fleet_bridge
@@ -758,7 +761,7 @@ class BrainClient:
         except ImportError:
             return {"error": "fleet_bridge not available"}
 
-    def get_fleet_remediation_plan(self, fleet_name: str = "default") -> Dict[str, Any]:
+    def get_fleet_remediation_plan(self, fleet_name: str = "default") -> dict[str, Any]:
         """Get coordinated remediation plan for fleet."""
         try:
             from .fleet_bridge import get_fleet_bridge
@@ -769,8 +772,8 @@ class BrainClient:
             return {"error": "fleet_bridge not available"}
 
     def explain_decision(
-        self, decision: Dict[str, Any], context: Dict[str, Any]  = None
-    ) -> Dict[str, Any]:
+        self, decision: dict[str, Any], context: dict[str, Any] = None
+    ) -> dict[str, Any]:
         """Explain a decision with reasoning."""
         try:
             from .explanatory_bridge import get_explanatory_bridge
@@ -780,7 +783,7 @@ class BrainClient:
         except ImportError:
             return {"error": "explanatory_bridge not available"}
 
-    def explain_confidence(self, score: float, factors: Dict[str, Any]) -> Dict[str, Any]:
+    def explain_confidence(self, score: float, factors: dict[str, Any]) -> dict[str, Any]:
         """Explain why confidence is at a particular level."""
         try:
             from .explanatory_bridge import get_explanatory_bridge
@@ -792,9 +795,9 @@ class BrainClient:
 
     def get_decision_trace(
         self,
-        start_state: Dict[str, Any],
-        decision: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        start_state: dict[str, Any],
+        decision: dict[str, Any],
+    ) -> dict[str, Any]:
         """Get reasoning trace for a decision."""
         try:
             from .explanatory_bridge import get_explanatory_bridge
@@ -805,8 +808,8 @@ class BrainClient:
             return {"error": "explanatory_bridge not available"}
 
     def justify_action(
-        self, action: str, expected_outcome: str, risks: List[str], benefits: List[str]
-    ) -> Dict[str, Any]:
+        self, action: str, expected_outcome: str, risks: list[str], benefits: list[str]
+    ) -> dict[str, Any]:
         """Get justification for an action."""
         try:
             from .explanatory_bridge import get_explanatory_bridge
@@ -816,7 +819,7 @@ class BrainClient:
         except ImportError:
             return {"error": "explanatory_bridge not available"}
 
-    def reflect_on_decisions(self) -> Dict[str, Any]:
+    def reflect_on_decisions(self) -> dict[str, Any]:
         """Perform meta-cognitive reflection on decision history."""
         try:
             from .meta_cognitive_bridge import get_meta_cognitive_bridge
@@ -829,11 +832,11 @@ class BrainClient:
     def record_decision_outcome(
         self,
         decision_type: str,
-        context: Dict[str, Any],
-        outcome: Dict[str, Any],
+        context: dict[str, Any],
+        outcome: dict[str, Any],
         confidence: float,
         success: bool,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Record a decision for meta-cognitive learning."""
         try:
             from .meta_cognitive_bridge import get_meta_cognitive_bridge
@@ -843,7 +846,7 @@ class BrainClient:
         except ImportError:
             return {"error": "meta_cognitive_bridge not available"}
 
-    def get_meta_cognitive_status(self) -> Dict[str, Any]:
+    def get_meta_cognitive_status(self) -> dict[str, Any]:
         """Get meta-cognitive reflection status."""
         try:
             from .meta_cognitive_bridge import get_meta_cognitive_bridge
@@ -853,7 +856,7 @@ class BrainClient:
         except ImportError:
             return {"error": "meta_cognitive_bridge not available"}
 
-    def get_self_improvement_suggestions(self) -> Dict[str, Any]:
+    def get_self_improvement_suggestions(self) -> dict[str, Any]:
         """Get self-improvement suggestions from meta-cognitive analysis."""
         try:
             from .meta_cognitive_bridge import get_meta_cognitive_bridge
@@ -863,7 +866,7 @@ class BrainClient:
         except ImportError:
             return {"error": "meta_cognitive_bridge not available"}
 
-    def find_causal_root_causes(self, symptom: str, data: Dict[str, Any]) -> Dict[str, Any]:
+    def find_causal_root_causes(self, symptom: str, data: dict[str, Any]) -> dict[str, Any]:
         """Find true root causes using causal reasoning (not just correlations)."""
         try:
             from .causal_bridge import get_causal_bridge
@@ -873,7 +876,7 @@ class BrainClient:
         except ImportError:
             return {"error": "causal_bridge not available"}
 
-    def check_correlation_vs_causation(self, var1: str, var2: str) -> Dict[str, Any]:
+    def check_correlation_vs_causation(self, var1: str, var2: str) -> dict[str, Any]:
         """Determine if relationship between variables is causal or spurious."""
         try:
             from .causal_bridge import get_causal_bridge
@@ -884,8 +887,8 @@ class BrainClient:
             return {"error": "causal_bridge not available"}
 
     def analyze_causal_intervention(
-        self, target: str, new_value: Any, context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, target: str, new_value: Any, context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Analyze expected effects of an intervention using causal reasoning."""
         try:
             from .causal_bridge import get_causal_bridge
@@ -896,8 +899,8 @@ class BrainClient:
             return {"error": "causal_bridge not available"}
 
     def counterfactual_reasoning(
-        self, observation: Dict[str, Any], target: str, new_value: Any
-    ) -> Dict[str, Any]:
+        self, observation: dict[str, Any], target: str, new_value: Any
+    ) -> dict[str, Any]:
         """Perform counterfactual reasoning: what if X had been different?"""
         try:
             from .causal_bridge import get_causal_bridge
@@ -907,7 +910,7 @@ class BrainClient:
         except ImportError:
             return {"error": "causal_bridge not available"}
 
-    def get_causal_insights(self) -> Dict[str, Any]:
+    def get_causal_insights(self) -> dict[str, Any]:
         """Get general causal insights about software architecture."""
         try:
             from .causal_bridge import get_causal_bridge
@@ -917,7 +920,7 @@ class BrainClient:
         except ImportError:
             return {"error": "causal_bridge not available"}
 
-    def assess_constitutional_integrity(self) -> Dict[str, Any]:
+    def assess_constitutional_integrity(self) -> dict[str, Any]:
         """Assess constitutional architecture integrity."""
         try:
             from .constitutional_bridge import get_constitutional_bridge
@@ -928,8 +931,8 @@ class BrainClient:
             return {"error": "constitutional_bridge not available"}
 
     def check_state_ownership(
-        self, domain: str, declared_writers: List[str], observed_writers: List[str]
-    ) -> Dict[str, Any]:
+        self, domain: str, declared_writers: list[str], observed_writers: list[str]
+    ) -> dict[str, Any]:
         """Check if state domain has clear ownership (I_state_ownership)."""
         try:
             from .constitutional_bridge import get_constitutional_bridge
@@ -939,7 +942,7 @@ class BrainClient:
         except ImportError:
             return {"error": "constitutional_bridge not available"}
 
-    def validate_absence_semantics(self, domain: str, required_states: List[str]) -> Dict[str, Any]:
+    def validate_absence_semantics(self, domain: str, required_states: list[str]) -> dict[str, Any]:
         """Validate absence semantics taxonomy (I_absence)."""
         try:
             from .constitutional_bridge import get_constitutional_bridge
@@ -950,8 +953,8 @@ class BrainClient:
             return {"error": "constitutional_bridge not available"}
 
     def check_semantic_versioning(
-        self, claimed_version: str, actual_changes: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, claimed_version: str, actual_changes: dict[str, Any]
+    ) -> dict[str, Any]:
         """Check semantic versioning honesty (I_semver)."""
         try:
             from .constitutional_bridge import get_constitutional_bridge
@@ -966,8 +969,8 @@ class BrainClient:
         interface: str,
         current_state: str,
         has_replacement: bool = False,
-        sunset_date: str  = None,
-    ) -> Dict[str, Any]:
+        sunset_date: Optional[str] = None,
+    ) -> dict[str, Any]:
         """Check protocol lifecycle completeness (I_protocol_lifecycle)."""
         try:
             from .constitutional_bridge import get_constitutional_bridge
@@ -979,7 +982,7 @@ class BrainClient:
         except ImportError:
             return {"error": "constitutional_bridge not available"}
 
-    def get_constitutional_insights(self) -> Dict[str, Any]:
+    def get_constitutional_insights(self) -> dict[str, Any]:
         """Get constitutional architecture insights."""
         try:
             from .constitutional_bridge import get_constitutional_bridge
@@ -989,7 +992,7 @@ class BrainClient:
         except ImportError:
             return {"error": "constitutional_bridge not available"}
 
-    def assess_temporal_integrity(self) -> Dict[str, Any]:
+    def assess_temporal_integrity(self) -> dict[str, Any]:
         """Assess temporal architecture integrity."""
         try:
             from .temporal_architecture_bridge import get_temporal_architecture_bridge
@@ -1000,9 +1003,8 @@ class BrainClient:
             return {"error": "temporal_bridge not available"}
 
     def validate_partial_order(
-        self, order_id: str, operations: List[dict[str, Any]],
-        execution_sequence: List[str]
-    ) -> Dict[str, Any]:
+        self, order_id: str, operations: list[dict[str, Any]], execution_sequence: list[str]
+    ) -> dict[str, Any]:
         """Validate execution respects partial order (I_partial_order)."""
         try:
             from .temporal_architecture_bridge import get_temporal_architecture_bridge
@@ -1013,8 +1015,8 @@ class BrainClient:
             return {"error": "temporal_bridge not available"}
 
     def validate_migration_order(
-        self, migrations: List[str], execution_order: List[str]
-    ) -> Dict[str, Any]:
+        self, migrations: list[str], execution_order: list[str]
+    ) -> dict[str, Any]:
         """Validate migration executes before deploy (I_partial_order)."""
         try:
             from .temporal_architecture_bridge import get_temporal_architecture_bridge
@@ -1024,7 +1026,7 @@ class BrainClient:
         except ImportError:
             return {"error": "temporal_bridge not available"}
 
-    def check_clock_consistency(self, components: List[dict[str, Any]]) -> Dict[str, Any]:
+    def check_clock_consistency(self, components: list[dict[str, Any]]) -> dict[str, Any]:
         """Check clock semantics consistency across components (I_clock)."""
         try:
             from .temporal_architecture_bridge import get_temporal_architecture_bridge
@@ -1035,9 +1037,12 @@ class BrainClient:
             return {"error": "temporal_bridge not available"}
 
     def validate_consistency_model(
-        self, domain: str, declared_model: str,
-        actual_model: str  = None, convergence_bound_ms: float  = None
-    ) -> Dict[str, Any]:
+        self,
+        domain: str,
+        declared_model: str,
+        actual_model: Optional[str] = None,
+        convergence_bound_ms: Optional[float] = None,
+    ) -> dict[str, Any]:
         """Validate consistency model declaration (I_consistency, I_eventuality)."""
         try:
             from .temporal_architecture_bridge import get_temporal_architecture_bridge
@@ -1049,7 +1054,7 @@ class BrainClient:
         except ImportError:
             return {"error": "temporal_bridge not available"}
 
-    def get_temporal_insights(self) -> Dict[str, Any]:
+    def get_temporal_insights(self) -> dict[str, Any]:
         """Get temporal architecture insights."""
         try:
             from .temporal_architecture_bridge import get_temporal_architecture_bridge
@@ -1059,7 +1064,7 @@ class BrainClient:
         except ImportError:
             return {"error": "temporal_bridge not available"}
 
-    def assess_operational_integrity(self) -> Dict[str, Any]:
+    def assess_operational_integrity(self) -> dict[str, Any]:
         """Assess operational architecture integrity."""
         try:
             from .operational_architecture_bridge import get_operational_architecture_bridge
@@ -1074,26 +1079,24 @@ class BrainClient:
         cache_id: str,
         strategy: str,
         invalidation: str,
-        source_of_truth: str  = None,
-        ttl_seconds: int  = None,
-        staleness_bound_ms: int  = None,
-    ) -> Dict[str, Any]:
+        source_of_truth: Optional[str] = None,
+        ttl_seconds: Optional[int] = None,
+        staleness_bound_ms: Optional[int] = None,
+    ) -> dict[str, Any]:
         """Validate cache configuration (I_cache)."""
         try:
             from .operational_architecture_bridge import get_operational_architecture_bridge
 
             bridge = get_operational_architecture_bridge(self._repo_path)
             return bridge.validate_cache_config(
-                cache_id, strategy, invalidation, source_of_truth,
-                ttl_seconds, staleness_bound_ms
+                cache_id, strategy, invalidation, source_of_truth, ttl_seconds, staleness_bound_ms
             )
         except ImportError:
             return {"error": "operational_bridge not available"}
 
     def validate_fallback_topology(
-        self, service_id: str, levels: Dict[str, list[str]],
-        triggers: Dict[str, str]  = None
-    ) -> Dict[str, Any]:
+        self, service_id: str, levels: dict[str, list[str]], triggers: dict[str, str] = None
+    ) -> dict[str, Any]:
         """Validate fallback topology (I_fallback)."""
         try:
             from .operational_architecture_bridge import get_operational_architecture_bridge
@@ -1111,24 +1114,32 @@ class BrainClient:
         max_retry: int = 3,
         dlq_enabled: bool = False,
         deduplication: bool = False,
-        dedup_window_ms: int  = None,
-    ) -> Dict[str, Any]:
+        dedup_window_ms: Optional[int] = None,
+    ) -> dict[str, Any]:
         """Validate queue configuration (I_queue)."""
         try:
             from .operational_architecture_bridge import get_operational_architecture_bridge
 
             bridge = get_operational_architecture_bridge(self._repo_path)
             return bridge.validate_queue_config(
-                queue_id, order, delivery_guarantee, max_retry,
-                dlq_enabled, deduplication, dedup_window_ms
+                queue_id,
+                order,
+                delivery_guarantee,
+                max_retry,
+                dlq_enabled,
+                deduplication,
+                dedup_window_ms,
             )
         except ImportError:
             return {"error": "operational_bridge not available"}
 
     def validate_idempotency(
-        self, operation_id: str, idempotent: bool,
-        key_extractor: str  = None, storage_backend: str  = None
-    ) -> Dict[str, Any]:
+        self,
+        operation_id: str,
+        idempotent: bool,
+        key_extractor: Optional[str] = None,
+        storage_backend: Optional[str] = None,
+    ) -> dict[str, Any]:
         """Validate idempotency configuration (I_idempotency)."""
         try:
             from .operational_architecture_bridge import get_operational_architecture_bridge
@@ -1140,7 +1151,7 @@ class BrainClient:
         except ImportError:
             return {"error": "operational_bridge not available"}
 
-    def get_operational_insights(self) -> Dict[str, Any]:
+    def get_operational_insights(self) -> dict[str, Any]:
         """Get operational architecture insights."""
         try:
             from .operational_architecture_bridge import get_operational_architecture_bridge
@@ -1150,7 +1161,7 @@ class BrainClient:
         except ImportError:
             return {"error": "operational_bridge not available"}
 
-    def assess_resilience(self) -> Dict[str, Any]:
+    def assess_resilience(self) -> dict[str, Any]:
         """Assess recovery and resilience architecture."""
         try:
             from .recovery_resilience_bridge import get_recovery_resilience_bridge
@@ -1161,60 +1172,83 @@ class BrainClient:
             return {"error": "resilience_bridge not available"}
 
     def validate_recovery_path(
-        self, path_id: str, failure_scenario: str, recovery_type: str,
-        estimated_rto_minutes: int, automated: bool = False, tested: bool = False
-    ) -> Dict[str, Any]:
+        self,
+        path_id: str,
+        failure_scenario: str,
+        recovery_type: str,
+        estimated_rto_minutes: int,
+        automated: bool = False,
+        tested: bool = False,
+    ) -> dict[str, Any]:
         """Validate recovery path (I_recovery)."""
         try:
             from .recovery_resilience_bridge import get_recovery_resilience_bridge
 
             bridge = get_recovery_resilience_bridge(self._repo_path)
             return bridge.validate_recovery_path(
-                path_id, failure_scenario, recovery_type, estimated_rto_minutes,
-                automated, tested
+                path_id, failure_scenario, recovery_type, estimated_rto_minutes, automated, tested
             )
         except ImportError:
             return {"error": "resilience_bridge not available"}
 
     def validate_dr_capability(
-        self, service_id: str, dr_enabled: bool, multi_region: bool,
-        backup_frequency_hours: int, failover_automated: bool,
-        estimated_failover_minutes: int, estimated_rpo_minutes: int,
-        data_sync_mode: str, last_dr_test: str  = None
-    ) -> Dict[str, Any]:
+        self,
+        service_id: str,
+        dr_enabled: bool,
+        multi_region: bool,
+        backup_frequency_hours: int,
+        failover_automated: bool,
+        estimated_failover_minutes: int,
+        estimated_rpo_minutes: int,
+        data_sync_mode: str,
+        last_dr_test: Optional[str] = None,
+    ) -> dict[str, Any]:
         """Validate disaster recovery capability (I_disaster_recovery)."""
         try:
             from .recovery_resilience_bridge import get_recovery_resilience_bridge
 
             bridge = get_recovery_resilience_bridge(self._repo_path)
             return bridge.validate_dr_capability(
-                service_id, dr_enabled, multi_region, backup_frequency_hours,
-                failover_automated, estimated_failover_minutes, estimated_rpo_minutes,
-                data_sync_mode, last_dr_test
+                service_id,
+                dr_enabled,
+                multi_region,
+                backup_frequency_hours,
+                failover_automated,
+                estimated_failover_minutes,
+                estimated_rpo_minutes,
+                data_sync_mode,
+                last_dr_test,
             )
         except ImportError:
             return {"error": "resilience_bridge not available"}
 
     def validate_blast_containment(
-        self, component_id: str, max_blast_radius: float, blast_unit: str,
-        containment_measures: List[str], isolation_domain: str
-    ) -> Dict[str, Any]:
+        self,
+        component_id: str,
+        max_blast_radius: float,
+        blast_unit: str,
+        containment_measures: list[str],
+        isolation_domain: str,
+    ) -> dict[str, Any]:
         """Validate blast containment (I_blast)."""
         try:
             from .recovery_resilience_bridge import get_recovery_resilience_bridge
 
             bridge = get_recovery_resilience_bridge(self._repo_path)
             return bridge.validate_blast_containment(
-                component_id, max_blast_radius, blast_unit,
-                containment_measures, isolation_domain
+                component_id, max_blast_radius, blast_unit, containment_measures, isolation_domain
             )
         except ImportError:
             return {"error": "resilience_bridge not available"}
 
     def validate_failure_domain(
-        self, domain_id: str, domain_type: str, components: List[str],
-        isolation_score: float, dependencies: List[str]  = None
-    ) -> Dict[str, Any]:
+        self,
+        domain_id: str,
+        domain_type: str,
+        components: list[str],
+        isolation_score: float,
+        dependencies: list[str] = None,
+    ) -> dict[str, Any]:
         """Validate failure domain isolation (I_isolation)."""
         try:
             from .recovery_resilience_bridge import get_recovery_resilience_bridge
@@ -1226,7 +1260,7 @@ class BrainClient:
         except ImportError:
             return {"error": "resilience_bridge not available"}
 
-    def get_resilience_insights(self) -> Dict[str, Any]:
+    def get_resilience_insights(self) -> dict[str, Any]:
         """Get recovery and resilience insights."""
         try:
             from .recovery_resilience_bridge import get_recovery_resilience_bridge
@@ -1236,7 +1270,7 @@ class BrainClient:
         except ImportError:
             return {"error": "resilience_bridge not available"}
 
-    def assess_unified_architecture(self) -> Dict[str, Any]:
+    def assess_unified_architecture(self) -> dict[str, Any]:
         """Assess unified architecture across all 19 invariants."""
         try:
             from .unified_orchestrator_bridge import get_unified_orchestrator_bridge
@@ -1246,7 +1280,7 @@ class BrainClient:
         except ImportError:
             return {"error": "unified_orchestrator not available"}
 
-    def get_unified_architectural_decision(self) -> Dict[str, Any]:
+    def get_unified_architectural_decision(self) -> dict[str, Any]:
         """Get synthesized decision from all invariant domains."""
         try:
             from .unified_orchestrator_bridge import get_unified_orchestrator_bridge
@@ -1256,7 +1290,7 @@ class BrainClient:
         except ImportError:
             return {"error": "unified_orchestrator not available"}
 
-    def get_architectural_health_dashboard(self) -> Dict[str, Any]:
+    def get_architectural_health_dashboard(self) -> dict[str, Any]:
         """Get comprehensive architectural health across all domains."""
         try:
             from .unified_orchestrator_bridge import get_unified_orchestrator_bridge
@@ -1266,7 +1300,7 @@ class BrainClient:
         except ImportError:
             return {"error": "unified_orchestrator not available"}
 
-    def get_cross_domain_correlations(self) -> Dict[str, Any]:
+    def get_cross_domain_correlations(self) -> dict[str, Any]:
         """Get cross-domain invariant correlations."""
         try:
             from .unified_orchestrator_bridge import get_unified_orchestrator_bridge
@@ -1276,7 +1310,7 @@ class BrainClient:
         except ImportError:
             return {"error": "unified_orchestrator not available"}
 
-    def get_unified_architecture_insights(self) -> Dict[str, Any]:
+    def get_unified_architecture_insights(self) -> dict[str, Any]:
         """Get unified insights across all architectural domains."""
         try:
             from .unified_orchestrator_bridge import get_unified_orchestrator_bridge
@@ -1286,22 +1320,27 @@ class BrainClient:
         except ImportError:
             return {"error": "unified_orchestrator not available"}
 
-    def capture_architecture_state(self, components: List[dict[str, Any]],
-                                    dependencies: List[dict[str, Any]],
-                                    interfaces: List[dict[str, Any]],
-                                    invariant_status: Dict[str, bool]) -> Dict[str, Any]:
+    def capture_architecture_state(
+        self,
+        components: list[dict[str, Any]],
+        dependencies: list[dict[str, Any]],
+        interfaces: list[dict[str, Any]],
+        invariant_status: dict[str, bool],
+    ) -> dict[str, Any]:
         """Capture architecture state into digital twin."""
         try:
             from .digital_twin_bridge import get_digital_twin_bridge
 
             bridge = get_digital_twin_bridge(self._repo_path)
-            return bridge.capture_architecture_state(components, dependencies,
-                                                     interfaces, invariant_status)
+            return bridge.capture_architecture_state(
+                components, dependencies, interfaces, invariant_status
+            )
         except ImportError:
             return {"error": "digital_twin not available"}
 
-    def simulate_architectural_change(self, change_type: str, target: str,
-                                      description: str, details: Dict[str, Any]) -> Dict[str, Any]:
+    def simulate_architectural_change(
+        self, change_type: str, target: str, description: str, details: dict[str, Any]
+    ) -> dict[str, Any]:
         """Simulate impact of architectural change."""
         try:
             from .digital_twin_bridge import get_digital_twin_bridge
@@ -1311,7 +1350,7 @@ class BrainClient:
         except ImportError:
             return {"error": "digital_twin not available"}
 
-    def forecast_invariant_violations(self, steps: int = 5) -> Dict[str, Any]:
+    def forecast_invariant_violations(self, steps: int = 5) -> dict[str, Any]:
         """Forecast future invariant violations."""
         try:
             from .digital_twin_bridge import get_digital_twin_bridge
@@ -1321,7 +1360,7 @@ class BrainClient:
         except ImportError:
             return {"error": "digital_twin not available"}
 
-    def evaluate_what_if_scenario(self, changes: List[dict[str, Any]]) -> Dict[str, Any]:
+    def evaluate_what_if_scenario(self, changes: list[dict[str, Any]]) -> dict[str, Any]:
         """Evaluate what-if scenario with multiple changes."""
         try:
             from .digital_twin_bridge import get_digital_twin_bridge
@@ -1331,7 +1370,7 @@ class BrainClient:
         except ImportError:
             return {"error": "digital_twin not available"}
 
-    def get_digital_twin_status(self) -> Dict[str, Any]:
+    def get_digital_twin_status(self) -> dict[str, Any]:
         """Get digital twin status."""
         try:
             from .digital_twin_bridge import get_digital_twin_bridge
@@ -1345,7 +1384,7 @@ class BrainClient:
     # Layer 18: Distributed Systems Physics Engine
     # ===================================================================
 
-    def assess_truth_arbitration(self, domains: List[dict[str, Any]]) -> Dict[str, Any]:
+    def assess_truth_arbitration(self, domains: list[dict[str, Any]]) -> dict[str, Any]:
         """Assess truth arbitration integrity across domains."""
         try:
             from .distributed_physics_bridge import get_distributed_physics_bridge
@@ -1355,7 +1394,7 @@ class BrainClient:
         except ImportError:
             return {"error": "distributed_physics not available", "satisfied": False}
 
-    def assess_irreversibility(self, transitions: List[dict[str, Any]]) -> Dict[str, Any]:
+    def assess_irreversibility(self, transitions: list[dict[str, Any]]) -> dict[str, Any]:
         """Assess irreversibility classification and compensation."""
         try:
             from .distributed_physics_bridge import get_distributed_physics_bridge
@@ -1365,7 +1404,7 @@ class BrainClient:
         except ImportError:
             return {"error": "distributed_physics not available", "satisfied": False}
 
-    def assess_quiescence(self, subsystems: List[dict[str, Any]]) -> Dict[str, Any]:
+    def assess_quiescence(self, subsystems: list[dict[str, Any]]) -> dict[str, Any]:
         """Assess quiescence integrity for safe stopping."""
         try:
             from .distributed_physics_bridge import get_distributed_physics_bridge
@@ -1375,7 +1414,7 @@ class BrainClient:
         except ImportError:
             return {"error": "distributed_physics not available", "satisfied": False}
 
-    def assess_policy_precedence(self, policy_layers: List[dict[str, Any]]) -> Dict[str, Any]:
+    def assess_policy_precedence(self, policy_layers: list[dict[str, Any]]) -> dict[str, Any]:
         """Assess policy precedence hierarchy."""
         try:
             from .distributed_physics_bridge import get_distributed_physics_bridge
@@ -1385,7 +1424,7 @@ class BrainClient:
         except ImportError:
             return {"error": "distributed_physics not available", "satisfied": False}
 
-    def assess_adaptive_bounds(self, loops: List[dict[str, Any]]) -> Dict[str, Any]:
+    def assess_adaptive_bounds(self, loops: list[dict[str, Any]]) -> dict[str, Any]:
         """Assess adaptive behavior boundedness."""
         try:
             from .distributed_physics_bridge import get_distributed_physics_bridge
@@ -1395,7 +1434,7 @@ class BrainClient:
         except ImportError:
             return {"error": "distributed_physics not available", "satisfied": False}
 
-    def assess_architectural_entropy(self, measurements: List[dict[str, Any]]) -> Dict[str, Any]:
+    def assess_architectural_entropy(self, measurements: list[dict[str, Any]]) -> dict[str, Any]:
         """Assess architectural entropy boundedness."""
         try:
             from .distributed_physics_bridge import get_distributed_physics_bridge
@@ -1405,7 +1444,9 @@ class BrainClient:
         except ImportError:
             return {"error": "distributed_physics not available", "satisfied": False}
 
-    def comprehensive_distributed_physics_assessment(self, context: Dict[str, Any]) -> Dict[str, Any]:
+    def comprehensive_distributed_physics_assessment(
+        self, context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Run comprehensive distributed systems physics assessment."""
         try:
             from .distributed_physics_bridge import get_distributed_physics_bridge
@@ -1427,7 +1468,7 @@ class BrainClient:
                 "health": 0.0,
             }
 
-    def get_distributed_physics_status(self) -> Dict[str, Any]:
+    def get_distributed_physics_status(self) -> dict[str, Any]:
         """Get Layer 18 distributed physics engine status."""
         try:
             from .distributed_physics_bridge import get_distributed_physics_bridge
@@ -1437,7 +1478,7 @@ class BrainClient:
         except ImportError:
             return {"error": "distributed_physics not available", "layer": 18}
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get complete brain status."""
         engines = self.brain.list_engines()
 
@@ -1470,29 +1511,31 @@ class BrainClient:
 # Convenience functions for simple usage
 def think(query: str, domain: str = "general") -> BrainResponse:
     """Quick think function - one line cognitive processing."""
+    import asyncio
+
     client = BrainClient()
-    return client.think(query, domain)
+    return asyncio.run(client.think(query, domain))
 
 
-def validate(action: str) -> Tuple[bool, list[str]]:
+def validate(action: str) -> tuple[bool, list[str]]:
     """Quick validation function."""
     client = BrainClient()
     return client.validate_action(action)
 
 
-def decide(question: str, options: List[str]  = None) -> Decision:
+def decide(question: str, options: list[str] = None) -> Decision:
     """Quick decision function."""
     client = BrainClient()
     return client.decide(question, options)
 
 
-async def execute(code: str, language: str = "python") -> Dict[str, Any]:
+async def execute(code: str, language: str = "python") -> dict[str, Any]:
     """Quick execution function with brain guidance."""
     client = BrainClient()
     return await client.execute_code(code, language)
 
 
-async def heal(issue_description: str) -> Dict[str, Any]:
+async def heal(issue_description: str) -> dict[str, Any]:
     """Quick self-healing function."""
     client = BrainClient()
     return await client.self_heal(issue_description)

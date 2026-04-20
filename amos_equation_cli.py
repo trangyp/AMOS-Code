@@ -38,7 +38,6 @@ except ImportError:
     print("Error: Typer required. Install with: pip install typer")
     sys.exit(1)
 
-from typing import Dict
 
 from amos_equation_kernel import (
     EquationKernel,
@@ -409,8 +408,8 @@ def summary() -> None:
 
     # Count equations by domain and pattern
     all_eqs = kernel.get_all_equations()
-    domains: Dict[str, int] = {}
-    patterns: Dict[str, int] = {}
+    domains: dict[str, int] = {}
+    patterns: dict[str, int] = {}
 
     for eq in all_eqs:
         domains[eq.domain] = domains.get(eq.domain, 0) + 1

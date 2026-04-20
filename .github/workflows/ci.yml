@@ -1,5 +1,6 @@
-# AMOS CI Pipeline
-# Runs tests on multiple Python versions
+# AMOS Brain CI Pipeline
+# Unified build contract: package installable via pip
+# Python 3.10+ required (matches pyproject.toml)
 # Author: Trang Phan
 
 name: CI
@@ -29,7 +30,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest]
-        python-version: ['3.10', '3.11', '3.12']
+        python-version: ['3.10', '3.11', '3.12', '3.13']
 
     steps:
       - name: Checkout code
@@ -41,26 +42,27 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
 
-      - name: Install dependencies
+      - name: Install build dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pytest pytest-cov pytest-xdist
-          # Install core dependencies if requirements.txt exists
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-          # Install optional dependencies for tests
-          pip install chromadb sentence-transformers || true
+          pip install pytest pytest-cov pytest-xdist build
 
-      - name: Run tests
+      - name: Build wheel
         run: |
+          python -m build --wheel
+
+      - name: Install wheel and run tests
+        run: |
+          pip install dist/amos_brain-*.whl[all,dev]
           pytest tests/ -v --tb=short \
-            --cov=amos_unified_system \
-            --cov=amos_hybrid_orchestrator \
-            --cov=amos_mcp_tools \
-            --cov=amos_auth_integration \
-            --cov=amos_vector_memory \
+            --cov=amos_brain \
+            --cov=amosl \
+            --cov=amos_model_fabric \
+            --cov=amos_self_evolution \
+            --cov=amos_platform \
             --cov-report=xml \
             --cov-report=term-missing \
-            -n auto
+            -n auto || exit 1
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
@@ -97,15 +99,19 @@ jobs:
           python-version: '3.11'
           cache: 'pip'
 
-      - name: Install dependencies
+      - name: Install build dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pytest pytest-cov
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install pytest pytest-cov build
 
-      - name: Run integration tests
+      - name: Build wheel
         run: |
-          pytest tests/integration/ -v --tb=short -m integration || true
+          python -m build --wheel
+
+      - name: Install wheel and run integration tests
+        run: |
+          pip install dist/amos_brain-*.whl[all]
+          pytest tests/integration/ -v --tb=short || exit 1
 
   smoke-test:
     name: Smoke Test System Initialization
@@ -121,22 +127,24 @@ jobs:
           python-version: '3.11'
           cache: 'pip'
 
-      - name: Install dependencies
+      - name: Install package
         run: |
           python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install -e ".[server,database,security]"
 
-      - name: Test system initialization
+      - name: Test system initialization (smoke test)
         run: |
           python -c "
-          from amos_unified_system import AMOSUnifiedSystem
-          amos = AMOSUnifiedSystem()
-          success = amos.initialize()
+          from amos_brain import get_amos_integration, get_brain, get_super_brain
+          amos = get_amos_integration()
+          brain = get_brain()
+          super_brain = get_super_brain()
           status = amos.get_status()
-          print(f'System initialized: {status[\"initialized\"]}')
-          print(f'Components ready: {len(status[\"components\"])}')
+          print(f'Brain initialized: {status[\"initialized\"]}')
+          print(f'Engines: {status.get(\"engines_count\", 0)}')
+          print(f'Laws active: {len(status.get(\"laws_active\", []))}')
           assert status['initialized'], 'System failed to initialize'
-          print('✓ Smoke test passed')
+          print('✓ Smoke test passed - package imports working')
           "
 
   lint:
@@ -157,25 +165,25 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install ruff mypy bandit safety
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install -e ".[all]"
 
-      - name: Run Ruff linter
+      - name: Run Ruff linter (strict - fails on errors)
         run: |
-          ruff check . --output-format=github || true
+          ruff check amos_brain amosl amos_model_fabric amos_self_evolution amos_platform --output-format=github || exit 1
 
-      - name: Run MyPy type checker
+      - name: Run MyPy type checker (strict - fails on errors)
         run: |
-          mypy amos_equation*.py amos_symbolic*.py --ignore-missing-imports --pretty || true
+          mypy amos_brain amosl --ignore-missing-imports --pretty || exit 1
 
-      - name: Run Bandit security scan
+      - name: Run Bandit security scan (strict - fails on issues)
         run: |
-          bandit -r . -f json -o bandit-report.json || true
-          bandit -r . -f screen || true
+          bandit -r amos_brain amosl amos_model_fabric -f json -o bandit-report.json || exit 1
+          bandit -r amos_brain amosl amos_model_fabric -f screen
 
-      - name: Check for known vulnerabilities
+      - name: Check for known vulnerabilities (strict - fails on issues)
         run: |
-          safety check --json --output safety-report.json || true
-          safety check || true
+          safety check --json --output safety-report.json || exit 1
+          safety check
 
       - name: Upload security reports
         uses: actions/upload-artifact@v4
@@ -202,16 +210,16 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ./Dockerfile.equation
+          file: ./Dockerfile
           push: false
           load: true
-          tags: amos-equation:test
+          tags: amos-brain:test
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
       - name: Test Docker image
         run: |
-          docker run --rm -d -p 8000:8000 --name amos-test amos-equation:test
+          docker run --rm -d -p 8000:8000 --name amos-test amos-brain:test
           sleep 10
           curl -f http://localhost:8000/health || (docker logs amos-test && exit 1)
           docker stop amos-test

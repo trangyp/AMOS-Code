@@ -1,13 +1,16 @@
 """AMOS Electrical Power Engine - Power systems and energy infrastructure."""
 
+from __future__ import annotations
+
 import math
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class PowerDomain(Enum):
     """Electrical power domain classifications."""
+
     GENERATION = "generation"
     TRANSMISSION = "transmission"
     DISTRIBUTION = "distribution"
@@ -30,9 +33,9 @@ class PowerSystemsKernel:
     """Kernel for power system analysis (gen, trans, dist)."""
 
     def __init__(self):
-        self.components: Dict[str, PowerComponent] = {}
-        self.buses: List[dict] = []
-        self.lines: List[dict] = []
+        self.components: dict[str, PowerComponent] = {}
+        self.buses: list[dict] = []
+        self.lines: list[dict] = []
 
     def add_bus(self, name: str, voltage_kv: float, bus_type: str = "PQ") -> dict:
         bus = {
@@ -45,8 +48,7 @@ class PowerSystemsKernel:
         return bus
 
     def add_line(
-        self, name: str, from_bus: str, to_bus: str,
-        resistance_ohm: float, reactance_ohm: float
+        self, name: str, from_bus: str, to_bus: str, resistance_ohm: float, reactance_ohm: float
     ) -> dict:
         line = {
             "name": name,
@@ -105,7 +107,7 @@ class PowerSystemsKernel:
             "reactive_power_mvar": reactive_power_mvar,
         }
 
-    def get_principles(self) -> List[str]:
+    def get_principles(self) -> list[str]:
         return [
             "Ohm's and Kirchhoff's laws",
             "Per-unit system for analysis",
@@ -118,12 +120,16 @@ class PowerElectronicsKernel:
     """Kernel for power electronics and converters."""
 
     def __init__(self):
-        self.converters: List[dict] = []
-        self.ev_chargers: List[dict] = []
+        self.converters: list[dict] = []
+        self.ev_chargers: list[dict] = []
 
     def add_converter(
-        self, name: str, converter_type: str,
-        input_voltage: float, output_voltage: float, efficiency: float = 0.95
+        self,
+        name: str,
+        converter_type: str,
+        input_voltage: float,
+        output_voltage: float,
+        efficiency: float = 0.95,
     ) -> dict:
         converter = {
             "name": name,
@@ -157,7 +163,7 @@ class PowerElectronicsKernel:
             "conversion": "DC to AC",
         }
 
-    def get_principles(self) -> List[str]:
+    def get_principles(self) -> list[str]:
         return [
             "DC-AC and AC-DC conversion",
             "PWM and switching principles",
@@ -170,8 +176,8 @@ class ProtectionReliabilityKernel:
     """Kernel for protection systems and reliability."""
 
     def __init__(self):
-        self.relays: List[dict] = []
-        self.faults: List[dict] = []
+        self.relays: list[dict] = []
+        self.faults: list[dict] = []
 
     def add_relay(self, name: str, relay_type: str, setting_a: float, time_delay_s: float) -> dict:
         relay = {
@@ -183,9 +189,13 @@ class ProtectionReliabilityKernel:
         self.relays.append(relay)
         return relay
 
-    def analyze_fault(self, fault_type: str, fault_impedance_ohm: float, system_voltage_kv: float) -> dict:
+    def analyze_fault(
+        self, fault_type: str, fault_impedance_ohm: float, system_voltage_kv: float
+    ) -> dict:
         voltage_v = system_voltage_kv * 1000 / math.sqrt(3)
-        fault_current_a = voltage_v / fault_impedance_ohm if fault_impedance_ohm > 0 else float('inf')
+        fault_current_a = (
+            voltage_v / fault_impedance_ohm if fault_impedance_ohm > 0 else float("inf")
+        )
         return {
             "fault_type": fault_type,
             "fault_impedance_ohm": fault_impedance_ohm,
@@ -194,7 +204,7 @@ class ProtectionReliabilityKernel:
             "severity": "high" if fault_current_a > 10000 else "medium",
         }
 
-    def get_principles(self) -> List[str]:
+    def get_principles(self) -> list[str]:
         return [
             "Overcurrent protection",
             "Differential protection",
@@ -207,8 +217,8 @@ class MarketsPolicyKernel:
     """Kernel for electricity markets and policy."""
 
     def __init__(self):
-        self.market_zones: List[dict] = []
-        self.tariffs: List[dict] = []
+        self.market_zones: list[dict] = []
+        self.tariffs: list[dict] = []
 
     def add_market_zone(self, name: str, zone_type: str, capacity_mw: float) -> dict:
         zone = {
@@ -219,7 +229,9 @@ class MarketsPolicyKernel:
         self.market_zones.append(zone)
         return zone
 
-    def add_tariff(self, name: str, consumer_type: str, energy_price: float, demand_charge: float) -> dict:
+    def add_tariff(
+        self, name: str, consumer_type: str, energy_price: float, demand_charge: float
+    ) -> dict:
         tariff = {
             "name": name,
             "consumer_type": consumer_type,
@@ -229,7 +241,9 @@ class MarketsPolicyKernel:
         self.tariffs.append(tariff)
         return tariff
 
-    def calculate_energy_cost(self, consumption_kwh: float, peak_demand_kw: float, tariff_name: str) -> dict:
+    def calculate_energy_cost(
+        self, consumption_kwh: float, peak_demand_kw: float, tariff_name: str
+    ) -> dict:
         tariff = next((t for t in self.tariffs if t["name"] == tariff_name), None)
         if not tariff:
             return {"error": f"Tariff {tariff_name} not found"}
@@ -243,7 +257,7 @@ class MarketsPolicyKernel:
             "total_cost": energy_cost + demand_cost,
         }
 
-    def get_principles(self) -> List[str]:
+    def get_principles(self) -> list[str]:
         return [
             "Market structure and operation",
             "Tariff design principles",
@@ -264,14 +278,10 @@ class ElectricalPowerEngine:
         self.protection_kernel = ProtectionReliabilityKernel()
         self.markets_kernel = MarketsPolicyKernel()
 
-    def analyze(
-        self, description: str, domains: Optional[List[str]] = None
-    ) -> Dict[str, Any]:
+    def analyze(self, description: str, domains: list[str | None] = None) -> dict[str, Any]:
         """Run electrical power analysis across specified domains."""
-        domains = domains or [
-            "power_systems", "power_electronics", "protection", "markets"
-        ]
-        results: Dict[str, Any] = {}
+        domains = domains or ["power_systems", "power_electronics", "protection", "markets"]
+        results: dict[str, Any] = {}
         if "power_systems" in domains:
             results["power_systems"] = self._analyze_power_systems(description)
         if "power_electronics" in domains:
@@ -339,23 +349,25 @@ class ElectricalPowerEngine:
                         lines.append(f"- **{key}**: {value}")
                 if "principles" in data:
                     lines.append(f"- **Principles**: {', '.join(data['principles'][:2])}...")
-        lines.extend([
-            "",
-            "## Gaps and Limitations",
-            "- Real-time grid data not available",
-            "- Country-specific regulations require manual lookup",
-            "- Dynamic stability analysis simplified",
-            "- Protection coordination requires specialist review",
-            "",
-            "## Safety Disclaimer",
-            "NO safety-critical decisions without qualified engineer review. "
-            "All calculations are conceptual and require validation.",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Gaps and Limitations",
+                "- Real-time grid data not available",
+                "- Country-specific regulations require manual lookup",
+                "- Dynamic stability analysis simplified",
+                "- Protection coordination requires specialist review",
+                "",
+                "## Safety Disclaimer",
+                "NO safety-critical decisions without qualified engineer review. "
+                "All calculations are conceptual and require validation.",
+            ]
+        )
         return "\n".join(lines)
 
 
 # Singleton instance
-_electrical_power_engine: Optional[ElectricalPowerEngine] = None
+_electrical_power_engine: ElectricalPowerEngine | None = None
 
 
 def get_electrical_power_engine() -> ElectricalPowerEngine:

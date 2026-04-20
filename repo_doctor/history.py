@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """
 History Analysis Module - Temporal Analysis
 
@@ -38,9 +40,9 @@ class HistoryAnalyzer:
     Analyzes repository history for temporal drift.
     """
 
-    def __init__(self, repo_path: str | Path):
+    def __init__(self, repo_path: Union[str, Path]):
         self.repo_path = Path(repo_path).resolve()
-        self.commits: List[CommitState] = []
+        self.commits: list[CommitState] = []
         self.current_commit: str = None
 
     def get_current_commit(self) -> str:
@@ -89,7 +91,7 @@ class HistoryAnalyzer:
 
     def analyze_commit_range(
         self, start_commit: str = None, end_commit: str = None
-    ) -> List[CommitState]:
+    ) -> list[CommitState]:
         """
         Analyze state vectors for a range of commits.
         """
@@ -176,11 +178,8 @@ class HistoryAnalyzer:
             script_path = self.repo_path / ".bisect_script.py"
             script_content = f"""#!/usr/bin/env python3
 import sys
-from pathlib import Path
-sys.path.insert(0, str(Path("{self.repo_path}")))
 
 from repo_doctor.invariants import InvariantEngine
-from typing import Optional
 
 engine = InvariantEngine("{self.repo_path}")
 result = engine.check_specific("{invariant_name}")
@@ -259,6 +258,6 @@ else:
 
         return "\n".join(lines)
 
-    def get_high_drift_commits(self, threshold: float = 0.5) -> List[CommitState]:
+    def get_high_drift_commits(self, threshold: float = 0.5) -> list[CommitState]:
         """Get commits with drift above threshold."""
         return [c for c in self.commits if c.drift_from_parent and c.drift_from_parent >= threshold]

@@ -15,15 +15,18 @@ Owner: Trang Phan
 Version: 2.0.0
 """
 
+from __future__ import annotations
 
 import hashlib
 import json
 import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
+
+UTC = UTC
 
 # Redis for queue
 try:
@@ -85,7 +88,7 @@ class Job:
     job_id: str
     task_name: str
     system: str
-    payload: Dict[str, Any]
+    payload: dict[str, Any]
     priority: JobPriority = JobPriority.MEDIUM
     status: JobStatus = JobStatus.PENDING
     created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
@@ -119,7 +122,7 @@ class TaskQueue:
     """Central task queue with SuperBrain governance."""
 
     # Task registry for 12 systems
-    TASK_REGISTRY: Dict[str, dict[str, Any]] = {
+    TASK_REGISTRY: dict[str, dict[str, Any]] = {
         # Cognitive Router tasks
         "cognitive_router.analyze_task": {
             "system": "cognitive_router",
@@ -207,7 +210,7 @@ class TaskQueue:
     }
 
     # Scheduled tasks (cron-like)
-    SCHEDULED_TASKS: List[dict[str, Any]] = [
+    SCHEDULED_TASKS: list[dict[str, Any]] = [
         {
             "task": "resilience_engine.health_check",
             "schedule": "*/5 * * * *",  # Every 5 minutes
@@ -237,7 +240,7 @@ class TaskQueue:
         self._brain = None
         self._executor: Optional[ThreadPoolExecutor] = None
         self._stats = WorkerStats()
-        self._handlers: Dict[str, Callable] = {}
+        self._handlers: dict[str, Callable] = {}
         self._running = False
 
         # Initialize connections
@@ -268,7 +271,7 @@ class TaskQueue:
     def submit_job(
         self,
         task_name: str,
-        payload: Dict[str, Any],
+        payload: dict[str, Any],
         system: str = None,
         priority: JobPriority = JobPriority.MEDIUM,
         scheduled_for: datetime = None,
@@ -634,7 +637,7 @@ task_queue = TaskQueue()
 # Convenience functions
 def submit_task(
     task_name: str,
-    payload: Dict[str, Any],
+    payload: dict[str, Any],
     priority: JobPriority = JobPriority.MEDIUM,
     scheduled_for: datetime = None,
     correlation_id: str = None,

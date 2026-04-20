@@ -25,9 +25,10 @@ Usage:
 import asyncio
 import sys
 from dataclasses import dataclass
-from datetime import datetime, timezone
-UTC = timezone.utc
-from typing import Any, Dict, List, Optional
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
+from typing import Any, Optional
 
 from amos_bootstrap_orchestrator import get_bootstrap_orchestrator
 from amos_self_healing_controller import get_self_healing_controller
@@ -204,7 +205,7 @@ class AMOSProductionRuntime:
         self._self_healing_enabled = False
         print("🛑 Self-healing disabled")
 
-    def get_health(self) -> Dict[str, Any]:
+    def get_health(self) -> dict[str, Any]:
         """Get current system health status.
 
         Returns:
@@ -264,7 +265,7 @@ class AMOSProductionRuntime:
 
         return self._equations.execute(name, *args)
 
-    def execute_equation_with_kernel(self, name: str, inputs: Dict[str, Any]) -> Any:
+    def execute_equation_with_kernel(self, name: str, inputs: dict[str, Any]) -> Any:
         """Execute equation through AMOS kernel with law enforcement.
 
         This is the recommended API for equation execution with full
@@ -300,7 +301,7 @@ class AMOSProductionRuntime:
 
         return self._equation_kernel.execute_equation(name, inputs)
 
-    def search_equations(self, query: str) -> List[dict[str, Any]]:
+    def search_equations(self, query: str) -> list[dict[str, Any]]:
         """Search equations by name or domain.
 
         Args:
@@ -314,7 +315,7 @@ class AMOSProductionRuntime:
 
         return self._equations.search(query)
 
-    async def run_health_check(self) -> Dict[str, Any]:
+    async def run_health_check(self) -> dict[str, Any]:
         """Run immediate comprehensive health check.
 
         Returns:

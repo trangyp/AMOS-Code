@@ -23,9 +23,10 @@ Version: 20.0.0
 
 import argparse
 import json
-from datetime import datetime, timezone
-UTC = timezone.utc
-from typing import Any, Dict
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
+from typing import Any
 
 
 class FinalValidator:
@@ -40,9 +41,9 @@ class FinalValidator:
 
     def __init__(self):
         self.validation_id = f"VAL-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}"
-        self.results: Dict[str, Any] = {}
+        self.results: dict[str, Any] = {}
 
-    def run_full_validation(self) -> Dict[str, Any]:
+    def run_full_validation(self) -> dict[str, Any]:
         """Execute complete system validation.
 
         Validates:
@@ -202,7 +203,7 @@ class FinalValidator:
 
         return report
 
-    def get_ship_ready_status(self) -> Dict[str, Any]:
+    def get_ship_ready_status(self) -> dict[str, Any]:
         """Get current ship-ready status."""
         return {
             "version": self.VERSION,
@@ -216,7 +217,7 @@ class FinalValidator:
             "next_step": "Run full validation",
         }
 
-    def declare_ship_ready(self, validation_report: Dict[str, Any]) -> Dict[str, Any]:
+    def declare_ship_ready(self, validation_report: dict[str, Any]) -> dict[str, Any]:
         """Officially declare AMOS Brain SHIP-READY.
 
         Only declares if all validations passed.
@@ -261,7 +262,7 @@ class FinalValidator:
 
         return declaration
 
-    def _save_report(self, report: Dict[str, Any]) -> None:
+    def _save_report(self, report: dict[str, Any]) -> None:
         """Save validation report."""
         report_file = f".amos_validation_{self.validation_id}.json"
         try:

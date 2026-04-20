@@ -13,7 +13,6 @@ Usage:
     python tests/integration/test_equation_kernel_integration.py
 """
 
-
 import asyncio
 import sys
 import time
@@ -23,10 +22,9 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from amos_equation_kernel_integration import (
-    get_equation_kernel_integration,
-    initialize_equation_kernel_integration,
     EquationExecutionMode,
     EquationKernelResult,
+    get_equation_kernel_integration,
 )
 
 
@@ -63,7 +61,9 @@ class TestEquationKernelIntegration:
 
         # Kernel governance fields
         assert result.law_score >= 0.0, f"Law score should be >= 0, got {result.law_score}"
-        assert result.stability_index >= 0.0, f"Stability should be >= 0, got {result.stability_index}"
+        assert result.stability_index >= 0.0, (
+            f"Stability should be >= 0, got {result.stability_index}"
+        )
 
         # Execution metadata
         assert result.execution_time_ms > 0, "Should track execution time"
@@ -88,7 +88,9 @@ class TestEquationKernelIntegration:
         assert result.law_score >= 0.0
         assert result.stability_index >= 0.0
 
-        print(f"\n  Sigmoid result: law_score={result.law_score:.4f}, stability={result.stability_index:.4f}")
+        print(
+            f"\n  Sigmoid result: law_score={result.law_score:.4f}, stability={result.stability_index:.4f}"
+        )
 
     def test_execute_relu_kernel_governed(self):
         """Test ReLU equation execution through kernel."""
@@ -102,7 +104,9 @@ class TestEquationKernelIntegration:
         assert result.equation_name == "relu"
         assert result.law_score >= 0.0
 
-        print(f"\n  ReLU result: law_score={result.law_score:.4f}, stability={result.stability_index:.4f}")
+        print(
+            f"\n  ReLU result: law_score={result.law_score:.4f}, stability={result.stability_index:.4f}"
+        )
 
     def test_direct_execution_mode(self):
         """Test direct execution mode (no kernel governance)."""
@@ -173,6 +177,7 @@ class TestEquationKernelIntegration:
 
     def test_concurrent_executions(self):
         """Test concurrent equation executions."""
+
         async def run_concurrent():
             tasks = [
                 self.integration.execute_equation(
@@ -278,6 +283,7 @@ if __name__ == "__main__":
     # Run pytest if available, otherwise run demo
     try:
         import pytest
+
         sys.exit(pytest.main([__file__, "-v"]))
     except ImportError:
         print("pytest not installed, running demo mode...")

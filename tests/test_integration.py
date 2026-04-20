@@ -8,11 +8,7 @@ Comprehensive validation of the complete AMOSL ecosystem:
 - Stress testing
 """
 
-import os
 import sys
-
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 import unittest
 
 from amosl.bridge import BridgeExecutor, BridgeType

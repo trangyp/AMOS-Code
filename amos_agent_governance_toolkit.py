@@ -11,6 +11,8 @@ Implements state-of-the-art patterns from Microsoft Agent Governance Toolkit:
 Component #66 - Advanced Governance Layer (2026)
 """
 
+from __future__ import annotations
+
 import asyncio
 import hashlib
 import secrets
@@ -19,7 +21,9 @@ from collections import deque
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Optional
+
+UTC = timezone.utc
 
 
 class ExecutionRing(Enum):
@@ -64,8 +68,8 @@ class DIDIdentity:
     private_key: str = None  # Only for self (never shared)
     trust_score: int = 0  # 0-1000 scale
     ring: ExecutionRing = ExecutionRing.RING3_USER
-    capabilities: Set[str] = field(default_factory=set)
-    behavioral_fingerprint: Dict[str, Any] = field(default_factory=dict)
+    capabilities: set[str] = field(default_factory=set)
+    behavioral_fingerprint: dict[str, Any] = field(default_factory=dict)
     created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     last_verified: str = None
     violation_count: int = 0
@@ -82,17 +86,34 @@ class IATPMessage:
     sender_did: str
     recipient_did: str
     message_type: str  # AUTH, ACTION, VERIFY, SYNC
-    payload: Dict[str, Any]
+    payload: dict[str, Any]
     signature: str  # Ed25519 signature
     timestamp: float = field(default_factory=time.time)
     nonce: str = field(default_factory=lambda: secrets.token_hex(16))
 
     def verify_signature(self, public_key: str) -> bool:
-        """Verify message signature."""
-        # In production: Ed25519 verify
-        data = f"{self.sender_did}:{self.recipient_did}:{self.message_type}:{self.timestamp}:{self.nonce}"
-        expected = hashlib.sha256(f"{data}:{public_key}".encode()).hexdigest()[:32]
-        return self.signature == expected
+        """Verify message signature using Ed25519."""
+        try:
+            from cryptography.exceptions import InvalidSignature
+            from cryptography.hazmat.primitives.asymmetric import ed25519
+
+            # Decode public key from hex
+            pub_key_bytes = bytes.fromhex(public_key)
+            ed_pub_key = ed25519.Ed25519PublicKey.from_public_bytes(pub_key_bytes)
+
+            # Create message data
+            data = f"{self.sender_did}:{self.recipient_did}:{self.message_type}:{self.timestamp}:{self.nonce}"
+            message_bytes = data.encode()
+
+            # Decode signature from hex
+            sig_bytes = bytes.fromhex(self.signature)
+
+            # Verify signature
+            ed_pub_key.verify(sig_bytes, message_bytes)
+            return True
+        except (InvalidSignature, ValueError, ImportError) as e:
+            print(f"[AgentMessage] Signature verification failed: {e}")
+            return False
 
 
 @dataclass
@@ -134,7 +155,7 @@ class ExecutionContext:
     did: str
     action: str
     resource_sensitivity: str  # low, medium, high, critical
-    approved_capabilities: Set[str] = field(default_factory=set)
+    approved_capabilities: set[str] = field(default_factory=set)
     budget_remaining: float = 1.0  # Error budget (0-1)
 
     def can_execute(self, required_capability: str) -> bool:
@@ -155,8 +176,8 @@ class SemanticIntent:
     original_prompt: str
     classified_intent: str
     confidence: float
-    risk_flags: List[RiskCategory] = field(default_factory=list)
-    required_capabilities: Set[str] = field(default_factory=set)
+    risk_flags: list[RiskCategory] = field(default_factory=list)
+    required_capabilities: set[str] = field(default_factory=set)
     suggested_ring: ExecutionRing = ExecutionRing.RING3_USER
 
     def is_goal_hijacking_attempt(self) -> bool:
@@ -169,11 +190,11 @@ class CMVKVerification:
     """Cross-Model Verification Kernel result."""
 
     query: str
-    models_consulted: List[str]
-    responses: List[dict[str, Any]]
+    models_consulted: list[str]
+    responses: list[dict[str, Any]]
     consensus_score: float  # 0-1, majority agreement
     verified_answer: Any
-    dissenting_models: List[str] = field(default_factory=list)
+    dissenting_models: list[str] = field(default_factory=list)
 
     def is_memory_poisoned(self) -> bool:
         """Detect memory poisoning via consensus failure."""
@@ -230,11 +251,11 @@ class SemanticIntentClassifier:
 class CrossModelVerificationKernel:
     """AGENT-06: Memory poisoning protection via majority voting."""
 
-    def __init__(self, models: List[str] = None):
+    def __init__(self, models: list[str] = None):
         self.models = models or ["gpt-4", "claude-3", "llama-3", "amos-brain"]
         self.consensus_threshold = 0.6
 
-    async def verify(self, query: str, context: Dict[str, Any] = None) -> CMVKVerification:
+    async def verify(self, query: str, context: dict[str, Any] = None) -> CMVKVerification:
         """Cross-verify response across multiple models."""
         # In production: Query multiple models in parallel
         responses = []
@@ -267,7 +288,7 @@ class AgentOSPolicyEngine:
     """Stateless policy engine with sub-millisecond latency."""
 
     def __init__(self, policy_language: PolicyLanguage = PolicyLanguage.YAML):
-        self.policies: List[dict[str, Any]] = []
+        self.policies: list[dict[str, Any]] = []
         self.language = policy_language
         self.evaluation_count = 0
         self.latency_ns = deque(maxlen=1000)
@@ -313,7 +334,7 @@ class AgentOSPolicyEngine:
             },
         ]
 
-    async def evaluate(self, context: ExecutionContext, intent: SemanticIntent) -> Dict[str, Any]:
+    async def evaluate(self, context: ExecutionContext, intent: SemanticIntent) -> dict[str, Any]:
         """Evaluate policy with latency tracking."""
         start_ns = time.perf_counter_ns()
 
@@ -363,10 +384,10 @@ class InterAgentTrustProtocol:
     """IATP: Secure agent-to-agent communication layer."""
 
     def __init__(self):
-        self.active_sessions: Dict[str, dict[str, Any]] = {}
-        self.trust_matrix: Dict[tuple[str, str], float] = {}  # (sender, recipient) -> trust
+        self.active_sessions: dict[str, dict[str, Any]] = {}
+        self.trust_matrix: dict[tuple[str, str], float] = {}  # (sender, recipient) -> trust
 
-    async def authenticate(self, did: str, challenge: str = None) -> Dict[str, Any]:
+    async def authenticate(self, did: str, challenge: str = None) -> dict[str, Any]:
         """Authenticate agent via DID challenge-response."""
         # In production: Ed25519 signature verification
         challenge = challenge or secrets.token_hex(32)
@@ -378,7 +399,7 @@ class InterAgentTrustProtocol:
         }
 
     async def send_message(
-        self, sender: DIDIdentity, recipient_did: str, message_type: str, payload: Dict[str, Any]
+        self, sender: DIDIdentity, recipient_did: str, message_type: str, payload: dict[str, Any]
     ) -> IATPMessage:
         """Send authenticated message to another agent."""
         # Create signature
@@ -408,9 +429,9 @@ class AgentSREController:
     """SLOs, error budgets, and reliability controls."""
 
     def __init__(self):
-        self.sli_registry: Dict[str, SLI] = {}
-        self.circuit_breakers: Dict[str, dict[str, Any]] = {}
-        self.error_budgets: Dict[str, float] = {}  # service -> remaining budget (0-1)
+        self.sli_registry: dict[str, SLI] = {}
+        self.circuit_breakers: dict[str, dict[str, Any]] = {}
+        self.error_budgets: dict[str, float] = {}  # service -> remaining budget (0-1)
 
     def register_slo(
         self, name: str, metric_type: str, threshold: float, window_minutes: int = 5
@@ -428,7 +449,7 @@ class AgentSREController:
         self.error_budgets[name] = 1.0  # 100% budget
         return sli
 
-    def record_metric(self, sli_name: str, value: float) -> Dict[str, Any]:
+    def record_metric(self, sli_name: str, value: float) -> dict[str, Any]:
         """Record metric and update error budget."""
         if sli_name not in self.sli_registry:
             return {"error": f"SLI {sli_name} not found"}
@@ -474,7 +495,7 @@ class AMOSAgentGovernanceToolkit:
         self.sre = AgentSREController()
 
         # Identity registry
-        self.identities: Dict[str, DIDIdentity] = {}
+        self.identities: dict[str, DIDIdentity] = {}
 
         # SLOs
         self._setup_default_slos()
@@ -488,7 +509,7 @@ class AMOSAgentGovernanceToolkit:
     async def register_component(
         self,
         component_id: str,
-        capabilities: List[str],
+        capabilities: list[str],
         ring: ExecutionRing = ExecutionRing.RING3_USER,
         initial_trust: int = 100,
     ) -> DIDIdentity:
@@ -511,8 +532,8 @@ class AMOSAgentGovernanceToolkit:
         return identity
 
     async def evaluate_action(
-        self, component_id: str, action: str, context: Dict[str, Any] = None
-    ) -> Dict[str, Any]:
+        self, component_id: str, action: str, context: dict[str, Any] = None
+    ) -> dict[str, Any]:
         """Complete action evaluation pipeline."""
         identity = self.identities.get(component_id)
         if not identity:
@@ -559,7 +580,7 @@ class AMOSAgentGovernanceToolkit:
             "cmvk_consensus": cmvk_result.consensus_score if cmvk_result else None,
         }
 
-    def get_governance_report(self) -> Dict[str, Any]:
+    def get_governance_report(self) -> dict[str, Any]:
         """Generate comprehensive governance report."""
         return {
             "toolkit_version": "2026.1.0",

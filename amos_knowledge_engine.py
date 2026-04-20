@@ -25,10 +25,12 @@ Creator: Trang Phan
 System: AMOS vInfinity - Layer 23
 """
 
+from __future__ import annotations
+
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 @dataclass
@@ -57,11 +59,11 @@ class KnowledgeEngine:
     KNOWLEDGE_PATH = Path("_AMOS_BRAIN")
 
     def __init__(self):
-        self.engines: Dict[str, EngineInfo] = {}
+        self.engines: dict[str, EngineInfo] = {}
         self.loaded_count = 0
         self.domains: set = set()
 
-    def discover_engines(self) -> Dict[str, int]:
+    def discover_engines(self) -> dict[str, int]:
         """Discover all available knowledge engines.
 
         Returns:
@@ -137,7 +139,7 @@ class KnowledgeEngine:
         discovered["total"] = len(self.engines)
         return discovered
 
-    def load_engine(self, engine_name: str) -> Dict[str, Any]:
+    def load_engine(self, engine_name: str) -> dict[str, Any]:
         """Load a specific engine by name."""
         if engine_name not in self.engines:
             return None
@@ -152,7 +154,7 @@ class KnowledgeEngine:
         except Exception as e:
             return {"error": str(e)}
 
-    def query(self, domain: str, question: str) -> Dict[str, Any]:
+    def query(self, domain: str, question: str) -> dict[str, Any]:
         """Query knowledge engines in a domain.
 
         Args:
@@ -188,17 +190,17 @@ class KnowledgeEngine:
         """Get information about a specific engine."""
         return self.engines.get(engine_name)
 
-    def list_domains(self) -> List[str]:
+    def list_domains(self) -> list[str]:
         """List all available knowledge domains."""
         return sorted(list(self.domains))
 
-    def list_engines(self, domain: str = None) -> List[str]:
+    def list_engines(self, domain: str = None) -> list[str]:
         """List all engines, optionally filtered by domain."""
         if domain:
             return sorted([e.name for e in self.engines.values() if e.domain == domain])
         return sorted(list(self.engines.keys()))
 
-    def status(self) -> Dict[str, Any]:
+    def status(self) -> dict[str, Any]:
         """Get knowledge engine status."""
         return {
             "total_engines": len(self.engines),
@@ -223,12 +225,12 @@ def get_knowledge_engine() -> KnowledgeEngine:
     return _knowledge_engine
 
 
-def query_knowledge(domain: str, question: str) -> Dict[str, Any]:
+def query_knowledge(domain: str, question: str) -> dict[str, Any]:
     """Quick knowledge query."""
     return get_knowledge_engine().query(domain, question)
 
 
-def list_knowledge_domains() -> List[str]:
+def list_knowledge_domains() -> list[str]:
     """List available knowledge domains."""
     return get_knowledge_engine().list_domains()
 

@@ -2,14 +2,8 @@
 """AMOS Brain CLI - Command line interface to the AMOS cognitive architecture."""
 
 import argparse
-import sys
-from pathlib import Path
 
-# Add parent to path for imports
-sys.path.insert(0, str(Path(__file__).parent))
-
-
-from amos_brain import BrainLoader, GlobalLaws, KernelRouter, SystemPromptBuilder
+from clawspring.amos_brain import BrainLoader, GlobalLaws, KernelRouter, SystemPromptBuilder
 
 
 def cmd_info(args):

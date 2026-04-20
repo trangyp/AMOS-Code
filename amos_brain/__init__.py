@@ -238,6 +238,26 @@ def _lazy_import(module_name: str):
                 from .canon_orchestrator import canon_orchestrate as co
 
                 _lazy_modules[module_name] = co
+            elif module_name == "get_cognitive_runtime":
+                from amos_cognitive_runtime import get_cognitive_runtime as gcr
+
+                _lazy_modules[module_name] = gcr
+            elif module_name == "get_autonomous_compiler":
+                from .autonomous_compiler_engine import get_autonomous_compiler as gac
+
+                _lazy_modules[module_name] = gac
+            elif module_name == "AutonomousCompilerEngine":
+                from .autonomous_compiler_engine import AutonomousCompilerEngine as ace
+
+                _lazy_modules[module_name] = ace
+            elif module_name == "get_llm_generator":
+                from .llm_code_generator import get_llm_generator as glg
+
+                _lazy_modules[module_name] = glg
+            elif module_name == "LLMCodeGenerator":
+                from .llm_code_generator import LLMCodeGenerator as lcg
+
+                _lazy_modules[module_name] = lcg
         except Exception as _load_err:
             # Capture values by using default arguments to avoid closure bug
             def _make_error_loader(name: str, err: str):
@@ -376,6 +396,26 @@ def ActionGate():
 def ModelRouter():
     """Get ModelRouter class (lazy import)."""
     return _lazy_import("ModelRouter")
+
+
+def get_autonomous_compiler():
+    """Get autonomous compiler engine (lazy import)."""
+    return _lazy_import("get_autonomous_compiler")()
+
+
+def AutonomousCompilerEngine():
+    """Get AutonomousCompilerEngine class (lazy import)."""
+    return _lazy_import("AutonomousCompilerEngine")
+
+
+def get_llm_generator():
+    """Get LLM code generator (lazy import)."""
+    return _lazy_import("get_llm_generator")()
+
+
+def LLMCodeGenerator():
+    """Get LLMCodeGenerator class (lazy import)."""
+    return _lazy_import("LLMCodeGenerator")
 
 
 def SourceRegistry():
@@ -682,6 +722,11 @@ __all__ = [
     "BrainResponse",
     "Decision",
     "FeatureFlags",
+    # Compiler / Code Generation
+    "get_autonomous_compiler",
+    "AutonomousCompilerEngine",
+    "get_llm_generator",
+    "LLMCodeGenerator",
     # Optional (deferred loading)
     "SystemPromptBuilder",
     "ArchitectureDecision",
@@ -736,4 +781,10 @@ __all__ = [
     "EquationBridgeIntegration",
     "EquationComputeRequest",
     "EquationComputeResponse",
+    "get_cognitive_runtime",
 ]
+
+
+def get_cognitive_runtime():
+    """Get cognitive runtime (lazy import)."""
+    return _lazy_import("get_cognitive_runtime")()

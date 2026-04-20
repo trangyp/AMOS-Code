@@ -12,8 +12,8 @@ Version: 3.0.0
 """
 
 from amos_brain.canon_knowledge_engine import (
-    get_canon_knowledge_engine,
     CanonKnowledgeEngine,
+    get_canon_knowledge_engine,
 )
 
 
@@ -96,7 +96,7 @@ def test_query_enrichment(engine: CanonKnowledgeEngine):
         print(f"\n  Original: {query[:50]}...")
         if "[Canon Context]" in enriched:
             context_start = enriched.find("[Canon Context]")
-            print(f"  Enriched: {enriched[context_start:context_start+80]}...")
+            print(f"  Enriched: {enriched[context_start : context_start + 80]}...")
         else:
             print("  No Canon context found")
 

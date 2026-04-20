@@ -3,9 +3,11 @@
 import json
 import uuid
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timedelta
+from datetime import UTC, datetime
+
+UTC = UTC, timedelta
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 @dataclass
@@ -14,7 +16,7 @@ class SynchronicityEvent:
     description: str = ""
     timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     significance: float = 0.5  # 0-1
-    related_events: List[str] = field(default_factory=list)
+    related_events: list[str] = field(default_factory=list)
     context: str = ""
 
     def to_dict(self):
@@ -25,7 +27,7 @@ class TimingSynchronizer:
     def __init__(self, data_dir: Optional[Path] = None):
         self.data_dir = data_dir or Path(__file__).parent / "data"
         self.data_dir.mkdir(parents=True, exist_ok=True)
-        self.events: List[SynchronicityEvent] = []
+        self.events: list[SynchronicityEvent] = []
         self._load_data()
 
     def _load_data(self):
@@ -60,7 +62,7 @@ class TimingSynchronizer:
         self.save()
         return event
 
-    def find_patterns(self, hours: int = 24) -> List[dict[str, Any]]:
+    def find_patterns(self, hours: int = 24) -> list[dict[str, Any]]:
         cutoff = (datetime.now(UTC) - timedelta(hours=hours)).isoformat()
         recent = [e for e in self.events if e.timestamp > cutoff]
         by_context = {}
@@ -68,7 +70,7 @@ class TimingSynchronizer:
             by_context[e.context] = by_context.get(e.context, 0) + 1
         return [{"context": c, "frequency": n} for c, n in by_context.items() if n > 1]
 
-    def get_optimal_timing(self, action_type: str) -> Dict[str, Any]:
+    def get_optimal_timing(self, action_type: str) -> dict[str, Any]:
         # Simple heuristic based on patterns
         patterns = self.find_patterns(168)  # 1 week
         relevant = [p for p in patterns if action_type in p["context"]]

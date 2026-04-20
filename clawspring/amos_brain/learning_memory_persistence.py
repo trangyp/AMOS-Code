@@ -1,4 +1,6 @@
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
+
+from typing import Any
 
 """
 AMOS Learning-Memory Persistence Layer
@@ -13,13 +15,15 @@ Core integration:
     - Memory export/import for backup
 """
 
+
 import asyncio
 import json
 import sqlite3
 from datetime import datetime, timezone
+
 UTC = timezone.utc
+
 from pathlib import Path
-from sqlite3 import Connection
 
 try:
     from .learning_memory_kernel import (
@@ -37,8 +41,7 @@ except ImportError:
 
 
 class MemoryPersistenceLayer:
-    """
-    Persistence layer for AMOS Learning-Memory Kernel.
+    """Persistence layer for AMOS Learning-Memory Kernel.
 
     Provides:
         - SQLite storage for memory records
@@ -162,10 +165,10 @@ class MemoryPersistenceLayer:
 
     async def load_memories(
         self,
-        memory_type: Optional[MemoryType] = None,
+        memory_type: MemoryType | None = None,
         min_importance: float = 0.0,
         limit: int = 1000,
-    ) -> List[MemoryRecord]:
+    ) -> list[MemoryRecord]:
         """Load memories from persistence."""
         if not self.connection:
             return []
@@ -201,7 +204,7 @@ class MemoryPersistenceLayer:
 
         return records
 
-    def _row_to_memory(self, row: sqlite3.Row) -> Optional[MemoryRecord]:
+    def _row_to_memory(self, row: sqlite3.Row) -> MemoryRecord | None:
         """Convert database row to MemoryRecord."""
         try:
             return MemoryRecord(
@@ -228,7 +231,7 @@ class MemoryPersistenceLayer:
         except Exception:
             return None
 
-    async def export_memory_state(self, filepath: str) -> Dict[str, Any]:
+    async def export_memory_state(self, filepath: str) -> dict[str, Any]:
         """Export full memory state to JSON file."""
         lmk = get_learning_memory_kernel()
         stats = lmk.get_learning_stats()
@@ -267,8 +270,7 @@ class MemoryPersistenceLayer:
 
 
 class VectorSearchAdapter:
-    """
-    Adapter to integrate with existing AMOS vector search system.
+    """Adapter to integrate with existing AMOS vector search system.
 
     Bridges memory tensors with pgvector for semantic retrieval.
     """
@@ -277,8 +279,7 @@ class VectorSearchAdapter:
         self.persistence = memory_persistence
 
     async def index_memory_for_search(self, record: MemoryRecord) -> None:
-        """
-        Index a memory for vector search.
+        """Index a memory for vector search.
 
         This would integrate with amos_vector_search.py to store
         the memory's embedding in pgvector.
@@ -289,9 +290,8 @@ class VectorSearchAdapter:
         # - pgvector storage via amos_vector_search
         pass
 
-    async def semantic_memory_search(self, query: str, k: int = 5) -> List[MemoryRecord]:
-        """
-        Search memories by semantic similarity.
+    async def semantic_memory_search(self, query: str, k: int = 5) -> list[MemoryRecord]:
+        """Search memories by semantic similarity.
 
         Would use pgvector similarity search in production.
         """
@@ -307,7 +307,7 @@ async def initialize_persistence(db_path: str = "amos_memory.db") -> MemoryPersi
 
 
 # Integration with main kernel
-async def persist_memory_state() -> Dict[str, Any]:
+async def persist_memory_state() -> dict[str, Any]:
     """Persist current memory state to database."""
     lmk = get_learning_memory_kernel()
     persistence = await initialize_persistence()
@@ -330,7 +330,7 @@ async def persist_memory_state() -> Dict[str, Any]:
     return {"persisted": True, "memory_count": saved_count}
 
 
-async def restore_memory_state(db_path: str = "amos_memory.db") -> Dict[str, Any]:
+async def restore_memory_state(db_path: str = "amos_memory.db") -> dict[str, Any]:
     """Restore memory state from persistence."""
     lmk = get_learning_memory_kernel()
     persistence = MemoryPersistenceLayer(db_path)

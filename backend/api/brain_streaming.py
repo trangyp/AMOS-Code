@@ -1,10 +1,13 @@
-from typing import Any, Dict, Optional
+from __future__ import annotations
+
+from typing import Any, Optional
 
 """AMOS Brain Streaming API
 
 Real-time WebSocket streaming for brain processing with ReAct steps.
 Based on research: Streaming agent outputs for responsive UX.
 """
+
 
 import json
 import sys
@@ -16,8 +19,6 @@ from pydantic import BaseModel
 # Add clawspring to path
 CLAWSPRING_PATH = Path(__file__).parent.parent.parent / "clawspring"
 if str(CLAWSPRING_PATH) not in sys.path:
-    sys.path.insert(0, str(CLAWSPRING_PATH))
-
 
 try:
     from amos_brain.brain_event_integration import (
@@ -38,14 +39,14 @@ class BrainStreamRequest(BaseModel):
 
     query: str
     mode: str = "auto"
-    context: Dict[str, Any] = {}
+    context: dict[str, Any] = {}
 
 
 class BrainStreamManager:
     """Manage WebSocket connections for brain streaming."""
 
     def __init__(self):
-        self.connections: Dict[str, WebSocket] = {}
+        self.connections: dict[str, WebSocket] = {}
         self.processor: Optional[BrainEventProcessor] = None
         if BRAIN_STREAMING_AVAILABLE:
             self.processor = get_brain_event_processor()
@@ -74,7 +75,7 @@ class BrainStreamManager:
         client_id: str,
         query: str,
         mode: str = "auto",
-        context: Dict[str, Any] = None,
+        context: dict[str, Any] = None,
     ) -> None:
         """
         Stream brain processing steps to client.
@@ -195,7 +196,7 @@ async def brain_websocket(websocket: WebSocket, client_id: str) -> None:
 
 
 @router.get("/status")
-async def brain_streaming_status() -> Dict[str, Any]:
+async def brain_streaming_status() -> dict[str, Any]:
     """Get brain streaming status."""
 
     # Check fast thinking availability

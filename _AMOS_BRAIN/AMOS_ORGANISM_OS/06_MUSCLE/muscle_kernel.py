@@ -12,18 +12,19 @@ Responsible for:
 - Integration with BLOOD signals and IMMUNE safety checks
 """
 
-
 import hashlib
 import json
 import logging
 import subprocess
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
+from collections.abc import Callable
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("amos.muscle")
@@ -59,15 +60,15 @@ class Action:
 
     action_id: str
     action_type: ActionType
-    payload: Dict[str, Any]
+    payload: dict[str, Any]
     source: str
     status: ActionStatus = ActionStatus.PENDING
     created_at: str = ""
-    started_at: str  = None
-    completed_at: str  = None
-    result: dict[str, Any ] = None
-    error: str  = None
-    safety_report: dict[str, Any ] = None
+    started_at: str = None
+    completed_at: str = None
+    result: dict[str, Any] = None
+    error: str = None
+    safety_report: dict[str, Any] = None
 
     def __post_init__(self):
         if not self.created_at:
@@ -82,7 +83,7 @@ class Tool:
     name: str
     description: str
     handler: Callable[[dict[str, Any]], dict[str, Any]]
-    parameters: Dict[str, Any] = field(default_factory=dict)
+    parameters: dict[str, Any] = field(default_factory=dict)
     requires_confirmation: bool = False
     category: str = "general"
 
@@ -103,11 +104,11 @@ class MuscleKernel:
         self.logs_path.mkdir(parents=True, exist_ok=True)
 
         # Action registry
-        self.actions: Dict[str, Action] = {}
-        self.action_history: List[Action] = []
+        self.actions: dict[str, Action] = {}
+        self.action_history: list[Action] = []
 
         # Tool registry
-        self.tools: Dict[str, Tool] = {}
+        self.tools: dict[str, Tool] = {}
         self._register_builtin_tools()
 
         # Execution settings
@@ -115,7 +116,7 @@ class MuscleKernel:
         self.executor = ThreadPoolExecutor(max_workers=self.max_concurrent)
 
         # Safety integration (will be connected to IMMUNE)
-        self.immune_check: Callable[[str, dict[str, Any ], dict[str, Any]]] = None
+        self.immune_check: Callable[[str, dict[str, Any], dict[str, Any]]] = None
 
         # Statistics
         self.stats = {
@@ -193,7 +194,7 @@ class MuscleKernel:
         logger.info("Immune safety checker connected")
 
     def execute_action(
-        self, action_type: ActionType, payload: Dict[str, Any], source: str = "unknown"
+        self, action_type: ActionType, payload: dict[str, Any], source: str = "unknown"
     ) -> Action:
         """Execute an action with safety validation.
 
@@ -254,7 +255,7 @@ class MuscleKernel:
 
         return action
 
-    def _execute(self, action_type: ActionType, payload: Dict[str, Any]) -> Dict[str, Any]:
+    def _execute(self, action_type: ActionType, payload: dict[str, Any]) -> dict[str, Any]:
         """Internal execution dispatcher."""
         if action_type == ActionType.FILE_READ:
             return self._exec_file_read(payload)
@@ -276,7 +277,7 @@ class MuscleKernel:
             raise ValueError(f"Unknown action type: {action_type}")
 
     def invoke_tool(
-        self, tool_id: str, parameters: Dict[str, Any], source: str = "unknown"
+        self, tool_id: str, parameters: dict[str, Any], source: str = "unknown"
     ) -> Action:
         """Invoke a registered tool."""
         if tool_id not in self.tools:
@@ -302,7 +303,7 @@ class MuscleKernel:
             ActionType.TOOL_INVOKE, {"tool_id": tool_id, "parameters": parameters}, source
         )
 
-    def _exec_file_read(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+    def _exec_file_read(self, payload: dict[str, Any]) -> dict[str, Any]:
         """Execute file read."""
         path = Path(payload["path"])
 
@@ -318,7 +319,7 @@ class MuscleKernel:
             "hash": hashlib.md5(content.encode()).hexdigest()[:8],
         }
 
-    def _exec_file_write(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+    def _exec_file_write(self, payload: dict[str, Any]) -> dict[str, Any]:
         """Execute file write."""
         path = Path(payload["path"])
         content = payload["content"]
@@ -334,7 +335,7 @@ class MuscleKernel:
             "hash": hashlib.md5(content.encode()).hexdigest()[:8],
         }
 
-    def _exec_file_delete(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+    def _exec_file_delete(self, payload: dict[str, Any]) -> dict[str, Any]:
         """Execute file delete."""
         path = Path(payload["path"])
 
@@ -345,7 +346,7 @@ class MuscleKernel:
 
         return {"path": str(path), "deleted": True}
 
-    def _exec_file_modify(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+    def _exec_file_modify(self, payload: dict[str, Any]) -> dict[str, Any]:
         """Execute file modification (edit)."""
         path = Path(payload["path"])
 
@@ -370,13 +371,17 @@ class MuscleKernel:
         else:
             raise ValueError("Modification requires 'old_string' and 'new_string'")
 
-    def _exec_command(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+    def _exec_command(self, payload: dict[str, Any]) -> dict[str, Any]:
         """Execute shell command."""
         command = payload["command"]
         timeout = payload.get("timeout", 30)
 
+        # SECURITY: Use shlex.split() and shell=False to prevent injection
+        import shlex
+
+        cmd_parts = shlex.split(command)
         result = subprocess.run(
-            command, shell=True, capture_output=True, text=True, timeout=timeout
+            cmd_parts, shell=False, capture_output=True, text=True, timeout=timeout
         )
 
         return {
@@ -387,7 +392,7 @@ class MuscleKernel:
             "success": result.returncode == 0,
         }
 
-    def _exec_api_call(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+    def _exec_api_call(self, payload: dict[str, Any]) -> dict[str, Any]:
         """Execute API call."""
 
         url = payload["url"]
@@ -416,7 +421,7 @@ class MuscleKernel:
         except Exception as e:
             return {"url": url, "status": 0, "error": str(e)}
 
-    def _exec_tool_invoke(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+    def _exec_tool_invoke(self, payload: dict[str, Any]) -> dict[str, Any]:
         """Execute tool invocation."""
         tool_id = payload["tool_id"]
         parameters = payload.get("parameters", {})
@@ -427,29 +432,33 @@ class MuscleKernel:
         tool = self.tools[tool_id]
         return tool.handler(parameters)
 
-    def _exec_task_complete(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+    def _exec_task_complete(self, payload: dict[str, Any]) -> dict[str, Any]:
         """Mark task as complete."""
         task_id = payload.get("task_id", "unknown")
 
-        return {"task_id": task_id, "completed": True, "timestamp": datetime.now(timezone.utc).isoformat()}
+        return {
+            "task_id": task_id,
+            "completed": True,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+        }
 
-    def _tool_file_read(self, params: Dict[str, Any]) -> Dict[str, Any]:
+    def _tool_file_read(self, params: dict[str, Any]) -> dict[str, Any]:
         """Tool handler for file read."""
         return self._exec_file_read(params)
 
-    def _tool_file_write(self, params: Dict[str, Any]) -> Dict[str, Any]:
+    def _tool_file_write(self, params: dict[str, Any]) -> dict[str, Any]:
         """Tool handler for file write."""
         return self._exec_file_write(params)
 
-    def _tool_file_delete(self, params: Dict[str, Any]) -> Dict[str, Any]:
+    def _tool_file_delete(self, params: dict[str, Any]) -> dict[str, Any]:
         """Tool handler for file delete."""
         return self._exec_file_delete(params)
 
-    def _tool_command_execute(self, params: Dict[str, Any]) -> Dict[str, Any]:
+    def _tool_command_execute(self, params: dict[str, Any]) -> dict[str, Any]:
         """Tool handler for command execution."""
         return self._exec_command(params)
 
-    def _tool_api_call(self, params: Dict[str, Any]) -> Dict[str, Any]:
+    def _tool_api_call(self, params: dict[str, Any]) -> dict[str, Any]:
         """Tool handler for API call."""
         return self._exec_api_call(params)
 
@@ -458,15 +467,15 @@ class MuscleKernel:
         self.tools[tool.tool_id] = tool
         logger.info(f"Registered tool: {tool.name}")
 
-    def get_action(self, action_id: str) -> Optional[Action]:
+    def get_action(self, action_id: str) -> Action:
         """Get action by ID."""
         return self.actions.get(action_id)
 
-    def get_recent_actions(self, count: int = 10) -> List[Action]:
+    def get_recent_actions(self, count: int = 10) -> list[Action]:
         """Get recent actions."""
         return self.action_history[-count:]
 
-    def get_state(self) -> Dict[str, Any]:
+    def get_state(self) -> dict[str, Any]:
         """Get current muscle state."""
         return {
             "active_actions": len(

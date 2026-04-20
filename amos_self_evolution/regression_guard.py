@@ -16,7 +16,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 # Import invariant checking
 from amos_invariants import (
@@ -48,7 +48,7 @@ class RegressionCheck:
     duration_ms: int = 0
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "check_name": self.check_name,
             "status": self.status.name,
@@ -64,7 +64,7 @@ class RegressionReport:
 
     evolution_id: str
     overall_status: CheckStatus = CheckStatus.PENDING
-    checks: List[RegressionCheck] = field(default_factory=list)
+    checks: list[RegressionCheck] = field(default_factory=list)
     started_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     completed_at: str = ""
     mutation_permitted: bool = False
@@ -88,7 +88,7 @@ class RegressionReport:
         self.completed_at = datetime.now(timezone.utc).isoformat()
         self._update_overall_status()
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "evolution_id": self.evolution_id,
             "overall_status": self.overall_status.name,
@@ -113,7 +113,7 @@ class RegressionGuard:
 
     def __init__(self, repo_root: str = "."):
         self.repo_root = Path(repo_root)
-        self._check_registry: Dict[str, callable] = {
+        self._check_registry: dict[str, callable] = {
             "syntax_check": self._check_syntax,
             "import_check": self._check_imports,
             "test_check": self._check_tests,
@@ -537,7 +537,7 @@ class RegressionGuard:
         """Determine if mutation should be permitted based on report."""
         return report.mutation_permitted and report.overall_status == CheckStatus.PASS
 
-    def get_mandatory_checks(self) -> List[str]:
+    def get_mandatory_checks(self) -> list[str]:
         """Get list of mandatory checks that cannot be skipped."""
         return ["syntax_check", "import_check"]
 

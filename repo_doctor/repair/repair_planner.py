@@ -129,7 +129,7 @@ class RepairPlanner:
         self,
         invariant_failure: dict[str, Any],
         smt_model: dict[str, Any] = None,
-    ) -> Optional[RepairPlan]:
+    ) -> RepairPlan | None:
         """
         Generate repair plan for an invariant failure.
 

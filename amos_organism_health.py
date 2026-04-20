@@ -19,8 +19,10 @@ sys.path.insert(0, str(Path(__file__).parent / "AMOS_ORGANISM_OS"))
 
 import time
 from dataclasses import dataclass
-from datetime import datetime
-from typing import Any, Dict, List
+from datetime import UTC, datetime
+
+UTC = UTC
+from typing import Any
 
 
 @dataclass
@@ -31,18 +33,18 @@ class SubsystemHealth:
     status: str  # healthy, degraded, unhealthy
     response_time_ms: float
     last_check: str
-    errors: List[str]
-    metrics: Dict[str, Any]
+    errors: list[str]
+    metrics: dict[str, Any]
 
 
 class OrganismHealthMonitor:
     """Monitors health of all Organism OS subsystems."""
 
     def __init__(self):
-        self.checks: Dict[str, Any] = {}
-        self.health_history: List[dict] = []
+        self.checks: dict[str, Any] = {}
+        self.health_history: list[dict] = []
 
-    def check_all_subsystems(self) -> Dict[str, SubsystemHealth]:
+    def check_all_subsystems(self) -> dict[str, SubsystemHealth]:
         """Run health checks on all subsystems."""
         from AMOS_ORGANISM_OS import SUBSYSTEMS, get_subsystem
 
@@ -86,7 +88,7 @@ class OrganismHealthMonitor:
 
         return results
 
-    def generate_report(self, results: Dict[str, SubsystemHealth]) -> dict:
+    def generate_report(self, results: dict[str, SubsystemHealth]) -> dict:
         """Generate health report."""
         healthy = sum(1 for h in results.values() if h.status == "healthy")
         degraded = sum(1 for h in results.values() if h.status == "degraded")

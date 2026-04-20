@@ -13,11 +13,13 @@ Monitors system health and metrics, sends alerts when thresholds are exceeded.
 import asyncio
 import json
 from dataclasses import dataclass
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime
+
+UTC = UTC
+from collections.abc import Callable
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 from amos_health_monitor import SystemHealth
 
@@ -40,7 +42,7 @@ class Alert:
     acknowledged: bool = False
     resolved: bool = False
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "id": self.id,
             "severity": self.severity.value,
@@ -67,7 +69,7 @@ class AlertRule:
         self.condition = condition
         self.message_template = message_template
 
-    def check(self, data: Any) -> Optional[Alert]:
+    def check(self, data: Any) -> Alert:
         """Check if alert should be triggered."""
         if self.condition(data):
             return Alert(
@@ -85,9 +87,9 @@ class AlertManager:
 
     def __init__(self, alert_file: str = "AMOS_ORGANISM_OS/alerts.json"):
         self.alert_file = Path(alert_file)
-        self.rules: List[AlertRule] = []
-        self.active_alerts: Dict[str, Alert] = {}
-        self.alert_history: List[Alert] = []
+        self.rules: list[AlertRule] = []
+        self.active_alerts: dict[str, Alert] = {}
+        self.alert_history: list[Alert] = []
         self._setup_default_rules()
 
     def _setup_default_rules(self):
@@ -124,7 +126,7 @@ class AlertManager:
         """Add an alert rule."""
         self.rules.append(rule)
 
-    def check_health(self, health: SystemHealth) -> List[Alert]:
+    def check_health(self, health: SystemHealth) -> list[Alert]:
         """Check health data against rules."""
         triggered = []
 
@@ -149,14 +151,14 @@ class AlertManager:
             self.alert_history.append(alert)
             self._save_alerts()
 
-    def get_active_alerts(self, severity: Optional[AlertSeverity] = None) -> List[Alert]:
+    def get_active_alerts(self, severity: AlertSeverity = None) -> list[Alert]:
         """Get active alerts, optionally filtered by severity."""
         alerts = list(self.active_alerts.values())
         if severity:
             alerts = [a for a in alerts if a.severity == severity]
         return sorted(alerts, key=lambda a: a.timestamp, reverse=True)
 
-    def get_alert_summary(self) -> Dict[str, Any]:
+    def get_alert_summary(self) -> dict[str, Any]:
         """Get summary of alert status."""
         active = self.get_active_alerts()
         return {
@@ -178,7 +180,7 @@ class AlertManager:
 
 
 # Global alert manager
-_alert_manager: Optional[AlertManager] = None
+_alert_manager: AlertManager = None
 
 
 def get_alert_manager() -> AlertManager:
@@ -223,6 +225,7 @@ async def monitor_loop(check_interval: int = 60):
 
 class AlertStatus(Enum):
     """Alert status enumeration."""
+
     ACTIVE = "active"
     ACKNOWLEDGED = "acknowledged"
     RESOLVED = "resolved"
@@ -231,6 +234,7 @@ class AlertStatus(Enum):
 @dataclass
 class BaseAlert:
     """Base alert class for metric-based alerting."""
+
     id: str
     rule_name: str
     severity: AlertSeverity
@@ -239,13 +243,14 @@ class BaseAlert:
     value: float
     threshold: float
     timestamp: datetime
-    acknowledged_by: str  = None
-    acknowledged_at: datetime  = None
+    acknowledged_by: str = None
+    acknowledged_at: datetime = None
 
 
 @dataclass
 class MetricAlertRule:
     """Alert rule for metric-based threshold alerting."""
+
     name: str
     metric: str
     condition: str  # '>', '<', '==', '>=', '<='
@@ -288,7 +293,7 @@ class ConsoleChannel:
 class WebhookChannel:
     """Webhook notification channel."""
 
-    def __init__(self, url: str, headers: dict  = None):
+    def __init__(self, url: str, headers: dict = None):
         self.url = url
         self.headers = headers or {}
 
@@ -314,7 +319,7 @@ class WebhookChannel:
 class SlackChannel:
     """Slack notification channel."""
 
-    def __init__(self, webhook_url: str, channel: str  = None):
+    def __init__(self, webhook_url: str, channel: str = None):
         self.webhook_url = webhook_url
         self.channel = channel
 
@@ -341,10 +346,10 @@ class AMOSAlerting:
     """Main alerting system for metric-based rules."""
 
     def __init__(self):
-        self.rules: List[MetricAlertRule] = []
-        self.channels: Dict[str, Any] = {}
-        self.active_alerts: Dict[str, BaseAlert] = {}
-        self.alert_history: List[BaseAlert] = []
+        self.rules: list[MetricAlertRule] = []
+        self.channels: dict[str, Any] = {}
+        self.active_alerts: dict[str, BaseAlert] = {}
+        self.alert_history: list[BaseAlert] = []
 
     def add_rule(self, rule: MetricAlertRule):
         """Add an alert rule."""
@@ -354,7 +359,7 @@ class AMOSAlerting:
         """Add a notification channel."""
         self.channels[name] = channel
 
-    def evaluate_rules(self, metrics: Dict[str, float]) -> List[BaseAlert]:
+    def evaluate_rules(self, metrics: dict[str, float]) -> list[BaseAlert]:
         """Evaluate all rules against current metrics."""
         triggered = []
 
@@ -401,7 +406,7 @@ class AMOSAlerting:
             alert.status = AlertStatus.RESOLVED
             self.alert_history.append(alert)
 
-    def get_active_alerts(self) -> List[BaseAlert]:
+    def get_active_alerts(self) -> list[BaseAlert]:
         """Get all active alerts."""
         return [a for a in self.active_alerts.values() if a.status == AlertStatus.ACTIVE]
 

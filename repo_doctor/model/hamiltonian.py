@@ -44,7 +44,7 @@ class RepositoryHamiltonian:
 
     def apply(self, state_vector) -> float:
         """
-        Apply Hamiltonian to state: H|Ψ> = E
+        Apply Hamiltonian to state: Union[H, Ψ]> = E
 
         Returns: Total energy E_repo = Σ λk (1 - αk)^2
         """

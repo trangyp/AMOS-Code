@@ -52,7 +52,7 @@ Environment Variables:
 import json
 import logging
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any
 
 # FastAPI documentation support
 try:
@@ -262,7 +262,7 @@ EXAMPLE_RESPONSES = {
 
 def custom_openapi_schema(
     app: FastAPI, title: str = None, version: str = None, hide_internal: bool = False
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Generate custom OpenAPI schema with examples.
 
     Args:
@@ -679,8 +679,8 @@ def create_api_explorer(app: FastAPI, prefix: str = "/api-explorer") -> None:
 
 
 def export_documentation(
-    app: FastAPI, output_path: str = "./api-docs", formats: List[str] = None
-) -> Dict[str, str]:
+    app: FastAPI, output_path: str = "./api-docs", formats: list[str] = None
+) -> dict[str, str]:
     """Export API documentation for offline use.
 
     Args:
@@ -716,7 +716,7 @@ def export_documentation(
         <!DOCTYPE html>
         <html>
         <head>
-            <title>{schema.get('info', {}).get('title', 'API Documentation')}</title>
+            <title>{schema.get("info", {}).get("title", "API Documentation")}</title>
             <meta charset="utf-8"/>
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <link rel="stylesheet" type="text/css"
@@ -755,8 +755,8 @@ def export_documentation(
 def add_endpoint_examples(
     router: Any,
     endpoint: str,
-    request_example: Dict[str, Any] = None,
-    response_example: Dict[str, Any] = None,
+    request_example: dict[str, Any] = None,
+    response_example: dict[str, Any] = None,
 ) -> None:
     """Add examples to a specific endpoint.
 
@@ -771,7 +771,7 @@ def add_endpoint_examples(
     pass
 
 
-def get_api_statistics(app: FastAPI) -> Dict[str, Any]:
+def get_api_statistics(app: FastAPI) -> dict[str, Any]:
     """Get API documentation statistics.
 
     Args:

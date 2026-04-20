@@ -11,9 +11,11 @@ Version: 1.0.0
 import json
 import sys
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 @dataclass
@@ -24,9 +26,9 @@ class SubsystemStatus:
     name: str
     folder_exists: bool = False
     init_importable: bool = False
-    core_modules: List[str] = field(default_factory=list)
+    core_modules: list[str] = field(default_factory=list)
     test_passed: bool = False
-    errors: List[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -38,7 +40,7 @@ class SystemHealthReport:
     healthy_count: int = 0
     warning_count: int = 0
     error_count: int = 0
-    subsystems: Dict[str, SubsystemStatus] = field(default_factory=dict)
+    subsystems: dict[str, SubsystemStatus] = field(default_factory=dict)
     overall_health: str = "unknown"  # healthy, degraded, critical
 
 
@@ -163,7 +165,7 @@ class SystemHealthMonitor:
         else:
             self.report.overall_health = "critical"
 
-    def get_summary(self) -> Dict[str, Any]:
+    def get_summary(self) -> dict[str, Any]:
         """Get summary of health check."""
         return {
             "timestamp": self.report.timestamp,

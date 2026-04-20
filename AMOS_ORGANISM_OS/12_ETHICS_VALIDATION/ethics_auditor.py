@@ -7,10 +7,12 @@ Owner: Trang
 Version: 1.0.0
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class EthicsCompliance(Enum):
@@ -54,7 +56,7 @@ class AuditReport:
     conducted_at: datetime
     conducted_by: str
     overall_compliance: EthicsCompliance
-    findings: List[AuditFinding]
+    findings: list[AuditFinding]
     score: float  # 0.0 to 100.0
     next_audit_due: datetime
 
@@ -79,9 +81,9 @@ class EthicsAuditor:
     """
 
     def __init__(self):
-        self.audits: List[AuditReport] = []
-        self.metrics: List[ComplianceMetric] = []
-        self.audit_schedule: Dict[str, datetime] = {}
+        self.audits: list[AuditReport] = []
+        self.metrics: list[ComplianceMetric] = []
+        self.audit_schedule: dict[str, datetime] = {}
 
     def conduct_audit(
         self, audit_type: AuditType = AuditType.ROUTINE, conducted_by: str = "system"
@@ -110,7 +112,7 @@ class EthicsAuditor:
         self.audits.append(audit)
         return audit
 
-    def _perform_audit_checks(self) -> List[AuditFinding]:
+    def _perform_audit_checks(self) -> list[AuditFinding]:
         """Perform actual audit checks."""
         findings = []
 
@@ -130,7 +132,7 @@ class EthicsAuditor:
 
         return findings
 
-    def _calculate_score(self, findings: List[AuditFinding]) -> float:
+    def _calculate_score(self, findings: list[AuditFinding]) -> float:
         """Calculate compliance score."""
         # Start with perfect score
         score = 100.0
@@ -148,7 +150,7 @@ class EthicsAuditor:
 
         return max(0.0, score)
 
-    def _determine_compliance(self, score: float, findings: List[AuditFinding]) -> EthicsCompliance:
+    def _determine_compliance(self, score: float, findings: list[AuditFinding]) -> EthicsCompliance:
         """Determine compliance level from score."""
         critical_open = sum(1 for f in findings if f.severity == "critical" and f.status == "open")
 
@@ -167,7 +169,7 @@ class EthicsAuditor:
             return None
         return sorted(self.audits, key=lambda a: a.conducted_at)[-1]
 
-    def get_audit_history(self, limit: int = 10) -> List[AuditReport]:
+    def get_audit_history(self, limit: int = 10) -> list[AuditReport]:
         """Get audit history."""
         return sorted(self.audits, key=lambda a: a.conducted_at, reverse=True)[:limit]
 
@@ -175,7 +177,7 @@ class EthicsAuditor:
         """Add a compliance metric."""
         self.metrics.append(metric)
 
-    def get_trend_analysis(self) -> Dict[str, Any]:
+    def get_trend_analysis(self) -> dict[str, Any]:
         """Analyze compliance trends over time."""
         if not self.audits:
             return {"error": "No audit data available"}

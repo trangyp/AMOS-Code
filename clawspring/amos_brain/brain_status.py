@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from typing import Any, Dict, List
+from typing import Any
 
 """AMOS Brain Status - Unified status reporting for all brain components.
 
@@ -16,19 +16,10 @@ Owner: Trang Phan
 """
 
 import asyncio
-import sys
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-UTC = timezone.utc
-from pathlib import Path
 
-# Add paths for both direct run and module import contexts
-_CLAWSPRING_PATH = Path(__file__).parent.parent
-_AMOS_BRAIN_PATH = Path(__file__).parent
-if str(_CLAWSPRING_PATH) not in sys.path:
-    sys.path.insert(0, str(_CLAWSPRING_PATH))
-if str(_AMOS_BRAIN_PATH) not in sys.path:
-    sys.path.insert(0, str(_AMOS_BRAIN_PATH))
+UTC = timezone.utc
 
 
 @dataclass
@@ -39,7 +30,7 @@ class ComponentStatus:
     status: str  # operational, degraded, failed, unavailable
     version: str = "1.0.0"
     last_check: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -47,7 +38,7 @@ class BrainSystemStatus:
     """Complete brain system status."""
 
     overall: str
-    components: List[ComponentStatus]
+    components: list[ComponentStatus]
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     total_components: int = 0
     operational_count: int = 0
@@ -59,7 +50,7 @@ class BrainStatusReporter:
     """Unified status reporter for AMOS brain ecosystem."""
 
     def __init__(self):
-        self._components: Dict[str, ComponentStatus] = {}
+        self._components: dict[str, ComponentStatus] = {}
 
     async def check_master_orchestrator(self) -> ComponentStatus:
         """Check MasterOrchestrator status."""

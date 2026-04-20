@@ -135,7 +135,7 @@ class StateVector:
             total += weight * (1 - amp) ** 2
         return total
 
-    def get_critical_dimensions(self, threshold: float = 50.0) -> List[StateDimension]:
+    def get_critical_dimensions(self, threshold: float = 50.0) -> list[StateDimension]:
         """Find dimensions contributing most to energy."""
         energies = []
         for dim, amp in self.amplitudes.items():
@@ -170,7 +170,7 @@ class PureStateHypothesis:
     label: str
     state_vector: StateVector
     probability: float
-    evidence: Dict[str, Any] = field(default_factory=dict)
+    evidence: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -187,7 +187,7 @@ class DensityMatrix:
     - ambiguous blame
     """
 
-    hypotheses: List[PureStateHypothesis] = field(default_factory=list)
+    hypotheses: list[PureStateHypothesis] = field(default_factory=list)
 
     def add_hypothesis(self, hypothesis: PureStateHypothesis) -> None:
         """Add a plausible state hypothesis."""
@@ -219,7 +219,7 @@ class DensityMatrix:
 
         return total
 
-    def get_dominant_hypothesis(self) -> Optional[PureStateHypothesis]:
+    def get_dominant_hypothesis(self) -> PureStateHypothesis:
         """Get the highest probability hypothesis."""
         if not self.hypotheses:
             return None
@@ -247,10 +247,10 @@ class Observable:
     kind: str
     location: str
     severity: str  # fatal, critical, error, warning
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: dict[str, Any] = field(default_factory=dict)
 
     # Decay model weights for amplitude computation
-    IMPACT_WEIGHTS: Dict[str, float] = field(
+    IMPACT_WEIGHTS: dict[str, float] = field(
         default_factory=lambda: {
             "fatal": 1.0,
             "critical": 0.8,
@@ -285,7 +285,7 @@ class EnergyOperator:
     dimension: StateDimension
     weight: float
 
-    def apply(self, amplitude: float, observables: List[Observable]) -> float:
+    def apply(self, amplitude: float, observables: list[Observable]) -> float:
         """
         Compute energy contribution for this subsystem.
 
@@ -394,8 +394,8 @@ class InvariantResult:
     passed: bool
     severity: str
     message: str
-    details: Dict[str, Any] = field(default_factory=dict)
-    affected_files: List[str] = field(default_factory=list)
+    details: dict[str, Any] = field(default_factory=dict)
+    affected_files: list[str] = field(default_factory=list)
 
 
 class HardInvariantChecker:
@@ -405,9 +405,9 @@ class HardInvariantChecker:
 
     def __init__(self, repo_path: Path):
         self.repo_path = repo_path
-        self.results: List[InvariantResult] = []
+        self.results: list[InvariantResult] = []
 
-    def check_all(self) -> List[InvariantResult]:
+    def check_all(self) -> list[InvariantResult]:
         """Check all 12 hard invariants."""
         self.results = [
             self._check_parse(),
@@ -679,7 +679,7 @@ class HardInvariantChecker:
             self.check_all()
         return all(r.passed for r in self.results)
 
-    def get_failing(self) -> List[InvariantResult]:
+    def get_failing(self) -> list[InvariantResult]:
         """Get list of failing invariants."""
         return [r for r in self.results if not r.passed]
 
@@ -726,8 +726,8 @@ class RepoNode:
 
     id: str
     type: NodeType
-    path: Optional[Path] = None
-    properties: Dict[str, Any] = field(default_factory=dict)
+    path: Path = None
+    properties: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -737,7 +737,7 @@ class RepoEdge:
     source: str
     target: str
     type: EdgeType
-    properties: Dict[str, Any] = field(default_factory=dict)
+    properties: dict[str, Any] = field(default_factory=dict)
 
 
 class RepositoryGraph:
@@ -752,8 +752,8 @@ class RepositoryGraph:
 
     def __init__(self, repo_path: Path):
         self.repo_path = repo_path
-        self.nodes: Dict[str, RepoNode] = {}
-        self.edges: List[RepoEdge] = []
+        self.nodes: dict[str, RepoNode] = {}
+        self.edges: list[RepoEdge] = []
         self._build_graph()
 
     def _build_graph(self) -> None:
@@ -775,7 +775,7 @@ class RepositoryGraph:
         """Add an edge to the graph."""
         self.edges.append(edge)
 
-    def get_neighbors(self, node_id: str, edge_type: Optional[EdgeType] = None) -> List[RepoNode]:
+    def get_neighbors(self, node_id: str, edge_type: EdgeType = None) -> list[RepoNode]:
         """Get neighbors of a node."""
         neighbors = []
         for edge in self.edges:
@@ -919,7 +919,7 @@ class CollapseOperator:
         self.checker = checker
         self.graph = graph
 
-    def collapse(self) -> Dict[str, Any]:
+    def collapse(self) -> dict[str, Any]:
         """
         Collapse failure surface to minimal broken subspace.
 
@@ -959,7 +959,7 @@ class CollapseOperator:
             "energy": self._estimate_energy(failing),
         }
 
-    def _build_unsat_core(self, failing: List[InvariantResult]) -> List[dict]:
+    def _build_unsat_core(self, failing: list[InvariantResult]) -> list[dict]:
         """Build unsat core - minimal contradictory fact set."""
         core = []
 
@@ -992,7 +992,7 @@ class CollapseOperator:
 
         return core
 
-    def _estimate_energy(self, failing: List[InvariantResult]) -> float:
+    def _estimate_energy(self, failing: list[InvariantResult]) -> float:
         """Estimate repository energy from failing invariants."""
         weights = {
             "I_parse": 100,
@@ -1042,7 +1042,7 @@ class TemporalAnalyzer:
 
     def __init__(self, repo_path: Path):
         self.repo_path = repo_path
-        self.history: List[TemporalState] = []
+        self.history: list[TemporalState] = []
 
     def compute_drift(
         self,
@@ -1113,7 +1113,7 @@ class TemporalAnalyzer:
     def compute_path_integral_blame(
         self,
         invariant_name: str,
-        history: List[TemporalState],
+        history: list[TemporalState],
     ) -> list[tuple[str, float]]:
         """
         Path-integral blame assignment.
@@ -1174,8 +1174,8 @@ class RepairOptimizer:
 
     def optimize_repairs(
         self,
-        failing_invariants: List[InvariantResult],
-    ) -> List[RepairAction]:
+        failing_invariants: list[InvariantResult],
+    ) -> list[RepairAction]:
         """
         Compute optimal repair plan.
 
@@ -1226,7 +1226,7 @@ class RepairOptimizer:
 
         return repairs
 
-    def compute_objective(self, repairs: List[RepairAction]) -> float:
+    def compute_objective(self, repairs: list[RepairAction]) -> float:
         """
         Compute optimization objective.
 
@@ -1255,8 +1255,8 @@ class FleetState:
     Fleet energy: E_fleet = Σr ωr E_repo_r
     """
 
-    repos: Dict[str, StateVector] = field(default_factory=dict)
-    weights: Dict[str, float] = field(default_factory=dict)
+    repos: dict[str, StateVector] = field(default_factory=dict)
+    weights: dict[str, float] = field(default_factory=dict)
 
     def add_repository(self, repo_id: str, state: StateVector, weight: float = 1.0):
         """Add a repository to the fleet."""
@@ -1306,15 +1306,15 @@ class DiagnosisReport:
         self,
         repo_path: Path,
         state_vector: StateVector,
-        invariants: List[InvariantResult],
-        collapse_result: Dict[str, Any],
+        invariants: list[InvariantResult],
+        collapse_result: dict[str, Any],
     ):
         self.repo_path = repo_path
         self.state_vector = state_vector
         self.invariants = invariants
         self.collapse_result = collapse_result
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Generate structured diagnosis."""
         failing = [inv for inv in self.invariants if not inv.passed]
 
@@ -1342,7 +1342,7 @@ class DiagnosisReport:
             "diagnosis": self._generate_diagnosis(failing),
         }
 
-    def _generate_diagnosis(self, failing: List[InvariantResult]) -> str:
+    def _generate_diagnosis(self, failing: list[InvariantResult]) -> str:
         """Generate human-readable diagnosis."""
         if not failing:
             return "Repository is healthy. All 12 hard invariants pass."
@@ -1419,7 +1419,7 @@ class RepoDoctorOmegaInfinity:
     6. Which adjacent repos are entangled with the same defect class?
     """
 
-    def __init__(self, repo_path: str | Path):
+    def __init__(self, repo_path: Union[str, Path]):
         self.repo_path = Path(repo_path).resolve()
         self.checker = HardInvariantChecker(self.repo_path)
         self.graph = RepositoryGraph(self.repo_path)
@@ -1486,7 +1486,7 @@ class RepoDoctorOmegaInfinity:
 
         return report
 
-    def get_repair_plan(self) -> List[RepairAction]:
+    def get_repair_plan(self) -> list[RepairAction]:
         """Get optimized repair plan."""
         failing = self.checker.get_failing()
         return self.optimizer.optimize_repairs(failing)
@@ -1495,7 +1495,7 @@ class RepoDoctorOmegaInfinity:
         """Get entangled modules."""
         return self.entanglement.get_entangled_modules(module)
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get system status."""
         return {
             "repo_path": str(self.repo_path),

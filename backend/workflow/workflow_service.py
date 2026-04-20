@@ -13,33 +13,37 @@ Owner: Trang Phan
 Version: 2.0.0
 """
 
+from __future__ import annotations
 
 import asyncio
-import hashlib
 import json
 import time
 import uuid
-from collections import defaultdict
+from collections.abc import Callable, Coroutine
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
-from enum import Enum, auto
-from typing import Any, Callable, Coroutine, Dict, List, Optional, Tuple
+from datetime import UTC
+from enum import Enum
+from typing import Any, Optional
+
+UTC = UTC
 
 try:
     import redis.asyncio as redis
+
     REDIS_AVAILABLE = True
 except ImportError:
     REDIS_AVAILABLE = False
 
 try:
     from amos_brain import get_super_brain
+
     SUPERBRAIN_AVAILABLE = True
 except ImportError:
     SUPERBRAIN_AVAILABLE = False
 
 try:
     from backend.data_pipeline.streaming import publish_event
+
     STREAMING_AVAILABLE = True
 except ImportError:
     STREAMING_AVAILABLE = False
@@ -47,6 +51,7 @@ except ImportError:
 
 class WorkflowStatus(Enum):
     """Workflow execution status."""
+
     PENDING = "pending"
     RUNNING = "running"
     COMPLETED = "completed"
@@ -59,6 +64,7 @@ class WorkflowStatus(Enum):
 
 class ActivityStatus(Enum):
     """Activity execution status."""
+
     PENDING = "pending"
     RUNNING = "running"
     COMPLETED = "completed"
@@ -69,16 +75,17 @@ class ActivityStatus(Enum):
 @dataclass
 class WorkflowActivity:
     """Single workflow activity/step."""
+
     activity_id: str
     name: str
     handler: Callable[..., Coroutine[Any, Any, Any]]
-    compensation: Optional[Callable[..., Coroutine[Any, Any, Any]]] = None
-    input_data: Dict[str, Any] = field(default_factory=dict)
+    compensation: Callable[..., Coroutine[Any, Any, Optional[Any]]] = None
+    input_data: dict[str, Any] = field(default_factory=dict)
     output_data: Any = None
     status: ActivityStatus = ActivityStatus.PENDING
-    error: Optional[str] = None
-    started_at: Optional[float] = None
-    completed_at: Optional[float] = None
+    error: str = None
+    started_at: float = None
+    completed_at: float = None
     retry_count: int = 0
     max_retries: int = 3
     timeout_seconds: float = 30.0
@@ -87,18 +94,19 @@ class WorkflowActivity:
 @dataclass
 class WorkflowInstance:
     """Workflow execution instance."""
+
     workflow_id: str
     workflow_type: str
     status: WorkflowStatus = WorkflowStatus.PENDING
-    activities: List[WorkflowActivity] = field(default_factory=list)
-    context: Dict[str, Any] = field(default_factory=dict)
-    results: Dict[str, Any] = field(default_factory=dict)
+    activities: list[WorkflowActivity] = field(default_factory=list)
+    context: dict[str, Any] = field(default_factory=dict)
+    results: dict[str, Any] = field(default_factory=dict)
     created_at: float = field(default_factory=time.time)
-    started_at: Optional[float] = None
-    completed_at: Optional[float] = None
-    error_message: Optional[str] = None
-    parent_workflow_id: Optional[str] = None
-    saga_compensations: List[dict[str, Any]] = field(default_factory=list)
+    started_at: float = None
+    completed_at: float = None
+    error_message: str = None
+    parent_workflow_id: str = None
+    saga_compensations: list[dict[str, Any]] = field(default_factory=list)
 
 
 class SagaOrchestrator:
@@ -108,14 +116,11 @@ class SagaOrchestrator:
     """
 
     def __init__(self):
-        self._active_sagas: Dict[str, WorkflowInstance] = {}
-        self._compensation_log: List[dict[str, Any]] = []
+        self._active_sagas: dict[str, WorkflowInstance] = {}
+        self._compensation_log: list[dict[str, Any]] = []
 
     async def execute_saga(
-        self,
-        workflow_id: str,
-        activities: List[WorkflowActivity],
-        context: Dict[str, Any]
+        self, workflow_id: str, activities: list[WorkflowActivity], context: dict[str, Any]
     ) -> WorkflowInstance:
         """Execute saga workflow with compensation support."""
         saga = WorkflowInstance(
@@ -124,11 +129,11 @@ class SagaOrchestrator:
             activities=activities,
             context=context,
             status=WorkflowStatus.RUNNING,
-            started_at=time.time()
+            started_at=time.time(),
         )
         self._active_sagas[workflow_id] = saga
 
-        completed_activities: List[WorkflowActivity] = []
+        completed_activities: list[WorkflowActivity] = []
 
         try:
             for activity in activities:
@@ -152,13 +157,15 @@ class SagaOrchestrator:
                 completed_activities.append(activity)
                 saga.results[activity.name] = result
 
-                saga.saga_compensations.append({
-                    "activity_id": activity.activity_id,
-                    "name": activity.name,
-                    "compensation": activity.compensation,
-                    "input": activity.input_data,
-                    "output": result
-                })
+                saga.saga_compensations.append(
+                    {
+                        "activity_id": activity.activity_id,
+                        "name": activity.name,
+                        "compensation": activity.compensation,
+                        "input": activity.input_data,
+                        "output": result,
+                    }
+                )
 
             saga.status = WorkflowStatus.COMPLETED
             saga.completed_at = time.time()
@@ -170,27 +177,26 @@ class SagaOrchestrator:
 
         return saga
 
-    async def _execute_with_retry(
-        self,
-        activity: WorkflowActivity,
-        context: Dict[str, Any]
-    ) -> Any:
+    async def _execute_with_retry(self, activity: WorkflowActivity, context: dict[str, Any]) -> Any:
         """Execute activity with exponential backoff retry."""
         for attempt in range(activity.max_retries + 1):
             try:
-                if activity.started_at and (time.time() - activity.started_at) > activity.timeout_seconds:
+                if (
+                    activity.started_at
+                    and (time.time() - activity.started_at) > activity.timeout_seconds
+                ):
                     raise TimeoutError(f"Activity {activity.name} timed out")
 
                 result = await asyncio.wait_for(
                     activity.handler(**activity.input_data, context=context),
-                    timeout=activity.timeout_seconds
+                    timeout=activity.timeout_seconds,
                 )
                 return result
 
             except Exception as e:
                 activity.retry_count += 1
                 if attempt < activity.max_retries:
-                    wait_time = 0.5 * (2 ** attempt)
+                    wait_time = 0.5 * (2**attempt)
                     await asyncio.sleep(wait_time)
                 else:
                     activity.error = str(e)
@@ -199,42 +205,41 @@ class SagaOrchestrator:
         return None
 
     async def _compensate_saga(
-        self,
-        completed_activities: List[WorkflowActivity],
-        saga: WorkflowInstance
+        self, completed_activities: list[WorkflowActivity], saga: WorkflowInstance
     ) -> None:
         """Run compensating transactions in reverse order."""
         for activity in reversed(completed_activities):
             if activity.compensation:
                 try:
-                    await activity.compensation(
-                        activity.output_data,
-                        context=saga.context
-                    )
+                    await activity.compensation(activity.output_data, context=saga.context)
                     activity.status = ActivityStatus.COMPENSATED
 
-                    self._compensation_log.append({
-                        "workflow_id": saga.workflow_id,
-                        "activity_id": activity.activity_id,
-                        "compensated_at": time.time(),
-                        "status": "success"
-                    })
+                    self._compensation_log.append(
+                        {
+                            "workflow_id": saga.workflow_id,
+                            "activity_id": activity.activity_id,
+                            "compensated_at": time.time(),
+                            "status": "success",
+                        }
+                    )
                 except Exception as e:
-                    self._compensation_log.append({
-                        "workflow_id": saga.workflow_id,
-                        "activity_id": activity.activity_id,
-                        "compensated_at": time.time(),
-                        "status": "failed",
-                        "error": str(e)
-                    })
+                    self._compensation_log.append(
+                        {
+                            "workflow_id": saga.workflow_id,
+                            "activity_id": activity.activity_id,
+                            "compensated_at": time.time(),
+                            "status": "failed",
+                            "error": str(e),
+                        }
+                    )
 
 
 class CompensationManager:
     """Manages compensation logic and audit trail."""
 
-    def __init__(self, redis_url: Optional[str] = None):
+    def __init__(self, redis_url: str = None):
         self.redis_url = redis_url or "redis://localhost:6379/9"
-        self._redis: Optional[Any] = None
+        self._redis: Any = None
 
         if REDIS_AVAILABLE:
             try:
@@ -243,10 +248,7 @@ class CompensationManager:
                 pass
 
     async def record_compensation(
-        self,
-        workflow_id: str,
-        activity_id: str,
-        compensation_data: Dict[str, Any]
+        self, workflow_id: str, activity_id: str, compensation_data: dict[str, Any]
     ) -> bool:
         """Record compensation action for audit."""
         if not self._redis:
@@ -257,21 +259,20 @@ class CompensationManager:
             await self._redis.setex(
                 key,
                 86400 * 30,
-                json.dumps({
-                    "workflow_id": workflow_id,
-                    "activity_id": activity_id,
-                    "data": compensation_data,
-                    "recorded_at": time.time()
-                })
+                json.dumps(
+                    {
+                        "workflow_id": workflow_id,
+                        "activity_id": activity_id,
+                        "data": compensation_data,
+                        "recorded_at": time.time(),
+                    }
+                ),
             )
             return True
         except Exception:
             return False
 
-    async def get_compensation_log(
-        self,
-        workflow_id: str
-    ) -> List[dict[str, Any]]:
+    async def get_compensation_log(self, workflow_id: str) -> list[dict[str, Any]]:
         """Retrieve compensation history for workflow."""
         if not self._redis:
             return []
@@ -295,13 +296,13 @@ class WorkflowService:
     Supports: Sequential, Parallel, Saga, and Child workflows.
     """
 
-    def __init__(self, redis_url: Optional[str] = None):
+    def __init__(self, redis_url: str = None):
         self.redis_url = redis_url or "redis://localhost:6379/9"
-        self._redis: Optional[Any] = None
+        self._redis: Any = None
         self._saga_orchestrator = SagaOrchestrator()
         self._compensation_manager = CompensationManager(redis_url)
-        self._workflows: Dict[str, WorkflowInstance] = {}
-        self._workflow_definitions: Dict[str, list[WorkflowActivity]] = {}
+        self._workflows: dict[str, WorkflowInstance] = {}
+        self._workflow_definitions: dict[str, list[WorkflowActivity]] = {}
 
         if REDIS_AVAILABLE:
             try:
@@ -309,20 +310,16 @@ class WorkflowService:
             except Exception:
                 pass
 
-    def define_workflow(
-        self,
-        workflow_type: str,
-        activities: List[WorkflowActivity]
-    ) -> None:
+    def define_workflow(self, workflow_type: str, activities: list[WorkflowActivity]) -> None:
         """Define a reusable workflow template."""
         self._workflow_definitions[workflow_type] = activities
 
     async def start_workflow(
         self,
         workflow_type: str,
-        input_data: Dict[str, Any],
-        parent_workflow_id: Optional[str] = None,
-        use_saga: bool = False
+        input_data: dict[str, Any],
+        parent_workflow_id: str = None,
+        use_saga: bool = False,
     ) -> str:
         """Start new workflow execution."""
         workflow_id = f"wf_{uuid.uuid4().hex[:16]}"
@@ -330,15 +327,15 @@ class WorkflowService:
         if SUPERBRAIN_AVAILABLE:
             try:
                 brain = get_super_brain()
-                if brain and hasattr(brain, 'action_gate'):
+                if brain and hasattr(brain, "action_gate"):
                     result = brain.action_gate.validate_action(
                         agent_id="workflow_service",
                         action="start_workflow",
                         details={
                             "workflow_type": workflow_type,
                             "workflow_id": workflow_id,
-                            "use_saga": use_saga
-                        }
+                            "use_saga": use_saga,
+                        },
                     )
                     if not result.authorized:
                         raise PermissionError(f"Workflow start blocked: {result.reason}")
@@ -363,10 +360,10 @@ class WorkflowService:
                     compensation=act.compensation,
                     input_data={**act.input_data, **input_data},
                     max_retries=act.max_retries,
-                    timeout_seconds=act.timeout_seconds
+                    timeout_seconds=act.timeout_seconds,
                 )
                 for i, act in enumerate(activities)
-            ]
+            ],
         )
 
         self._workflows[workflow_id] = instance
@@ -376,13 +373,15 @@ class WorkflowService:
                 await self._redis.setex(
                     f"workflow:{workflow_id}",
                     86400 * 7,
-                    json.dumps({
-                        "workflow_id": workflow_id,
-                        "type": workflow_type,
-                        "status": instance.status.value,
-                        "created_at": instance.created_at,
-                        "parent_id": parent_workflow_id
-                    })
+                    json.dumps(
+                        {
+                            "workflow_id": workflow_id,
+                            "type": workflow_type,
+                            "status": instance.status.value,
+                            "created_at": instance.created_at,
+                            "parent_id": parent_workflow_id,
+                        }
+                    ),
                 )
             except Exception:
                 pass
@@ -395,9 +394,9 @@ class WorkflowService:
                     payload={
                         "workflow_id": workflow_id,
                         "type": workflow_type,
-                        "use_saga": use_saga
+                        "use_saga": use_saga,
                     },
-                    requires_governance=True
+                    requires_governance=True,
                 )
             except Exception:
                 pass
@@ -425,7 +424,7 @@ class WorkflowService:
             try:
                 result = await asyncio.wait_for(
                     activity.handler(**activity.input_data, context=instance.context),
-                    timeout=activity.timeout_seconds
+                    timeout=activity.timeout_seconds,
                 )
                 activity.output_data = result
                 activity.status = ActivityStatus.COMPLETED
@@ -448,34 +447,32 @@ class WorkflowService:
                 await self._redis.setex(
                     f"workflow:{instance.workflow_id}",
                     86400 * 7,
-                    json.dumps({
-                        "workflow_id": instance.workflow_id,
-                        "type": instance.workflow_type,
-                        "status": instance.status.value,
-                        "completed_at": instance.completed_at,
-                        "results": instance.results
-                    })
+                    json.dumps(
+                        {
+                            "workflow_id": instance.workflow_id,
+                            "type": instance.workflow_type,
+                            "status": instance.status.value,
+                            "completed_at": instance.completed_at,
+                            "results": instance.results,
+                        }
+                    ),
                 )
             except Exception:
                 pass
 
     async def execute_parallel(
-        self,
-        workflow_id: str,
-        activities: List[WorkflowActivity],
-        max_concurrent: int = 5
-    ) -> Dict[str, Any]:
+        self, workflow_id: str, activities: list[WorkflowActivity], max_concurrent: int = 5
+    ) -> dict[str, Any]:
         """Execute activities in parallel with concurrency limit."""
         semaphore = asyncio.Semaphore(max_concurrent)
 
-        async def run_with_limit(activity: WorkflowActivity) -> Tuple[str, Any]:
+        async def run_with_limit(activity: WorkflowActivity) -> tuple[str, Any]:
             async with semaphore:
                 activity.status = ActivityStatus.RUNNING
                 activity.started_at = time.time()
                 try:
                     result = await asyncio.wait_for(
-                        activity.handler(**activity.input_data),
-                        timeout=activity.timeout_seconds
+                        activity.handler(**activity.input_data), timeout=activity.timeout_seconds
                     )
                     activity.status = ActivityStatus.COMPLETED
                     activity.completed_at = time.time()
@@ -488,7 +485,7 @@ class WorkflowService:
         results = await asyncio.gather(*[run_with_limit(act) for act in activities])
         return {name: result for name, result in results}
 
-    async def get_workflow_status(self, workflow_id: str) -> Optional[WorkflowInstance]:
+    async def get_workflow_status(self, workflow_id: str) -> WorkflowInstance:
         """Get current workflow status."""
         if workflow_id in self._workflows:
             return self._workflows[workflow_id]
@@ -502,7 +499,7 @@ class WorkflowService:
                         workflow_id=info["workflow_id"],
                         workflow_type=info["type"],
                         status=WorkflowStatus(info["status"]),
-                        results=info.get("results", {})
+                        results=info.get("results", {}),
                     )
             except Exception:
                 pass
@@ -527,14 +524,11 @@ class WorkflowService:
 
         return True
 
-    def get_active_workflows(self) -> List[WorkflowInstance]:
+    def get_active_workflows(self) -> list[WorkflowInstance]:
         """Get all currently running workflows."""
-        return [
-            wf for wf in self._workflows.values()
-            if wf.status == WorkflowStatus.RUNNING
-        ]
+        return [wf for wf in self._workflows.values() if wf.status == WorkflowStatus.RUNNING]
 
-    def get_workflow_stats(self) -> Dict[str, Any]:
+    def get_workflow_stats(self) -> dict[str, Any]:
         """Get workflow execution statistics."""
         all_workflows = list(self._workflows.values())
         return {
@@ -546,10 +540,13 @@ class WorkflowService:
             "avg_duration": (
                 sum(
                     (w.completed_at or time.time()) - (w.started_at or w.created_at)
-                    for w in all_workflows if w.started_at
-                ) / len([w for w in all_workflows if w.started_at])
-                if any(w.started_at for w in all_workflows) else 0
-            )
+                    for w in all_workflows
+                    if w.started_at
+                )
+                / len([w for w in all_workflows if w.started_at])
+                if any(w.started_at for w in all_workflows)
+                else 0
+            ),
         }
 
 
@@ -557,9 +554,7 @@ workflow_service = WorkflowService()
 
 
 async def start_workflow(
-    workflow_type: str,
-    input_data: Dict[str, Any],
-    use_saga: bool = False
+    workflow_type: str, input_data: dict[str, Any], use_saga: bool = False
 ) -> str:
     """Start workflow execution."""
     return await workflow_service.start_workflow(workflow_type, input_data, use_saga=use_saga)
@@ -568,9 +563,9 @@ async def start_workflow(
 async def execute_activity(
     name: str,
     handler: Callable[..., Coroutine[Any, Any, Any]],
-    input_data: Dict[str, Any],
+    input_data: dict[str, Any],
     timeout: float = 30.0,
-    retries: int = 3
+    retries: int = 3,
 ) -> Any:
     """Execute single activity."""
     activity = WorkflowActivity(
@@ -579,7 +574,7 @@ async def execute_activity(
         handler=handler,
         input_data=input_data,
         max_retries=retries,
-        timeout_seconds=timeout
+        timeout_seconds=timeout,
     )
 
     activity.status = ActivityStatus.RUNNING
@@ -587,10 +582,7 @@ async def execute_activity(
 
     for attempt in range(retries + 1):
         try:
-            result = await asyncio.wait_for(
-                handler(**input_data),
-                timeout=timeout
-            )
+            result = await asyncio.wait_for(handler(**input_data), timeout=timeout)
             activity.output_data = result
             activity.status = ActivityStatus.COMPLETED
             return result
@@ -599,14 +591,13 @@ async def execute_activity(
                 activity.status = ActivityStatus.FAILED
                 activity.error = str(e)
                 raise
-            await asyncio.sleep(0.5 * (2 ** attempt))
+            await asyncio.sleep(0.5 * (2**attempt))
 
     return None
 
 
 async def compensate_activity(
-    activity_data: Any,
-    compensation_handler: Callable[..., Coroutine[Any, Any, Any]]
+    activity_data: Any, compensation_handler: Callable[..., Coroutine[Any, Any, Any]]
 ) -> bool:
     """Execute compensation for an activity."""
     try:

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """
 Tree-sitter Ingestion Engine
 
@@ -20,11 +22,11 @@ class SyntaxNode:
     type: str
     start_byte: int
     end_byte: int
-    start_point: Tuple[int, int]  # (row, col)
-    end_point: Tuple[int, int]
+    start_point: tuple[int, int]  # (row, col)
+    end_point: tuple[int, int]
     text: str = ""
-    children: List[SyntaxNode] = field(default_factory=list)
-    parent: Optional[SyntaxNode] = None
+    children: list[SyntaxNode] = field(default_factory=list)
+    parent: SyntaxNode | None = None
 
 
 @dataclass
@@ -33,11 +35,11 @@ class ParsedFile:
 
     path: Path
     language: str
-    root: Optional[SyntaxNode] = None
+    root: SyntaxNode | None = None
     errors: list[dict[str, Any]] = field(default_factory=list)
-    imports: List[str] = field(default_factory=list)
-    exports: List[str] = field(default_factory=list)
-    symbols: Dict[str, Any] = field(default_factory=dict)
+    imports: list[str] = field(default_factory=list)
+    exports: list[str] = field(default_factory=list)
+    symbols: dict[str, Any] = field(default_factory=dict)
 
     @property
     def is_valid(self) -> bool:
@@ -70,7 +72,7 @@ class TreeSitterIngest:
 
     def __init__(self, repo_path: Path):
         self.repo_path = Path(repo_path)
-        self.parsers: Dict[str, Any] = {}
+        self.parsers: dict[str, Any] = {}
         self.cache: dict[Path, ParsedFile] = {}
         self._init_parsers()
 
@@ -157,7 +159,7 @@ class TreeSitterIngest:
             )
 
     def _convert_node(
-        self, ts_node: Any, content: bytes, parent: Optional[SyntaxNode] = None
+        self, ts_node: Any, content: bytes, parent: SyntaxNode | None = None
     ) -> SyntaxNode:
         """Convert tree-sitter node to our SyntaxNode format."""
         node = SyntaxNode(
@@ -232,7 +234,7 @@ class TreeSitterIngest:
             )
 
     def parse_repo(
-        self, patterns: List[str] = None, exclude_dirs: List[str] = None
+        self, patterns: list[str] | None = None, exclude_dirs: list[str] | None = None
     ) -> dict[Path, ParsedFile]:
         """
         Parse entire repository.
@@ -283,7 +285,7 @@ class TreeSitterIngest:
 
         return errors
 
-    def get_symbol_graph(self) -> Dict[str, Any]:
+    def get_symbol_graph(self) -> dict[str, Any]:
         """
         Build a graph of symbols and their relationships.
 

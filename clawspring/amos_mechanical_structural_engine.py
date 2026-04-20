@@ -4,11 +4,12 @@ Enhanced with Mathematical Framework Engine integration for advanced
 structural calculations and validation.
 """
 
+from __future__ import annotations
 
 import math
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 # Mathematical Framework Integration
 try:
@@ -50,8 +51,8 @@ class MechanicsKernel:
     """Kernel for mechanics and materials analysis."""
 
     def __init__(self):
-        self.materials: List[dict] = []
-        self.forces: List[dict] = []
+        self.materials: list[dict] = []
+        self.forces: list[dict] = []
 
     def add_material(
         self,
@@ -104,7 +105,7 @@ class MechanicsKernel:
             "deflection_mm": deflection_m * 1000,
         }
 
-    def get_principles(self) -> List[str]:
+    def get_principles(self) -> list[str]:
         return [
             "Statics and equilibrium",
             "Elasticity and material behavior",
@@ -112,7 +113,7 @@ class MechanicsKernel:
             "Energy methods",
         ]
 
-    def analyze_with_math_framework(self, component_description: str) -> Dict[str, Any]:
+    def analyze_with_math_framework(self, component_description: str) -> dict[str, Any]:
         """Analyze structural component using mathematical framework.
 
         Leverages the AMOS Mathematical Framework Engine to get
@@ -123,6 +124,7 @@ class MechanicsKernel:
 
         Returns:
             Dictionary with mathematical analysis results
+
         """
         if not MATH_FRAMEWORK_AVAILABLE:
             return {
@@ -196,7 +198,7 @@ class MechanicsKernel:
 
     def validate_with_invariants(
         self, force_n: float, area_mm2: float, material_yield_mpa: float
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Validate structural calculation against mathematical invariants.
 
         Checks that stress calculations satisfy fundamental constraints:
@@ -211,6 +213,7 @@ class MechanicsKernel:
 
         Returns:
             Validation result with pass/fail status
+
         """
         stress_mpa = force_n / area_mm2 if area_mm2 > 0 else float("inf")
         safety_factor = 1.5  # Standard engineering safety factor
@@ -303,16 +306,16 @@ class StructuralElementsKernel:
     """Kernel for structural element analysis."""
 
     def __init__(self):
-        self.trusses: List[dict] = []
-        self.beams: List[dict] = []
-        self.frames: List[dict] = []
+        self.trusses: list[dict] = []
+        self.beams: list[dict] = []
+        self.frames: list[dict] = []
 
     def add_beam(
         self,
         name: str,
         length_m: float,
         cross_section: str,
-        supports: List[str],
+        supports: list[str],
     ) -> dict:
         """Add beam."""
         beam = {
@@ -352,7 +355,7 @@ class StructuralElementsKernel:
             "p_critical_kn": p_cr_n / 1000,
         }
 
-    def get_principles(self) -> List[str]:
+    def get_principles(self) -> list[str]:
         return [
             "Truss analysis",
             "Beam bending and deflection",
@@ -365,7 +368,7 @@ class LoadsAnalysisKernel:
     """Kernel for load analysis."""
 
     def __init__(self):
-        self.loads: List[dict] = []
+        self.loads: list[dict] = []
 
     def add_load(
         self,
@@ -405,7 +408,7 @@ class LoadsAnalysisKernel:
             "total_load": total_load,
         }
 
-    def get_principles(self) -> List[str]:
+    def get_principles(self) -> list[str]:
         return [
             "Dead and live loads",
             "Wind and seismic loads",
@@ -418,7 +421,7 @@ class DesignCodesKernel:
     """Kernel for design codes and safety."""
 
     def __init__(self):
-        self.code_checks: List[dict] = []
+        self.code_checks: list[dict] = []
 
     def add_code_check(
         self,
@@ -449,7 +452,7 @@ class DesignCodesKernel:
             "adequate": sf >= 1.0,
         }
 
-    def get_principles(self) -> List[str]:
+    def get_principles(self) -> list[str]:
         return [
             "Ultimate limit state (ULS)",
             "Serviceability limit state (SLS)",
@@ -470,10 +473,10 @@ class MechanicalStructuralEngine:
         self.loads_kernel = LoadsAnalysisKernel()
         self.codes_kernel = DesignCodesKernel()
 
-    def analyze(self, description: str, domains: Optional[List[str]] = None) -> Dict[str, Any]:
+    def analyze(self, description: str, domains: list[str | None] = None) -> dict[str, Any]:
         """Run structural analysis across specified domains."""
         domains = domains or ["mechanics", "elements", "loads", "codes"]
-        results: Dict[str, Any] = {}
+        results: dict[str, Any] = {}
         if "mechanics" in domains:
             results["mechanics"] = self._analyze_mechanics(description)
         if "elements" in domains:
@@ -558,7 +561,7 @@ class MechanicalStructuralEngine:
 
 
 # Singleton instance
-_mechanical_structural_engine: Optional[MechanicalStructuralEngine] = None
+_mechanical_structural_engine: MechanicalStructuralEngine | None = None
 
 
 def get_mechanical_structural_engine() -> MechanicalStructuralEngine:

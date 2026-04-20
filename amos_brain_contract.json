@@ -1,0 +1,67 @@
+{
+  "contract_version": "1.0.0",
+  "contract_date": "2026-04-20",
+  "package": {
+    "name": "amos-brain",
+    "version": "14.0.0",
+    "canonical_module": "amos_brain",
+    "canonical_entrypoint": "amos_brain.cli:main",
+    "health_check_module": "amos_brain.health",
+    "health_check_function": "check"
+  },
+  "public_api": {
+    "modules": [
+      "amos_brain"
+    ],
+    "entrypoints": [
+      "amos-brain"
+    ],
+    "allowed_secondary_entrypoints": [
+      "amosl"
+    ],
+    "exports": [
+      "get_brain",
+      "process_task",
+      "GlobalLaws",
+      "think",
+      "decide",
+      "validate"
+    ]
+  },
+  "forbidden_patterns": {
+    "runtime": [
+      "sys.path.insert",
+      "sys.path.append"
+    ],
+    "code_quality": [
+      "except:",
+      "datetime.utcnow()"
+    ]
+  },
+  "ci_requirements": {
+    "required_checks": [
+      "wheel-install",
+      "entrypoints",
+      "docker-check",
+      "import-graph",
+      "contract-exists",
+      "forbidden-patterns"
+    ],
+    "python_version": "3.12",
+    "workflow_file": ".github/workflows/brain-health.yml"
+  },
+  "structure": {
+    "allowed_root_files": [
+      "pyproject.toml",
+      "README.md",
+      "LICENSE",
+      "Dockerfile",
+      "docker-compose.yml",
+      "amos_brain_contract.json"
+    ],
+    "forbidden_root_patterns": [
+      "*.py",
+      "amos-*.py"
+    ]
+  }
+}

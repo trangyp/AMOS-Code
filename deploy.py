@@ -15,9 +15,10 @@ Version: 1.0.0
 import argparse
 import subprocess
 import sys
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import List
+
+UTC = UTC
 
 
 class AmosDeployer:
@@ -26,8 +27,8 @@ class AmosDeployer:
     def __init__(self, environment: str = "local"):
         self.environment = environment
         self.root = Path(__file__).parent
-        self.errors: List[str] = []
-        self.warnings: List[str] = []
+        self.errors: list[str] = []
+        self.warnings: list[str] = []
 
     def deploy(self) -> bool:
         """Execute full deployment sequence."""

@@ -4,15 +4,15 @@ Routes LLM requests to appropriate local backends (Ollama, LM Studio, vLLM, etc.
 This is the ONLY component that connects directly to local LLM providers.
 """
 
-import asyncio
 from enum import Enum
-from typing import Any, AsyncIterator, Dict, List, Optional
+from typing import Any
 
 import httpx
 
 
 class LLMBackend(str, Enum):
     """Supported local LLM backends."""
+
     OLLAMA = "ollama"
     LM_STUDIO = "lmstudio"
     VLLM = "vllm"
@@ -23,11 +23,11 @@ class LLMBackend(str, Enum):
 
 class LLMRouter:
     """Route LLM requests to appropriate local backend.
-    
+
     This is the ONLY place that connects directly to Ollama, LM Studio, etc.
     All frontend repos go through this router via AMOS-Consulting API.
     """
-    
+
     DEFAULT_PORTS = {
         LLMBackend.OLLAMA: 11434,
         LLMBackend.LM_STUDIO: 1234,
@@ -36,21 +36,21 @@ class LLMRouter:
         LLMBackend.SGLANG: 30000,
         LLMBackend.LITELLM: 4000,
     }
-    
+
     def __init__(self):
-        self._backends: Dict[LLMBackend, str] = {}
+        self._backends: dict[LLMBackend, str] = {}
         self._client = httpx.AsyncClient(timeout=30.0)
         self._initialized = False
-    
+
     async def initialize(self):
         """Auto-discover available local backends."""
         await self.discover_backends()
         self._initialized = True
-    
-    async def discover_backends(self) -> List[LLMBackend]:
+
+    async def discover_backends(self) -> list[LLMBackend]:
         """Auto-discover available local backends."""
         available = []
-        
+
         for backend, port in self.DEFAULT_PORTS.items():
             try:
                 url = f"http://localhost:{port}"
@@ -60,23 +60,23 @@ class LLMRouter:
                     available.append(backend)
             except Exception:
                 pass
-        
+
         return available
-    
-    async def list_models(self) -> List[dict[str, Any]]:
+
+    async def list_models(self) -> list[dict[str, Any]]:
         """List models from all discovered backends."""
         models = []
-        
+
         for backend, url in self._backends.items():
             try:
                 backend_models = await self._list_for_backend(backend, url)
                 models.extend(backend_models)
             except Exception:
                 pass
-        
+
         return models
-    
-    async def _list_for_backend(self, backend: LLMBackend, url: str) -> List[dict[str, Any]]:
+
+    async def _list_for_backend(self, backend: LLMBackend, url: str) -> list[dict[str, Any]]:
         """List models for a specific backend."""
         if backend == LLMBackend.OLLAMA:
             resp = await self._client.get(f"{url}/api/tags")
@@ -84,11 +84,11 @@ class LLMRouter:
             return [
                 {
                     "model_id": f"ollama/{m['name']}",
-                    "name": m['name'],
+                    "name": m["name"],
                     "provider": "ollama",
-                    "status": "available"
+                    "status": "available",
                 }
-                for m in data.get('models', [])
+                for m in data.get("models", [])
             ]
         elif backend in (LLMBackend.LM_STUDIO, LLMBackend.VLLM):
             resp = await self._client.get(f"{url}/v1/models")
@@ -96,94 +96,96 @@ class LLMRouter:
             return [
                 {
                     "model_id": f"{backend.value}/{m['id']}",
-                    "name": m['id'],
+                    "name": m["id"],
                     "provider": backend.value,
-                    "status": "available"
+                    "status": "available",
                 }
-                for m in data.get('data', [])
+                for m in data.get("data", [])
             ]
         return []
-    
+
     async def chat(
         self,
         model: str,
-        messages: List[dict],
+        messages: list[dict],
         temperature: float = 0.7,
-        max_tokens: Optional[int] = None,
-        stream: bool = False
-    ) -> Dict[str, Any]:
+        max_tokens: int | None = None,
+        stream: bool = False,
+    ) -> dict[str, Any]:
         """Send chat request to appropriate backend."""
         parts = model.split("/", 1)
         if len(parts) != 2:
             raise ValueError(f"Invalid model format: {model}")
-        
+
         provider, model_name = parts
         backend = LLMBackend(provider)
         backend_url = self._backends.get(backend)
-        
+
         if not backend_url:
             raise ValueError(f"Backend {backend} not available")
-        
+
         if backend == LLMBackend.OLLAMA:
-            return await self._chat_ollama(backend_url, model_name, messages, temperature, max_tokens)
+            return await self._chat_ollama(
+                backend_url, model_name, messages, temperature, max_tokens
+            )
         elif backend in (LLMBackend.LM_STUDIO, LLMBackend.VLLM):
-            return await self._chat_openai_compatible(backend_url, model_name, messages, temperature, max_tokens)
-        
+            return await self._chat_openai_compatible(
+                backend_url, model_name, messages, temperature, max_tokens
+            )
+
         raise ValueError(f"Unsupported backend: {backend}")
-    
+
     async def _chat_ollama(
-        self, url: str, model: str, messages: List[dict],
-        temperature: float, max_tokens: Optional[int]
-    ) -> Dict[str, Any]:
+        self, url: str, model: str, messages: list[dict], temperature: float, max_tokens: int | None
+    ) -> dict[str, Any]:
         """Chat with Ollama backend."""
         payload = {
             "model": model,
             "messages": messages,
             "stream": False,
-            "options": {"temperature": temperature}
+            "options": {"temperature": temperature},
         }
         if max_tokens:
             payload["options"]["num_predict"] = max_tokens
-        
+
         resp = await self._client.post(f"{url}/api/chat", json=payload)
         data = resp.json()
-        
+
         return {
             "content": data.get("message", {}).get("content", ""),
             "usage": {
                 "prompt_tokens": data.get("prompt_eval_count", 0),
                 "completion_tokens": data.get("eval_count", 0),
-                "total_tokens": data.get("prompt_eval_count", 0) + data.get("eval_count", 0)
+                "total_tokens": data.get("prompt_eval_count", 0) + data.get("eval_count", 0),
             },
-            "finish_reason": "stop" if not data.get("done_reason") else data.get("done_reason")
+            "finish_reason": "stop" if not data.get("done_reason") else data.get("done_reason"),
         }
-    
+
     async def _chat_openai_compatible(
-        self, url: str, model: str, messages: List[dict],
-        temperature: float, max_tokens: Optional[int]
-    ) -> Dict[str, Any]:
+        self, url: str, model: str, messages: list[dict], temperature: float, max_tokens: int | None
+    ) -> dict[str, Any]:
         """Chat with OpenAI-compatible backend (LM Studio, vLLM)."""
         payload = {
             "model": model,
             "messages": messages,
             "temperature": temperature,
-            "stream": False
+            "stream": False,
         }
         if max_tokens:
             payload["max_tokens"] = max_tokens
-        
+
         resp = await self._client.post(f"{url}/v1/chat/completions", json=payload)
         data = resp.json()
-        
+
         choice = data.get("choices", [{}])[0]
         usage = data.get("usage", {})
-        
+
         return {
             "content": choice.get("message", {}).get("content", ""),
             "usage": {
                 "prompt_tokens": usage.get("prompt_tokens", 0),
                 "completion_tokens": usage.get("completion_tokens", 0),
-                "total_tokens": usage.get("total_tokens", 0)
+                "total_tokens": usage.get("total_tokens", 0),
             },
-            "finish_reason": choice.get("finish_reason", "stop")
+            "finish_reason": choice.get("finish_reason", "stop"),
         }

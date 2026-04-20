@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """Observable definitions for repository measurement.
 
 Typed facts extracted from repository analysis.
@@ -67,10 +69,10 @@ class Observable:
 
     # Detailed context
     message: str = ""
-    context: Dict[str, Any] = field(default_factory=dict)
+    context: dict[str, Any] = field(default_factory=dict)
 
     # Affected basis vectors
-    basis_impact: List[str] = field(default_factory=list)
+    basis_impact: list[str] = field(default_factory=list)
 
     def __post_init__(self):
         self.severity = max(0.0, min(1.0, self.severity))
@@ -79,7 +81,7 @@ class Observable:
         if not self.basis_impact:
             self.basis_impact = self._default_basis_impact()
 
-    def _default_basis_impact(self) -> List[str]:
+    def _default_basis_impact(self) -> list[str]:
         """Map observable kind to affected basis vectors."""
         mapping = {
             ObservableKind.PARSE_FATAL: ["SYNTAX"],

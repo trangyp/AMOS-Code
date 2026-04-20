@@ -3,7 +3,9 @@
 Provides integration between organism and brain components.
 """
 
-from typing import Any, Dict, Optional
+from __future__ import annotations
+
+from typing import Any, Optional
 
 
 class OrganismBridge:
@@ -18,7 +20,7 @@ class OrganismBridge:
         """Establish connection to organism."""
         return True
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get current bridge status."""
         return {"connected": True, "status": self.status}
 

@@ -1,4 +1,6 @@
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
+
+from typing import Any, Optional
 
 """AMOS File Brain API
 
@@ -29,7 +31,7 @@ class FileProcessRequest(BaseModel):
 
     content: str
     source: Optional[str] = None
-    context: Dict[str, Any] = {}
+    context: dict[str, Any] = {}
 
 
 class FileProcessResponse(BaseModel):
@@ -39,10 +41,10 @@ class FileProcessResponse(BaseModel):
     source: Optional[str]
     total_segments: int
     processed_segments: int
-    stable_reads: List[dict[str, Any]]
-    cognitive_summary: Dict[str, Any]
+    stable_reads: list[dict[str, Any]]
+    cognitive_summary: dict[str, Any]
     processing_time_ms: float
-    errors: List[str]
+    errors: list[str]
 
 
 class FileQueryRequest(BaseModel):
@@ -61,7 +63,7 @@ class FileQueryResponse(BaseModel):
     path: str
     context: Optional[str]
     latency_ms: float
-    brain_enhancement: Dict[str, Any] = None
+    brain_enhancement: dict[str, Any] = None
 
 
 @router.post("/process", response_model=FileProcessResponse)
@@ -171,7 +173,7 @@ async def query_file_endpoint(request: FileQueryRequest) -> FileQueryResponse:
 
 
 @router.get("/status")
-async def get_file_brain_status() -> Dict[str, Any]:
+async def get_file_brain_status() -> dict[str, Any]:
     """Get file brain service status."""
     if not FILE_BRAIN_AVAILABLE:
         return {

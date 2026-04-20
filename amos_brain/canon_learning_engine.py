@@ -15,9 +15,9 @@ Version: 3.0.0
 import hashlib
 import time
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Optional
 
-from .canon_knowledge_engine import get_canon_knowledge_engine, CanonKnowledgeEntry
+from .canon_knowledge_engine import CanonKnowledgeEntry, get_canon_knowledge_engine
 
 
 @dataclass

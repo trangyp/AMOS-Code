@@ -6,6 +6,7 @@ Uses real BrainClient facade for live telemetry:
 - Simulation status from Simulation Engine
 - Health from organism_bridge
 """
+from __future__ import annotations
 
 
 import asyncio
@@ -13,19 +14,18 @@ import sys
 import time
 from collections.abc import AsyncIterator
 from datetime import datetime, timezone
-
-UTC = timezone.utc
 from pathlib import Path
-from typing import Any, Dict, Optional, Set
+from typing import Any, Optional
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel, Field
+
+UTC = timezone.utc
 
 # Setup paths
 AMOS_ROOT = Path(__file__).parent.parent.parent.resolve()
 for p in [AMOS_ROOT, AMOS_ROOT / "clawspring", AMOS_ROOT / "amos_brain"]:
     if str(p) not in sys.path:
-        sys.path.insert(0, str(p))
 
 # Import real brain
 try:
@@ -59,8 +59,8 @@ class BrainAlert(BaseModel):
     timestamp: datetime
     severity: str  # info, warning, critical
     category: str  # performance, legality, memory, error
-    message: str
-    metric_value: Optional[float] = None
+    message:str
+    metric_value: Optional[float] =None
     threshold: Optional[float] = None
 
 
@@ -72,7 +72,7 @@ class BrainMonitorSession:
         self.websocket = websocket
         self.started_at = datetime.now(UTC)
         self.is_active = True
-        self.subscriptions: Set[str] = {"telemetry", "alerts"}
+        self.subscriptions: set[str] = {"telemetry", "alerts"}
         self._cognitive_engine = None
         self._memory = None
 
@@ -209,7 +209,7 @@ class BrainMonitorSession:
             # Check every 5 seconds
             await asyncio.sleep(5.0)
 
-    async def send_message(self, message: Dict[str, Any]) -> None:
+    async def send_message(self, message: dict[str, Any]) -> None:
         """Send message to websocket."""
         if self.is_active:
             await self.websocket.send_json(message)
@@ -220,7 +220,7 @@ class BrainMonitorSession:
 
 
 # Active sessions
-_active_sessions: Dict[str, BrainMonitorSession] = {}
+_active_sessions: dict[str, BrainMonitorSession] = {}
 
 
 @router.websocket("/ws")
@@ -320,7 +320,7 @@ async def _stream_alerts(session: BrainMonitorSession) -> None:
         pass
 
 
-async def _handle_client_message(session: BrainMonitorSession, message: Dict[str, Any]) -> None:
+async def _handle_client_message(session: BrainMonitorSession, message: dict[str, Any]) -> None:
     """Handle message from client."""
     action = message.get("action")
 
@@ -350,7 +350,7 @@ async def _handle_client_message(session: BrainMonitorSession, message: Dict[str
 
 
 @router.get("/sessions")
-async def get_active_sessions() -> Dict[str, Any]:
+async def get_active_sessions() -> dict[str, Any]:
     """Get information about active monitoring sessions."""
     sessions = []
     for session_id, session in _active_sessions.items():
@@ -372,7 +372,7 @@ async def get_active_sessions() -> Dict[str, Any]:
 
 
 @router.post("/sessions/{session_id}/close")
-async def close_session(session_id: str) -> Dict[str, Any]:
+async def close_session(session_id: str) -> dict[str, Any]:
     """Close a monitoring session."""
     if session_id not in _active_sessions:
         raise Exception(f"Session {session_id} not found")
@@ -389,7 +389,7 @@ async def close_session(session_id: str) -> Dict[str, Any]:
 
 
 @router.get("/health")
-async def health_check() -> Dict[str, Any]:
+async def health_check() -> dict[str, Any]:
     """Health check for real-time monitor."""
     return {
         "status": "healthy",

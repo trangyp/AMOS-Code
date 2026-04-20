@@ -51,6 +51,8 @@ Author: Trang Phan
 Version: 1.0.0
 """
 
+from __future__ import annotations
+
 import asyncio
 import functools
 import hashlib
@@ -60,7 +62,7 @@ import time
 from collections.abc import Callable
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
-from typing import Any, List, Optional, Tuple, TypeVar, cast
+from typing import Any, TypeVar, cast
 
 # Try to import Redis
 try:
@@ -110,14 +112,14 @@ class CacheConfig:
 class AMOSCache:
     """AMOS distributed caching system."""
 
-    def __init__(self, config: Optional[CacheConfig] = None):
+    def __init__(self, config: CacheConfig | None = None):
         """Initialize cache system.
 
         Args:
             config: Cache configuration
         """
         self.config = config or CacheConfig()
-        self._redis: Optional[Redis] = None
+        self._redis: Redis | None = None
         self._l1_cache: Any = None  # In-memory cache
         self._initialized = False
         self._lock = asyncio.Lock()
@@ -183,7 +185,7 @@ class AMOSCache:
         """Create prefixed key."""
         return f"{self.config.key_prefix}{key}"
 
-    async def get(self, key: str) -> Optional[Any]:
+    async def get(self, key: str) -> Any | None:
         """Get value from cache.
 
         Args:
@@ -216,7 +218,7 @@ class AMOSCache:
 
         return None
 
-    async def set(self, key: str, value: Any, ttl: int = None, tags: List[str] = None) -> bool:
+    async def set(self, key: str, value: Any, ttl: int = None, tags: list[str] = None) -> bool:
         """Set value in cache.
 
         Args:
@@ -334,7 +336,7 @@ class AMOSCache:
         return True
 
     async def get_or_set(
-        self, key: str, factory: Callable[..., T], ttl: int = None, tags: List[str] = None
+        self, key: str, factory: Callable[..., T], ttl: int = None, tags: list[str] = None
     ) -> T:
         """Get from cache or compute and store.
 
@@ -427,7 +429,7 @@ class AMOSCache:
 
 
 # Singleton cache instance
-_cache_instance: Optional[AMOSCache] = None
+_cache_instance: AMOSCache | None = None
 
 
 async def get_cache() -> AMOSCache:
@@ -440,7 +442,7 @@ async def get_cache() -> AMOSCache:
 
 
 def cache_response(
-    ttl: int = 300, key_builder: Optional[Callable] = None, tags: List[str] = None
+    ttl: int = 300, key_builder: Callable | None = None, tags: list[str] = None
 ) -> Callable[[F], F]:
     """Decorator to cache FastAPI endpoint responses.
 
@@ -488,7 +490,7 @@ def cache_response(
     return decorator
 
 
-def cache_query(ttl: int = 300, tags: List[str] = None) -> Callable[[F], F]:
+def cache_query(ttl: int = 300, tags: list[str] = None) -> Callable[[F], F]:
     """Decorator to cache database query results.
 
     Args:
@@ -520,7 +522,7 @@ def cache_query(ttl: int = 300, tags: List[str] = None) -> Callable[[F], F]:
 class RateLimiter:
     """Sliding window rate limiter using Redis."""
 
-    def __init__(self, cache: Optional[AMOSCache] = None):
+    def __init__(self, cache: AMOSCache | None = None):
         """Initialize rate limiter.
 
         Args:
@@ -530,7 +532,7 @@ class RateLimiter:
 
     async def is_allowed(
         self, key: str, max_requests: int, window_seconds: int
-    ) -> Tuple[bool, int, int]:
+    ) -> tuple[bool, int, int]:
         """Check if request is allowed.
 
         Args:
@@ -624,7 +626,7 @@ async def main():
             "demo_user", max_requests=3, window_seconds=60
         )
         status = "✓ ALLOWED" if allowed else "✗ BLOCKED"
-        print(f"  {status} Request {i+1}: remaining={remaining}")
+        print(f"  {status} Request {i + 1}: remaining={remaining}")
 
     print("\n[Demo: Cache Decorators]")
 
@@ -660,7 +662,7 @@ async def main():
     print("""
 from fastapi import FastAPI, Depends
 from amos_cache import get_cache, cache_response
-from typing import Callable, Set, TypeVar
+from typing import Callable, Set, TypeVar, Optional
 
 app = FastAPI()
 

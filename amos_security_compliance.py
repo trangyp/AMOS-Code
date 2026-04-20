@@ -25,6 +25,8 @@ Version: 1.0.0
 Phase: 22
 """
 
+from __future__ import annotations
+
 import hashlib
 import html
 import json
@@ -33,9 +35,11 @@ import re
 import time
 from collections import defaultdict
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Optional
+
+UTC = UTC
 
 # FastAPI imports
 try:
@@ -168,7 +172,7 @@ class AuditEvent:
     resource_id: str
     action: str
     status: str  # success, failure
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: dict[str, Any] = field(default_factory=dict)
     request_id: str = None
 
 
@@ -182,7 +186,7 @@ class SecurityAlert:
     source_ip: str
     timestamp: datetime
     description: str
-    evidence: Dict[str, Any]
+    evidence: dict[str, Any]
     mitigated: bool = False
 
 
@@ -319,7 +323,7 @@ class WAFProtection:
         self.xss_patterns = [re.compile(p, re.IGNORECASE) for p in self.XSS_PATTERNS]
         self.path_patterns = [re.compile(p, re.IGNORECASE) for p in self.PATH_TRAVERSAL_PATTERNS]
 
-    def validate_input(self, value: str) -> Tuple[bool, str]:
+    def validate_input(self, value: str) -> tuple[bool, str]:
         """
         Validate input for malicious patterns.
 
@@ -363,7 +367,7 @@ class AuditLogger:
 
     def __init__(self):
         self._redis: Optional[Any] = None
-        self._local_buffer: List[AuditEvent] = []
+        self._local_buffer: list[AuditEvent] = []
 
     async def initialize(self) -> None:
         """Initialize Redis connection."""
@@ -429,13 +433,13 @@ class AuditLogger:
     async def query_events(
         self,
         session: AsyncSession,
-        event_types: List[AuditEventType] = None,
+        event_types: list[AuditEventType] = None,
         tenant_id: str = None,
         user_id: str = None,
         start_date: datetime = None,
         end_date: datetime = None,
         limit: int = 100,
-    ) -> List[AuditLog]:
+    ) -> list[AuditLog]:
         """Query audit events for compliance reporting."""
         if not DB_AVAILABLE:
             return []
@@ -478,7 +482,7 @@ class ThreatDetection:
 
     def __init__(self):
         self._redis: Optional[Any] = None
-        self._suspicious_ips: Dict[str, dict] = defaultdict(
+        self._suspicious_ips: dict[str, dict] = defaultdict(
             lambda: {"count": 0, "first_seen": None}
         )
         self.waf = WAFProtection()
@@ -491,7 +495,7 @@ class ThreatDetection:
             except Exception as e:
                 logger.error(f"Redis connection failed: {e}")
 
-    async def check_request(self, request: Request) -> Tuple[bool, SecurityAlert]:
+    async def check_request(self, request: Request) -> tuple[bool, SecurityAlert]:
         """
         Check request for threats.
 
@@ -592,7 +596,7 @@ class DataPrivacyController:
 
     async def export_user_data(
         self, user_id: str, tenant_id: str, session: AsyncSession
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Export all user data (GDPR Article 20 - Data Portability).
 
@@ -628,7 +632,7 @@ class DataPrivacyController:
 
     async def delete_user_data(
         self, user_id: str, tenant_id: str, session: AsyncSession
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Delete all user data (GDPR Article 17 - Right to Erasure).
 
@@ -733,11 +737,11 @@ if FASTAPI_AVAILABLE:
 
     @router.get("/audit-log")
     async def query_audit_log(
-        event_types: List[str] = None,
+        event_types: list[str] = None,
         tenant_id: str = None,
         days: int = 7,
         session: AsyncSession = Depends(get_database_session) if DB_AVAILABLE else lambda: None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Query audit log for compliance (admin only)."""
         audit = AuditLogger()
 
@@ -773,7 +777,7 @@ if FASTAPI_AVAILABLE:
     @router.post("/block-ip")
     async def block_ip_endpoint(
         ip: str, reason: str, duration: int = BLOCKED_IPS_TTL
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Block an IP address (admin only)."""
         threat = ThreatDetection()
         await threat.block_ip(ip, reason, duration)

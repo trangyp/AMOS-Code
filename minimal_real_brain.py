@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 """
 MINIMUM REAL BRAIN SPEC
@@ -26,8 +26,9 @@ import random
 from collections import defaultdict
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 
 # ============================================================================
 # 1. WORLD STATE - Persistent structured world graph
@@ -40,12 +41,12 @@ class WorldNode:
 
     id: str
     node_type: str  # 'entity', 'relation', 'goal', 'constraint'
-    properties: Dict[str, Any] = field(default_factory=dict)
+    properties: dict[str, Any] = field(default_factory=dict)
     confidence: float = 1.0
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     last_updated: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
-    def update(self, properties: Dict[str, Any], confidence: Optional[float] = None) -> None:
+    def update(self, properties: dict[str, Any], confidence: float = None) -> None:
         """Update node properties with conflict resolution."""
         for key, value in properties.items():
             if key in self.properties:
@@ -62,7 +63,7 @@ class WorldNode:
             self.confidence = (self.confidence + confidence) / 2
         self.last_updated = datetime.now(timezone.utc).isoformat()
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "id": self.id,
             "type": self.node_type,
@@ -81,7 +82,7 @@ class WorldEdge:
     target: str
     edge_type: str  # 'causes', 'requires', 'part_of', 'blocks'
     weight: float = 1.0
-    properties: Dict[str, Any] = field(default_factory=dict)
+    properties: dict[str, Any] = field(default_factory=dict)
 
 
 class WorldState:
@@ -91,16 +92,16 @@ class WorldState:
     """
 
     def __init__(self):
-        self.nodes: Dict[str, WorldNode] = {}
-        self.edges: List[WorldEdge] = []
-        self._index_by_type: Dict[str, set[str]] = defaultdict(set)
-        self._causal_chains: List[list[str]] = []
+        self.nodes: dict[str, WorldNode] = {}
+        self.edges: list[WorldEdge] = []
+        self._index_by_type: dict[str, set[str]] = defaultdict(set)
+        self._causal_chains: list[list[str]] = []
 
     def add_node(
         self,
         node_id: str,
         node_type: str,
-        properties: Dict[str, Any] = None,
+        properties: dict[str, Any] = None,
         confidence: float = 1.0,
     ) -> WorldNode:
         """Add or update a world node."""
@@ -121,7 +122,7 @@ class WorldState:
         target: str,
         edge_type: str,
         weight: float = 1.0,
-        properties: Dict[str, Any] = None,
+        properties: dict[str, Any] = None,
     ) -> WorldEdge:
         """Add a typed edge between nodes."""
         edge = WorldEdge(source, target, edge_type, weight, properties or {})
@@ -146,7 +147,7 @@ class WorldState:
         for start in self.nodes:
             self._dfs_causal(start, [], adj, 0)
 
-    def _dfs_causal(self, node: str, path: List[str], adj: dict, depth: int) -> None:
+    def _dfs_causal(self, node: str, path: list[str], adj: dict, depth: int) -> None:
         """DFS to find causal chains."""
         if depth > 5:
             return
@@ -158,10 +159,10 @@ class WorldState:
 
     def query(
         self,
-        node_type: Optional[str] = None,
-        properties: Dict[str, Any] = None,
+        node_type: str = None,
+        properties: dict[str, Any] = None,
         min_confidence: float = 0.0,
-    ) -> List[WorldNode]:
+    ) -> list[WorldNode]:
         """Query nodes by type and property filters."""
         results = []
 
@@ -183,7 +184,7 @@ class WorldState:
 
         return sorted(results, key=lambda n: n.confidence, reverse=True)
 
-    def get_causal_ancestors(self, node_id: str) -> List[str]:
+    def get_causal_ancestors(self, node_id: str) -> list[str]:
         """Get all nodes that causally lead to given node."""
         ancestors = []
         for chain in self._causal_chains:
@@ -191,7 +192,7 @@ class WorldState:
                 ancestors.extend(chain[:-1])
         return list(set(ancestors))
 
-    def compute_diff(self, other: WorldState) -> Dict[str, Any]:
+    def compute_diff(self, other: WorldState) -> dict[str, Any]:
         """Compute structural difference between two world states."""
         diff = {
             "nodes_added": [],
@@ -227,7 +228,7 @@ class WorldState:
         )
         return hashlib.sha256(state_str.encode()).hexdigest()[:16]
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "nodes": {k: v.to_dict() for k, v in self.nodes.items()},
             "edges": [
@@ -274,9 +275,9 @@ class WorkingMemory:
     CAPACITY: int = 7  # Miller's Law
 
     def __init__(self):
-        self.slots: List[MemorySlot] = []
-        self._focus_stack: List[str] = []  # Current attention focus
-        self._rehearsal_buffer: List[MemorySlot] = []  # Items being rehearsed
+        self.slots: list[MemorySlot] = []
+        self._focus_stack: list[str] = []  # Current attention focus
+        self._rehearsal_buffer: list[MemorySlot] = []  # Items being rehearsed
 
     def add(self, content: Any, slot_type: str, priority: float = 0.5) -> MemorySlot:
         """Add item to working memory, may displace low-activation items."""
@@ -299,7 +300,7 @@ class WorkingMemory:
         self.slots.append(slot)
         return slot
 
-    def focus(self, slot_type: Optional[str] = None) -> List[MemorySlot]:
+    def focus(self, slot_type: str = None) -> list[MemorySlot]:
         """Get items matching current attention focus."""
         if not slot_type:
             # Return highest activation items
@@ -310,7 +311,7 @@ class WorkingMemory:
             s.access()
         return sorted(typed, key=lambda s: s.activation, reverse=True)
 
-    def retrieve_from_rehearsal(self, predicate: Callable[[Any], bool]) -> Optional[MemorySlot]:
+    def retrieve_from_rehearsal(self, predicate: Callable[[Any], bool]) -> MemorySlot:
         """Try to retrieve a displaced item from rehearsal buffer."""
         for slot in reversed(self._rehearsal_buffer):
             if predicate(slot.content):
@@ -335,7 +336,7 @@ class WorkingMemory:
         # Remove near-zero activation slots
         self.slots = [s for s in self.slots if s.activation > 0.1]
 
-    def dump(self) -> Dict[str, Any]:
+    def dump(self) -> dict[str, Any]:
         return {
             "slots": [
                 {
@@ -361,8 +362,8 @@ class PlanStep:
     """Single step in a plan."""
 
     action: str
-    preconditions: List[str]
-    effects: List[str]
+    preconditions: list[str]
+    effects: list[str]
     estimated_cost: float
     confidence: float
 
@@ -372,12 +373,12 @@ class Plan:
     """Generated plan with metadata."""
 
     goal: str
-    steps: List[PlanStep]
+    steps: list[PlanStep]
     total_cost: float
     estimated_success: float
-    alternative_branches: List[list[PlanStep]] = field(default_factory=list)
+    alternative_branches: list[list[PlanStep]] = field(default_factory=list)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "goal": self.goal,
             "steps": [s.action for s in self.steps],
@@ -396,14 +397,14 @@ class NeuralProposer:
 
     def __init__(self, world: WorldState):
         self.world = world
-        self._action_templates: Dict[str, dict[str, Any]] = {}
+        self._action_templates: dict[str, dict[str, Any]] = {}
         self._success_history: defaultdict[str, list[bool]] = defaultdict(list)
 
-    def learn_template(self, action_type: str, template: Dict[str, Any]) -> None:
+    def learn_template(self, action_type: str, template: dict[str, Any]) -> None:
         """Learn an action template from experience."""
         self._action_templates[action_type] = template
 
-    def propose_actions(self, goal: str, world: WorldState, n_proposals: int = 3) -> List[PlanStep]:
+    def propose_actions(self, goal: str, world: WorldState, n_proposals: int = 3) -> list[PlanStep]:
         """
         Propose candidate actions to achieve goal.
         Simulates neural generation with learned biases.
@@ -468,7 +469,7 @@ class Planner:
         self.proposer = NeuralProposer(world)
         self._search_budget: int = 100  # Max nodes to expand
 
-    def plan(self, goal: str, max_steps: int = 5) -> Optional[Plan]:
+    def plan(self, goal: str, max_steps: int = 5) -> Plan:
         """
         Generate plan to achieve goal.
         Combines neural proposals with symbolic forward search.
@@ -511,7 +512,7 @@ class Planner:
 
         return best_plan
 
-    def _build_plan(self, seed: PlanStep, goal: str, max_steps: int) -> Optional[List[PlanStep] ]:
+    def _build_plan(self, seed: PlanStep, goal: str, max_steps: int) -> list[PlanStep]:
         """Build plan via forward search from seed."""
         plan = [seed]
         current_state = set(seed.effects)
@@ -535,7 +536,7 @@ class Planner:
 
         return plan if len(plan) > 0 else None
 
-    def _estimate_success(self, steps: List[PlanStep]) -> float:
+    def _estimate_success(self, steps: list[PlanStep]) -> float:
         """Estimate success probability from step confidences."""
         if not steps:
             return 0.0
@@ -545,7 +546,7 @@ class Planner:
             p_success *= step.confidence
         return p_success ** (1.0 / len(steps))  # Geometric mean
 
-    def replan(self, failed_step: int, reason: str) -> Optional[Plan]:
+    def replan(self, failed_step: int, reason: str) -> Plan:
         """Replan from a failed step, using alternative branch."""
         # Add failure to working memory
         self.wm.add(f"step_{failed_step}_failed:{reason}", "error", priority=1.0)
@@ -569,9 +570,9 @@ class VerificationResult:
     """Result of plan verification."""
 
     valid: bool
-    violations: List[str]
-    warnings: List[str]
-    checked_constraints: List[str]
+    violations: list[str]
+    warnings: list[str]
+    checked_constraints: list[str]
 
 
 class Verifier:
@@ -582,8 +583,8 @@ class Verifier:
 
     def __init__(self, world: WorldState):
         self.world = world
-        self._hard_constraints: List[Callable[[Plan, WorldState], str]] = []
-        self._soft_constraints: List[Callable[[Plan, WorldState], tuple[str, float]]] = []
+        self._hard_constraints: list[Callable[[Plan, WorldState], str]] = []
+        self._soft_constraints: list[Callable[[Plan, WorldState], tuple[str, float]]] = []
 
     def add_hard_constraint(self, name: str, check: Callable[[Plan, WorldState], str]) -> None:
         """Add a hard constraint (plan rejected if violated)."""
@@ -633,7 +634,7 @@ class Verifier:
     def setup_default_constraints(self) -> None:
         """Setup default safety/resource constraints."""
 
-        def resource_limit_check(plan: Plan, world: WorldState) -> Optional[str]:
+        def resource_limit_check(plan: Plan, world: WorldState) -> str:
             """Check if plan exceeds available resources."""
             total_cost = sum(s.estimated_cost for s in plan.steps)
             # Query available resources from world
@@ -644,7 +645,7 @@ class Verifier:
                     return f"Resource limit: plan cost {total_cost:.1f} > available {available:.1f}"
             return None
 
-        def circular_action_check(plan: Plan, world: WorldState) -> Optional[str]:
+        def circular_action_check(plan: Plan, world: WorldState) -> str:
             """Check for circular action sequences."""
             actions = [s.action for s in plan.steps]
             for i in range(len(actions)):
@@ -653,7 +654,7 @@ class Verifier:
                         return f"Circular action detected: {actions[i]} at positions {i}, {j}"
             return None
 
-        def precondition_check(plan: Plan, world: WorldState) -> Optional[str]:
+        def precondition_check(plan: Plan, world: WorldState) -> str:
             """Check if initial preconditions are satisfied in world."""
             if not plan.steps:
                 return None
@@ -688,9 +689,9 @@ class ErrorPattern:
 
     error_type: str
     context_hash: str  # Hash of world state when error occurred
-    plan_step: Optional[str]
+    plan_step: str
     failure_reason: str
-    correction_applied: Optional[str]
+    correction_applied: str
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     recurrence_count: int = 1
 
@@ -706,18 +707,18 @@ class ErrorMemory:
     """
 
     def __init__(self):
-        self.errors: List[ErrorPattern] = []
+        self.errors: list[ErrorPattern] = []
         self._signature_counts: defaultdict[str, int] = defaultdict(int)
         self._context_errors: defaultdict[str, list[ErrorPattern]] = defaultdict(list)
-        self._error_chains: List[list[ErrorPattern]] = []
+        self._error_chains: list[list[ErrorPattern]] = []
 
     def record(
         self,
         error_type: str,
         world_state: WorldState,
-        plan_step: Optional[str],
+        plan_step: str,
         failure_reason: str,
-        correction: Optional[str] = None,
+        correction: str = None,
     ) -> ErrorPattern:
         """Record a new error occurrence."""
         context_hash = world_state.snapshot_hash()
@@ -753,18 +754,18 @@ class ErrorMemory:
         return pattern
 
     def is_recurrence(
-        self, error_type: str, plan_step: Optional[str], failure_reason: str
-    ) -> Tuple[bool, int]:
+        self, error_type: str, plan_step: str, failure_reason: str
+    ) -> tuple[bool, int]:
         """Check if this error has occurred before."""
         sig = f"{error_type}:{plan_step}:{failure_reason}"
         count = self._signature_counts.get(sig, 0)
         return count > 0, count
 
-    def get_similar_errors(self, context_hash: str, n: int = 3) -> List[ErrorPattern]:
+    def get_similar_errors(self, context_hash: str, n: int = 3) -> list[ErrorPattern]:
         """Get errors from similar contexts."""
         return self._context_errors.get(context_hash, [])[-n:]
 
-    def get_learned_corrections(self, error_type: str) -> List[str]:
+    def get_learned_corrections(self, error_type: str) -> list[str]:
         """Get corrections that have worked for this error type."""
         corrections = []
         for e in self.errors:
@@ -773,7 +774,7 @@ class ErrorMemory:
                     corrections.append(e.correction_applied)
         return corrections
 
-    def get_error_stats(self) -> Dict[str, Any]:
+    def get_error_stats(self) -> dict[str, Any]:
         """Get error statistics."""
         if not self.errors:
             return {"total": 0, "unique": 0, "recurrences": 0}
@@ -790,7 +791,7 @@ class ErrorMemory:
             else None,
         }
 
-    def dump(self) -> Dict[str, Any]:
+    def dump(self) -> dict[str, Any]:
         return {
             "recent_errors": [
                 {
@@ -816,7 +817,7 @@ class Update:
     """A learned update to apply."""
 
     target: str  # 'world_model', 'action_template', 'constraint_weight'
-    delta: Dict[str, Any]
+    delta: dict[str, Any]
     source_error: str
     confidence: float
 
@@ -835,11 +836,11 @@ class OnlineUpdater:
         self.error_memory = error_memory
         self.verifier = verifier
 
-        self._pending_updates: List[Update] = []
+        self._pending_updates: list[Update] = []
         self._learning_rate: float = 0.3
-        self._applied_updates: List[Update] = []
+        self._applied_updates: list[Update] = []
 
-    def compute_update(self, plan: Plan, result: Dict[str, Any]) -> List[Update]:
+    def compute_update(self, plan: Plan, result: dict[str, Any]) -> list[Update]:
         """
         Compute updates based on execution result.
         Returns list of updates to apply.
@@ -915,7 +916,7 @@ class OnlineUpdater:
         self._pending_updates.extend(updates)
         return updates
 
-    def apply_pending_updates(self) -> List[str]:
+    def apply_pending_updates(self) -> list[str]:
         """Apply all pending updates to the system."""
         applied = []
 
@@ -940,7 +941,7 @@ class OnlineUpdater:
         self._pending_updates = []
         return applied
 
-    def get_learning_stats(self) -> Dict[str, Any]:
+    def get_learning_stats(self) -> dict[str, Any]:
         """Get learning statistics."""
         return {
             "pending_updates": len(self._pending_updates),
@@ -975,7 +976,7 @@ class MinimalBrain:
         self._execution_count: int = 0
         self._success_count: int = 0
 
-    async def think(self, goal: str) -> Dict[str, Any]:
+    async def think(self, goal: str) -> dict[str, Any]:
         """
         Main thinking loop: plan -> verify -> (optionally) execute.
         Returns full trace of cognition.
@@ -1019,7 +1020,7 @@ class MinimalBrain:
 
         return trace
 
-    async def execute(self, plan: Plan) -> Dict[str, Any]:
+    async def execute(self, plan: Plan) -> dict[str, Any]:
         """
         Execute a plan (simulated) and learn from result.
         """
@@ -1068,7 +1069,7 @@ class MinimalBrain:
             "learning_stats": self.updater.get_learning_stats(),
         }
 
-    async def run_benchmark(self, n_iterations: int = 10) -> Dict[str, Any]:
+    async def run_benchmark(self, n_iterations: int = 10) -> dict[str, Any]:
         """
         Run benchmark loop showing learning over time.
         """
@@ -1116,7 +1117,7 @@ class MinimalBrain:
             "final_working_memory": self.working_memory.dump(),
         }
 
-    def inspect(self) -> Dict[str, Any]:
+    def inspect(self) -> dict[str, Any]:
         """Inspect current state of all 6 components."""
         return {
             "world_state": {

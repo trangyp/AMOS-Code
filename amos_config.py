@@ -42,7 +42,6 @@ Version: 1.0.0
 import sys
 from enum import Enum
 from pathlib import Path
-from typing import List
 
 # Try to import pydantic-settings
 try:
@@ -82,7 +81,7 @@ class APISettings(BaseSettings):
     port: int = Field(default=8080, description="API server port", ge=1, le=65535)
     workers: int = Field(default=1, description="Number of worker processes", ge=1)
     reload: bool = Field(default=False, description="Auto-reload on code changes")
-    cors_origins: List[str] = Field(default=["*"], description="Allowed CORS origins")
+    cors_origins: list[str] = Field(default=["*"], description="Allowed CORS origins")
     rate_limit_requests: int = Field(default=100, description="Requests per minute per IP", ge=1)
 
 
@@ -102,7 +101,7 @@ class SecuritySettings(BaseSettings):
     )
     password_min_length: int = Field(default=8, ge=4)
     require_auth: bool = Field(default=True)
-    allowed_roles: List[str] = Field(default=["admin", "operator", "viewer", "evolution_approver"])
+    allowed_roles: list[str] = Field(default=["admin", "operator", "viewer", "evolution_approver"])
 
 
 class LLMSettings(BaseSettings):

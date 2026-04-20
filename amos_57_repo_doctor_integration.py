@@ -19,10 +19,12 @@ Integration Points:
 5. Self-healing across both cognitive and repository layers
 """
 
+from __future__ import annotations
+
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 @dataclass
@@ -31,15 +33,15 @@ class UnifiedSystemState:
 
     # Repository layer (from Repo Doctor)
     repo_path: str
-    invariant_status: Dict[str, Any] = field(default_factory=dict)
-    state_vector: Dict[str, float] = field(default_factory=dict)
+    invariant_status: dict[str, Any] = field(default_factory=dict)
+    state_vector: dict[str, float] = field(default_factory=dict)
     energy: float = 0.0
     density_matrix: Optional[Any] = None
 
     # Cognitive layer (from AMOS 57-Component)
-    meta_governance_state: Dict[str, Any] = field(default_factory=dict)
-    meta_ontological_state: Dict[str, Any] = field(default_factory=dict)
-    formal_core_state: Dict[str, Any] = field(default_factory=dict)
+    meta_governance_state: dict[str, Any] = field(default_factory=dict)
+    meta_ontological_state: dict[str, Any] = field(default_factory=dict)
+    formal_core_state: dict[str, Any] = field(default_factory=dict)
 
     # Unified metrics
     coherence_score: float = 0.0  # 0-1, overall system coherence
@@ -55,20 +57,20 @@ class UnifiedDecision:
     timestamp: str
 
     # Inputs
-    repo_concerns: List[str] = field(default_factory=list)
-    governance_concerns: List[str] = field(default_factory=list)
+    repo_concerns: list[str] = field(default_factory=list)
+    governance_concerns: list[str] = field(default_factory=list)
 
     # Synthesis
     priority: str = "LOW"  # CRITICAL/HIGH/MEDIUM/LOW
     category: str = "UNKNOWN"  # REPOSITORY/ARCHITECTURAL/GOVERNANCE/INTEGRATED
 
     # Actions
-    recommended_actions: List[dict[str, Any]] = field(default_factory=list)
+    recommended_actions: list[dict[str, Any]] = field(default_factory=list)
     auto_executable: bool = False
     requires_human_review: bool = False
 
     # Meta-architecture compliance
-    promise_checks: Dict[str, bool] = field(default_factory=dict)
+    promise_checks: dict[str, bool] = field(default_factory=dict)
     breach_risk: float = 0.0
     identity_continuity: bool = True
 
@@ -169,7 +171,7 @@ class AMOS57RepoDoctorIntegration:
 
         return self.unified_state
 
-    def _get_repo_doctor_state(self) -> Dict[str, Any]:
+    def _get_repo_doctor_state(self) -> dict[str, Any]:
         """Get current state from Repo Doctor."""
         if not self.repo_doctor_available:
             return {"invariants": {}, "state_vector": {}, "energy": 0.0}
@@ -222,7 +224,7 @@ class AMOS57RepoDoctorIntegration:
             print(f"[AMOS57Integration] Error getting Repo Doctor state: {e}")
             return {"invariants": {}, "state_vector": {}, "energy": 0.0}
 
-    def _transform_to_amos_inputs(self, repo_state: Dict[str, Any]) -> Dict[str, Any]:
+    def _transform_to_amos_inputs(self, repo_state: dict[str, Any]) -> dict[str, Any]:
         """Transform Repo Doctor state to AMOS 57-Component inputs."""
         return {
             "repository_state": repo_state["state_vector"],
@@ -234,7 +236,7 @@ class AMOS57RepoDoctorIntegration:
             "coherence_requirements": {"high_availability": True},
         }
 
-    def _run_amos_governance(self, inputs: Dict[str, Any]) -> Dict[str, dict[str, Any]]:
+    def _run_amos_governance(self, inputs: dict[str, Any]) -> dict[str, dict[str, Any]]:
         """Run AMOS 57-Component governance on transformed inputs."""
         if not self.amos_57_available:
             return {
@@ -283,7 +285,7 @@ class AMOS57RepoDoctorIntegration:
         return governance_results
 
     def _compute_coherence(
-        self, repo_state: Dict[str, Any], governance_state: Dict[str, Any]
+        self, repo_state: dict[str, Any], governance_state: dict[str, Any]
     ) -> float:
         """Compute coherence score between repository and governance states."""
         # Base coherence from repository
@@ -308,7 +310,7 @@ class AMOS57RepoDoctorIntegration:
         return 0.6 * repo_coherence + 0.4 * gov_coherence
 
     def _determine_governance_grade(
-        self, energy: float, governance_state: Dict[str, Any], coherence: float
+        self, energy: float, governance_state: dict[str, Any], coherence: float
     ) -> str:
         """Determine overall governance grade."""
         # Critical conditions
@@ -348,7 +350,7 @@ class AMOS57RepoDoctorIntegration:
             governance_grade="AMOS_ONLY",
         )
 
-    def make_unified_decision(self, context: Dict[str, Any] = None) -> UnifiedDecision:
+    def make_unified_decision(self, context: dict[str, Any] = None) -> UnifiedDecision:
         """
         Make decision using both Repo Doctor invariants and AMOS governance.
 
@@ -421,10 +423,10 @@ class AMOS57RepoDoctorIntegration:
     def _generate_actions(
         self,
         state: UnifiedSystemState,
-        repo_concerns: List[str],
-        gov_concerns: List[str],
+        repo_concerns: list[str],
+        gov_concerns: list[str],
         priority: str,
-    ) -> List[dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Generate recommended actions based on unified state."""
         actions = []
 
@@ -498,7 +500,7 @@ class AMOS57RepoDoctorIntegration:
         return actions
 
 
-def run_unified_analysis(repo_path: str) -> Dict[str, Any]:
+def run_unified_analysis(repo_path: str) -> dict[str, Any]:
     """
     Run complete unified analysis of repository using both systems.
 
@@ -557,5 +559,5 @@ if __name__ == "__main__":
     print(f"Auto-Executable: {result['decision']['auto_executable']}")
     print(f"\nRecommended Actions: {result['decision']['action_count']}")
     for action in result["actions"]:
-        print(f"  - [{action['priority']}] {action['type']}: " f"{action['action']}")
+        print(f"  - [{action['priority']}] {action['type']}: {action['action']}")
     print("\n" + "=" * 70)

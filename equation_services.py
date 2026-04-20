@@ -44,8 +44,10 @@ import hashlib
 import logging
 from abc import ABC
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Any, Generic, TypeVar
+
+UTC = UTC
 
 # Core dependencies
 try:
@@ -133,7 +135,7 @@ class DomainEvent:
     timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
     event_type: str = ""
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "event_id": self.event_id,
             "timestamp": self.timestamp.isoformat(),
@@ -184,7 +186,7 @@ class EventBus:
     """Simple event bus for domain events."""
 
     def __init__(self):
-        self._handlers: Dict[str, list] = {}
+        self._handlers: dict[str, list] = {}
 
     def subscribe(self, event_type: str, handler):
         """Subscribe to an event type."""
@@ -266,15 +268,15 @@ class BaseService(ABC, Generic[T]):
 
     def __init__(
         self,
-        uow: Optional[UnitOfWork] = None,
-        cache: Optional[EquationCache] = None,
-        event_bus: Optional[EventBus] = None,
+        uow: UnitOfWork = None,
+        cache: EquationCache = None,
+        event_bus: EventBus = None,
     ):
         self.uow = uow
         self.cache = cache
         self.event_bus = event_bus or _event_bus
 
-    async def _cache_get(self, key: str) -> Optional[Any]:
+    async def _cache_get(self, key: str) -> Any:
         """Get from cache if available."""
         if self.cache:
             return await self.cache.get(key)
@@ -363,7 +365,7 @@ class EquationService(BaseService[Equation]):
         logger.info(f"Created equation: {name} (ID: {equation.id})")
         return equation
 
-    async def get_equation(self, equation_id: int) -> Optional[Equation]:
+    async def get_equation(self, equation_id: int) -> Equation:
         """Get equation by ID with caching."""
         cache_key = self._generate_cache_key("equation", equation_id)
 
@@ -381,13 +383,13 @@ class EquationService(BaseService[Equation]):
 
         return equation
 
-    async def get_equation_by_name(self, name: str) -> Optional[Equation]:
+    async def get_equation_by_name(self, name: str) -> Equation:
         """Get equation by name."""
         return await self.uow.equations.get_by_name(name)
 
     async def search_equations(
         self, query: str, domain: str = None, skip: int = 0, limit: int = 100
-    ) -> List[Equation]:
+    ) -> list[Equation]:
         """Search equations with caching."""
         cache_key = self._generate_cache_key("search", query, domain, skip, limit)
 
@@ -405,7 +407,7 @@ class EquationService(BaseService[Equation]):
 
         return results
 
-    async def list_by_domain(self, domain: str, skip: int = 0, limit: int = 100) -> List[Equation]:
+    async def list_by_domain(self, domain: str, skip: int = 0, limit: int = 100) -> list[Equation]:
         """List equations by domain with caching."""
         cache_key = self._generate_cache_key("equations", "domain", domain, skip, limit)
 
@@ -470,10 +472,10 @@ class ExecutionService(BaseService[EquationExecution]):
 
     def __init__(
         self,
-        uow: Optional[UnitOfWork] = None,
-        cache: Optional[EquationCache] = None,
-        event_bus: Optional[EventBus] = None,
-        task_manager: Optional[TaskManager] = None,
+        uow: UnitOfWork = None,
+        cache: EquationCache = None,
+        event_bus: EventBus = None,
+        task_manager: TaskManager = None,
     ):
         super().__init__(uow, cache, event_bus)
         self.task_manager = task_manager
@@ -481,12 +483,12 @@ class ExecutionService(BaseService[EquationExecution]):
     async def execute_equation(
         self,
         equation_id: int,
-        inputs: Dict[str, Any],
+        inputs: dict[str, Any],
         user_id: int = None,
         request_id: str = None,
         async_execution: bool = False,
         **metadata,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Execute an equation.
 
         Args:
@@ -642,8 +644,8 @@ class ExecutionService(BaseService[EquationExecution]):
                 raise ValueError(f"Parameter {key} must be <= {max_val}")
 
     async def _perform_calculation(
-        self, equation: Equation, inputs: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, equation: Equation, inputs: dict[str, Any]
+    ) -> dict[str, Any]:
         """Perform the actual calculation.
 
         This is a placeholder that would integrate with the actual
@@ -658,7 +660,7 @@ class ExecutionService(BaseService[EquationExecution]):
             "computed_at": datetime.now(UTC).isoformat(),
         }
 
-    async def get_execution_status(self, execution_id: int) -> Dict[str, Any]:
+    async def get_execution_status(self, execution_id: int) -> dict[str, Any]:
         """Get execution status."""
         execution = await self.uow.executions.get_by_id(EquationExecution, execution_id)
 
@@ -680,7 +682,7 @@ class ExecutionService(BaseService[EquationExecution]):
 
     async def get_execution_history(
         self, equation_id: int = None, user_id: int = None, limit: int = 100
-    ) -> List[dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Get execution history."""
         if equation_id:
             executions = await self.uow.executions.get_recent_by_equation(equation_id, limit)
@@ -749,7 +751,7 @@ class UserService(BaseService[User]):
         logger.info(f"Registered user: {username} (ID: {user.id})")
         return user
 
-    async def authenticate_user(self, username: str, password: str) -> Optional[User]:
+    async def authenticate_user(self, username: str, password: str) -> User:
         """Authenticate user credentials."""
         user = await self.uow.users.get_by_username(username)
         if not user:
@@ -771,7 +773,7 @@ class UserService(BaseService[User]):
 
         return user
 
-    async def get_user(self, user_id: int) -> Optional[User]:
+    async def get_user(self, user_id: int) -> User:
         """Get user by ID."""
         return await self.uow.users.get_by_id(User, user_id)
 
@@ -784,7 +786,7 @@ class UserService(BaseService[User]):
 class AnalyticsService(BaseService):
     """Service for analytics and reporting."""
 
-    async def get_system_statistics(self) -> Dict[str, Any]:
+    async def get_system_statistics(self) -> dict[str, Any]:
         """Get system-wide statistics."""
         # Equation counts
         total_equations = await self.uow.equations.count(Equation)
@@ -806,7 +808,7 @@ class AnalyticsService(BaseService):
             "timestamp": datetime.now(UTC).isoformat(),
         }
 
-    async def get_equation_statistics(self, equation_id: int) -> Dict[str, Any]:
+    async def get_equation_statistics(self, equation_id: int) -> dict[str, Any]:
         """Get statistics for a specific equation."""
         stats = await self.uow.executions.get_statistics(equation_id=equation_id)
 

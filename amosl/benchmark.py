@@ -10,7 +10,7 @@ Measures and validates field-theoretic performance:
 import statistics
 import time
 from dataclasses import dataclass, field
-from typing import Any, Dict, List
+from typing import Any
 
 
 @dataclass
@@ -23,14 +23,14 @@ class BenchmarkResult:
     min_time_ms: float
     max_time_ms: float
     iterations: int
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class PerformanceBenchmark:
     """AMOSL performance benchmark suite."""
 
     def __init__(self):
-        self.results: List[BenchmarkResult] = []
+        self.results: list[BenchmarkResult] = []
         self.warmup_iterations = 3
 
     def benchmark_field_evolution(self, steps: int = 100) -> BenchmarkResult:
@@ -248,7 +248,7 @@ class PerformanceBenchmark:
         self.results.append(result)
         return result
 
-    def run_full_suite(self) -> Dict[str, BenchmarkResult]:
+    def run_full_suite(self) -> dict[str, BenchmarkResult]:
         """Run complete benchmark suite."""
         print("Running AMOSL Performance Benchmark Suite...")
         print("=" * 60)

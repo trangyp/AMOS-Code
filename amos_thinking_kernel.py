@@ -23,16 +23,16 @@ Architecture:
 
 import math
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
 from enum import Enum
 from functools import lru_cache
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
-UTC = timezone.utc
-
+UTC = UTC
 # ============================================================================
 # Section 1: Enums and Type Definitions
 # ============================================================================
+
 
 class ThinkingMode(Enum):
     """Modes of thinking operation."""
@@ -47,6 +47,7 @@ class ThinkingMode(Enum):
     COMMIT = "commit"  # Finalize state update
     DEFER = "defer"  # Pause, await more info
 
+
 class HypothesisStatus(Enum):
     """Status of a hypothesis in the belief state."""
 
@@ -54,6 +55,7 @@ class HypothesisStatus(Enum):
     REJECTED = "rejected"
     COMMITTED = "committed"
     PENDING = "pending"
+
 
 class ErrorType(Enum):
     """Types of errors detectable in thinking."""
@@ -64,6 +66,7 @@ class ErrorType(Enum):
     REASONING = "reasoning"
     CONVERGENCE = "convergence"
 
+
 class FailureSignal(Enum):
     """Meta-thinking failure signals."""
 
@@ -72,9 +75,11 @@ class FailureSignal(Enum):
     ERROR_ACCUMULATION = "error_accumulation"
     MODE_MISMATCH = "mode_mismatch"
 
+
 # ============================================================================
 # Section 2: Data Structures (State Components)
 # ============================================================================
+
 
 @dataclass(frozen=True)
 class WorkspaceItem:
@@ -86,6 +91,7 @@ class WorkspaceItem:
     source: str = "input"  # input, memory, inference
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
+
 @dataclass(frozen=True)
 class Hypothesis:
     """A candidate explanation or solution."""
@@ -93,9 +99,10 @@ class Hypothesis:
     id: str
     content: Any
     confidence: float = 0.5
-    evidence: List[str] = field(default_factory=list)
+    evidence: list[str] = field(default_factory=list)
     status: HypothesisStatus = HypothesisStatus.ACTIVE
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
 
 @dataclass(frozen=True)
 class Goal:
@@ -104,8 +111,9 @@ class Goal:
     id: str
     description: str
     priority: float = 1.0  # 0.0 to 1.0
-    deadline: Optional[str] = None
+    deadline: str = None
     satisfied: bool = False
+
 
 @dataclass(frozen=True)
 class Constraint:
@@ -115,7 +123,8 @@ class Constraint:
     type: str  # resource, time, logic, safety
     description: str
     hard: bool = True  # Hard constraints cannot be violated
-    check_fn: Optional[str] = None  # Reference to validation function
+    check_fn: str = None  # Reference to validation function
+
 
 @dataclass(frozen=True)
 class ConstraintViolation:
@@ -125,41 +134,46 @@ class ConstraintViolation:
     severity: str  # critical, warning
     message: str
 
+
 @dataclass
 class Workspace:
     """Active workspace component W_t."""
 
-    active_items: List[WorkspaceItem] = field(default_factory=list)
-    focus_items: List[str] = field(default_factory=list)  # IDs of focused items
-    suppressed_items: List[str] = field(default_factory=list)
+    active_items: list[WorkspaceItem] = field(default_factory=list)
+    focus_items: list[str] = field(default_factory=list)  # IDs of focused items
+    suppressed_items: list[str] = field(default_factory=list)
     capacity_limit: int = 7  # Working memory capacity (Miller's law)
+
 
 @dataclass
 class BeliefState:
     """Belief state component H_t (hypotheses)."""
 
-    hypotheses: List[Hypothesis] = field(default_factory=list)
-    active_model: Dict[str, Any] = field(default_factory=dict)
+    hypotheses: list[Hypothesis] = field(default_factory=list)
+    active_model: dict[str, Any] = field(default_factory=dict)
     confidence: float = 0.0
     uncertainty: float = 1.0
     entropy: float = 1.0
+
 
 @dataclass
 class GoalState:
     """Goal state component G_t."""
 
-    primary_goal: Optional[Goal] = None
-    secondary_goals: List[Goal] = field(default_factory=list)
-    priority_weights: Dict[str, float] = field(default_factory=dict)
-    satisfied_goals: List[str] = field(default_factory=list)
+    primary_goal: Goal = None
+    secondary_goals: list[Goal] = field(default_factory=list)
+    priority_weights: dict[str, float] = field(default_factory=dict)
+    satisfied_goals: list[str] = field(default_factory=list)
+
 
 @dataclass
 class ConstraintState:
     """Constraint state component C_t."""
 
-    hard_constraints: List[Constraint] = field(default_factory=list)
-    soft_constraints: List[Constraint] = field(default_factory=list)
-    violations: List[ConstraintViolation] = field(default_factory=list)
+    hard_constraints: list[Constraint] = field(default_factory=list)
+    soft_constraints: list[Constraint] = field(default_factory=list)
+    violations: list[ConstraintViolation] = field(default_factory=list)
+
 
 @dataclass
 class ErrorState:
@@ -169,7 +183,7 @@ class ErrorState:
     coherence_error: float = 0.0
     constraint_error: float = 0.0
     reasoning_error: float = 0.0
-    detected_anomalies: List[dict[str, Any]] = field(default_factory=list)
+    detected_anomalies: list[dict[str, Any]] = field(default_factory=list)
 
     def total_error(self) -> float:
         """Aggregate error score."""
@@ -179,6 +193,7 @@ class ErrorState:
             + self.constraint_error
             + self.reasoning_error
         ) / 4.0
+
 
 @dataclass
 class ControlState:
@@ -191,14 +206,16 @@ class ControlState:
     iteration_count: int = 0
     max_iterations: int = 10
 
+
 @dataclass
 class TransitionState:
     """State tracking transitions."""
 
-    last_operation: Optional[str] = None
-    next_operation: Optional[str] = None
+    last_operation: str = None
+    next_operation: str = None
     improvement_score: float = 0.0
     convergence_detected: bool = False
+
 
 @dataclass
 class QualityMetrics:
@@ -209,6 +226,7 @@ class QualityMetrics:
     constraint_satisfaction: float = 0.0
     predictive_power: float = 0.0
     overall_quality: float = 0.0
+
 
 @dataclass
 class ThinkingState:
@@ -233,7 +251,7 @@ class ThinkingState:
     quality_metrics: QualityMetrics = field(default_factory=QualityMetrics)
 
     # Optional memory activation (M_t)
-    memory_activations: Dict[str, Any] = field(default_factory=dict)
+    memory_activations: dict[str, Any] = field(default_factory=dict)
 
     def copy(self) -> ThinkingState:
         """Create a deep copy of the state."""
@@ -295,9 +313,11 @@ class ThinkingState:
             memory_activations=dict(self.memory_activations),
         )
 
+
 # ============================================================================
 # Section 3: Meta-Thinking State
 # ============================================================================
+
 
 @dataclass
 class OperatorQualityRecord:
@@ -306,6 +326,7 @@ class OperatorQualityRecord:
     operator: str
     quality_score: float
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
 
 @dataclass
 class FailureSignalRecord:
@@ -316,6 +337,7 @@ class FailureSignalRecord:
     description: str
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
+
 @dataclass
 class MetaThinkingState:
     """
@@ -324,17 +346,19 @@ class MetaThinkingState:
     Meta_t = Model(T_t)
     """
 
-    current_operator: Optional[str] = None
-    operator_quality_history: List[OperatorQualityRecord] = field(default_factory=list)
-    failure_signals: List[FailureSignalRecord] = field(default_factory=list)
-    repair_candidate: Dict[str, str]  = None
+    current_operator: str = None
+    operator_quality_history: list[OperatorQualityRecord] = field(default_factory=list)
+    failure_signals: list[FailureSignalRecord] = field(default_factory=list)
+    repair_candidate: dict[str, str] = None
     policy_update_required: bool = False
     policy_version: int = 1
     learning_rate: float = 0.1
 
+
 # ============================================================================
 # Section 4: Thinking Operators (Ω)
 # ============================================================================
+
 
 class ThinkingOperators:
     """
@@ -360,7 +384,7 @@ class ThinkingOperators:
         return new_state
 
     @staticmethod
-    def focus(state: ThinkingState, item_ids: Optional[list[str]] = None) -> ThinkingState:
+    def focus(state: ThinkingState, item_ids: list[str] = None) -> ThinkingState:
         """
         ω_focus(S_t) = Reweight(S_t, FocusMask)
 
@@ -389,7 +413,7 @@ class ThinkingOperators:
 
     @staticmethod
     def activate_memory(
-        state: ThinkingState, memory_query: str, memory_store: Dict[str, Any]  = None
+        state: ThinkingState, memory_query: str, memory_store: dict[str, Any] = None
     ) -> ThinkingState:
         """
         Activate relevant memories based on query.
@@ -419,9 +443,7 @@ class ThinkingOperators:
         return new_state
 
     @staticmethod
-    def form_hypothesis(
-        state: ThinkingState, hypothesis_content: Optional[Any] = None
-    ) -> ThinkingState:
+    def form_hypothesis(state: ThinkingState, hypothesis_content: Any = None) -> ThinkingState:
         """
         Form a new hypothesis from current workspace and memory.
 
@@ -430,9 +452,7 @@ class ThinkingOperators:
         new_state = state.copy()
 
         # Generate hypothesis ID
-        hyp_id = (
-            f"hyp_{len(new_state.belief_state.hypotheses)}_{datetime.now(timezone.utc).strftime('%H%M%S')}"
-        )
+        hyp_id = f"hyp_{len(new_state.belief_state.hypotheses)}_{datetime.now(timezone.utc).strftime('%H%M%S')}"
 
         # If no content provided, synthesize from workspace
         if hypothesis_content is None:
@@ -583,7 +603,7 @@ class ThinkingOperators:
         return new_state
 
     @staticmethod
-    def evaluate(state: ThinkingState) -> Tuple[ThinkingState, QualityMetrics]:
+    def evaluate(state: ThinkingState) -> tuple[ThinkingState, QualityMetrics]:
         """
         ω_eval(S_t) = Score_t
 
@@ -634,7 +654,7 @@ class ThinkingOperators:
         return new_state, metrics
 
     @staticmethod
-    def detect_error(state: ThinkingState, expected: Optional[Any] = None) -> ErrorState:
+    def detect_error(state: ThinkingState, expected: Any = None) -> ErrorState:
         """
         Detect errors in current state.
 
@@ -750,7 +770,7 @@ class ThinkingOperators:
 
     @staticmethod
     def select_next_operator(
-        state: ThinkingState, error_state: ErrorState, goals: List[Goal]
+        state: ThinkingState, error_state: ErrorState, goals: list[Goal]
     ) -> str:
         """
         Select the next thinking operator based on state.
@@ -782,9 +802,11 @@ class ThinkingOperators:
 
         return "focus"
 
+
 # ============================================================================
 # Section 5: Meta-Thinking Operators
 # ============================================================================
+
 
 class MetaThinkingOperators:
     """
@@ -795,7 +817,7 @@ class MetaThinkingOperators:
 
     @staticmethod
     def observe_thinking(
-        meta_state: MetaThinkingState, thinking_history: List[ThinkingState]
+        meta_state: MetaThinkingState, thinking_history: list[ThinkingState]
     ) -> MetaThinkingState:
         """Observe recent thinking operations."""
         new_meta = MetaThinkingState(
@@ -825,7 +847,7 @@ class MetaThinkingOperators:
 
     @staticmethod
     def detect_failure(
-        meta_state: MetaThinkingState, thinking_history: List[ThinkingState]
+        meta_state: MetaThinkingState, thinking_history: list[ThinkingState]
     ) -> MetaThinkingState:
         """Detect failure signals in thinking process."""
         new_meta = MetaThinkingState(
@@ -910,20 +932,23 @@ class MetaThinkingOperators:
 
         return new_meta
 
+
 # ============================================================================
 # Section 6: Thinking Kernel (Main Engine)
 # ============================================================================
+
 
 @dataclass
 class ThinkingResult:
     """Result of a thinking operation."""
 
     final_state: ThinkingState
-    history: List[ThinkingState]
+    history: list[ThinkingState]
     converged: bool
     iterations: int
-    quality_progression: List[float]
-    meta_state: Optional[MetaThinkingState] = None
+    quality_progression: list[float]
+    meta_state: MetaThinkingState = None
+
 
 class ThinkingKernel:
     """
@@ -942,16 +967,16 @@ class ThinkingKernel:
 
     def initialize_state(
         self,
-        goals: Optional[list[Goal]] = None,
-        constraints: Optional[list[Constraint]] = None,
-        initial_workspace: Optional[list[Any]] = None,
+        goals: list[Goal] = None,
+        constraints: list[Constraint] = None,
+        initial_workspace: list[Any] = None,
     ) -> ThinkingState:
         """Initialize a fresh thinking state."""
         state = ThinkingState()
 
         if goals:
-                state.goal_state.primary_goal = goals[0]
-                state.goal_state.secondary_goals = goals[1:]
+            state.goal_state.primary_goal = goals[0]
+            state.goal_state.secondary_goals = goals[1:]
 
         if constraints:
             state.constraint_state.hard_constraints = [c for c in constraints if c.hard]
@@ -969,8 +994,8 @@ class ThinkingKernel:
     def think_step(
         self,
         state: ThinkingState,
-        input_data: Optional[Any] = None,
-        mode: Optional[ThinkingMode] = None,
+        input_data: Any = None,
+        mode: ThinkingMode = None,
     ) -> ThinkingState:
         """
         Execute a single thinking step.
@@ -1037,7 +1062,7 @@ class ThinkingKernel:
     def think(
         self,
         initial_state: ThinkingState,
-        input_data: Optional[Any] = None,
+        input_data: Any = None,
         max_iterations: int = 10,
         convergence_threshold: float = 0.01,
     ) -> ThinkingResult:
@@ -1099,7 +1124,7 @@ class ThinkingKernel:
         _, metrics = self.operators.evaluate(state)
         return metrics.overall_quality
 
-    def check_convergence(self, history: List[ThinkingState]) -> bool:
+    def check_convergence(self, history: list[ThinkingState]) -> bool:
         """Check if thinking has converged."""
         if len(history) < 2:
             return False
@@ -1115,17 +1140,20 @@ class ThinkingKernel:
 
         return False
 
+
 # ============================================================================
 # Section 7: Convenience Functions and Integration
 # ============================================================================
+
 
 @lru_cache(maxsize=1)
 def get_thinking_kernel(enable_meta: bool = True) -> ThinkingKernel:
     """Get or create global thinking kernel instance."""
     return ThinkingKernel(enable_meta_thinking=enable_meta)
 
+
 def quick_think(
-    problem: str | dict[str, Any], goal: Optional[str] = None, max_iterations: int = 5
+    problem: Union[str, dict][str, Any], goal: str = None, max_iterations: int = 5
 ) -> ThinkingResult:
     """
     Quick thinking function for simple problems.
@@ -1147,7 +1175,8 @@ def quick_think(
     # Think
     return kernel.think(state, max_iterations=max_iterations)
 
-def serialize_thinking_state(state: ThinkingState) -> Dict[str, Any]:
+
+def serialize_thinking_state(state: ThinkingState) -> dict[str, Any]:
     """Convert thinking state to JSON-serializable dict."""
     return {
         "version": state.version,
@@ -1206,9 +1235,11 @@ def serialize_thinking_state(state: ThinkingState) -> Dict[str, Any]:
         },
     }
 
+
 # ============================================================================
 # Section 8: Invariants Validation
 # ============================================================================
+
 
 class ThinkingInvariants:
     """
@@ -1216,7 +1247,7 @@ class ThinkingInvariants:
     """
 
     @staticmethod
-    def validate_thi01(state: ThinkingState) -> Tuple[bool, str]:
+    def validate_thi01(state: ThinkingState) -> tuple[bool, str]:
         """
         THI01: Thinking must operate on internal state, not directly on text.
 
@@ -1228,7 +1259,7 @@ class ThinkingInvariants:
         return True, "THI01 satisfied"
 
     @staticmethod
-    def validate_thi02(state: ThinkingState) -> Tuple[bool, str]:
+    def validate_thi02(state: ThinkingState) -> tuple[bool, str]:
         """
         THI02: Every thinking step must be a state transformation.
 
@@ -1239,7 +1270,7 @@ class ThinkingInvariants:
         return True, "THI02 satisfied"
 
     @staticmethod
-    def validate_thi03(history: List[ThinkingState]) -> Tuple[bool, str]:
+    def validate_thi03(history: list[ThinkingState]) -> tuple[bool, str]:
         """
         THI03: State quality should improve across successful transitions.
 
@@ -1258,8 +1289,8 @@ class ThinkingInvariants:
 
     @staticmethod
     def validate_all(
-        state: ThinkingState, history: Optional[list[ThinkingState]] = None
-    ) -> Dict[str, tuple[bool, str]]:
+        state: ThinkingState, history: list[ThinkingState] = None
+    ) -> dict[str, tuple[bool, str]]:
         """Run all invariant checks."""
         results = {
             "THI01": ThinkingInvariants.validate_thi01(state),
@@ -1271,9 +1302,11 @@ class ThinkingInvariants:
 
         return results
 
+
 # ============================================================================
 # Section 9: Demo and Testing
 # ============================================================================
+
 
 def demo_thinking_kernel():
     """Demonstrate the thinking kernel capabilities."""
@@ -1374,6 +1407,7 @@ def demo_thinking_kernel():
     print("=" * 70)
 
     return result
+
 
 if __name__ == "__main__":
     demo_thinking_kernel()

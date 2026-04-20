@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """API surface analysis substrate.
 
 Extracts and compares:
@@ -313,7 +315,7 @@ class APISubstrate:
 
         return results
 
-    def get_summary(self, results: dict[str, list[APIDiscrepancy]]) -> Dict[str, Any]:
+    def get_summary(self, results: dict[str, list[APIDiscrepancy]]) -> dict[str, Any]:
         """Generate summary statistics."""
         total_discrepancies = sum(len(d) for d in results.values())
         missing_exports = sum(1 for d in results.values() for x in d if x.kind == "missing_export")

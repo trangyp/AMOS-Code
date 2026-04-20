@@ -17,7 +17,6 @@ import subprocess
 import sys
 import time
 from pathlib import Path
-from typing import List, Optional
 
 
 class ProfilerConfig:
@@ -114,7 +113,7 @@ class CPProfiler:
             print(f"   ❌ Error: {e}")
             return None
 
-    def profile_all(self, duration: int = 30) -> List[Path]:
+    def profile_all(self, duration: int = 30) -> list[Path]:
         """Profile all test targets."""
         results = []
         for test_file in ProfilerConfig.TEST_TARGETS:
@@ -202,7 +201,7 @@ class MemoryProfiler:
         except Exception:
             pass  # Flamegraph generation is optional
 
-    def profile_all(self) -> List[Path]:
+    def profile_all(self) -> list[Path]:
         """Profile memory for all test targets."""
         results = []
         for test_file in ProfilerConfig.TEST_TARGETS:
@@ -219,7 +218,7 @@ class BaselineReport:
         self.output_dir = output_dir
         self.results_file = output_dir / "baseline_report.md"
 
-    def generate(self, cpu_results: List[Path], memory_results: List[Path]) -> None:
+    def generate(self, cpu_results: list[Path], memory_results: list[Path]) -> None:
         """Generate markdown report."""
         timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
 

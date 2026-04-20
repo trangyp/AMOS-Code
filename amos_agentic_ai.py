@@ -90,13 +90,15 @@ Author: AMOS Agentic Systems Team
 Version: 27.0.0-AGENTIC-AI-COMPUTER-USE
 """
 
+from __future__ import annotations
+
 import asyncio
 import secrets
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class AgentType(Enum):
@@ -138,7 +140,7 @@ class Tool:
     name: str
     description: str
     category: ActionCategory
-    parameters: Dict[str, Any] = field(default_factory=dict)
+    parameters: dict[str, Any] = field(default_factory=dict)
     requires_approval: bool = False
 
 
@@ -148,12 +150,12 @@ class Action:
 
     action_id: str
     tool_name: str
-    parameters: Dict[str, Any]
+    parameters: dict[str, Any]
     category: ActionCategory
     description: str
     requires_approval: bool = False
     approved: bool = None
-    result: Dict[str, Any] = field(default_factory=dict)
+    result: dict[str, Any] = field(default_factory=dict)
     status: str = "pending"
     timestamp: datetime = field(default_factory=datetime.now)
 
@@ -164,7 +166,7 @@ class Plan:
 
     plan_id: str
     goal: str
-    actions: List[Action]
+    actions: list[Action]
     current_step: int = 0
     created_at: datetime = field(default_factory=datetime.now)
     updated_at: datetime = field(default_factory=datetime.now)
@@ -176,18 +178,18 @@ class ExecutionResult:
 
     success: bool
     goal: str
-    actions_taken: List[Action]
+    actions_taken: list[Action]
     final_output: str
     execution_time_seconds: float
-    resources_used: Dict[str, Any]
-    logs: List[str]
+    resources_used: dict[str, Any]
+    logs: list[str]
 
 
 class ToolInterface(ABC):
     """Abstract interface for agent tools."""
 
     @abstractmethod
-    async def execute(self, parameters: Dict[str, Any]) -> Dict[str, Any]:
+    async def execute(self, parameters: dict[str, Any]) -> dict[str, Any]:
         """Execute tool with given parameters."""
         pass
 
@@ -200,7 +202,7 @@ class ToolInterface(ABC):
 class FileSystemTool(ToolInterface):
     """Tool for file system operations."""
 
-    async def execute(self, parameters: Dict[str, Any]) -> Dict[str, Any]:
+    async def execute(self, parameters: dict[str, Any]) -> dict[str, Any]:
         """Execute file system operation."""
         operation = parameters.get("operation", "read")
         path = parameters.get("path", "")
@@ -227,7 +229,7 @@ class FileSystemTool(ToolInterface):
 class WebBrowserTool(ToolInterface):
     """Tool for web browsing and search."""
 
-    async def execute(self, parameters: Dict[str, Any]) -> Dict[str, Any]:
+    async def execute(self, parameters: dict[str, Any]) -> dict[str, Any]:
         """Execute web operation."""
         operation = parameters.get("operation", "search")
         query = parameters.get("query", "")
@@ -261,7 +263,7 @@ class WebBrowserTool(ToolInterface):
 class CodeExecutionTool(ToolInterface):
     """Tool for code execution."""
 
-    async def execute(self, parameters: Dict[str, Any]) -> Dict[str, Any]:
+    async def execute(self, parameters: dict[str, Any]) -> dict[str, Any]:
         """Execute code safely."""
         code = parameters.get("code", "")
         language = parameters.get("language", "python")
@@ -290,7 +292,7 @@ class CodeExecutionTool(ToolInterface):
 class APIClientTool(ToolInterface):
     """Tool for API interactions."""
 
-    async def execute(self, parameters: Dict[str, Any]) -> Dict[str, Any]:
+    async def execute(self, parameters: dict[str, Any]) -> dict[str, Any]:
         """Execute API call."""
         method = parameters.get("method", "GET")
         endpoint = parameters.get("endpoint", "")
@@ -315,7 +317,7 @@ class APIClientTool(ToolInterface):
 class ProcessManagerTool(ToolInterface):
     """Tool for process management."""
 
-    async def execute(self, parameters: Dict[str, Any]) -> Dict[str, Any]:
+    async def execute(self, parameters: dict[str, Any]) -> dict[str, Any]:
         """Execute process operation."""
         operation = parameters.get("operation", "list")
 
@@ -346,7 +348,7 @@ class ToolRegistry:
     """Registry of available tools."""
 
     def __init__(self) -> None:
-        self.tools: Dict[str, ToolInterface] = {
+        self.tools: dict[str, ToolInterface] = {
             "file_system": FileSystemTool(),
             "web_browser": WebBrowserTool(),
             "code_execution": CodeExecutionTool(),
@@ -358,11 +360,11 @@ class ToolRegistry:
         """Get tool by name."""
         return self.tools.get(name)
 
-    def list_tools(self) -> List[Tool]:
+    def list_tools(self) -> list[Tool]:
         """List all available tools."""
         return [tool.get_tool_info() for tool in self.tools.values()]
 
-    def get_tools_by_category(self, category: ActionCategory) -> List[Tool]:
+    def get_tools_by_category(self, category: ActionCategory) -> list[Tool]:
         """Get tools by category."""
         return [
             tool.get_tool_info()
@@ -377,14 +379,14 @@ class AgentPlanner:
     def __init__(self, tool_registry: ToolRegistry) -> None:
         self.tool_registry = tool_registry
 
-    async def create_plan(self, goal: str, available_tools: List[str] = None) -> Plan:
+    async def create_plan(self, goal: str, available_tools: list[str] = None) -> Plan:
         """Create execution plan for goal."""
         plan_id = f"plan_{secrets.token_hex(8)}"
 
         # Simple planning: break down into logical steps
         # In production: Use LLM for planning
 
-        actions: List[Action] = []
+        actions: list[Action] = []
 
         # Parse goal and create appropriate actions
         if "file" in goal.lower() or "read" in goal.lower():
@@ -478,8 +480,8 @@ class AMOSAgent:
         self,
         name: str,
         agent_type: AgentType = AgentType.TASK,
-        tools: List[str] = None,
-        require_approval_for: List[str] = None,
+        tools: list[str] = None,
+        require_approval_for: list[str] = None,
     ) -> None:
         self.name = name
         self.agent_type = agent_type
@@ -489,8 +491,8 @@ class AMOSAgent:
 
         self.state = AgentState.IDLE
         self.current_plan: Optional[Plan] = None
-        self.execution_history: List[ExecutionResult] = []
-        self.logs: List[str] = []
+        self.execution_history: list[ExecutionResult] = []
+        self.logs: list[str] = []
 
     async def execute(
         self,
@@ -510,7 +512,7 @@ class AMOSAgent:
         self._log(f"📋 Created plan with {len(plan.actions)} actions")
 
         # Execute plan
-        actions_taken: List[Action] = []
+        actions_taken: list[Action] = []
         success = True
 
         for step in range(min(max_steps, len(plan.actions))):
@@ -569,7 +571,7 @@ class AMOSAgent:
 
         return result
 
-    async def _execute_action(self, action: Action) -> Dict[str, Any]:
+    async def _execute_action(self, action: Action) -> dict[str, Any]:
         """Execute single action."""
         tool = self.tool_registry.get_tool(action.tool_name)
         if tool is None:
@@ -596,7 +598,7 @@ class AMOSAgent:
         log_entry = f"[{timestamp}] {message}"
         self.logs.append(log_entry)
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get agent status."""
         return {
             "name": self.name,
@@ -613,7 +615,7 @@ class AMOSAgent:
 async def create_agent(
     name: str,
     agent_type: AgentType = AgentType.TASK,
-    tools: List[str] = None,
+    tools: list[str] = None,
 ) -> AMOSAgent:
     """Create and initialize AMOS agent."""
     agent = AMOSAgent(name=name, agent_type=agent_type, tools=tools)

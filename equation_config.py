@@ -39,20 +39,31 @@ Files:
     .env.example - Template for required variables
 """
 
-import os
-import sys
+from __future__ import annotations
+
 import logging
+import os
 import secrets
+import sys
 from enum import Enum
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Dict, List, Literal, Optional
+from typing import Any, Optional
 
 # Pydantic Settings v2 imports with graceful fallback
 try:
+    from pydantic import (
+        Field,
+        PostgresDsn,
+        RedisDsn,
+        SecretStr,
+        ValidationError,
+        field_validator,
+        model_validator,
+        validator,
+    )
     from pydantic_settings import BaseSettings, SettingsConfigDict
-    from pydantic import Field, validator, field_validator, model_validator
-    from pydantic import ValidationError, SecretStr, PostgresDsn, RedisDsn
+
     PYDANTIC_SETTINGS_AVAILABLE = True
 except ImportError:
     PYDANTIC_SETTINGS_AVAILABLE = False
@@ -73,6 +84,7 @@ _ENV = os.getenv("APP_ENV", "development").lower()
 
 class LogLevel(str, Enum):
     """Valid log levels."""
+
     DEBUG = "DEBUG"
     INFO = "INFO"
     WARNING = "WARNING"
@@ -82,6 +94,7 @@ class LogLevel(str, Enum):
 
 class Environment(str, Enum):
     """Application environments."""
+
     DEVELOPMENT = "development"
     STAGING = "staging"
     PRODUCTION = "production"
@@ -91,36 +104,23 @@ class Environment(str, Enum):
 class DatabaseSettings(BaseSettings):
     """Database connection settings."""
 
-    model_config = SettingsConfigDict(
-        env_prefix="DB_",
-        extra="ignore"
-    )
+    model_config = SettingsConfigDict(env_prefix="DB_", extra="ignore")
 
-    url: Optional[PostgresDsn] = Field(
-        default=None,
-        description="PostgreSQL connection URL"
-    )
+    url: Optional[PostgresDsn] = Field(default=None, description="PostgreSQL connection URL")
     host: str = Field(default="localhost", description="Database host")
     port: int = Field(default=5432, ge=1, le=65535, description="Database port")
     user: str = Field(default="amos", description="Database user")
-    password: SecretStr = Field(
-        default=SecretStr("amos"),
-        description="Database password"
-    )
+    password: SecretStr = Field(default=SecretStr("amos"), description="Database password")
     name: str = Field(default="amos_equations", description="Database name")
 
     # Connection pool settings
     pool_size: int = Field(default=5, ge=1, le=100, description="Connection pool size")
-    max_overflow: int = Field(
-        default=10, ge=0, le=100, description="Max pool overflow"
-    )
-    pool_timeout: int = Field(
-        default=30, ge=1, description="Pool timeout in seconds"
-    )
+    max_overflow: int = Field(default=10, ge=0, le=100, description="Max pool overflow")
+    pool_timeout: int = Field(default=30, ge=1, description="Pool timeout in seconds")
 
     @field_validator("url", mode="before")
     @classmethod
-    def assemble_db_url(cls, v: str , values: Dict[str, Any]) -> str:
+    def assemble_db_url(cls, v: str, values: dict[str, Any]) -> str:
         """Build database URL from components if not provided."""
         if v:
             return v
@@ -145,42 +145,28 @@ class DatabaseSettings(BaseSettings):
         password = self.password
         if isinstance(password, SecretStr):
             password = password.get_secret_value()
-        return (
-            f"postgresql://{self.user}:{password}"
-            f"@{self.host}:{self.port}/{self.name}"
-        )
+        return f"postgresql://{self.user}:{password}@{self.host}:{self.port}/{self.name}"
 
 
 class RedisSettings(BaseSettings):
     """Redis connection settings."""
 
-    model_config = SettingsConfigDict(
-        env_prefix="REDIS_",
-        extra="ignore"
-    )
+    model_config = SettingsConfigDict(env_prefix="REDIS_", extra="ignore")
 
-    url: Optional[RedisDsn] = Field(
-        default=None,
-        description="Redis connection URL"
-    )
+    url: Optional[RedisDsn] = Field(default=None, description="Redis connection URL")
     host: str = Field(default="localhost", description="Redis host")
     port: int = Field(default=6379, ge=1, le=65535, description="Redis port")
     db: int = Field(default=0, ge=0, le=15, description="Redis database number")
-    password: Optional[SecretStr] = Field(
-        default=None,
-        description="Redis password"
-    )
+    password: Optional[SecretStr] = Field(default=None, description="Redis password")
 
     # Connection settings
     socket_timeout: int = Field(default=5, ge=1, description="Socket timeout")
-    socket_connect_timeout: int = Field(
-        default=5, ge=1, description="Socket connect timeout"
-    )
+    socket_connect_timeout: int = Field(default=5, ge=1, description="Socket connect timeout")
     retry_on_timeout: bool = Field(default=True, description="Retry on timeout")
 
     @field_validator("url", mode="before")
     @classmethod
-    def assemble_redis_url(cls, v: str , values: Dict[str, Any]) -> str:
+    def assemble_redis_url(cls, v: str, values: dict[str, Any]) -> str:
         """Build Redis URL from components if not provided."""
         if v:
             return v
@@ -199,19 +185,14 @@ class RedisSettings(BaseSettings):
 class SecuritySettings(BaseSettings):
     """Security-related settings."""
 
-    model_config = SettingsConfigDict(
-        env_prefix="SECURITY_",
-        extra="ignore"
-    )
+    model_config = SettingsConfigDict(env_prefix="SECURITY_", extra="ignore")
 
     # Secret keys
     secret_key: SecretStr = Field(
-        default=SecretStr(secrets.token_urlsafe(32)),
-        description="Application secret key"
+        default=SecretStr(secrets.token_urlsafe(32)), description="Application secret key"
     )
     jwt_secret: SecretStr = Field(
-        default=SecretStr(secrets.token_urlsafe(32)),
-        description="JWT signing secret"
+        default=SecretStr(secrets.token_urlsafe(32)), description="JWT signing secret"
     )
 
     # JWT settings
@@ -219,30 +200,19 @@ class SecuritySettings(BaseSettings):
     access_token_expire_minutes: int = Field(
         default=30, ge=1, description="Access token expiration"
     )
-    refresh_token_expire_days: int = Field(
-        default=7, ge=1, description="Refresh token expiration"
-    )
+    refresh_token_expire_days: int = Field(default=7, ge=1, description="Refresh token expiration")
 
     # CORS settings
-    cors_origins: List[str] = Field(
-        default=["*"],
-        description="Allowed CORS origins"
-    )
-    cors_credentials: bool = Field(
-        default=True, description="Allow CORS credentials"
-    )
+    cors_origins: list[str] = Field(default=["*"], description="Allowed CORS origins")
+    cors_credentials: bool = Field(default=True, description="Allow CORS credentials")
 
     # Security headers
-    hsts_max_age: int = Field(
-        default=63072000, ge=0, description="HSTS max age in seconds"
-    )
-    csp_nonce_enabled: bool = Field(
-        default=True, description="Enable CSP nonce generation"
-    )
+    hsts_max_age: int = Field(default=63072000, ge=0, description="HSTS max age in seconds")
+    csp_nonce_enabled: bool = Field(default=True, description="Enable CSP nonce generation")
 
     @field_validator("cors_origins", mode="before")
     @classmethod
-    def parse_cors_origins(cls, v: str | list[str]) -> List[str]:
+    def parse_cors_origins(cls, v: str | list[str]) -> list[str]:
         """Parse CORS origins from string or list."""
         if isinstance(v, str):
             return [origin.strip() for origin in v.split(",") if origin.strip()]
@@ -252,24 +222,13 @@ class SecuritySettings(BaseSettings):
 class RateLimitSettings(BaseSettings):
     """Rate limiting configuration."""
 
-    model_config = SettingsConfigDict(
-        env_prefix="RATE_LIMIT_",
-        extra="ignore"
-    )
+    model_config = SettingsConfigDict(env_prefix="RATE_LIMIT_", extra="ignore")
 
     enabled: bool = Field(default=True, description="Enable rate limiting")
-    default_limit: int = Field(
-        default=100, ge=1, description="Default requests per minute"
-    )
-    verify_limit: int = Field(
-        default=30, ge=1, description="Verify endpoint requests per minute"
-    )
-    batch_limit: int = Field(
-        default=10, ge=1, description="Batch endpoint requests per minute"
-    )
-    window_seconds: int = Field(
-        default=60, ge=1, description="Rate limit window in seconds"
-    )
+    default_limit: int = Field(default=100, ge=1, description="Default requests per minute")
+    verify_limit: int = Field(default=30, ge=1, description="Verify endpoint requests per minute")
+    batch_limit: int = Field(default=10, ge=1, description="Batch endpoint requests per minute")
+    window_seconds: int = Field(default=60, ge=1, description="Rate limit window in seconds")
     block_duration_seconds: int = Field(
         default=300, ge=1, description="Block duration after limit exceeded"
     )
@@ -278,73 +237,50 @@ class RateLimitSettings(BaseSettings):
 class MetricsSettings(BaseSettings):
     """Prometheus metrics configuration."""
 
-    model_config = SettingsConfigDict(
-        env_prefix="METRICS_",
-        extra="ignore"
-    )
+    model_config = SettingsConfigDict(env_prefix="METRICS_", extra="ignore")
 
     enabled: bool = Field(default=True, description="Enable metrics collection")
     endpoint: str = Field(default="/metrics", description="Metrics endpoint path")
     namespace: str = Field(default="amos", description="Metrics namespace")
-    subsystem: str = Field(
-        default="equation", description="Metrics subsystem"
-    )
+    subsystem: str = Field(default="equation", description="Metrics subsystem")
 
     # Buckets for histograms
-    latency_buckets: List[float] = Field(
+    latency_buckets: list[float] = Field(
         default=[0.001, 0.005, 0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 1.0],
-        description="Latency histogram buckets"
+        description="Latency histogram buckets",
     )
 
 
 class TracingSettings(BaseSettings):
     """OpenTelemetry tracing configuration."""
 
-    model_config = SettingsConfigDict(
-        env_prefix="TRACING_",
-        extra="ignore"
-    )
+    model_config = SettingsConfigDict(env_prefix="TRACING_", extra="ignore")
 
     enabled: bool = Field(default=True, description="Enable tracing")
-    service_name: str = Field(
-        default="amos-equation-api", description="Service name for tracing"
-    )
-    exporter_endpoint: str  = Field(
+    service_name: str = Field(default="amos-equation-api", description="Service name for tracing")
+    exporter_endpoint: str = Field(
         default=None, description="OTLP exporter endpoint (e.g., http://jaeger:4317)"
     )
-    sampling_rate: float = Field(
-        default=1.0, ge=0.0, le=1.0, description="Trace sampling rate"
-    )
-    console_export: bool = Field(
-        default=False, description="Export traces to console"
-    )
+    sampling_rate: float = Field(default=1.0, ge=0.0, le=1.0, description="Trace sampling rate")
+    console_export: bool = Field(default=False, description="Export traces to console")
 
 
 class TaskQueueSettings(BaseSettings):
     """Celery task queue configuration."""
 
-    model_config = SettingsConfigDict(
-        env_prefix="CELERY_",
-        extra="ignore"
-    )
+    model_config = SettingsConfigDict(env_prefix="CELERY_", extra="ignore")
 
-    broker_url: str  = Field(
-        default=None, description="Celery broker URL (defaults to Redis)"
-    )
-    result_backend: str  = Field(
+    broker_url: str = Field(default=None, description="Celery broker URL (defaults to Redis)")
+    result_backend: str = Field(
         default=None, description="Celery result backend (defaults to Redis)"
     )
 
     # Worker settings
-    worker_concurrency: int = Field(
-        default=4, ge=1, description="Worker concurrency"
-    )
+    worker_concurrency: int = Field(default=4, ge=1, description="Worker concurrency")
     worker_prefetch_multiplier: int = Field(
         default=4, ge=1, description="Worker prefetch multiplier"
     )
-    task_time_limit: int = Field(
-        default=3600, ge=1, description="Task time limit in seconds"
-    )
+    task_time_limit: int = Field(default=3600, ge=1, description="Task time limit in seconds")
     task_soft_time_limit: int = Field(
         default=3300, ge=1, description="Task soft time limit in seconds"
     )
@@ -365,24 +301,13 @@ class TaskQueueSettings(BaseSettings):
 class CacheSettings(BaseSettings):
     """Cache configuration."""
 
-    model_config = SettingsConfigDict(
-        env_prefix="CACHE_",
-        extra="ignore"
-    )
+    model_config = SettingsConfigDict(env_prefix="CACHE_", extra="ignore")
 
     enabled: bool = Field(default=True, description="Enable caching")
-    default_ttl: int = Field(
-        default=3600, ge=1, description="Default cache TTL in seconds"
-    )
-    query_cache_ttl: int = Field(
-        default=300, ge=1, description="Query cache TTL in seconds"
-    )
-    result_cache_ttl: int = Field(
-        default=86400, ge=1, description="Result cache TTL in seconds"
-    )
-    max_key_length: int = Field(
-        default=250, ge=1, description="Maximum cache key length"
-    )
+    default_ttl: int = Field(default=3600, ge=1, description="Default cache TTL in seconds")
+    query_cache_ttl: int = Field(default=300, ge=1, description="Query cache TTL in seconds")
+    result_cache_ttl: int = Field(default=86400, ge=1, description="Result cache TTL in seconds")
+    max_key_length: int = Field(default=250, ge=1, description="Maximum cache key length")
 
 
 class Settings(BaseSettings):
@@ -405,20 +330,16 @@ class Settings(BaseSettings):
     )
 
     # Application metadata
-    app_name: str = Field(
-        default="AMOS Equation API",
-        description="Application name"
-    )
+    app_name: str = Field(default="AMOS Equation API", description="Application name")
     app_version: str = Field(default="2.0.0", description="Application version")
     app_description: str = Field(
         default="Unified Equation System with 1608+ mathematical functions",
-        description="Application description"
+        description="Application description",
     )
 
     # Environment
     app_env: Environment = Field(
-        default=Environment.DEVELOPMENT,
-        description="Application environment"
+        default=Environment.DEVELOPMENT, description="Application environment"
     )
     app_debug: bool = Field(default=False, description="Debug mode")
 
@@ -432,7 +353,7 @@ class Settings(BaseSettings):
     log_level: LogLevel = Field(default=LogLevel.INFO, description="Log level")
     log_format: str = Field(
         default="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        description="Log format string"
+        description="Log format string",
     )
 
     # API settings
@@ -503,7 +424,7 @@ class Settings(BaseSettings):
         """Check if running in testing mode."""
         return self.app_env == Environment.TESTING
 
-    def to_dict(self, mask_secrets: bool = True) -> Dict[str, Any]:
+    def to_dict(self, mask_secrets: bool = True) -> dict[str, Any]:
         """Convert settings to dictionary.
 
         Args:
@@ -529,9 +450,7 @@ class Settings(BaseSettings):
         logging.basicConfig(
             level=getattr(logging, self.log_level.value),
             format=self.log_format,
-            handlers=[
-                logging.StreamHandler(sys.stdout)
-            ]
+            handlers=[logging.StreamHandler(sys.stdout)],
         )
 
 
@@ -539,7 +458,7 @@ class Settings(BaseSettings):
 _settings: Optional[Settings] = None
 
 
-@lru_cache()
+@lru_cache
 def get_settings() -> Settings:
     """Get cached settings instance.
 

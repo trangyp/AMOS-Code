@@ -3,7 +3,6 @@
 
 import ast
 from dataclasses import dataclass
-from typing import List
 
 
 @dataclass
@@ -16,7 +15,7 @@ class Suggestion:
 class CompletionEngine:
     """AST-based code completion."""
 
-    def complete(self, code_prefix: str) -> List[Suggestion]:
+    def complete(self, code_prefix: str) -> list[Suggestion]:
         """Generate completions from code prefix."""
         try:
             tree = ast.parse(code_prefix)

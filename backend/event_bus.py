@@ -8,13 +8,17 @@ Creator: Trang Phan
 Version: 3.0.0
 """
 
+from __future__ import annotations
+
 import asyncio
 import json
 import os
 from collections.abc import Callable
 from dataclasses import dataclass
-from datetime import datetime
-from typing import Any, Dict
+from datetime import UTC, datetime
+
+UTC = UTC
+from typing import Any
 
 import redis.asyncio as redis
 
@@ -28,7 +32,7 @@ class AMOSEvent:
 
     event_type: str
     source: str
-    payload: Dict[str, Any]
+    payload: dict[str, Any]
     timestamp: str
     correlation_id: str = None
     priority: str = "normal"  # low, normal, high, critical
@@ -47,7 +51,7 @@ class AMOSEvent:
         )
 
     @classmethod
-    def from_json(cls, data: str) -> "AMOSEvent":
+    def from_json(cls, data: str) -> AMOSEvent:
         """Deserialize event from JSON."""
         parsed = json.loads(data)
         return cls(**parsed)
@@ -63,7 +67,7 @@ class EventBus:
         self.redis_url = redis_url
         self._redis: redis.Redis = None
         self._pubsub = None
-        self._handlers: Dict[str, list[Callable]] = {}
+        self._handlers: dict[str, list[Callable]] = {}
         self._running = False
         self._listener_task = None
 
@@ -199,7 +203,12 @@ class EventBus:
         await self.publish(event)
 
     async def emit_agent_task(
-        self, task_id: str, task_name: str, status: str, progress: int = 0, agent_id: str = None
+        self,
+        task_id: str,
+        task_name: str,
+        status: str,
+        progress: int = 0,
+        agent_id: str | None = None,
     ):
         """Emit an agent task event."""
         event = AMOSEvent(

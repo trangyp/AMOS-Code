@@ -9,11 +9,13 @@ Owner: Trang
 Version: 1.0.0
 """
 
+from __future__ import annotations
+
 import json
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 @dataclass
@@ -24,10 +26,10 @@ class KnowledgePack:
     version: str
     description: str
     pack_type: str  # country, sector, scenario, etc.
-    data: Dict[str, Any]
+    data: dict[str, Any]
     file_path: Path
     size_bytes: int
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class KnowledgePackLoader:
@@ -43,11 +45,11 @@ class KnowledgePackLoader:
     PACKS_DIR = Path(__file__).parent.parent.parent / "_AMOS_BRAIN" / "Packs"
 
     def __init__(self):
-        self.packs: Dict[str, KnowledgePack] = {}
+        self.packs: dict[str, KnowledgePack] = {}
         self._loaded = False
         self._stats = {"country_packs": 0, "sector_packs": 0, "scenario_packs": 0, "state_packs": 0}
 
-    def load_all_packs(self) -> Dict[str, KnowledgePack]:
+    def load_all_packs(self) -> dict[str, KnowledgePack]:
         """Discover and load all knowledge packs."""
         if not self.PACKS_DIR.exists():
             print(f"[KNOWLEDGE] Packs directory not found: {self.PACKS_DIR}")
@@ -140,7 +142,7 @@ class KnowledgePackLoader:
             self.load_all_packs()
         return self.packs.get(name)
 
-    def query_packs_by_type(self, pack_type: str) -> List[KnowledgePack]:
+    def query_packs_by_type(self, pack_type: str) -> list[KnowledgePack]:
         """Query packs by type."""
         if not self._loaded:
             self.load_all_packs()
@@ -158,7 +160,7 @@ class KnowledgePackLoader:
                     return pack
         return None
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get loader status and statistics."""
         if not self._loaded:
             self.load_all_packs()

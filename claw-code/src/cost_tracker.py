@@ -1,11 +1,10 @@
 from dataclasses import dataclass, field
-from typing import List
 
 
 @dataclass
 class CostTracker:
     total_units: int = 0
-    events: List[str] = field(default_factory=list)
+    events: list[str] = field(default_factory=list)
 
     def record(self, label: str, units: int) -> None:
         self.total_units += units

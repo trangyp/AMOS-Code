@@ -7,22 +7,21 @@ Live simulation execution and monitoring using the Simulation Engine:
 - Recommendation tracking
 """
 
+from __future__ import annotations
+
 import asyncio
 import json
-import sys
-from datetime import datetime, timezone
-
-UTC = timezone.utc
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel, Field
 
+UTC = UTC
+
 # Add repo root
 _REPO_ROOT = Path(__file__).parent.parent.parent.resolve()
-sys.path.insert(0, str(_REPO_ROOT))
-
 try:
     from amos_brain.facade import BrainClient
     from amos_brain.simulation_engine import (
@@ -40,7 +39,7 @@ except ImportError:
 router = APIRouter(prefix="/simulation", tags=["Simulation Dashboard"])
 
 # Active simulation sessions
-_simulation_sessions: Dict[str, dict[str, Any]] = {}
+_simulation_sessions: dict[str, dict[str, Any]] = {}
 
 
 class SimulationRunRequest(BaseModel):
@@ -48,7 +47,7 @@ class SimulationRunRequest(BaseModel):
 
     target: str = Field(..., description="PR number or commit to simulate")
     simulation_type: str = Field(default="deployment_impact", description="Type of simulation")
-    scenarios: List[dict[str, Any]] = Field(
+    scenarios: list[dict[str, Any]] = Field(
         default_factory=lambda: [
             {"name": "normal", "load_factor": 1.0},
             {"name": "peak", "load_factor": 2.0},
@@ -98,9 +97,9 @@ class SimulationResult(BaseModel):
     status: str
     target: str
     confidence_score: float
-    scenarios: List[ScenarioResult]
+    scenarios: list[ScenarioResult]
     impact: ImpactSummary
-    recommendations: List[RecommendationItem]
+    recommendations: list[RecommendationItem]
     started_at: str
     completed_at: str = None
 
@@ -109,8 +108,8 @@ class SimulationDashboard:
     """Real-time simulation dashboard manager."""
 
     def __init__(self):
-        self.active_simulations: Dict[str, dict[str, Any]] = {}
-        self.subscribers: Dict[str, set[WebSocket]] = {}
+        self.active_simulations: dict[str, dict[str, Any]] = {}
+        self.subscribers: dict[str, set[WebSocket]] = {}
 
     async def run_simulation(self, request: SimulationRunRequest) -> SimulationResult:
         """Run simulation and track progress."""
@@ -237,7 +236,7 @@ async def run_simulation(request: SimulationRunRequest) -> SimulationResult:
 
 
 @router.get("/status/{simulation_id}")
-async def get_simulation_status(simulation_id: str) -> Dict[str, Any]:
+async def get_simulation_status(simulation_id: str) -> dict[str, Any]:
     """Get current status of a simulation."""
     if simulation_id not in _dashboard.active_simulations:
         raise HTTPException(status_code=404, detail="Simulation not found")
@@ -252,7 +251,7 @@ async def get_simulation_status(simulation_id: str) -> Dict[str, Any]:
 
 
 @router.get("/active")
-async def get_active_simulations() -> List[dict[str, Any]]:
+async def get_active_simulations() -> list[dict[str, Any]]:
     """List all active simulations."""
     return [
         {
@@ -334,7 +333,7 @@ async def simulation_websocket(websocket: WebSocket, simulation_id: str):
 
 
 @router.get("/health")
-async def simulation_health() -> Dict[str, Any]:
+async def simulation_health() -> dict[str, Any]:
     """Check simulation engine health."""
     return {
         "available": _SIMULATION_AVAILABLE,

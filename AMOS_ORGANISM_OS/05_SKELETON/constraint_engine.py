@@ -2,9 +2,11 @@
 
 import re
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from enum import Enum
-from typing import Any, Dict, List
+from typing import Any
 
 
 class ConstraintType(Enum):
@@ -67,8 +69,8 @@ class ConstraintEngine:
     """
 
     def __init__(self):
-        self._constraints: Dict[str, Constraint] = {}
-        self._history: List[ConstraintResult] = []
+        self._constraints: dict[str, Constraint] = {}
+        self._history: list[ConstraintResult] = []
         self._setup_default_constraints()
 
     def _setup_default_constraints(self):
@@ -120,7 +122,7 @@ class ConstraintEngine:
             return True
         return False
 
-    def validate_file(self, filepath: str, content: str = None) -> List[ConstraintResult]:
+    def validate_file(self, filepath: str, content: str = None) -> list[ConstraintResult]:
         """Validate a file against all applicable constraints."""
         results = []
 
@@ -221,11 +223,11 @@ class ConstraintEngine:
             return not bool(re.match(expected, str(actual), re.MULTILINE))
         return False
 
-    def validate_batch(self, filepaths: List[str]) -> Dict[str, list[ConstraintResult]]:
+    def validate_batch(self, filepaths: list[str]) -> dict[str, list[ConstraintResult]]:
         """Validate multiple files."""
         return {fp: self.validate_file(fp) for fp in filepaths}
 
-    def get_violations(self, severity: str = None, limit: int = 100) -> List[ConstraintResult]:
+    def get_violations(self, severity: str = None, limit: int = 100) -> list[ConstraintResult]:
         """Get constraint violations from history."""
         violations = [r for r in self._history if not r.passed]
         if severity:
@@ -238,7 +240,7 @@ class ConstraintEngine:
             violations = filtered
         return violations[-limit:]
 
-    def status(self) -> Dict[str, Any]:
+    def status(self) -> dict[str, Any]:
         """Get engine status."""
         violations = [r for r in self._history if not r.passed]
         return {

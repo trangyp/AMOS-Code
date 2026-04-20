@@ -10,12 +10,7 @@ Tests all brain components:
 Run: python -m pytest tests/test_amos_brain.py -v
 """
 
-import os
-import sys
 import unittest
-
-# Add parent to path
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from amos_brain import get_amos_integration
 from amos_brain.cognitive_stack import CognitiveStack

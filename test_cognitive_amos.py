@@ -8,8 +8,6 @@ from datetime import datetime
 
 def test_imports():
     """Test all cognitive modules can be imported."""
-    sys.path.insert(0, "clawspring")
-    sys.path.insert(0, "clawspring/amos_brain")
 
     modules = [
         "amos_cognitive_router",

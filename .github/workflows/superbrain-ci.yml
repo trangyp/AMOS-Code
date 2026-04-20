@@ -48,26 +48,25 @@ jobs:
       - name: Install dependencies
         run: |
           pip install ruff mypy black isort
-          pip install -r requirements.txt || true
+          pip install -r requirements.txt
 
       - name: Run Ruff (linter)
         run: |
           ruff check --select E,W,F,I,N,D --ignore D100,D103,D104,D107 \
             amos_cognitive_router.py \
             amos_resilience_engine.py \
-            backend/health_checks.py \
-            || true
+            backend/health_checks.py
 
       - name: Run Black (format check)
-        run: black --check --diff . || true
+        run: black --check --diff amos_brain/ amosl/ backend/
 
       - name: Run isort (import sorting)
-        run: isort --check-only --diff . || true
+        run: isort --check-only --diff amos_brain/ amosl/ backend/
 
       - name: Type check with mypy
         run: |
           mypy amos_cognitive_router.py amos_resilience_engine.py \
-            --ignore-missing-imports --follow-imports=skip || true
+            --ignore-missing-imports --follow-imports=skip
 
   # ============================================
   # Phase 2: Unit Tests
@@ -88,12 +87,12 @@ jobs:
       - name: Install dependencies
         run: |
           pip install pytest pytest-asyncio pytest-cov
-          pip install -r requirements.txt || true
+          pip install -r requirements.txt
 
       - name: Run tests
         run: |
-          pytest tests/ -v --cov=. --cov-report=xml --cov-report=html \
-            -k "superbrain or governance or router or resilience" || true
+          pytest tests/ -v --cov=amos_brain --cov-report=xml --cov-report=html \
+            -k "superbrain or governance or router or resilience"
 
       - name: Upload coverage
         uses: codecov/codecov-action@v3
@@ -194,7 +193,7 @@ jobs:
       - name: Terraform Format Check
         run: |
           cd terraform
-          terraform fmt -check || true
+          terraform fmt -check
 
       - name: Terraform Init
         run: |
@@ -235,7 +234,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install pytest pytest-asyncio
-          pip install -r requirements.txt || true
+          pip install -r requirements.txt
 
       - name: Test health check structure
         run: |
@@ -288,7 +287,7 @@ jobs:
       - name: Verify deployment
         run: |
           chmod +x scripts/verify-integration.sh
-          ./scripts/verify-integration.sh dev || true
+          ./scripts/verify-integration.sh dev
 
   # ============================================
   # Phase 7: Deploy to Staging (on main branch)

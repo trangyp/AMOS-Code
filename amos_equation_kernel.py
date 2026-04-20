@@ -13,11 +13,13 @@ Usage:
     info_flow = kernel.get_by_pattern(MathematicalPattern.INFORMATION_FLOW)
 """
 
+from __future__ import annotations
+
 import math
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional, Protocol, Tuple, TypeVar, runtime_checkable
+from typing import Any, Optional, Protocol, TypeVar, runtime_checkable
 
 import numpy as np
 from numpy.typing import NDArray
@@ -66,8 +68,8 @@ class EquationMetadata:
     pattern: MathematicalPattern
     formula: str
     description: str
-    invariants: List[str] = field(default_factory=list)
-    parameters: Dict[str, str] = field(default_factory=dict)
+    invariants: list[str] = field(default_factory=list)
+    parameters: dict[str, str] = field(default_factory=dict)
 
 
 @dataclass
@@ -84,7 +86,7 @@ class EquationResult:
     value: Any
     metadata: EquationMetadata
     invariants_valid: bool
-    errors: List[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
 
 
 class EquationKernel:
@@ -104,9 +106,9 @@ class EquationKernel:
 
     def __init__(self) -> None:
         """Initialize the equation kernel with all equations."""
-        self._equations: Dict[str, Callable[..., Any]] = {}
-        self._metadata: Dict[str, EquationMetadata] = {}
-        self._pattern_index: Dict[MathematicalPattern, list[str]] = {
+        self._equations: dict[str, Callable[..., Any]] = {}
+        self._metadata: dict[str, EquationMetadata] = {}
+        self._pattern_index: dict[MathematicalPattern, list[str]] = {
             pattern: [] for pattern in MathematicalPattern
         }
         self._register_all_equations()
@@ -250,7 +252,7 @@ class EquationKernel:
     @staticmethod
     def _scaled_dot_product_attention(
         Q: ArrayType, K: ArrayType, V: ArrayType, mask: Optional[ArrayType] = None
-    ) -> Tuple[ArrayType, ArrayType]:
+    ) -> tuple[ArrayType, ArrayType]:
         """Compute scaled dot-product attention."""
         d_k = Q.shape[-1]
         scores = np.dot(Q, K.T) / np.sqrt(d_k)
@@ -305,7 +307,7 @@ class EquationKernel:
         return Kp * error + Ki * integral_error + Kd * derivative_error
 
     @staticmethod
-    def _rate_monotonic_schedulability(tasks: List[tuple[float, float]]) -> bool:
+    def _rate_monotonic_schedulability(tasks: list[tuple[float, float]]) -> bool:
         """Test schedulability under rate monotonic."""
         n = len(tasks)
         utilization = sum(c / p for c, p in tasks)
@@ -316,7 +318,7 @@ class EquationKernel:
     # Public API
     # =========================================================================
 
-    def execute(self, name: str, parameters: Dict[str, Any]) -> EquationResult:
+    def execute(self, name: str, parameters: dict[str, Any]) -> EquationResult:
         """Execute an equation with given parameters.
 
         Args:
@@ -356,8 +358,8 @@ class EquationKernel:
             )
 
     def _validate_invariants(
-        self, name: str, value: Any, parameters: Dict[str, Any]
-    ) -> Tuple[bool, list[str]]:
+        self, name: str, value: Any, parameters: dict[str, Any]
+    ) -> tuple[bool, list[str]]:
         """Validate invariants for equation result."""
         errors = []
 
@@ -377,7 +379,7 @@ class EquationKernel:
 
         return len(errors) == 0, errors
 
-    def get_by_pattern(self, pattern: MathematicalPattern) -> List[EquationMetadata]:
+    def get_by_pattern(self, pattern: MathematicalPattern) -> list[EquationMetadata]:
         """Get all equations matching a mathematical pattern.
 
         Args:
@@ -388,11 +390,11 @@ class EquationKernel:
         """
         return [self._metadata[name] for name in self._pattern_index.get(pattern, [])]
 
-    def get_all_equations(self) -> List[EquationMetadata]:
+    def get_all_equations(self) -> list[EquationMetadata]:
         """Get metadata for all registered equations."""
         return list(self._metadata.values())
 
-    def find_isomorphisms(self) -> List[dict[str, Any]]:
+    def find_isomorphisms(self) -> list[dict[str, Any]]:
         """Find structural similarities between equations.
 
         Returns:

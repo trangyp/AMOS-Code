@@ -6,7 +6,7 @@ import time
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 @dataclass
@@ -28,19 +28,19 @@ class SystemState:
 
     # Organism state
     organism_initialized: bool = False
-    subsystems_active: List[str] = field(default_factory=list)
+    subsystems_active: list[str] = field(default_factory=list)
 
     # Knowledge state
     knowledge_files_loaded: int = 0
-    knowledge_cache: Dict[str, Any] = field(default_factory=dict)
+    knowledge_cache: dict[str, Any] = field(default_factory=dict)
 
     # Configuration state
     active_config: str = "default"
-    custom_settings: Dict[str, Any] = field(default_factory=dict)
+    custom_settings: dict[str, Any] = field(default_factory=dict)
 
     # Session data
     session_id: str = field(default_factory=lambda: f"session_{int(time.time())}")
-    user_context: Dict[str, Any] = field(default_factory=dict)
+    user_context: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -72,7 +72,7 @@ class AMOSStateManager:
         self.state_dir.mkdir(exist_ok=True)
 
         self.current_state = SystemState()
-        self.snapshots: List[StateSnapshot] = []
+        self.snapshots: list[StateSnapshot] = []
         self.max_snapshots = 10
 
         # File paths
@@ -138,7 +138,7 @@ class AMOSStateManager:
                 return True
         return False
 
-    def list_snapshots(self) -> List[dict[str, Any]]:
+    def list_snapshots(self) -> list[dict[str, Any]]:
         """List all available snapshots."""
         return [
             {
@@ -196,7 +196,7 @@ class AMOSStateManager:
         """Get current system state."""
         return self.current_state
 
-    def get_state_summary(self) -> Dict[str, Any]:
+    def get_state_summary(self) -> dict[str, Any]:
         """Get a summary of current state."""
         return {
             "version": self.current_state.version,
@@ -218,11 +218,11 @@ class AMOSStateManager:
             "knowledge": {"files_loaded": self.current_state.knowledge_files_loaded},
         }
 
-    def _state_to_dict(self, state: SystemState) -> Dict[str, Any]:
+    def _state_to_dict(self, state: SystemState) -> dict[str, Any]:
         """Convert state to dictionary."""
         return asdict(state)
 
-    def _dict_to_state(self, data: Dict[str, Any]) -> SystemState:
+    def _dict_to_state(self, data: dict[str, Any]) -> SystemState:
         """Convert dictionary to state."""
         return SystemState(**data)
 

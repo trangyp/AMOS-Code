@@ -36,21 +36,24 @@ Version: 1.0.0
 Phase: 14 Enhancement
 """
 
+from __future__ import annotations
 
 import json
 import logging
 import sys
 import time
 import uuid
+from collections.abc import Callable
 from contextvars import ContextVar
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Optional
 
 # FastAPI imports
 try:
     from fastapi import Request, Response
     from starlette.middleware.base import BaseHTTPMiddleware
     from starlette.types import ASGIApp
+
     FASTAPI_AVAILABLE = True
 except ImportError:
     FASTAPI_AVAILABLE = False
@@ -58,35 +61,44 @@ except ImportError:
 # OpenTelemetry integration
 try:
     from opentelemetry import trace
+
     OTEL_AVAILABLE = True
 except ImportError:
     OTEL_AVAILABLE = False
 
 
 # Context variables for correlation tracking
-_correlation_id: ContextVar[str ] = ContextVar("correlation_id", default=None)
-_request_id: ContextVar[str ] = ContextVar("request_id", default=None)
-_tenant_id: ContextVar[str ] = ContextVar("tenant_id", default=None)
-_user_id: ContextVar[str ] = ContextVar("user_id", default=None)
+_correlation_id: ContextVar[str] = ContextVar("correlation_id", default=None)
+_request_id: ContextVar[str] = ContextVar("request_id", default=None)
+_tenant_id: ContextVar[str] = ContextVar("tenant_id", default=None)
+_user_id: ContextVar[str] = ContextVar("user_id", default=None)
 
 
 @dataclass
 class LoggingConfig:
     """Configuration for structured logging."""
+
     level: str = "INFO"
     format: str = "json"  # json or text
     include_timestamp: bool = True
     include_correlation_id: bool = True
     include_trace_id: bool = True
     redact_pii: bool = True
-    pii_fields: list  = None
+    pii_fields: list = None
     output: Any = sys.stdout
 
     def __post_init__(self):
         if self.pii_fields is None:
             self.pii_fields = [
-                "password", "token", "api_key", "secret", "credit_card",
-                "ssn", "email", "phone", "address"
+                "password",
+                "token",
+                "api_key",
+                "secret",
+                "credit_card",
+                "ssn",
+                "email",
+                "phone",
+                "address",
             ]
 
 
@@ -99,7 +111,7 @@ class JSONFormatter(logging.Formatter):
 
     def format(self, record: logging.LogRecord) -> str:
         """Format log record as JSON."""
-        log_data: Dict[str, Any] = {
+        log_data: dict[str, Any] = {
             "level": record.levelname,
             "logger": record.name,
             "message": record.getMessage(),
@@ -149,7 +161,7 @@ class JSONFormatter(logging.Formatter):
 
         return json.dumps(log_data, default=str)
 
-    def _redact_pii(self, data: Dict[str, Any]) -> Dict[str, Any]:
+    def _redact_pii(self, data: dict[str, Any]) -> dict[str, Any]:
         """Redact PII fields from log data."""
         redacted = {}
         for key, value in data.items():
@@ -183,26 +195,12 @@ class StructuredLogger:
         # Set level
         self._logger.setLevel(getattr(logging, self.config.level.upper()))
 
-    def _log(
-        self,
-        level: int,
-        message: str,
-        extra: dict  = None,
-        exc_info: bool = False
-    ) -> None:
+    def _log(self, level: int, message: str, extra: dict = None, exc_info: bool = False) -> None:
         """Internal log method."""
         extra_dict = extra or {}
 
         # Create log record with extra data
-        record = self._logger.makeRecord(
-            self.name,
-            level,
-            "",
-            0,
-            message,
-            (),
-            None
-        )
+        record = self._logger.makeRecord(self.name, level, "", 0, message, (), None)
         record.extra = extra_dict  # type: ignore
 
         if exc_info:
@@ -210,33 +208,23 @@ class StructuredLogger:
 
         self._logger.handle(record)
 
-    def debug(self, message: str, extra: dict  = None) -> None:
+    def debug(self, message: str, extra: dict = None) -> None:
         """Log debug message."""
         self._log(logging.DEBUG, message, extra)
 
-    def info(self, message: str, extra: dict  = None) -> None:
+    def info(self, message: str, extra: dict = None) -> None:
         """Log info message."""
         self._log(logging.INFO, message, extra)
 
-    def warning(self, message: str, extra: dict  = None) -> None:
+    def warning(self, message: str, extra: dict = None) -> None:
         """Log warning message."""
         self._log(logging.WARNING, message, extra)
 
-    def error(
-        self,
-        message: str,
-        extra: dict  = None,
-        exc_info: bool = True
-    ) -> None:
+    def error(self, message: str, extra: dict = None, exc_info: bool = True) -> None:
         """Log error message."""
         self._log(logging.ERROR, message, extra, exc_info)
 
-    def critical(
-        self,
-        message: str,
-        extra: dict  = None,
-        exc_info: bool = True
-    ) -> None:
+    def critical(self, message: str, extra: dict = None, exc_info: bool = True) -> None:
         """Log critical message."""
         self._log(logging.CRITICAL, message, extra, exc_info)
 
@@ -246,41 +234,38 @@ def get_logger(name: str = "amos", config: Optional[LoggingConfig] = None) -> St
     return StructuredLogger(name, config)
 
 
-def get_correlation_id() -> str :
+def get_correlation_id() -> str:
     """Get current correlation ID."""
     return _correlation_id.get()
 
 
-def set_correlation_id(correlation_id: str ) -> None:
+def set_correlation_id(correlation_id: str) -> None:
     """Set correlation ID for current context."""
     _correlation_id.set(correlation_id)
 
 
-def get_request_id() -> str :
+def get_request_id() -> str:
     """Get current request ID."""
     return _request_id.get()
 
 
-def set_request_id(request_id: str ) -> None:
+def set_request_id(request_id: str) -> None:
     """Set request ID for current context."""
     _request_id.set(request_id)
 
 
-def get_context() -> Dict[str, Any]:
+def get_context() -> dict[str, Any]:
     """Get current logging context."""
     return {
         "correlation_id": _correlation_id.get(),
         "request_id": _request_id.get(),
         "tenant_id": _tenant_id.get(),
-        "user_id": _user_id.get()
+        "user_id": _user_id.get(),
     }
 
 
 def set_context(
-    correlation_id: str  = None,
-    request_id: str  = None,
-    tenant_id: str  = None,
-    user_id: str  = None
+    correlation_id: str = None, request_id: str = None, tenant_id: str = None, user_id: str = None
 ) -> None:
     """Set multiple context values at once."""
     if correlation_id:
@@ -314,7 +299,7 @@ class StructuredLoggingMiddleware(BaseHTTPMiddleware):
         log_requests: bool = True,
         log_responses: bool = True,
         correlation_id_header: str = "X-Correlation-ID",
-        request_id_header: str = "X-Request-ID"
+        request_id_header: str = "X-Request-ID",
     ):
         super().__init__(app)
         self.log_requests = log_requests
@@ -333,10 +318,7 @@ class StructuredLoggingMiddleware(BaseHTTPMiddleware):
                 try:
                     current_span = trace.get_current_span()
                     if current_span:
-                        correlation_id = format(
-                            current_span.get_span_context().trace_id,
-                            "032x"
-                        )
+                        correlation_id = format(current_span.get_span_context().trace_id, "032x")
                 except Exception:
                     pass
 
@@ -351,7 +333,7 @@ class StructuredLoggingMiddleware(BaseHTTPMiddleware):
             correlation_id=correlation_id,
             request_id=request_id,
             tenant_id=request.headers.get("X-Tenant-ID"),
-            user_id=request.headers.get("X-User-ID")
+            user_id=request.headers.get("X-User-ID"),
         )
 
         # Log request
@@ -364,8 +346,8 @@ class StructuredLoggingMiddleware(BaseHTTPMiddleware):
                     "path": str(request.url.path),
                     "query_params": str(request.query_params),
                     "client_ip": request.client.host if request.client else None,
-                    "user_agent": request.headers.get("user-agent")
-                }
+                    "user_agent": request.headers.get("user-agent"),
+                },
             )
 
         # Process request
@@ -385,8 +367,8 @@ class StructuredLoggingMiddleware(BaseHTTPMiddleware):
                         "method": request.method,
                         "path": str(request.url.path),
                         "status_code": response.status_code,
-                        "duration_ms": round(duration_ms, 2)
-                    }
+                        "duration_ms": round(duration_ms, 2),
+                    },
                 )
 
             return response
@@ -399,8 +381,8 @@ class StructuredLoggingMiddleware(BaseHTTPMiddleware):
                     "method": request.method,
                     "path": str(request.url.path),
                     "duration_ms": round(duration_ms, 2),
-                    "error": str(e)
-                }
+                    "error": str(e),
+                },
             )
             raise
 
@@ -410,9 +392,7 @@ class StructuredLoggingMiddleware(BaseHTTPMiddleware):
 
 
 def add_structured_logging_middleware(
-    app: Any,
-    log_requests: bool = True,
-    log_responses: bool = True
+    app: Any, log_requests: bool = True, log_responses: bool = True
 ) -> bool:
     """
     Add structured logging middleware to FastAPI application.
@@ -430,9 +410,7 @@ def add_structured_logging_middleware(
         return False
 
     app.add_middleware(
-        StructuredLoggingMiddleware,
-        log_requests=log_requests,
-        log_responses=log_responses
+        StructuredLoggingMiddleware, log_requests=log_requests, log_responses=log_responses
     )
     print("✅ Structured logging middleware added to FastAPI app")
     return True
@@ -440,10 +418,7 @@ def add_structured_logging_middleware(
 
 # Convenience function for logging exceptions with full context
 def log_exception(
-    logger: StructuredLogger,
-    message: str,
-    exception: Exception,
-    extra: dict  = None
+    logger: StructuredLogger, message: str, exception: Exception, extra: dict = None
 ) -> None:
     """Log exception with full context."""
     context = get_context()
@@ -468,5 +443,5 @@ __all__ = [
     "set_context",
     "clear_context",
     "add_structured_logging_middleware",
-    "log_exception"
+    "log_exception",
 ]

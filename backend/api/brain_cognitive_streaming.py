@@ -7,17 +7,19 @@ Creator: Trang Phan
 Version: 1.0.0
 """
 
+from __future__ import annotations
+
 import asyncio
 import json
 import time
 from collections.abc import AsyncGenerator
-from datetime import datetime, timezone
-
-UTC = timezone.utc
-from typing import Any, Dict, List, Optional
+from datetime import UTC, datetime
+from typing import Any, Optional
 
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel, Field
+
+UTC = UTC
 
 # Import BrainClient facade and Canon
 try:
@@ -40,7 +42,7 @@ class StreamChunk(BaseModel):
 
     content: str
     timestamp: str
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class StreamAnalysisRequest(BaseModel):
@@ -51,7 +53,7 @@ class StreamAnalysisRequest(BaseModel):
     analyze_sentiment: bool = True
     extract_entities: bool = True
     generate_summary: bool = False
-    context: Dict[str, Any] = Field(default_factory=dict)
+    context: dict[str, Any] = Field(default_factory=dict)
 
 
 class StreamAnalysisResult(BaseModel):
@@ -61,9 +63,9 @@ class StreamAnalysisResult(BaseModel):
     chunk_count: int
     total_chars: int
     sentiment_score: Optional[float]
-    entities: List[dict[str, Any]]
+    entities: list[dict[str, Any]]
     summary: Optional[str]
-    insights: List[str]
+    insights: list[str]
     cognitive_load: float
     processing_time_ms: float
     timestamp: str
@@ -73,8 +75,8 @@ class BrainStreamProcessor:
     """Brain-powered stream processor for real-time analysis with Canon context."""
 
     def __init__(self):
-        self._streams: Dict[str, list[StreamChunk]] = {}
-        self._analysis_results: Dict[str, StreamAnalysisResult] = {}
+        self._streams: dict[str, list[StreamChunk]] = {}
+        self._analysis_results: dict[str, StreamAnalysisResult] = {}
         self._lock = asyncio.Lock()
         self._canon_bridge = None
 
@@ -88,7 +90,7 @@ class BrainStreamProcessor:
         self,
         stream_id: str,
         content: str,
-        metadata: Optional[Dict[str, Any] ] = None,
+        metadata: dict[str, Optional[Any]] = None,
     ) -> StreamChunk:
         """Process a single stream chunk."""
         chunk = StreamChunk(
@@ -124,9 +126,9 @@ class BrainStreamProcessor:
         combined_text = " ".join(c.content for c in chunks)
 
         sentiment_score = None
-        entities: List[dict[str, Any]] = []
+        entities: list[dict[str, Any]] = []
         summary = None
-        insights: List[str] = []
+        insights: list[str] = []
         cognitive_load = 0.5
         canon_context = {}
 
@@ -304,7 +306,7 @@ class BrainStreamProcessor:
 
         yield "data: [DONE]\n\n"
 
-    def get_stream(self, stream_id: str) -> Optional[List[StreamChunk] ]:
+    def get_stream(self, stream_id: str) -> list[Optional[StreamChunk]]:
         """Get stream chunks by ID."""
         return self._streams.get(stream_id)
 
@@ -330,7 +332,7 @@ stream_processor = BrainStreamProcessor()
 async def add_stream_chunk(
     stream_id: str,
     content: str,
-    metadata: Optional[Dict[str, Any] ] = None,
+    metadata: dict[str, Optional[Any]] = None,
 ) -> StreamChunk:
     """Add a chunk to a stream."""
     return await stream_processor.process_chunk(stream_id, content, metadata)
@@ -345,7 +347,7 @@ async def analyze_stream_endpoint(
 
 
 @router.get("/streams/{stream_id}")
-async def get_stream_chunks(stream_id: str) -> List[StreamChunk]:
+async def get_stream_chunks(stream_id: str) -> list[StreamChunk]:
     """Get all chunks for a stream."""
     chunks = stream_processor.get_stream(stream_id)
     if chunks is None:
@@ -363,7 +365,7 @@ async def get_stream_analysis(stream_id: str) -> StreamAnalysisResult:
 
 
 @router.delete("/streams/{stream_id}")
-async def clear_stream_endpoint(stream_id: str) -> Dict[str, str]:
+async def clear_stream_endpoint(stream_id: str) -> dict[str, str]:
     """Clear a stream and its analysis."""
     await stream_processor.clear_stream(stream_id)
     return {"status": "cleared", "stream_id": stream_id}

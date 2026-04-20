@@ -29,7 +29,7 @@ class DeploymentResult:
     """Result of deployment."""
 
     success: bool
-    steps: List[DeploymentStep]
+    steps: list[DeploymentStep]
     deploy_path: str
     timestamp: str
     version: str = "2.0"
@@ -45,7 +45,7 @@ class AMOSDeployer:
         self.unified_dashboard_path = self.amos_path / "unified_dashboard.html"
         self.clawspring_path = self.base_path / "clawspring"
         self.log_file = self.base_path / ".amos_deploy.log"
-        self.steps: List[DeploymentStep] = []
+        self.steps: list[DeploymentStep] = []
 
     def log(self, message: str) -> None:
         """Log deployment activity."""
@@ -176,8 +176,9 @@ class AMOSDeployer:
         step = self._add_step("Installation Verification")
         self.log("Verifying installation...")
 
-        sys.path.insert(0, str(self.clawspring_path))
-        sys.path.insert(0, str(self.amos_path))
+        # Import alias modules to set up paths
+        import clawspring  # noqa: F401
+        import clawspring.amos_brain  # noqa: F401
 
         modules = [
             "amos_cognitive_router",
@@ -263,12 +264,11 @@ python clawspring/clawspring.py %*
         return '''#!/usr/bin/env python3
 """Quick AMOS System Validator."""
 
-import sys
-sys.path.insert(0, "clawspring/amos_brain")
-sys.path.insert(0, "clawspring")
+# Import alias modules to set up paths
+import clawspring  # noqa: F401
+import clawspring.amos_brain  # noqa: F401
 
 from system_validator import SystemValidator
-from typing import List
 
 validator = SystemValidator()
 results = validator.validate_all()
@@ -283,6 +283,7 @@ if failed == 0:
     print(" AMOS is ready for use!")
 else:
     print(" Some components need attention")
+    import sys
     sys.exit(1)
 '''
 

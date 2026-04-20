@@ -8,20 +8,14 @@ AMOS_ORGANISM_OS components for a single unified interface.
 import argparse
 import sys
 from pathlib import Path
-from typing import Any, Dict, List
-
-# Add paths for both systems
-sys.path.insert(0, str(Path(__file__).parent))
-sys.path.insert(0, str(Path(__file__).parent.parent))
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "AMOS_ORGANISM_OS"))
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "AMOS_ORGANISM_OS" / "14_INTERFACES"))
+from typing import Any
 
 
 class UnifiedCLI:
     """Unified command-line interface for AMOS ecosystem."""
 
     def __init__(self):
-        self.commands: Dict[str, Any] = {}
+        self.commands: dict[str, Any] = {}
         self._discover_commands()
 
     def _discover_commands(self) -> None:
@@ -58,7 +52,7 @@ class UnifiedCLI:
             "audit": self._cmd_math_audit,
         }
 
-    def _cmd_math_analyze(self, args: List[str]) -> int:
+    def _cmd_math_analyze(self, args: list[str]) -> int:
         """Analyze task using mathematical framework engine."""
         try:
             from clawspring.amos_brain.mathematical_framework_engine import get_framework_engine
@@ -79,7 +73,7 @@ class UnifiedCLI:
             print(f"Error: {e}")
             return 1
 
-    def _cmd_math_equations(self, args: List[str]) -> int:
+    def _cmd_math_equations(self, args: list[str]) -> int:
         """List mathematical equations from framework."""
         try:
             from clawspring.amos_brain.mathematical_framework_engine import get_framework_engine
@@ -101,7 +95,7 @@ class UnifiedCLI:
             print(f"Error: {e}")
             return 1
 
-    def _cmd_math_validate(self, args: List[str]) -> int:
+    def _cmd_math_validate(self, args: list[str]) -> int:
         """Validate design using validation engine."""
         try:
             from clawspring.amos_brain.design_validation_engine import get_design_validation_engine
@@ -116,7 +110,7 @@ class UnifiedCLI:
             print(f"Error: {e}")
             return 1
 
-    def _cmd_math_stats(self, args: List[str]) -> int:
+    def _cmd_math_stats(self, args: list[str]) -> int:
         """Show mathematical framework engine statistics."""
         try:
             from clawspring.amos_brain.mathematical_framework_engine import get_framework_engine
@@ -135,7 +129,7 @@ class UnifiedCLI:
             print(f"Error: {e}")
             return 1
 
-    def _cmd_cognitive_route(self, args: List[str]) -> int:
+    def _cmd_cognitive_route(self, args: list[str]) -> int:
         """Route a task through cognitive system."""
         try:
             from amos_cognitive_router import CognitiveRouter
@@ -158,7 +152,7 @@ class UnifiedCLI:
             print(f"Error: {e}")
             return 1
 
-    def _cmd_cognitive_validate(self, args: List[str]) -> int:
+    def _cmd_cognitive_validate(self, args: list[str]) -> int:
         """Run system validator."""
         try:
             from system_validator import validate_system
@@ -177,7 +171,7 @@ class UnifiedCLI:
             print(f"Error: {e}")
             return 1
 
-    def _cmd_cognitive_orchestrate(self, args: List[str]) -> int:
+    def _cmd_cognitive_orchestrate(self, args: list[str]) -> int:
         """Run master orchestrator."""
         try:
             from master_orchestrator import MasterOrchestrator
@@ -198,7 +192,7 @@ class UnifiedCLI:
             print(f"Error: {e}")
             return 1
 
-    def _cmd_cognitive_dashboard(self, args: List[str]) -> int:
+    def _cmd_cognitive_dashboard(self, args: list[str]) -> int:
         """Launch cognitive dashboard."""
         try:
             from dashboard_server import DashboardServer
@@ -215,7 +209,7 @@ class UnifiedCLI:
             print(f"Error: {e}")
             return 1
 
-    def _cmd_organism_coherence(self, args: List[str]) -> int:
+    def _cmd_organism_coherence(self, args: list[str]) -> int:
         """Run coherence engine check."""
         try:
             # Try to use existing coherence engine
@@ -235,7 +229,7 @@ class UnifiedCLI:
             print(f"Error: {e}")
             return 1
 
-    def _cmd_organism_ethics(self, args: List[str]) -> int:
+    def _cmd_organism_ethics(self, args: list[str]) -> int:
         """Run ethics validation."""
         try:
             from ethics_integration import EthicsValidator
@@ -262,7 +256,7 @@ class UnifiedCLI:
             print(f"Error: {e}")
             return 1
 
-    def _cmd_organism_predict(self, args: List[str]) -> int:
+    def _cmd_organism_predict(self, args: list[str]) -> int:
         """Run predictive engine."""
         print("=" * 60)
         print("PREDICTIVE ENGINE")
@@ -272,7 +266,7 @@ class UnifiedCLI:
         print("=" * 60)
         return 0
 
-    def _cmd_organism_execute(self, args: List[str]) -> int:
+    def _cmd_organism_execute(self, args: list[str]) -> int:
         """Run task executor."""
         print("=" * 60)
         print("TASK EXECUTOR")
@@ -282,7 +276,7 @@ class UnifiedCLI:
         print("=" * 60)
         return 0
 
-    def _cmd_unified_status(self, args: List[str]) -> int:
+    def _cmd_unified_status(self, args: list[str]) -> int:
         """Show unified system status."""
         print("=" * 70)
         print("AMOS ECOSYSTEM - UNIFIED STATUS")
@@ -309,7 +303,7 @@ class UnifiedCLI:
         print("=" * 70)
         return 0
 
-    def _cmd_unified_health(self, args: List[str]) -> int:
+    def _cmd_unified_health(self, args: list[str]) -> int:
         """Run unified health check."""
         print("=" * 70)
         print("AMOS ECOSYSTEM - HEALTH CHECK")
@@ -336,7 +330,7 @@ class UnifiedCLI:
         print("=" * 70)
         return 0 if all_healthy else 1
 
-    def _cmd_unified_version(self, args: List[str]) -> int:
+    def _cmd_unified_version(self, args: list[str]) -> int:
         """Show version information."""
         print("=" * 70)
         print("AMOS ECOSYSTEM VERSION")
@@ -355,7 +349,7 @@ class UnifiedCLI:
         print("=" * 70)
         return 0
 
-    def _cmd_math_audit(self, args: List[str]) -> int:
+    def _cmd_math_audit(self, args: list[str]) -> int:
         """Export or view mathematical framework audit logs."""
         try:
             from pathlib import Path
@@ -378,7 +372,7 @@ class UnifiedCLI:
             print(f"Error: {e}")
             return 1
 
-    def run(self, args: List[str] = None) -> int:
+    def run(self, args: list[str] = None) -> int:
         """Main CLI entry point."""
         parser = argparse.ArgumentParser(
             prog="amos-unified", description="AMOS Ecosystem Unified CLI - Cognitive + Organism"

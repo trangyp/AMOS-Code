@@ -1,12 +1,15 @@
 """SOCIAL_ENGINE negotiation_engine stub — Re-exports from 10_SOCIAL_ENGINE"""
 
-import sys
+import importlib.util
 from pathlib import Path
 
-social_path = Path(__file__).parent.parent / "10_SOCIAL_ENGINE"
-if str(social_path) not in sys.path:
-    sys.path.insert(0, str(social_path))
+# Load from 10_SOCIAL_ENGINE using importlib
+_social_path = Path(__file__).parent.parent / "10_SOCIAL_ENGINE" / "negotiation_engine.py"
+_spec = importlib.util.spec_from_file_location("_nego_eng", _social_path)
+_mod = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_mod)
+NegotiationEngine = _mod.NegotiationEngine
+NegotiationResult = _mod.NegotiationResult
+Proposal = _mod.Proposal
 
-from negotiation_engine import NegotiationEngine, NegotiationResult, Proposal
-
-__all__ = ["NegotiationEngine", "Proposal", "NegotiationResult"]
+__all__ = ["NegotiationEngine", "NegotiationResult", "Proposal"]

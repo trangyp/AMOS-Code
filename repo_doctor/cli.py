@@ -27,13 +27,7 @@ try:
     from .state_vector import format_state_report
 except ImportError:
     # Fall back to absolute imports (when run directly: python3 repo_doctor/cli.py)
-    # Add parent directory to path for imports
-    cli_dir = Path(__file__).parent
-    if str(cli_dir) not in sys.path:
-        sys.path.insert(0, str(cli_dir))
-    if str(cli_dir.parent) not in sys.path:
-        sys.path.insert(0, str(cli_dir.parent))
-
+    # Note: repo_doctor must be installed as a package for this to work
     from bisect_engine import BisectEngine
     from contracts import ContractAnalyzer
     from entanglement import EntanglementMatrix

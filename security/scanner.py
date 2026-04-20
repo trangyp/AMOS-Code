@@ -20,7 +20,6 @@ import subprocess
 from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List
 
 
 @dataclass
@@ -41,9 +40,9 @@ class ScanReport:
     """Complete security scan report."""
 
     timestamp: str
-    scan_types: List[str]
-    findings: List[SecurityFinding]
-    summary: Dict[str, int]
+    scan_types: list[str]
+    findings: list[SecurityFinding]
+    summary: dict[str, int]
     passed: bool
 
 
@@ -76,7 +75,7 @@ class SecurityScanner:
 
     def __init__(self, project_root: str = "."):
         self.project_root = Path(project_root)
-        self.findings: List[SecurityFinding] = []
+        self.findings: list[SecurityFinding] = []
 
     # Files containing detection patterns that should be excluded from scanning
     SCANNER_FILES = {
@@ -85,7 +84,7 @@ class SecurityScanner:
         "amos_universal_system_scanner.py",
     }
 
-    def scan_secrets(self) -> List[SecurityFinding]:
+    def scan_secrets(self) -> list[SecurityFinding]:
         """Scan for hardcoded secrets."""
         findings = []
 
@@ -121,7 +120,7 @@ class SecurityScanner:
 
         return findings
 
-    def scan_sast(self) -> List[SecurityFinding]:
+    def scan_sast(self) -> list[SecurityFinding]:
         """Static application security testing."""
         findings = []
 
@@ -158,7 +157,7 @@ class SecurityScanner:
 
         return findings
 
-    def scan_dependencies(self) -> List[SecurityFinding]:
+    def scan_dependencies(self) -> list[SecurityFinding]:
         """Check for vulnerable dependencies."""
         findings = []
 
@@ -224,7 +223,7 @@ class SecurityScanner:
 
         return findings
 
-    def scan_containers(self) -> List[SecurityFinding]:
+    def scan_containers(self) -> list[SecurityFinding]:
         """Container image security scan."""
         findings = []
 
@@ -276,7 +275,7 @@ class SecurityScanner:
 
         return findings
 
-    def generate_report(self, scan_types: List[str]) -> ScanReport:
+    def generate_report(self, scan_types: list[str]) -> ScanReport:
         """Generate comprehensive scan report."""
         all_findings = []
 

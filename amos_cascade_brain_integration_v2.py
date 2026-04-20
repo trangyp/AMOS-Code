@@ -14,24 +14,17 @@ Usage:
 import asyncio
 import atexit
 import hashlib
-import sys
 import threading
 from dataclasses import dataclass, field
-from datetime import datetime
-from pathlib import Path
-from typing import Any, ClassVar, Dict, Optional
+from datetime import UTC, datetime
+from typing import Any, ClassVar
 
-# Setup paths for AMOS imports
-_AMOS_ROOT = Path(__file__).parent.resolve()
+UTC = UTC
 
-# Add clawspring and its subdirectories to path
-sys.path.insert(0, str(_AMOS_ROOT))
-sys.path.insert(0, str(_AMOS_ROOT / "clawspring"))
-sys.path.insert(0, str(_AMOS_ROOT / "clawspring" / "amos_brain"))
-sys.path.insert(0, str(_AMOS_ROOT / "AMOS_ORGANISM_OS"))
+# Import AMOS brain from proper package
+from clawspring.amos_brain.amos_kernel_runtime import AMOSKernelRuntime
 
-# Import kernel runtime directly
-from amos_kernel_runtime import AMOSKernelRuntime
+# Kernel runtime already imported above
 
 
 @dataclass
@@ -44,11 +37,11 @@ class BrainSession:
         ).hexdigest()[:16]
     )
     start_time: datetime = field(default_factory=lambda: datetime.now(UTC))
-    kernel_runtime: Optional[AMOSKernelRuntime] = None
+    kernel_runtime: AMOSKernelRuntime = None
     active: bool = True
     request_count: int = 0
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "session_id": self.session_id,
             "start_time": self.start_time.isoformat(),
@@ -64,7 +57,7 @@ class AMOSCascadeBrain:
     Singleton that auto-activates AMOS brain on every session.
     """
 
-    _instance: Optional[AMOSCascadeBrain] = None
+    _instance: AMOSCascadeBrain = None
     _lock: ClassVar[threading.Lock] = threading.Lock()
 
     def __new__(cls) -> AMOSCascadeBrain:
@@ -78,8 +71,8 @@ class AMOSCascadeBrain:
         if hasattr(self, "_setup_complete"):
             return
         self._setup_complete = False
-        self._current_session: Optional[BrainSession] = None
-        self._kernel: Optional[AMOSKernelRuntime] = None
+        self._current_session: BrainSession = None
+        self._kernel: AMOSKernelRuntime = None
         self._init_lock = asyncio.Lock()
 
     @classmethod
@@ -133,7 +126,7 @@ class AMOSCascadeBrain:
                 traceback.print_exc()
                 return False
 
-    async def think(self, intent: str, context: Dict[str, Any] = None) -> Dict[str, Any]:
+    async def think(self, intent: str, context: dict[str, Any] = None) -> dict[str, Any]:
         """Process cognitive request through AMOS brain."""
         if not self._setup_complete:
             await self.initialize()
@@ -172,7 +165,7 @@ class AMOSCascadeBrain:
                 "intent": intent,
             }
 
-    def get_session_info(self) -> Dict[str, Any]:
+    def get_session_info(self) -> dict[str, Any]:
         """Get current session information."""
         if not self._current_session:
             return {"active": False, "initialized": self._setup_complete}
@@ -186,7 +179,7 @@ class AMOSCascadeBrain:
 
 
 # Global instance
-_cascade_brain: Optional[AMOSCascadeBrain] = None
+_cascade_brain: AMOSCascadeBrain = None
 
 
 async def get_brain() -> AMOSCascadeBrain:
@@ -198,7 +191,7 @@ async def get_brain() -> AMOSCascadeBrain:
     return _cascade_brain
 
 
-async def think(intent: str, context: Dict[str, Any] = None) -> Dict[str, Any]:
+async def think(intent: str, context: dict[str, Any] = None) -> dict[str, Any]:
     """Convenience function: think through brain."""
     brain = await get_brain()
     return await brain.think(intent, context)

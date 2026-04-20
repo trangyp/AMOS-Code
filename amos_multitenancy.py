@@ -31,12 +31,15 @@ Version: 1.0.0
 Phase: 17
 """
 
+from __future__ import annotations
+
 import uuid
 from contextvars import ContextVar
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 from enum import Enum
-from typing import Any, List, Optional
+from typing import Any, Optional
 
 # SQLAlchemy imports
 try:
@@ -433,7 +436,7 @@ class WorkspaceManager:
         owner_id: int,
         description: str = None,
         plan: str = SubscriptionPlan.FREE.value,
-    ) -> "Workspace":
+    ) -> Workspace:
         """Create a new workspace with owner and subscription."""
         if not MULTITENANCY_AVAILABLE:
             raise RuntimeError("Multi-tenancy not available")
@@ -501,7 +504,7 @@ class WorkspaceManager:
 
         return workspace
 
-    async def get_workspace_by_slug(self, slug: str) -> "Workspace":
+    async def get_workspace_by_slug(self, slug: str) -> Workspace:
         """Get workspace by slug."""
         if not MULTITENANCY_AVAILABLE:
             return None
@@ -511,7 +514,7 @@ class WorkspaceManager:
         )
         return result.scalar_one_or_none()
 
-    async def get_user_workspaces(self, user_id: int) -> List["Workspace"]:
+    async def get_user_workspaces(self, user_id: int) -> list[Workspace]:
         """Get all workspaces for a user."""
         if not MULTITENANCY_AVAILABLE:
             return []
@@ -543,7 +546,7 @@ class WorkspaceManager:
         user_id: int,
         role: str = WorkspaceRole.MEMBER.value,
         invited_by_id: int = None,
-    ) -> "WorkspaceMember":
+    ) -> WorkspaceMember:
         """Add a member to workspace."""
         if not MULTITENANCY_AVAILABLE:
             raise RuntimeError("Multi-tenancy not available")

@@ -13,7 +13,6 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from .store import INDEX_FILENAME, get_memory_dir, parse_frontmatter
-from typing import List
 
 MAX_MEMORY_FILES = 200
 
@@ -32,6 +31,7 @@ class MemoryHeader:
         description: value from frontmatter `description:` field
         type:        value from frontmatter `type:` field
         scope:       "user" or "project"
+
     """
 
     filename: str
@@ -45,7 +45,7 @@ class MemoryHeader:
 # ── Scanning ───────────────────────────────────────────────────────────────
 
 
-def scan_memory_dir(mem_dir: Path, scope: str) -> List[MemoryHeader]:
+def scan_memory_dir(mem_dir: Path, scope: str) -> list[MemoryHeader]:
     """Scan a single memory directory and return headers sorted newest-first.
 
     Reads only the frontmatter (first ~30 lines) for efficiency.
@@ -54,7 +54,7 @@ def scan_memory_dir(mem_dir: Path, scope: str) -> List[MemoryHeader]:
     if not mem_dir.is_dir():
         return []
 
-    headers: List[MemoryHeader] = []
+    headers: list[MemoryHeader] = []
     for fp in mem_dir.glob("*.md"):
         if fp.name == INDEX_FILENAME:
             continue
@@ -81,7 +81,7 @@ def scan_memory_dir(mem_dir: Path, scope: str) -> List[MemoryHeader]:
     return headers[:MAX_MEMORY_FILES]
 
 
-def scan_all_memories() -> List[MemoryHeader]:
+def scan_all_memories() -> list[MemoryHeader]:
     """Scan both user and project memory directories, merged newest-first."""
     user_dir = get_memory_dir("user")
     proj_dir = get_memory_dir("project")
@@ -132,7 +132,7 @@ def memory_freshness_text(mtime_s: float) -> str:
 # ── Manifest formatting ────────────────────────────────────────────────────
 
 
-def format_memory_manifest(headers: List[MemoryHeader]) -> str:
+def format_memory_manifest(headers: list[MemoryHeader]) -> str:
     """Format a list of MemoryHeader as a text manifest.
 
     Format per line:  [type/scope] filename (age): description

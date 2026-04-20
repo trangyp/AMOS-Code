@@ -14,9 +14,8 @@ Extends autonomous governance from single-repo to fleet-wide coordination.
 
 from __future__ import annotations
 
-
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 # Import fleet management
 try:

@@ -12,13 +12,15 @@ Implements 2025 observability patterns (OpenTelemetry, Jaeger, Zipkin):
 Component #79 - Distributed Tracing Infrastructure
 """
 
+from __future__ import annotations
+
 import asyncio
 import time
 import uuid
 from collections import defaultdict
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
+from typing import Any, Optional, Protocol
 
 
 class SpanStatus(Enum):
@@ -61,11 +63,11 @@ class Span:
     status_message: str = None
 
     # Context
-    attributes: Dict[str, Any] = field(default_factory=dict)
-    events: List[dict[str, Any]] = field(default_factory=list)
+    attributes: dict[str, Any] = field(default_factory=dict)
+    events: list[dict[str, Any]] = field(default_factory=list)
 
     # Links to other spans
-    links: List[dict[str, Any]] = field(default_factory=list)
+    links: list[dict[str, Any]] = field(default_factory=list)
 
     def duration_ms(self) -> float:
         """Calculate span duration in milliseconds."""
@@ -78,7 +80,7 @@ class Span:
         self.status = status
         self.status_message = message
 
-    def add_event(self, name: str, attributes: Dict[str, Any] = None) -> None:
+    def add_event(self, name: str, attributes: dict[str, Any] = None) -> None:
         """Add an event to the span."""
         self.events.append({"name": name, "timestamp": time.time(), "attributes": attributes or {}})
 
@@ -95,14 +97,14 @@ class Trace:
     root_span_id: str = None
 
     # Spans in this trace
-    spans: Dict[str, Span] = field(default_factory=dict)
+    spans: dict[str, Span] = field(default_factory=dict)
 
     # Metadata
     start_time: float = field(default_factory=time.time)
     end_time: float = None
 
     # Context
-    tags: Dict[str, str] = field(default_factory=dict)
+    tags: dict[str, str] = field(default_factory=dict)
 
     def add_span(self, span: Span) -> None:
         """Add a span to the trace."""
@@ -146,8 +148,8 @@ class TraceSummary:
     p99_duration_ms: float = 0.0
 
     # Service breakdown
-    service_counts: Dict[str, int] = field(default_factory=dict)
-    service_durations: Dict[str, list[float]] = field(default_factory=dict)
+    service_counts: dict[str, int] = field(default_factory=dict)
+    service_durations: dict[str, list[float]] = field(default_factory=dict)
 
 
 class TraceExporter(Protocol):
@@ -157,7 +159,7 @@ class TraceExporter(Protocol):
         """Export a trace."""
         ...
 
-    async def export_batch(self, traces: List[Trace]) -> bool:
+    async def export_batch(self, traces: list[Trace]) -> bool:
         """Export multiple traces."""
         ...
 
@@ -166,7 +168,7 @@ class InMemoryTraceExporter:
     """In-memory trace exporter for development."""
 
     def __init__(self, max_traces: int = 1000):
-        self.traces: List[Trace] = []
+        self.traces: list[Trace] = []
         self.max_traces = max_traces
 
     async def export(self, trace: Trace) -> bool:
@@ -175,7 +177,7 @@ class InMemoryTraceExporter:
             self.traces = self.traces[-self.max_traces :]
         return True
 
-    async def export_batch(self, traces: List[Trace]) -> bool:
+    async def export_batch(self, traces: list[Trace]) -> bool:
         self.traces.extend(traces)
         if len(self.traces) > self.max_traces:
             self.traces = self.traces[-self.max_traces :]
@@ -211,19 +213,19 @@ class AMOSTracingSystem:
         self.exporter = exporter or InMemoryTraceExporter()
 
         # Active traces
-        self.active_traces: Dict[str, Trace] = {}
-        self.active_spans: Dict[str, Span] = {}
+        self.active_traces: dict[str, Trace] = {}
+        self.active_spans: dict[str, Span] = {}
 
         # Completed traces
-        self.completed_traces: List[Trace] = []
+        self.completed_traces: list[Trace] = []
         self.max_completed_traces = 1000
 
         # Sampling
         self.sampling_rate = 1.0  # 100% sampling
-        self.force_sample_spans: Set[str] = set()
+        self.force_sample_spans: set[str] = set()
 
         # Service tracking
-        self.service_spans: Dict[str, list[Span]] = defaultdict(list)
+        self.service_spans: dict[str, list[Span]] = defaultdict(list)
 
         # Performance thresholds
         self.slow_span_threshold_ms = 1000.0
@@ -235,7 +237,7 @@ class AMOSTracingSystem:
         print(f"  - Sampling rate: {self.sampling_rate:.0%}")
         print(f"  - Slow span threshold: {self.slow_span_threshold_ms}ms")
 
-    def start_trace(self, name: str, service: str, tags: Dict[str, str] = None) -> Tuple[str, Span]:
+    def start_trace(self, name: str, service: str, tags: dict[str, str] = None) -> tuple[str, Span]:
         """Start a new distributed trace."""
         trace_id = f"trace_{uuid.uuid4().hex[:16]}"
         span_id = f"span_{uuid.uuid4().hex[:16]}"
@@ -258,7 +260,7 @@ class AMOSTracingSystem:
         service: str,
         parent_span_id: str,
         kind: SpanKind = SpanKind.INTERNAL,
-        attributes: Dict[str, Any] = None,
+        attributes: dict[str, Any] = None,
     ) -> Optional[Span]:
         """Start a child span."""
         # Find parent span
@@ -338,9 +340,9 @@ class AMOSTracingSystem:
 
         return None
 
-    def get_service_dependencies(self) -> Dict[str, set[str]]:
+    def get_service_dependencies(self) -> dict[str, set[str]]:
         """Map service dependencies from traces."""
-        dependencies: Dict[str, set[str]] = defaultdict(set)
+        dependencies: dict[str, set[str]] = defaultdict(set)
 
         for trace in self.completed_traces:
             for span in trace.spans.values():
@@ -367,8 +369,8 @@ class AMOSTracingSystem:
         total_spans = sum(len(t.spans) for t in recent_traces)
 
         # Service breakdown
-        service_counts: Dict[str, int] = defaultdict(int)
-        service_durations: Dict[str, list[float]] = defaultdict(list)
+        service_counts: dict[str, int] = defaultdict(int)
+        service_durations: dict[str, list[float]] = defaultdict(list)
 
         for trace in recent_traces:
             for span in trace.spans.values():
@@ -386,7 +388,7 @@ class AMOSTracingSystem:
             service_durations=dict(service_durations),
         )
 
-    def find_bottlenecks(self, trace_id: str) -> List[dict[str, Any]]:
+    def find_bottlenecks(self, trace_id: str) -> list[dict[str, Any]]:
         """Find performance bottlenecks in a trace."""
         trace = self.get_trace(trace_id)
         if not trace:
@@ -411,7 +413,7 @@ class AMOSTracingSystem:
         bottlenecks.sort(key=lambda x: x["duration_ms"], reverse=True)
         return bottlenecks
 
-    def get_error_traces(self, limit: int = 10) -> List[Trace]:
+    def get_error_traces(self, limit: int = 10) -> list[Trace]:
         """Get traces with errors."""
         error_traces = [t for t in self.completed_traces if t.has_errors()]
         return error_traces[-limit:]
@@ -426,7 +428,7 @@ class AMOSTracingSystem:
 ║           AMOS DISTRIBUTED TRACING REPORT                  ║
 ╠════════════════════════════════════════════════════════════╣
   Traces (1h):     {summary.total_traces:,}
-  Error Traces:    {summary.error_traces:,} ({summary.error_traces/max(summary.total_traces,1):.1%})
+  Error Traces:    {summary.error_traces:,} ({summary.error_traces / max(summary.total_traces, 1):.1%})
   Total Spans:     {summary.total_spans:,}
 ╠════════════════════════════════════════════════════════════╣
   Avg Duration:    {summary.avg_duration_ms:.1f}ms

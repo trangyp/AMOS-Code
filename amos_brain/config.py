@@ -7,7 +7,7 @@ import os
 from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 
 @dataclass
@@ -281,8 +281,7 @@ class CognitiveConfig:
         return config
 
 
-# Global config instance (using lru_cache for singleton pattern)
-_config_instance: Optional[CognitiveConfig] = None
+# Global config instance (using lru_cache for singleton pattern)_config_instance: Optional[CognitiveConfig] = None
 
 
 @lru_cache(maxsize=1)

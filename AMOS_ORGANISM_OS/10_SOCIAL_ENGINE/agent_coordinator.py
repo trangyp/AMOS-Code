@@ -7,10 +7,12 @@ Manages agent pools, task distribution, and result aggregation.
 import json
 import uuid
 from dataclasses import asdict, dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class TaskStatus(Enum):
@@ -31,14 +33,14 @@ class AgentTask:
     name: str = ""
     description: str = ""
     task_type: str = ""
-    parameters: Dict[str, Any] = field(default_factory=dict)
+    parameters: dict[str, Any] = field(default_factory=dict)
     status: TaskStatus = TaskStatus.PENDING
     assigned_agent: str = None
-    result: Dict[str, Any] = None
+    result: dict[str, Any] = None
     created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     completed_at: str = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "status": self.status.value,
@@ -52,12 +54,12 @@ class AgentPool:
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     name: str = ""
     agent_type: str = ""
-    capabilities: List[str] = field(default_factory=list)
-    agent_ids: List[str] = field(default_factory=list)
+    capabilities: list[str] = field(default_factory=list)
+    agent_ids: list[str] = field(default_factory=list)
     max_concurrent: int = 5
-    active_tasks: List[str] = field(default_factory=list)
+    active_tasks: list[str] = field(default_factory=list)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
@@ -68,15 +70,15 @@ class AgentCoordinator:
     and aggregates results from multiple agents.
     """
 
-    def __init__(self, data_dir: Optional[Path] = None):
+    def __init__(self, data_dir: Path = None):
         if data_dir is None:
             data_dir = Path(__file__).parent / "data"
         self.data_dir = data_dir
         self.data_dir.mkdir(exist_ok=True)
 
-        self.pools: Dict[str, AgentPool] = {}
-        self.tasks: Dict[str, AgentTask] = {}
-        self.agent_status: Dict[str, dict[str, Any]] = {}
+        self.pools: dict[str, AgentPool] = {}
+        self.tasks: dict[str, AgentTask] = {}
+        self.agent_status: dict[str, dict[str, Any]] = {}
 
         self._init_default_pools()
 
@@ -113,7 +115,7 @@ class AgentCoordinator:
         self,
         name: str,
         agent_type: str,
-        capabilities: List[str],
+        capabilities: list[str],
         max_concurrent: int = 5,
     ) -> AgentPool:
         """Create a new agent pool."""
@@ -130,7 +132,7 @@ class AgentCoordinator:
         self,
         name: str,
         task_type: str,
-        parameters: Dict[str, Any],
+        parameters: dict[str, Any],
         description: str = "",
     ) -> AgentTask:
         """Create a new task."""
@@ -174,7 +176,7 @@ class AgentCoordinator:
     def complete_task(
         self,
         task_id: str,
-        result: Dict[str, Any],
+        result: dict[str, Any],
         success: bool = True,
     ) -> bool:
         """Mark a task as completed."""
@@ -194,7 +196,7 @@ class AgentCoordinator:
         self._save_tasks()
         return True
 
-    def get_pool_status(self, pool_id: str) -> Dict[str, Any]:
+    def get_pool_status(self, pool_id: str) -> dict[str, Any]:
         """Get status of an agent pool."""
         pool = self.pools.get(pool_id)
         if not pool:
@@ -209,9 +211,9 @@ class AgentCoordinator:
 
     def aggregate_results(
         self,
-        task_ids: List[str],
+        task_ids: list[str],
         aggregation_type: str = "merge",
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Aggregate results from multiple tasks."""
         results = []
         for tid in task_ids:
@@ -254,18 +256,18 @@ class AgentCoordinator:
         }
         tasks_file.write_text(json.dumps(data, indent=2))
 
-    def list_pools(self) -> List[dict[str, Any]]:
+    def list_pools(self) -> list[dict[str, Any]]:
         """List all agent pools."""
         return [p.to_dict() for p in self.pools.values()]
 
-    def list_tasks(self, status: Optional[TaskStatus] = None) -> List[dict[str, Any]]:
+    def list_tasks(self, status: TaskStatus = None) -> list[dict[str, Any]]:
         """List tasks, optionally filtered by status."""
         tasks = self.tasks.values()
         if status:
             tasks = [t for t in tasks if t.status == status]
         return [t.to_dict() for t in tasks]
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get coordinator status."""
         pending = sum(1 for t in self.tasks.values() if t.status == TaskStatus.PENDING)
         active = sum(1 for t in self.tasks.values() if t.status == TaskStatus.IN_PROGRESS)
@@ -281,10 +283,10 @@ class AgentCoordinator:
         }
 
 
-_COORDINATOR: Optional[AgentCoordinator] = None
+_COORDINATOR: AgentCoordinator = None
 
 
-def get_agent_coordinator(data_dir: Optional[Path] = None) -> AgentCoordinator:
+def get_agent_coordinator(data_dir: Path = None) -> AgentCoordinator:
     """Get or create global agent coordinator."""
     global _COORDINATOR
     if _COORDINATOR is None:

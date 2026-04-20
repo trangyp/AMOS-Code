@@ -16,15 +16,16 @@ Usage:
 import argparse
 import sys
 import time
-from datetime import datetime
-from typing import List
+from datetime import UTC, datetime
+
+UTC = UTC
 
 
 class AMOSTestSuite:
     """Comprehensive test suite for AMOS."""
 
     def __init__(self):
-        self.results: List[dict] = []
+        self.results: list[dict] = []
         self.passed = 0
         self.failed = 0
 

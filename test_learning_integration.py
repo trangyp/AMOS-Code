@@ -1,9 +1,5 @@
 """Test Real Learning Engine integration with BrainTaskProcessor."""
 
-import sys
-
-sys.path.insert(0, "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code")
-
 from amos_brain.real_learning_engine import get_learning_engine
 from amos_brain.task_processor import BrainTaskProcessor
 

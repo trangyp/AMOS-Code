@@ -15,14 +15,16 @@ Creator: Trang Phan
 System: AMOS vInfinity - Layer 21
 """
 
+from __future__ import annotations
 
 import argparse
 import json
 import sys
 from dataclasses import dataclass
-from datetime import datetime, timezone
-UTC = timezone.utc
-from typing import Any, Dict, List, Optional
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
+from typing import Any, Optional
 
 
 @dataclass
@@ -59,10 +61,10 @@ class ProductionDeployer:
 
     def __init__(self, config: Optional[DeploymentConfig] = None):
         self.config = config or DeploymentConfig()
-        self.checks: List[dict[str, Any]] = []
+        self.checks: list[dict[str, Any]] = []
         self.deployment_id = f"AMOS-DEPLOY-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}"
 
-    def preflight_check(self) -> Dict[str, Any]:
+    def preflight_check(self) -> dict[str, Any]:
         """Run pre-flight checks before deployment.
 
         Checks:
@@ -214,7 +216,7 @@ class ProductionDeployer:
 
         return results
 
-    def deploy(self) -> Dict[str, Any]:
+    def deploy(self) -> dict[str, Any]:
         """Execute production deployment.
 
         Steps:
@@ -325,7 +327,7 @@ class ProductionDeployer:
 
         return deployment
 
-    def verify(self) -> Dict[str, Any]:
+    def verify(self) -> dict[str, Any]:
         """Verify production deployment."""
         verified = []
         issues = []
@@ -367,7 +369,7 @@ class ProductionDeployer:
             "issues": issues,
         }
 
-    def status(self) -> Dict[str, Any]:
+    def status(self) -> dict[str, Any]:
         """Get production deployment status."""
         try:
             from amos_brain import get_brain
@@ -386,7 +388,7 @@ class ProductionDeployer:
         except Exception as e:
             return {"status": "error", "error": str(e)}
 
-    def _save_report(self, deployment: Dict[str, Any]) -> None:
+    def _save_report(self, deployment: dict[str, Any]) -> None:
         """Save deployment report to file."""
         report_file = f".amos_deployment_{self.deployment_id}.json"
         try:

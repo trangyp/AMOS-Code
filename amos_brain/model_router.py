@@ -10,7 +10,7 @@ from __future__ import annotations
 import asyncio
 from dataclasses import dataclass
 from threading import Lock
-from typing import Any
+from typing import Any, Optional
 
 # Import Model Fabric Gateway
 from amos_model_fabric import ModelFabricGateway, get_gateway
@@ -23,8 +23,8 @@ class ModelConfig:
 
     model_id: str
     provider: str  # e.g., "ollama", "openai", "local"
-    endpoint: str = None
-    api_key: str = None
+    endpoint: Optional[str] = None
+    api_key: Optional[str] = None
     priority: int = 0
     healthy: bool = True
 

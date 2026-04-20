@@ -7,16 +7,10 @@ Tests cover:
 - Error handling and message quality
 """
 
-
-import os
-import sys
 import unittest
 from unittest.mock import MagicMock, Mock, patch
 
 # Ensure amos_brain is in path  # noqa: E402
-_here = os.path.dirname(os.path.abspath(__file__))  # noqa: E402
-sys.path.insert(0, os.path.join(_here, ".."))  # noqa: E402
-
 import requests  # noqa: E402
 
 from amos_brain.model_backend import (  # noqa: E402

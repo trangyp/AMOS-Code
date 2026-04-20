@@ -1,12 +1,15 @@
 """AMOS Strategy & Game Engine - Game theory and strategic analysis."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class StrategyDomain(Enum):
     """Strategy and game theory domain classifications."""
+
     NORMAL_FORM = "normal_form"
     DYNAMICAL = "dynamical"
     NEGOTIATION = "negotiation"
@@ -19,7 +22,7 @@ class Game:
     name: str
     game_type: str
     domain: StrategyDomain
-    players: List[str] = field(default_factory=list)
+    players: list[str] = field(default_factory=list)
     parameters: dict = field(default_factory=dict)
 
 
@@ -27,8 +30,8 @@ class NormalFormKernel:
     """Kernel for normal-form game analysis."""
 
     def __init__(self):
-        self.games: List[dict] = []
-        self.players: List[dict] = []
+        self.games: list[dict] = []
+        self.players: list[dict] = []
 
     def add_game(self, name: str, players: int, strategies_per_player: int) -> dict:
         """Add normal-form game."""
@@ -47,7 +50,7 @@ class NormalFormKernel:
         return player
 
     def nash_equilibrium_check_2x2(
-        self, payoff_matrix_a: List[list[float]], payoff_matrix_b: List[list[float]]
+        self, payoff_matrix_a: list[list[float]], payoff_matrix_b: list[list[float]]
     ) -> dict:
         """Check for pure strategy Nash equilibrium in 2x2 game."""
         # Simplified check: find best responses
@@ -59,9 +62,9 @@ class NormalFormKernel:
                 a_payoff = payoff_matrix_a[i][j]
                 b_payoff = payoff_matrix_b[i][j]
                 # Player A best response to j
-                a_best = a_payoff >= payoff_matrix_a[1-i][j]
+                a_best = a_payoff >= payoff_matrix_a[1 - i][j]
                 # Player B best response to i
-                b_best = b_payoff >= payoff_matrix_b[i][1-j]
+                b_best = b_payoff >= payoff_matrix_b[i][1 - j]
                 if a_best and b_best:
                     equilibria.append({"strategy_a": i, "strategy_b": j})
                     nash_found = True
@@ -72,7 +75,7 @@ class NormalFormKernel:
             "equilibria": equilibria,
         }
 
-    def dominant_strategy_check(self, payoffs: List[list[float]]) -> dict:
+    def dominant_strategy_check(self, payoffs: list[list[float]]) -> dict:
         """Check for dominant strategy."""
         if len(payoffs) < 2:
             return {"error": "Need at least 2 strategies"}
@@ -84,7 +87,7 @@ class NormalFormKernel:
             "strictly_dominates": strictly_dominates,
         }
 
-    def get_principles(self) -> List[str]:
+    def get_principles(self) -> list[str]:
         return [
             "Normal-form games",
             "Nash equilibrium",
@@ -97,8 +100,8 @@ class DynamicalKernel:
     """Kernel for repeated and evolutionary games."""
 
     def __init__(self):
-        self.repeated_games: List[dict] = []
-        self.strategies: List[dict] = []
+        self.repeated_games: list[dict] = []
+        self.strategies: list[dict] = []
 
     def add_repeated_game(
         self, name: str, stage_game: str, repetitions: int, discount: float
@@ -119,9 +122,7 @@ class DynamicalKernel:
         self.strategies.append(strategy)
         return strategy
 
-    def folk_theorem_viability(
-        self, min_payoff: float, max_payoff: float, discount: float
-    ) -> dict:
+    def folk_theorem_viability(self, min_payoff: float, max_payoff: float, discount: float) -> dict:
         """Check if cooperation can be sustained via Folk Theorem."""
         # Cooperation viable if discount is high enough
         viable = discount > 0.5  # Simplified threshold
@@ -145,7 +146,7 @@ class DynamicalKernel:
             "is_ess": ess,
         }
 
-    def get_principles(self) -> List[str]:
+    def get_principles(self) -> list[str]:
         return [
             "Repeated games",
             "Folk theorem",
@@ -158,12 +159,10 @@ class NegotiationKernel:
     """Kernel for bargaining and negotiation analysis."""
 
     def __init__(self):
-        self.negotiations: List[dict] = []
-        self.coalitions: List[dict] = []
+        self.negotiations: list[dict] = []
+        self.coalitions: list[dict] = []
 
-    def add_negotiation(
-        self, name: str, parties: int, reservation_values: List[float]
-    ) -> dict:
+    def add_negotiation(self, name: str, parties: int, reservation_values: list[float]) -> dict:
         """Add negotiation scenario."""
         negotiation = {
             "name": name,
@@ -173,7 +172,7 @@ class NegotiationKernel:
         self.negotiations.append(negotiation)
         return negotiation
 
-    def add_coalition(self, name: str, members: List[str], value: float) -> dict:
+    def add_coalition(self, name: str, members: list[str], value: float) -> dict:
         """Add coalition."""
         coalition = {"name": name, "members": members, "value": value}
         self.coalitions.append(coalition)
@@ -196,9 +195,7 @@ class NegotiationKernel:
             "nash_product": product,
         }
 
-    def shapley_value_simple(
-        self, player: str, marginal_contributions: List[float]
-    ) -> dict:
+    def shapley_value_simple(self, player: str, marginal_contributions: list[float]) -> dict:
         """Calculate simple Shapley value (average of marginal contributions)."""
         if not marginal_contributions:
             return {"error": "No marginal contributions provided"}
@@ -209,7 +206,7 @@ class NegotiationKernel:
             "shapley_value": value,
         }
 
-    def get_principles(self) -> List[str]:
+    def get_principles(self) -> list[str]:
         return [
             "Nash bargaining",
             "Coalition formation",
@@ -229,12 +226,10 @@ class StrategyGameEngine:
         self.dynamical_kernel = DynamicalKernel()
         self.negotiation_kernel = NegotiationKernel()
 
-    def analyze(
-        self, description: str, domains: Optional[List[str]] = None
-    ) -> Dict[str, Any]:
+    def analyze(self, description: str, domains: list[str | None] = None) -> dict[str, Any]:
         """Run strategic analysis across specified domains."""
         domains = domains or ["normal_form", "dynamical", "negotiation"]
-        results: Dict[str, Any] = {}
+        results: dict[str, Any] = {}
         if "normal_form" in domains:
             results["normal_form"] = self._analyze_normal_form(description)
         if "dynamical" in domains:
@@ -289,27 +284,27 @@ class StrategyGameEngine:
                     if key not in ("principles", "query"):
                         lines.append(f"- **{key}**: {value}")
                 if "principles" in data:
-                    lines.append(
-                        f"- **Principles**: {', '.join(data['principles'][:2])}..."
-                    )
-        lines.extend([
-            "",
-            "## Gaps and Limitations",
-            "- Complex multi-player games require simplification",
-            "- Real-world strategy involves tacit knowledge not captured",
-            "- Behavioral game theory (irrationality) not fully modeled",
-            "- Computational complexity limits large-scale analysis",
-            "",
-            "## Safety Disclaimer",
-            "Does not design strategies for physical harm or illegal activities. "
-            "Does not support illegal market collusion. "
-            "Strategic analysis is for educational and decision-support purposes only.",
-        ])
+                    lines.append(f"- **Principles**: {', '.join(data['principles'][:2])}...")
+        lines.extend(
+            [
+                "",
+                "## Gaps and Limitations",
+                "- Complex multi-player games require simplification",
+                "- Real-world strategy involves tacit knowledge not captured",
+                "- Behavioral game theory (irrationality) not fully modeled",
+                "- Computational complexity limits large-scale analysis",
+                "",
+                "## Safety Disclaimer",
+                "Does not design strategies for physical harm or illegal activities. "
+                "Does not support illegal market collusion. "
+                "Strategic analysis is for educational and decision-support purposes only.",
+            ]
+        )
         return "\n".join(lines)
 
 
 # Singleton instance
-_strategy_game_engine: Optional[StrategyGameEngine] = None
+_strategy_game_engine: StrategyGameEngine | None = None
 
 
 def get_strategy_game_engine() -> StrategyGameEngine:

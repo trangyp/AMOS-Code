@@ -11,13 +11,15 @@ Dynamically scans the codebase to catalog:
 Usage: python amos_deep_inventory.py [--scan] [--export]
 """
 
+from __future__ import annotations
+
 import ast
 import json
 import subprocess
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 sys.path.insert(0, str(Path(__file__).parent))
 
@@ -28,7 +30,7 @@ class DiscoveredEngine:
 
     name: str
     file_path: str
-    methods: List[str] = field(default_factory=list)
+    methods: list[str] = field(default_factory=list)
     purpose: str = ""
     engine_type: str = "unknown"
 
@@ -41,7 +43,7 @@ class DiscoveredTool:
     file_path: str
     function: str
     description: str = ""
-    parameters: List[str] = field(default_factory=list)
+    parameters: list[str] = field(default_factory=list)
 
 
 class AMOSDeepInventory:
@@ -49,11 +51,11 @@ class AMOSDeepInventory:
 
     def __init__(self, root_path: Optional[Path] = None):
         self.root = root_path or Path(__file__).parent
-        self.engines: List[DiscoveredEngine] = []
-        self.tools: List[DiscoveredTool] = []
-        self.knowledge_files: List[Path] = []
-        self.specs: List[Path] = []
-        self.demos: List[Path] = []
+        self.engines: list[DiscoveredEngine] = []
+        self.tools: list[DiscoveredTool] = []
+        self.knowledge_files: list[Path] = []
+        self.specs: list[Path] = []
+        self.demos: list[Path] = []
         self.total_lines = 0
         self.total_files = 0
 
@@ -152,7 +154,7 @@ class AMOSDeepInventory:
             if "demo" in demo_file.name or "cycle" in demo_file.name or "test" in demo_file.name:
                 self.demos.append(demo_file.relative_to(self.root))
 
-    def count_domain_engines(self) -> Dict[str, int]:
+    def count_domain_engines(self) -> dict[str, int]:
         """Count engines by domain."""
         domains = {}
         for engine in self.engines:
@@ -160,7 +162,7 @@ class AMOSDeepInventory:
             domains[domain] = domains.get(domain, 0) + 1
         return domains
 
-    def generate_inventory(self) -> Dict[str, Any]:
+    def generate_inventory(self) -> dict[str, Any]:
         """Generate complete inventory."""
         return {
             "metadata": {

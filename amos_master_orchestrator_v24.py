@@ -60,13 +60,15 @@ Author: AMOS Architecture Team
 Version: 24.0.0-MASTER-INTEGRATION
 """
 
+from __future__ import annotations
+
 import asyncio
 import importlib
 import logging
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Optional
 
 
 class PhaseStatus(Enum):
@@ -90,7 +92,7 @@ class PhaseInfo:
     module: str
     status: PhaseStatus = PhaseStatus.UNINITIALIZED
     version: str = ""
-    dependencies: List[int] = field(default_factory=list)
+    dependencies: list[int] = field(default_factory=list)
     health_score: float = 0.0
     last_error: str = None
     start_time: datetime = None
@@ -100,7 +102,7 @@ class AMOSMasterOrchestrator:
     """Master orchestrator coordinating all 23 AMOS phases."""
 
     # Phase registry - all 23 phases
-    PHASES: Dict[int, PhaseInfo] = {
+    PHASES: dict[int, PhaseInfo] = {
         1: PhaseInfo(1, "Core Equation System", "amos_equation_api"),
         2: PhaseInfo(2, "SuperBrain Integration", "amos_superbrain_equation_bridge"),
         3: PhaseInfo(3, "Vector Memory", "amos_vector_memory"),
@@ -127,9 +129,9 @@ class AMOSMasterOrchestrator:
     }
 
     def __init__(self) -> None:
-        self.phases: Dict[int, PhaseInfo] = {}
-        self.initialized: Set[int] = set()
-        self.running: Set[int] = set()
+        self.phases: dict[int, PhaseInfo] = {}
+        self.initialized: set[int] = set()
+        self.running: set[int] = set()
         self.logger = logging.getLogger("AMOS.Master")
         self._health_check_interval: float = 30.0
         self._monitoring_task: asyncio.Task = None
@@ -182,11 +184,11 @@ class AMOSMasterOrchestrator:
                 self.logger.error(f"Phase {phase_id} failed: {e}")
 
         self.logger.info(
-            f"✅ Initialization complete: {len(initialized)} ready, " f"{len(failed)} failed"
+            f"✅ Initialization complete: {len(initialized)} ready, {len(failed)} failed"
         )
         return len(failed) == 0
 
-    async def start_all(self) -> Dict[int, bool]:
+    async def start_all(self) -> dict[int, bool]:
         """Start all initialized phases."""
         results = {}
 
@@ -211,7 +213,7 @@ class AMOSMasterOrchestrator:
 
         return results
 
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """Comprehensive health check of all phases."""
         total_phases = len(self.phases)
         running = sum(1 for p in self.phases.values() if p.status == PhaseStatus.RUNNING)
@@ -286,7 +288,7 @@ class AMOSMasterOrchestrator:
         self.running.clear()
         self.logger.info("✅ Shutdown complete")
 
-    def get_system_summary(self) -> Dict[str, Any]:
+    def get_system_summary(self) -> dict[str, Any]:
         """Get complete system summary."""
         return {
             "version": "24.0.0-MASTER-INTEGRATION",

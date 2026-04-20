@@ -78,7 +78,7 @@ class MetaPathology:
     location: str
     message: str
     severity: str  # "critical", "high", "medium", "low"
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: dict[str, Any] = field(default_factory=dict)
     remediation: str = ""
     invariant_violated: str = ""
 
@@ -109,10 +109,10 @@ class SemanticIntegrityDetector:
         "handler": ["processor", "consumer", "listener", "callback"],
     }
 
-    def __init__(self, repo_path: str | Path):
+    def __init__(self, repo_path: Union[str, Path]):
         self.repo_path = Path(repo_path)
 
-    def detect(self) -> List[MetaPathology]:
+    def detect(self) -> list[MetaPathology]:
         """Detect semantic integrity problems."""
         pathologies = []
         pathologies.extend(self._detect_ontology_drift())
@@ -120,7 +120,7 @@ class SemanticIntegrityDetector:
         pathologies.extend(self._detect_false_equivalence())
         return pathologies
 
-    def _detect_ontology_drift(self) -> List[MetaPathology]:
+    def _detect_ontology_drift(self) -> list[MetaPathology]:
         """
         Detect when the same word means different things in different layers.
 
@@ -204,7 +204,7 @@ class SemanticIntegrityDetector:
 
         return pathologies
 
-    def _detect_semantic_alias_explosion(self) -> List[MetaPathology]:
+    def _detect_semantic_alias_explosion(self) -> list[MetaPathology]:
         """
         Detect uncontrolled synonyms for architecture-critical concepts.
 
@@ -217,7 +217,7 @@ class SemanticIntegrityDetector:
 
         # Count occurrences of each alias group
         for concept, aliases in self.SEMANTIC_ALIASES.items():
-            alias_counts: Dict[str, int] = {}
+            alias_counts: dict[str, int] = {}
 
             # Scan Python files
             for py_file in self.repo_path.rglob("*.py"):
@@ -251,7 +251,7 @@ class SemanticIntegrityDetector:
 
         return pathologies
 
-    def _detect_false_equivalence(self) -> List[MetaPathology]:
+    def _detect_false_equivalence(self) -> list[MetaPathology]:
         """
         Detect when two things are treated as equivalent when they are not.
 
@@ -309,7 +309,7 @@ class SemanticIntegrityDetector:
 
         return pathologies
 
-    def _has_semantic_registry(self, concept: str, aliases: List[str]) -> bool:
+    def _has_semantic_registry(self, concept: str, aliases: list[str]) -> bool:
         """Check if a semantic registry exists for this concept."""
         # Look for registry files
         registry_patterns = [
@@ -350,10 +350,10 @@ class TemporalOrderDetector:
         ),
     ]
 
-    def __init__(self, repo_path: str | Path):
+    def __init__(self, repo_path: Union[str, Path]):
         self.repo_path = Path(repo_path)
 
-    def detect(self) -> List[MetaPathology]:
+    def detect(self) -> list[MetaPathology]:
         """Detect temporal-order architecture failures."""
         pathologies = []
         pathologies.extend(self._detect_partial_order_failure())
@@ -361,7 +361,7 @@ class TemporalOrderDetector:
         pathologies.extend(self._detect_eventuality_traps())
         return pathologies
 
-    def _detect_partial_order_failure(self) -> List[MetaPathology]:
+    def _detect_partial_order_failure(self) -> list[MetaPathology]:
         """
         Detect missing explicit causal ordering.
 
@@ -409,7 +409,7 @@ class TemporalOrderDetector:
 
         return pathologies
 
-    def _detect_temporal_plane_skew(self) -> List[MetaPathology]:
+    def _detect_temporal_plane_skew(self) -> list[MetaPathology]:
         """
         Detect when control, data, execution, and observation planes lag.
 
@@ -450,7 +450,7 @@ class TemporalOrderDetector:
 
         return pathologies
 
-    def _detect_eventuality_traps(self) -> List[MetaPathology]:
+    def _detect_eventuality_traps(self) -> list[MetaPathology]:
         """
         Detect unbounded "eventually" consistency.
 
@@ -519,7 +519,7 @@ class TemporalOrderDetector:
         ]
         return any(re.search(pattern, content, re.IGNORECASE) for pattern in dep_patterns)
 
-    def _check_plane_update_mechanism(self, keywords: List[str]) -> bool:
+    def _check_plane_update_mechanism(self, keywords: list[str]) -> bool:
         """Check if a plane has update/sync mechanisms."""
         # Look for sync/update mechanisms in common files
         mechanism_files = [
@@ -552,10 +552,10 @@ class ProvenanceTrustDetector:
     you cannot trust what produced it.
     """
 
-    def __init__(self, repo_path: str | Path):
+    def __init__(self, repo_path: Union[str, Path]):
         self.repo_path = Path(repo_path)
 
-    def detect(self) -> List[MetaPathology]:
+    def detect(self) -> list[MetaPathology]:
         """Detect provenance and trust failures."""
         pathologies = []
         pathologies.extend(self._detect_provenance_gap())
@@ -563,7 +563,7 @@ class ProvenanceTrustDetector:
         pathologies.extend(self._detect_reproducibility_failure())
         return pathologies
 
-    def _detect_provenance_gap(self) -> List[MetaPathology]:
+    def _detect_provenance_gap(self) -> list[MetaPathology]:
         """
         Detect unknown artifact origins.
 
@@ -619,7 +619,7 @@ class ProvenanceTrustDetector:
 
         return pathologies
 
-    def _detect_supply_chain_trust_failure(self) -> List[MetaPathology]:
+    def _detect_supply_chain_trust_failure(self) -> list[MetaPathology]:
         """
         Detect semantically untrusted dependencies.
 
@@ -660,7 +660,7 @@ class ProvenanceTrustDetector:
 
         return pathologies
 
-    def _detect_reproducibility_failure(self) -> List[MetaPathology]:
+    def _detect_reproducibility_failure(self) -> list[MetaPathology]:
         """
         Detect non-deterministic builds.
 
@@ -719,10 +719,10 @@ class RecoveryContainmentDetector:
     The architecture can fail, but there may be no declared valid path back to safety.
     """
 
-    def __init__(self, repo_path: str | Path):
+    def __init__(self, repo_path: Union[str, Path]):
         self.repo_path = Path(repo_path)
 
-    def detect(self) -> List[MetaPathology]:
+    def detect(self) -> list[MetaPathology]:
         """Detect recovery and containment failures."""
         pathologies = []
         pathologies.extend(self._detect_recovery_path_incompleteness())
@@ -730,7 +730,7 @@ class RecoveryContainmentDetector:
         pathologies.extend(self._detect_blast_containment_failure())
         return pathologies
 
-    def _detect_recovery_path_incompleteness(self) -> List[MetaPathology]:
+    def _detect_recovery_path_incompleteness(self) -> list[MetaPathology]:
         """
         Detect missing recovery paths.
 
@@ -766,7 +766,7 @@ class RecoveryContainmentDetector:
 
         return pathologies
 
-    def _detect_non_idempotent_recovery(self) -> List[MetaPathology]:
+    def _detect_non_idempotent_recovery(self) -> list[MetaPathology]:
         """
         Detect recovery actions that change state each time run.
 
@@ -812,7 +812,7 @@ class RecoveryContainmentDetector:
 
         return pathologies
 
-    def _detect_blast_containment_failure(self) -> List[MetaPathology]:
+    def _detect_blast_containment_failure(self) -> list[MetaPathology]:
         """
         Detect failures that propagate too widely.
 
@@ -914,11 +914,11 @@ class DiagnosticSelfIntegrityDetector:
     The doctor can be wrong - this validates the diagnostic architecture.
     """
 
-    def __init__(self, repo_path: str | Path):
+    def __init__(self, repo_path: Union[str, Path]):
         self.repo_path = Path(repo_path)
-        self.detected_pathologies: List[MetaPathology] = []
+        self.detected_pathologies: list[MetaPathology] = []
 
-    def detect(self) -> List[MetaPathology]:
+    def detect(self) -> list[MetaPathology]:
         """Detect diagnostic self-integrity failures."""
         pathologies = []
         pathologies.extend(self._detect_measurement_blind_spots())
@@ -927,7 +927,7 @@ class DiagnosticSelfIntegrityDetector:
         pathologies.extend(self._detect_repair_unsoundness())
         return pathologies
 
-    def _detect_measurement_blind_spots(self) -> List[MetaPathology]:
+    def _detect_measurement_blind_spots(self) -> list[MetaPathology]:
         """
         Detect failure classes with no observables.
 
@@ -966,7 +966,7 @@ class DiagnosticSelfIntegrityDetector:
 
         return pathologies
 
-    def _detect_false_proof_surface(self) -> List[MetaPathology]:
+    def _detect_false_proof_surface(self) -> list[MetaPathology]:
         """
         Detect weak properties treated as strong.
 
@@ -1013,7 +1013,7 @@ class DiagnosticSelfIntegrityDetector:
 
         return pathologies
 
-    def _detect_oracle_unsoundness(self) -> List[MetaPathology]:
+    def _detect_oracle_unsoundness(self) -> list[MetaPathology]:
         """
         Detect incomplete test oracles.
 
@@ -1060,7 +1060,7 @@ class DiagnosticSelfIntegrityDetector:
 
         return pathologies
 
-    def _detect_repair_unsoundness(self) -> List[MetaPathology]:
+    def _detect_repair_unsoundness(self) -> list[MetaPathology]:
         """
         Detect repairs that increase architecture debt.
 
@@ -1128,7 +1128,7 @@ class MetaPathologyEngine:
     Coordinates all meta-level detectors.
     """
 
-    def __init__(self, repo_path: str | Path):
+    def __init__(self, repo_path: Union[str, Path]):
         self.repo_path = Path(repo_path)
         self.detectors = {
             "semantic_integrity": SemanticIntegrityDetector(repo_path),
@@ -1155,13 +1155,13 @@ class MetaPathologyEngine:
                 ]
         return results
 
-    def get_summary(self) -> Dict[str, Any]:
+    def get_summary(self) -> dict[str, Any]:
         """Get summary of all meta-pathologies."""
         results = self.detect_all()
 
         total = sum(len(p) for p in results.values())
         by_severity = {"critical": 0, "high": 0, "medium": 0, "low": 0}
-        by_type: Dict[str, int] = {}
+        by_type: dict[str, int] = {}
 
         for detector_results in results.values():
             for pathology in detector_results:
@@ -1177,6 +1177,6 @@ class MetaPathologyEngine:
         }
 
 
-def get_meta_pathology_engine(repo_path: str | Path = None) -> MetaPathologyEngine:
+def get_meta_pathology_engine(repo_path: Union[str, Path] = None) -> MetaPathologyEngine:
     """Factory function to get meta-pathology engine instance."""
     return MetaPathologyEngine(repo_path or ".")

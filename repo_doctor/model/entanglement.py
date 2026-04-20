@@ -7,9 +7,10 @@ M_ij = α·Import(i,j) + β·Call(i,j) + γ·SharedTests(i,j) +
 High entanglement means modules should be verified together.
 """
 
+from __future__ import annotations
+
 import math
 from dataclasses import dataclass
-from typing import Optional
 
 
 @dataclass
@@ -41,7 +42,7 @@ class EntanglementMatrix:
     Entanglement matrix M_ij for module coupling.
     """
 
-    def __init__(self, modules: List[str]):
+    def __init__(self, modules: list[str]):
         self.modules = modules
         self.edges: dict[tuple[str, str], EntanglementEdge] = {}
 
@@ -180,7 +181,7 @@ class EntanglementAnalyzer:
 
         return clusters
 
-    def _dfs_cluster(self, start: str, visited: set, threshold: float) -> List[str]:
+    def _dfs_cluster(self, start: str, visited: set, threshold: float) -> list[str]:
         """DFS to find connected cluster."""
         cluster = []
         stack = [start]

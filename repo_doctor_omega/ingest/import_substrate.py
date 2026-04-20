@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """Import resolution substrate for repository analysis.
 
 Resolves Python imports to verify:
@@ -13,7 +15,6 @@ import ast
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
 
 
 @dataclass
@@ -117,7 +118,7 @@ class ImportSubstrate:
 
         return paths
 
-    def extract_imports(self, file_path: str | Path) -> list[ImportStatement]:
+    def extract_imports(self, file_path: Union[str, Path]) -> list[ImportStatement]:
         """Extract all import statements from a Python file.
 
         Uses AST parsing for reliable extraction.
@@ -324,7 +325,7 @@ class ImportSubstrate:
             error_message=f"Relative import '{import_stmt.module}' not found from {source_file}",
         )
 
-    def analyze_file(self, file_path: str | Path) -> list[ImportResolution]:
+    def analyze_file(self, file_path: Union[str, Path]) -> list[ImportResolution]:
         """Analyze a single file and resolve all its imports.
 
         Args:

@@ -18,11 +18,14 @@ Version: 1.0.0
 Phase: 18
 """
 
+from __future__ import annotations
+
 import os
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 # Celery imports
 try:
@@ -53,13 +56,13 @@ except ImportError:
 # SQLAlchemy for job storage
 try:
     from sqlalchemy import (
+        JSON,
         Boolean,
         Column,
         DateTime,
         ForeignKey,
         Index,
         Integer,
-        JSON,
         String,
         Text,
         select,
@@ -330,7 +333,7 @@ class AsyncJobManager:
         self._celery = celery_app if CELERY_AVAILABLE else None
 
     async def submit_equation_job(
-        self, equation_name: str, parameters: Dict[str, Any], workspace_id: str = None
+        self, equation_name: str, parameters: dict[str, Any], workspace_id: str = None
     ) -> str:
         """
         Submit equation execution as async job.
@@ -353,7 +356,7 @@ class AsyncJobManager:
 
         return task.id
 
-    async def get_job_status(self, task_id: str) -> Dict[str, Any]:
+    async def get_job_status(self, task_id: str) -> dict[str, Any]:
         """Get job status by task ID."""
         if not CELERY_AVAILABLE:
             return {"error": "Celery not available"}
@@ -385,11 +388,11 @@ class WebhookManager:
         self,
         workspace_id: str,
         url: str,
-        event_types: List[str],
+        event_types: list[str],
         secret: str,
         description: str = None,
         created_by_id: int = None,
-    ) -> "WebhookSubscription":
+    ) -> WebhookSubscription:
         """Create webhook subscription."""
         if not SQLALCHEMY_AVAILABLE:
             raise RuntimeError("SQLAlchemy not available")
@@ -413,8 +416,8 @@ class WebhookManager:
         return subscription
 
     async def trigger_event(
-        self, workspace_id: str, event_type: str, payload: Dict[str, Any]
-    ) -> List[str]:
+        self, workspace_id: str, event_type: str, payload: dict[str, Any]
+    ) -> list[str]:
         """
         Trigger event and queue webhook deliveries.
 
@@ -460,9 +463,7 @@ class WebhookManager:
 
 # ============================================
 # Global Instances
-# ============================================
-
-_job_manager: Optional[AsyncJobManager] = None
+# ============================================_job_manager: Optional[AsyncJobManager] =None
 _webhook_manager: Optional[WebhookManager] = None
 
 

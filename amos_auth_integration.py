@@ -37,6 +37,7 @@ Version: 1.0.0
 """
 
 import hashlib
+import logging
 import secrets
 import sys
 import time
@@ -44,7 +45,9 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from functools import wraps
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
+
+logger = logging.getLogger(__name__)
 
 sys.path.insert(0, str(Path(__file__).parent))
 
@@ -69,8 +72,8 @@ class AuthSession:
 
     user_id: str
     username: str
-    roles: List[str] = field(default_factory=list)
-    permissions: List[str] = field(default_factory=list)
+    roles: list[str] = field(default_factory=list)
+    permissions: list[str] = field(default_factory=list)
     token: str = ""
     created_at: float = field(default_factory=time.time)
     expires_at: float = 0.0
@@ -84,9 +87,9 @@ class AMOSAuthIntegration:
     def __init__(self):
         self._auth_manager = None
         self._initialized = False
-        self._sessions: Dict[str, AuthSession] = {}
-        self._api_keys: Dict[str, str] = {}  # key -> user_id
-        self._rate_limits: Dict[str, list[float]] = {}  # ip -> timestamps
+        self._sessions: dict[str, AuthSession] = {}
+        self._api_keys: dict[str, str] = {}  # key -> user_id
+        self._rate_limits: dict[str, list[float]] = {}  # ip -> timestamps
 
     def initialize(self) -> bool:
         """Initialize authentication integration."""
@@ -296,7 +299,7 @@ class AMOSAuthIntegration:
 
         return False
 
-    def require_auth(self, roles: List[str] = None, permissions: List[str] = None) -> Callable:
+    def require_auth(self, roles: list[str] = None, permissions: list[str] = None) -> Callable:
         """Decorator to require authentication."""
 
         def decorator(func: Callable) -> Callable:
@@ -382,8 +385,8 @@ class AMOSAuthIntegration:
                 outcome="success" if success else "failure",
                 timestamp=time.time(),
             )
-        except Exception:
-            pass
+        except Exception as e:
+            logger.debug(f"Audit logging failed: {e}")
 
     def get_status(self) -> dict:
         """Get authentication system status."""

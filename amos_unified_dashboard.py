@@ -254,7 +254,7 @@ class AMOSUnifiedDashboard:
         print("\n" + "=" * 80)
         print("  🎉 AMOS COGNITIVE ECOSYSTEM - FULLY OPERATIONAL")
         print("  " + "=" * 80)
-        print("  Total Tools: 5  |  Total Lines: ~2,170  |  Decision Rounds: 5")
+        print("  Total Tools: Union[5, Total] Lines: ~2,170  |  Decision Rounds: 5")
         print("  Brain Status: ✅  |  Knowledge Files: 1,110+  |  Subsystems: 14")
         print("=" * 80)
         print("\n  🚀 The brain has demonstrated sustained continuous operation.")

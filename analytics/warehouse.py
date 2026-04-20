@@ -12,8 +12,9 @@ Version: 2.0.0
 
 import asyncio
 from dataclasses import dataclass
-from datetime import datetime, timezone, timedelta
-UTC = timezone.utc
+from datetime import UTC, datetime, timedelta, timezone
+
+UTC = UTC
 from enum import Enum
 from typing import Any
 
@@ -127,7 +128,7 @@ class AnalyticsWarehouse:
         start: datetime,
         end: datetime,
         granularity: str = "hour",  # hour, day
-    ) -> List[TimeSeriesPoint]:
+    ) -> list[TimeSeriesPoint]:
         """Get time series data."""
         if granularity == "hour":
             trunc_func = func.date_trunc("hour", AnalyticsEvent.timestamp)
@@ -165,7 +166,7 @@ class AnalyticsWarehouse:
         metric_type: MetricType,
         period: str = "day",
         lookback_days: int = 30,
-    ) -> List[MetricAggregation]:
+    ) -> list[MetricAggregation]:
         """Get aggregated metrics for a period."""
         end = datetime.now(timezone.utc)
         start = end - timedelta(days=lookback_days)
@@ -218,7 +219,7 @@ class AnalyticsWarehouse:
         self,
         start: datetime = None,
         end: datetime = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Get all metrics for dashboard."""
         if not end:
             end = datetime.now(timezone.utc)
@@ -349,7 +350,7 @@ class AnalyticsReporter:
     def __init__(self, warehouse: AnalyticsWarehouse):
         self.warehouse = warehouse
 
-    async def generate_weekly_report(self) -> Dict[str, Any]:
+    async def generate_weekly_report(self) -> dict[str, Any]:
         """Generate weekly business report."""
         end = datetime.now(timezone.utc)
         start = end - timedelta(days=7)
@@ -378,7 +379,7 @@ class AnalyticsReporter:
         }
 
     @staticmethod
-    def _calc_change(current: float, previous: float) -> Dict[str, Any]:
+    def _calc_change(current: float, previous: float) -> dict[str, Any]:
         """Calculate percentage change."""
         if previous == 0:
             return {"change": current, "percent": 100 if current > 0 else 0}

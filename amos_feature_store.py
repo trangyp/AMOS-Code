@@ -18,7 +18,7 @@ import time
 import uuid
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List
+from typing import Any
 
 
 class StoreType(Enum):
@@ -58,7 +58,7 @@ class FeatureDefinition:
 
     # Metadata
     owner: str = ""
-    tags: List[str] = field(default_factory=list)
+    tags: list[str] = field(default_factory=list)
     created_at: float = field(default_factory=time.time)
     version: str = "1.0.0"
 
@@ -72,7 +72,7 @@ class FeatureSet:
     description: str
 
     # Features
-    feature_ids: List[str] = field(default_factory=list)
+    feature_ids: list[str] = field(default_factory=list)
 
     # Entity (what the features describe)
     entity_name: str = ""  # e.g., "user", "product", "transaction"
@@ -153,20 +153,20 @@ class AMOSFeatureStore:
 
     def __init__(self):
         # Feature registry
-        self.features: Dict[str, FeatureDefinition] = {}
-        self.feature_sets: Dict[str, FeatureSet] = {}
+        self.features: dict[str, FeatureDefinition] = {}
+        self.feature_sets: dict[str, FeatureSet] = {}
 
         # Stores
-        self.online_store: Dict[
+        self.online_store: dict[
             str, dict[str, FeatureValue]
         ] = {}  # entity_id -> {feature_id -> value}
-        self.offline_store: List[FeatureValue] = []  # Append-only batch store
+        self.offline_store: list[FeatureValue] = []  # Append-only batch store
 
         # Materialization
-        self.materialization_jobs: Dict[str, MaterializationJob] = {}
+        self.materialization_jobs: dict[str, MaterializationJob] = {}
 
         # Search index
-        self.feature_search_index: Dict[str, list[str]] = {}  # tag -> feature_ids
+        self.feature_search_index: dict[str, list[str]] = {}  # tag -> feature_ids
 
     async def initialize(self) -> None:
         """Initialize the feature store."""
@@ -331,7 +331,7 @@ class AMOSFeatureStore:
 
         return fv
 
-    def get_online_features(self, entity_id: str, feature_ids: List[str]) -> Dict[str, Any]:
+    def get_online_features(self, entity_id: str, feature_ids: list[str]) -> dict[str, Any]:
         """Get feature values from online store (real-time inference)."""
         start_time = time.time()
 
@@ -355,8 +355,8 @@ class AMOSFeatureStore:
         }
 
     def get_offline_features(
-        self, entity_ids: List[str], feature_ids: List[str], timestamp: float
-    ) -> List[dict[str, Any]]:
+        self, entity_ids: list[str], feature_ids: list[str], timestamp: float
+    ) -> list[dict[str, Any]]:
         """Get point-in-time correct features for training."""
         # Point-in-time correct join: Get feature values as of specific timestamp
         results = []
@@ -431,7 +431,7 @@ class AMOSFeatureStore:
 
         return job
 
-    def search_features(self, query: str, tags: List[str] = None) -> List[FeatureDefinition]:
+    def search_features(self, query: str, tags: list[str] = None) -> list[FeatureDefinition]:
         """Search for features by name or tags."""
         results = []
 
@@ -450,7 +450,7 @@ class AMOSFeatureStore:
 
         return results
 
-    def get_feature_statistics(self, feature_id: str) -> Dict[str, Any]:
+    def get_feature_statistics(self, feature_id: str) -> dict[str, Any]:
         """Get statistics for a feature."""
         # Get all values for this feature
         values = [
@@ -480,7 +480,7 @@ class AMOSFeatureStore:
             "max": round(max_val, 2),
         }
 
-    def get_feature_store_summary(self) -> Dict[str, Any]:
+    def get_feature_store_summary(self) -> dict[str, Any]:
         """Get overall feature store summary."""
         total_online_entities = len(self.online_store)
         total_online_values = sum(len(f) for f in self.online_store.values())

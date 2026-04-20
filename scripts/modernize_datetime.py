@@ -118,9 +118,9 @@ def main():
     else:
         results = modernize_directory(args.path, args.dry_run)
 
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print(f"AMOS Datetime Modernization {'(DRY RUN)' if args.dry_run else ''}")
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
         print(f"Files processed: {results['files_processed']}")
         print(f"Files {'would be ' if args.dry_run else ''}modified: {results['files_modified']}")
         print(f"Total changes: {results['total_changes']}")

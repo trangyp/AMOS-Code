@@ -20,7 +20,6 @@ from decimal import Decimal
 
 import boto3
 from botocore.exceptions import ClientError
-from typing import Dict, List
 
 
 @dataclass
@@ -40,10 +39,10 @@ class CostReport:
 
     period: str
     total: Decimal
-    services: List[CostBreakdown]
+    services: list[CostBreakdown]
     budget_status: str
-    anomalies: List[dict]
-    recommendations: List[str]
+    anomalies: list[dict]
+    recommendations: list[str]
 
 
 class CostMonitor:
@@ -53,7 +52,7 @@ class CostMonitor:
         self.ce_client = boto3.client("ce", region_name="us-east-1")
         self.budgets_client = boto3.client("budgets")
 
-    def get_daily_costs(self, days: int = 7) -> List[dict]:
+    def get_daily_costs(self, days: int = 7) -> list[dict]:
         """Get daily cost breakdown."""
         end_date = datetime.now().strftime("%Y-%m-%d")
         start_date = (datetime.now() - timedelta(days=days)).strftime("%Y-%m-%d")
@@ -118,7 +117,7 @@ class CostMonitor:
                 "status": "unknown",
             }
 
-    def detect_anomalies(self, threshold_percent: float = 20.0) -> List[dict]:
+    def detect_anomalies(self, threshold_percent: float = 20.0) -> list[dict]:
         """Detect cost anomalies."""
         try:
             response = self.ce_client.get_anomalies(
@@ -142,7 +141,7 @@ class CostMonitor:
         except ClientError:
             return []
 
-    def get_optimization_recommendations(self) -> List[str]:
+    def get_optimization_recommendations(self) -> list[str]:
         """Get cost optimization recommendations."""
         recommendations = []
 
@@ -202,7 +201,7 @@ class CostMonitor:
         daily_costs = self.get_daily_costs(30)
 
         # Calculate totals by service
-        service_costs: Dict[str, Decimal] = {}
+        service_costs: dict[str, Decimal] = {}
         for day in daily_costs:
             for group in day.get("Groups", []):
                 service = group.get("Keys", ["Unknown"])[0]

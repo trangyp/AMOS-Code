@@ -22,28 +22,28 @@ References:
 - httpx TestClient for API testing
 """
 
+from datetime import UTC, datetime, timezone
 
-import json
 import pytest
-from datetime import datetime, timezone
-UTC = timezone.utc
-from typing import Any, Generator
+
+UTC = UTC
+from collections.abc import Generator
 
 # FastAPI testing
 from fastapi.testclient import TestClient
 
+from amos_brain import get_super_brain, initialize_super_brain
+from amos_brain.a2a_orchestrator import get_a2a_orchestrator
+from amos_brain.config_validation import ConfigValidator
+from amos_brain.memory_architecture import MemoryEntry, get_memory_manager
+
 # AMOS imports
 from amos_superbrain_api import app
-from amos_brain import initialize_super_brain, get_super_brain
-from amos_brain.tools_extended import calculate, file_read_write, git_operations
-from amos_brain.a2a_orchestrator import get_a2a_orchestrator
-from amos_brain.memory_architecture import get_memory_manager, MemoryEntry
-from amos_brain.config_validation import ConfigValidator
-
 
 # ============================================================================
 # Fixtures
 # ============================================================================
+
 
 @pytest.fixture(scope="session")
 def client() -> Generator[TestClient, None, None]:
@@ -62,6 +62,7 @@ def initialized_brain():
 # ============================================================================
 # API Endpoint Tests
 # ============================================================================
+
 
 class TestAPIEndpoints:
     """Test REST API endpoints."""
@@ -154,14 +155,14 @@ class TestAPIEndpoints:
 # Tool Execution Tests
 # ============================================================================
 
+
 class TestToolExecution:
     """Test tool execution via API."""
 
     def test_execute_calculate_tool(self, client: TestClient) -> None:
         """Test calculate tool execution."""
         response = client.post(
-            "/tools/calculate/execute",
-            json={"parameters": {"expression": "2 + 2 * 5"}}
+            "/tools/calculate/execute", json={"parameters": {"expression": "2 + 2 * 5"}}
         )
         assert response.status_code == 200
 
@@ -175,7 +176,7 @@ class TestToolExecution:
         """Test git operations tool."""
         response = client.post(
             "/tools/git_operations/execute",
-            json={"parameters": {"operation": "status", "repo_path": "."}}
+            json={"parameters": {"operation": "status", "repo_path": "."}},
         )
         assert response.status_code == 200
 
@@ -188,7 +189,7 @@ class TestToolExecution:
         """Test web search tool."""
         response = client.post(
             "/tools/web_search/execute",
-            json={"parameters": {"query": "Python programming", "max_results": 2}}
+            json={"parameters": {"query": "Python programming", "max_results": 2}},
         )
         assert response.status_code == 200
 
@@ -202,14 +203,14 @@ class TestToolExecution:
 # A2A Multi-Agent Tests
 # ============================================================================
 
+
 class TestA2AMultiAgent:
     """Test A2A multi-agent orchestration."""
 
     def test_create_task_via_api(self, client: TestClient) -> None:
         """Test task creation via API."""
         response = client.post(
-            "/agents/task",
-            json={"message": "Calculate 10 / 2", "capability": "calculate"}
+            "/agents/task", json={"message": "Calculate 10 / 2", "capability": "calculate"}
         )
         assert response.status_code == 200
 
@@ -241,6 +242,7 @@ class TestA2AMultiAgent:
 # Memory Architecture Tests
 # ============================================================================
 
+
 class TestMemoryArchitecture:
     """Test tiered memory architecture."""
 
@@ -255,7 +257,7 @@ class TestMemoryArchitecture:
             timestamp=datetime.now(timezone.utc),
             session_id="test-session",
             memory_type="test",
-            priority=5
+            priority=5,
         )
 
         # Store in L1
@@ -277,7 +279,7 @@ class TestMemoryArchitecture:
             timestamp=datetime.now(timezone.utc),
             session_id="test-session",
             memory_type="conversation",
-            priority=7
+            priority=7,
         )
 
         # Store (goes to L2 by default)
@@ -303,6 +305,7 @@ class TestMemoryArchitecture:
 # Configuration Tests
 # ============================================================================
 
+
 class TestConfiguration:
     """Test configuration validation."""
 
@@ -327,8 +330,7 @@ class TestConfiguration:
 
         # Should have info about missing API keys
         info_present = any(
-            "LLM providers" in issue and "INFO" in issue
-            for issue in report.get("issues", [])
+            "LLM providers" in issue and "INFO" in issue for issue in report.get("issues", [])
         )
         assert info_present or report["providers_configured"] == 0
 
@@ -336,6 +338,7 @@ class TestConfiguration:
 # ============================================================================
 # WebSocket Tests
 # ============================================================================
+
 
 class TestWebSocket:
     """Test WebSocket real-time communication."""
@@ -367,6 +370,7 @@ class TestWebSocket:
 # End-to-End Integration Tests
 # ============================================================================
 
+
 class TestEndToEndIntegration:
     """End-to-end integration tests."""
 
@@ -386,18 +390,14 @@ class TestEndToEndIntegration:
 
         # 3. Execute tool
         response = client.post(
-            "/tools/calculate/execute",
-            json={"parameters": {"expression": "100 / 4"}}
+            "/tools/calculate/execute", json={"parameters": {"expression": "100 / 4"}}
         )
         assert response.status_code == 200
         result = response.json()
         assert result["success"] is True
 
         # 4. Create A2A task
-        response = client.post(
-            "/agents/task",
-            json={"message": "Process calculation result"}
-        )
+        response = client.post("/agents/task", json={"message": "Process calculation result"})
         assert response.status_code == 200
         task = response.json()
         assert "task_id" in task
@@ -434,6 +434,7 @@ class TestEndToEndIntegration:
 # Performance Tests
 # ============================================================================
 
+
 class TestPerformance:
     """Basic performance tests."""
 
@@ -451,8 +452,7 @@ class TestPerformance:
     def test_tool_execution_performance(self, client: TestClient) -> None:
         """Test tool execution performance."""
         response = client.post(
-            "/tools/calculate/execute",
-            json={"parameters": {"expression": "2 + 2"}}
+            "/tools/calculate/execute", json={"parameters": {"expression": "2 + 2"}}
         )
 
         assert response.status_code == 200
@@ -464,15 +464,13 @@ class TestPerformance:
 # Error Handling Tests
 # ============================================================================
 
+
 class TestErrorHandling:
     """Test error handling and edge cases."""
 
     def test_invalid_tool_name(self, client: TestClient) -> None:
         """Test error for invalid tool."""
-        response = client.post(
-            "/tools/nonexistent/execute",
-            json={"parameters": {}}
-        )
+        response = client.post("/tools/nonexistent/execute", json={"parameters": {}})
         assert response.status_code == 400
 
     def test_malformed_json(self, client: TestClient) -> None:
@@ -480,7 +478,7 @@ class TestErrorHandling:
         response = client.post(
             "/tools/calculate/execute",
             data="invalid json",
-            headers={"Content-Type": "application/json"}
+            headers={"Content-Type": "application/json"},
         )
         assert response.status_code == 422
 

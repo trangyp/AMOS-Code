@@ -17,13 +17,10 @@ import logging
 import os
 import sqlite3
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
-
+from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Optional
 
 UTC = timezone.utc
-
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -209,7 +206,9 @@ class AMOSDatabase:
             conn.commit()
             return cursor.lastrowid
 
-    async def store_health(self, overall_status: str, checks: list[dict], uptime_seconds: float) -> None:
+    async def store_health(
+        self, overall_status: str, checks: list[dict], uptime_seconds: float
+    ) -> None:
         """Store health check result."""
         async with self._lock:
             return await asyncio.get_running_loop().run_in_executor(

@@ -8,9 +8,11 @@ Version: 1.0.0
 """
 
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from enum import Enum
-from typing import Any, Dict, List
+from typing import Any
 
 
 class EthicsSeverity(Enum):
@@ -55,7 +57,7 @@ class EthicalDecision:
     context: str
     action: str
     ethical_score: float  # 0.0 to 1.0
-    violations: List[str]
+    violations: list[str]
     approved: bool
     reasoning: str
 
@@ -80,8 +82,8 @@ class EthicsEngine:
     """
 
     def __init__(self):
-        self.rules: Dict[str, EthicsRule] = {}
-        self.decisions: List[EthicalDecision] = []
+        self.rules: dict[str, EthicsRule] = {}
+        self.decisions: list[EthicalDecision] = []
         self._load_default_rules()
 
     def _load_default_rules(self):
@@ -139,7 +141,7 @@ class EthicsEngine:
         self.rules[rule.id] = rule
         return True
 
-    def evaluate_decision(self, context: str, action: str, data: Dict[str, Any]) -> EthicalDecision:
+    def evaluate_decision(self, context: str, action: str, data: dict[str, Any]) -> EthicalDecision:
         """Evaluate a decision against ethical rules."""
         violations = []
         score = 1.0
@@ -186,7 +188,7 @@ class EthicsEngine:
         return decision
 
     def _check_rule(
-        self, rule: EthicsRule, context: str, action: str, data: Dict[str, Any]
+        self, rule: EthicsRule, context: str, action: str, data: dict[str, Any]
     ) -> bool:
         """Check if a rule is violated."""
         # Rule checking based on condition patterns
@@ -247,7 +249,7 @@ class EthicsEngine:
             critical_violations=critical_violations,
         )
 
-    def get_rules_by_category(self, category: EthicsCategory) -> List[EthicsRule]:
+    def get_rules_by_category(self, category: EthicsCategory) -> list[EthicsRule]:
         """Get all rules in a category."""
         return [r for r in self.rules.values() if r.category == category]
 
@@ -265,7 +267,7 @@ class EthicsEngine:
             return True
         return False
 
-    def validate_action(self, data: Dict[str, Any]) -> Dict[str, Any]:
+    def validate_action(self, data: dict[str, Any]) -> dict[str, Any]:
         """Validate an action against ethical rules.
 
         Simplified interface that evaluates action data and returns

@@ -31,7 +31,7 @@ class BisectEngine:
     Automated bisect engine for finding regression commits.
     """
 
-    def __init__(self, repo_path: str | Path):
+    def __init__(self, repo_path: Union[str, Path]):
         self.repo_path = Path(repo_path).resolve()
         self.original_commit: str = None
         self._save_current_commit()
@@ -195,15 +195,11 @@ class BisectEngine:
 import sys
 import os
 
-# Add repo to path
-repo_path = "{self.repo_path}"
-sys.path.insert(0, str(repo_path))
-
 # Import and run invariant check
 try:
     from repo_doctor.invariants import InvariantEngine
 
-    engine = InvariantEngine(repo_path)
+    engine = InvariantEngine("{self.repo_path}")
     result = engine.check_specific("{invariant_name}")
 
     if result.passed:
@@ -245,7 +241,7 @@ except Exception as e:
             except Exception:
                 pass
 
-    def quick_check(self, commit: str, invariant_name: str) -> Tuple[bool, str]:
+    def quick_check(self, commit: str, invariant_name: str) -> tuple[bool, str]:
         """
         Quick check if a specific commit passes an invariant.
         Returns (passed, message).
@@ -280,7 +276,7 @@ except Exception as e:
 
     def find_regression_range(
         self, invariant_name: str, lookback_commits: int = 20
-    ) -> Tuple[str, str]:
+    ) -> tuple[str, str]:
         """
         Find the regression range for an invariant.
         Returns (good_commit, bad_commit) or None.

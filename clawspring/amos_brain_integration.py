@@ -11,14 +11,11 @@ This module enables:
 """
 
 import functools
-import sys
 from collections.abc import Callable
-from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
-# Add parent to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
+# Import alias modules to set up paths
+import clawspring  # noqa: F401
 from amos_brain import (
     GlobalLaws,
     get_agent_bridge,
@@ -61,6 +58,7 @@ class BrainGuidedToolWrapper:
 
         Returns:
             Decorator function
+
         """
         wrapper = cls()
 
@@ -139,6 +137,7 @@ class BrainSystemPromptInjector:
 
         Returns:
             Enhanced prompt with brain context
+
         """
         # Get active engines
         engines = self.brain.list_engines()
@@ -193,7 +192,7 @@ class BrainAgentLifecycle:
         self.monitor = get_monitor()
         self.session_id: str = None
 
-    def on_agent_init(self, agent_name: str, goal: str) -> Dict[str, Any]:
+    def on_agent_init(self, agent_name: str, goal: str) -> dict[str, Any]:
         """Called when agent initializes.
 
         Returns brain context for the agent session.
@@ -221,7 +220,7 @@ class BrainAgentLifecycle:
             "status": "brain_initialized",
         }
 
-    def on_agent_shutdown(self, final_status: str = "completed") -> Dict[str, Any]:
+    def on_agent_shutdown(self, final_status: str = "completed") -> dict[str, Any]:
         """Called when agent shuts down.
 
         Saves state and generates audit report.
@@ -242,7 +241,7 @@ class BrainAgentLifecycle:
 
         return {"status": "no_active_session"}
 
-    def record_agent_step(self, step_description: str, tool_calls: List[dict], reasoning: str):
+    def record_agent_step(self, step_description: str, tool_calls: list[dict], reasoning: str):
         """Record an agent execution step in brain state."""
         if self.session_id:
             self.state_manager.record_reasoning_step(
@@ -291,15 +290,15 @@ class BrainClawSpringBridge:
         """Enhance a system prompt with brain context."""
         return self.prompt_injector.inject_context(base_prompt, domain)
 
-    def init_agent(self, agent_name: str, goal: str) -> Dict[str, Any]:
+    def init_agent(self, agent_name: str, goal: str) -> dict[str, Any]:
         """Initialize brain for an agent session."""
         return self.lifecycle.on_agent_init(agent_name, goal)
 
-    def shutdown_agent(self, status: str = "completed") -> Dict[str, Any]:
+    def shutdown_agent(self, status: str = "completed") -> dict[str, Any]:
         """Shutdown brain for an agent session."""
         return self.lifecycle.on_agent_shutdown(status)
 
-    def think(self, query: str, domain: str = "general") -> Dict[str, Any]:
+    def think(self, query: str, domain: str = "general") -> dict[str, Any]:
         """Direct brain consultation for agent reasoning.
 
         Args:
@@ -308,6 +307,7 @@ class BrainClawSpringBridge:
 
         Returns:
             Brain response with reasoning and compliance info
+
         """
         result = process_task(query, domain)
 
@@ -332,6 +332,7 @@ def create_brain_guided_agent(agent_name: str, goal: str) -> BrainClawSpringBrid
 
     Returns:
         Configured BrainClawSpringBridge instance
+
     """
     bridge = BrainClawSpringBridge()
     bridge.init_agent(agent_name, goal)

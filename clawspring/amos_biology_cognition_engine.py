@@ -1,8 +1,10 @@
 """AMOS Biology & Cognition Engine - Biological and neurological systems."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class BiologicalLevel(Enum):
@@ -23,7 +25,7 @@ class BiologicalEntity:
     name: str
     entity_type: str
     level: BiologicalLevel
-    properties: Dict[str, Any] = field(default_factory=dict)
+    properties: dict[str, Any] = field(default_factory=dict)
 
 
 class MolecularGeneticKernel:
@@ -53,8 +55,8 @@ class MolecularGeneticKernel:
     ]
 
     def __init__(self):
-        self.entities: Dict[str, BiologicalEntity] = {}
-        self.pathways: List[dict] = []
+        self.entities: dict[str, BiologicalEntity] = {}
+        self.pathways: list[dict] = []
 
     def define_entity(
         self,
@@ -75,9 +77,9 @@ class MolecularGeneticKernel:
     def add_pathway(
         self,
         name: str,
-        steps: List[str],
-        inputs: List[str],
-        outputs: List[str],
+        steps: list[str],
+        inputs: list[str],
+        outputs: list[str],
     ) -> dict:
         """Add a biological pathway."""
         pathway = {
@@ -99,7 +101,7 @@ class MolecularGeneticKernel:
             "note": "Conceptual analysis only - not wet lab",
         }
 
-    def _get_principles(self) -> List[str]:
+    def _get_principles(self) -> list[str]:
         """Return kernel principles."""
         return [
             "Central dogma: DNA → RNA → Protein",
@@ -133,8 +135,8 @@ class CellularTissueKernel:
     ]
 
     def __init__(self):
-        self.cells: Dict[str, BiologicalEntity] = {}
-        self.tissues: List[dict] = []
+        self.cells: dict[str, BiologicalEntity] = {}
+        self.tissues: list[dict] = []
 
     def define_cell(
         self,
@@ -156,7 +158,7 @@ class CellularTissueKernel:
         self,
         name: str,
         tissue_type: str,
-        cell_types: List[str],
+        cell_types: list[str],
     ) -> dict:
         """Define a tissue."""
         tissue = {
@@ -176,7 +178,7 @@ class CellularTissueKernel:
             "note": "Simplified conceptual model",
         }
 
-    def _get_principles(self) -> List[str]:
+    def _get_principles(self) -> list[str]:
         """Return kernel principles."""
         return [
             "Cell structure and function",
@@ -213,8 +215,8 @@ class OrganSystemKernel:
     ]
 
     def __init__(self):
-        self.organs: Dict[str, BiologicalEntity] = {}
-        self.systems: List[dict] = []
+        self.organs: dict[str, BiologicalEntity] = {}
+        self.systems: list[dict] = []
 
     def define_organ(
         self,
@@ -235,7 +237,7 @@ class OrganSystemKernel:
     def define_system(
         self,
         name: str,
-        organs: List[str],
+        organs: list[str],
         function: str,
     ) -> dict:
         """Define a biological system."""
@@ -265,7 +267,7 @@ class OrganSystemKernel:
             "note": "Oversimplified functional mapping",
         }
 
-    def _get_principles(self) -> List[str]:
+    def _get_principles(self) -> list[str]:
         """Return kernel principles."""
         return [
             "Organ structure and function",
@@ -279,14 +281,14 @@ class CognitionBehaviorKernel:
     """Kernel for cognition and behavior analysis."""
 
     def __init__(self):
-        self.cognitive_processes: List[dict] = []
-        self.behaviors: List[dict] = []
+        self.cognitive_processes: list[dict] = []
+        self.behaviors: list[dict] = []
 
     def define_cognitive_process(
         self,
         name: str,
         process_type: str,
-        brain_regions: List[str],
+        brain_regions: list[str],
     ) -> dict:
         """Define a cognitive process."""
         process = {
@@ -301,7 +303,7 @@ class CognitionBehaviorKernel:
         self,
         name: str,
         behavior_type: str,
-        triggers: List[str],
+        triggers: list[str],
     ) -> dict:
         """Define a behavior pattern."""
         behavior = {
@@ -327,7 +329,7 @@ class CognitionBehaviorKernel:
             "note": "Learning requires plasticity at synapses",
         }
 
-    def _get_principles(self) -> List[str]:
+    def _get_principles(self) -> list[str]:
         """Return kernel principles."""
         return [
             "Neural basis of cognition",
@@ -341,14 +343,14 @@ class PathologyRecoveryKernel:
     """Kernel for pathology and recovery analysis."""
 
     def __init__(self):
-        self.pathologies: List[dict] = []
-        self.recovery_processes: List[dict] = []
+        self.pathologies: list[dict] = []
+        self.recovery_processes: list[dict] = []
 
     def define_pathology(
         self,
         name: str,
         pathology_type: str,
-        affected_systems: List[str],
+        affected_systems: list[str],
     ) -> dict:
         """Define a pathology."""
         pathology = {
@@ -376,7 +378,7 @@ class PathologyRecoveryKernel:
             "note": "Recovery analysis - not medical advice",
         }
 
-    def _get_principles(self) -> List[str]:
+    def _get_principles(self) -> list[str]:
         """Return kernel principles."""
         return [
             "Pathology mechanisms",
@@ -402,11 +404,11 @@ class BiologyCognitionEngine:
     def analyze(
         self,
         description: str,
-        domains: Optional[List[str]] = None,
-    ) -> Dict[str, Any]:
+        domains: list[str | None] = None,
+    ) -> dict[str, Any]:
         """Run biology/cognition analysis across specified domains."""
         domains = domains or ["molecular", "cellular", "organ", "cognition", "pathology"]
-        results: Dict[str, Any] = {}
+        results: dict[str, Any] = {}
 
         if "molecular" in domains:
             results["molecular"] = self._analyze_molecular(description)
@@ -545,7 +547,7 @@ class BiologyCognitionEngine:
 
 
 # Singleton
-_biology_cognition_engine: Optional[BiologyCognitionEngine] = None
+_biology_cognition_engine: BiologyCognitionEngine | None = None
 
 
 def get_biology_cognition_engine() -> BiologyCognitionEngine:

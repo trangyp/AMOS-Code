@@ -17,7 +17,7 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 from .evolution_contract_registry import EvolutionContract
 
@@ -29,11 +29,11 @@ class RollbackSnapshot:
     snapshot_id: str
     evolution_id: str
     timestamp: str
-    file_hashes: Dict[str, str] = field(default_factory=dict)
+    file_hashes: dict[str, str] = field(default_factory=dict)
     backup_path: str = ""
     description: str = ""
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "snapshot_id": self.snapshot_id,
             "evolution_id": self.evolution_id,
@@ -51,12 +51,12 @@ class RollbackResult:
     success: bool
     evolution_id: str
     snapshot_id: str
-    restored_files: List[str] = field(default_factory=list)
-    failed_files: List[str] = field(default_factory=list)
+    restored_files: list[str] = field(default_factory=list)
+    failed_files: list[str] = field(default_factory=list)
     error_message: str = ""
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "success": self.success,
             "evolution_id": self.evolution_id,
@@ -97,7 +97,7 @@ class RollbackGuard:
         self.backup_dir.mkdir(parents=True, exist_ok=True)
 
         # Registry of snapshots
-        self._snapshots: Dict[str, RollbackSnapshot] = {}
+        self._snapshots: dict[str, RollbackSnapshot] = {}
         self._registry_file = self.backup_dir / "snapshot_registry.json"
         self._load_registry()
 
@@ -149,7 +149,7 @@ class RollbackGuard:
         snapshot_backup_dir = self.backup_dir / snapshot_id
         snapshot_backup_dir.mkdir(parents=True, exist_ok=True)
 
-        file_hashes: Dict[str, str] = {}
+        file_hashes: dict[str, str] = {}
 
         # Backup each target file
         for target_file in contract.target_files:
@@ -223,8 +223,8 @@ class RollbackGuard:
                 error_message=f"Backup directory missing: {backup_dir}",
             )
 
-        restored: List[str] = []
-        failed: List[str] = []
+        restored: list[str] = []
+        failed: list[str] = []
 
         if dry_run:
             # Just report what would be restored
@@ -286,11 +286,11 @@ class RollbackGuard:
         except Exception:
             return False
 
-    def get_snapshots_for_evolution(self, evolution_id: str) -> List[RollbackSnapshot]:
+    def get_snapshots_for_evolution(self, evolution_id: str) -> list[RollbackSnapshot]:
         """Get all snapshots associated with an evolution."""
         return [s for s in self._snapshots.values() if s.evolution_id == evolution_id]
 
-    def list_all_snapshots(self) -> List[dict[str, Any]]:
+    def list_all_snapshots(self) -> list[dict[str, Any]]:
         """List all snapshots with metadata."""
         return [s.to_dict() for s in self._snapshots.values()]
 

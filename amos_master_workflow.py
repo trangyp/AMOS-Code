@@ -34,7 +34,7 @@ class WorkflowPhase:
     start_time: str = None
     end_time: str = None
     results: dict = field(default_factory=dict)
-    logs: List[str] = field(default_factory=list)
+    logs: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -46,7 +46,7 @@ class WorkflowRun:
     start_time: str
     end_time: str = None
     status: str = "running"
-    phases: List[WorkflowPhase] = field(default_factory=list)
+    phases: list[WorkflowPhase] = field(default_factory=list)
     final_output: Optional[Path] = None
 
 
@@ -398,7 +398,7 @@ class AMOSMasterWorkflow:
 
         return self.current_run
 
-    def list_runs(self) -> List[WorkflowRun]:
+    def list_runs(self) -> list[WorkflowRun]:
         """List all workflow runs."""
         runs = []
         for report_file in self.workflow_dir.glob("workflow_*.md"):

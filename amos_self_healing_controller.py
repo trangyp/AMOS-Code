@@ -21,14 +21,14 @@ Usage:
 
 from __future__ import annotations
 
-
-
 import asyncio
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from enum import Enum, auto
-from typing import Any, Dict, List, Optional
+
+UTC = UTC
+from typing import Any, Optional
 
 from amos_async_safety import get_safety_manager
 from amos_brain_health_monitor import BrainHealthReport, HealthStatus, get_brain_health_monitor
@@ -64,7 +64,7 @@ class RecoveryAttempt:
     action: RecoveryAction
     result: RecoveryResult
     duration_ms: float
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: dict[str, Any] = field(default_factory=dict)
     error: str = None
 
 
@@ -116,10 +116,10 @@ class SelfHealingController:
         self._safety_manager = get_safety_manager()
         self._policy = HealingPolicy()
 
-        self._recovery_history: List[RecoveryAttempt] = []
+        self._recovery_history: list[RecoveryAttempt] = []
         self._max_history = 100
-        self._last_recovery: Dict[str, datetime] = {}
-        self._recovery_attempts: Dict[str, int] = {}
+        self._last_recovery: dict[str, datetime] = {}
+        self._recovery_attempts: dict[str, int] = {}
         self._escalation_level: int = 0
 
         self._monitoring = False
@@ -394,7 +394,7 @@ class SelfHealingController:
         # Would trigger system-wide restart
         return RecoveryResult.SUCCESS
 
-    async def _escalate(self, subsystem_name: str, errors: List[str]) -> None:
+    async def _escalate(self, subsystem_name: str, errors: list[str]) -> None:
         """Escalate unrecoverable failure."""
         self._escalation_level += 1
 
@@ -406,7 +406,7 @@ class SelfHealingController:
             print("   🔴 CRITICAL: Manual intervention required")
             # Could trigger alerts, notifications, etc.
 
-    def get_recovery_stats(self) -> Dict[str, Any]:
+    def get_recovery_stats(self) -> dict[str, Any]:
         """Get recovery statistics."""
         if not self._recovery_history:
             return {"total_attempts": 0}

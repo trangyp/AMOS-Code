@@ -9,6 +9,10 @@ References:
 - Property-based testing for agent validation
 """
 
+from datetime import UTC, datetime
+
+UTC = UTC
+
 import os
 import tempfile
 

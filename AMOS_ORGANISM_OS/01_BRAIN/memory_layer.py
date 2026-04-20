@@ -13,11 +13,11 @@ Based on AMOS cognitive architecture:
 import json
 import uuid
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
-UTC = timezone.utc
+UTC = UTC
 
 
 @dataclass
@@ -34,15 +34,15 @@ class Memory:
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     access_count: int = 0  # For LRU eviction
     last_accessed: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
-    tags: List[str] = field(default_factory=list)
-    related: List[str] = field(default_factory=list)  # Related memory IDs
+    tags: list[str] = field(default_factory=list)
+    related: list[str] = field(default_factory=list)  # Related memory IDs
 
     def touch(self):
         """Mark as accessed."""
         self.access_count += 1
         self.last_accessed = datetime.now(timezone.utc).isoformat()
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
@@ -79,13 +79,13 @@ class MemoryLayer:
         "long_term": 10000,
     }
 
-    def __init__(self, storage_dir: Optional[Path] = None):
+    def __init__(self, storage_dir: Path = None):
         self.storage_dir = storage_dir or Path(__file__).parent / "memory_store"
         self.storage_dir.mkdir(parents=True, exist_ok=True)
 
         # In-memory stores
-        self._memories: Dict[str, list[Memory]] = {layer: [] for layer in self.LAYERS}
-        self._index: Dict[str, Memory] = {}  # ID -> Memory lookup
+        self._memories: dict[str, list[Memory]] = {layer: [] for layer in self.LAYERS}
+        self._index: dict[str, Memory] = {}  # ID -> Memory lookup
 
         # Load persistent layers
         self._load_layer("episodic")
@@ -125,7 +125,7 @@ class MemoryLayer:
         layer: str = "short_term",
         source: str = "brain",
         importance: float = 0.5,
-        tags: List[str] = None,
+        tags: list[str] = None,
     ) -> Memory:
         """Store a new memory."""
         if layer not in self.LAYERS:
@@ -167,14 +167,14 @@ class MemoryLayer:
         if to_remove.id in self._index:
             del self._index[to_remove.id]
 
-    def retrieve(self, memory_id: str) -> Optional[Memory]:
+    def retrieve(self, memory_id: str) -> Memory:
         """Retrieve a memory by ID."""
         mem = self._index.get(memory_id)
         if mem:
             mem.touch()
         return mem
 
-    def search(self, query: str, layer: str = None, limit: int = 10) -> List[Memory]:
+    def search(self, query: str, layer: str = None, limit: int = 10) -> list[Memory]:
         """Simple text search across memories."""
         query_lower = query.lower()
         results = []
@@ -224,7 +224,7 @@ class MemoryLayer:
         self._save_layer(mem.layer)
         return True
 
-    def stats(self) -> Dict[str, Any]:
+    def stats(self) -> dict[str, Any]:
         """Get memory statistics."""
         return {
             "total_memories": sum(len(m) for m in self._memories.values()),
@@ -235,7 +235,7 @@ class MemoryLayer:
             },
         }
 
-    def dump(self, layer: str = None) -> List[dict[str, Any]]:
+    def dump(self, layer: str = None) -> list[dict[str, Any]]:
         """Export memories as dicts."""
         layers = [layer] if layer else self.LAYERS
         result = []

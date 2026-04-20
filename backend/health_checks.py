@@ -10,12 +10,12 @@ Creator: Trang Phan
 Version: 3.1.0
 """
 
-import time
-from datetime import datetime, timezone
+from __future__ import annotations
 
-UTC = timezone.utc
+import time
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 # SuperBrain integration
 try:
@@ -24,6 +24,8 @@ try:
     SUPERBRAIN_AVAILABLE = True
 except ImportError:
     SUPERBRAIN_AVAILABLE = False
+
+UTC = UTC
 
 
 class HealthStatus(str, Enum):
@@ -41,11 +43,11 @@ class HealthCheck:
         self.last_check: datetime = None
         self.last_result: bool = None
 
-    async def check(self) -> Tuple[bool, str]:
+    async def check(self) -> tuple[bool, str]:
         """Perform health check. Returns (passed, message)."""
         raise NotImplementedError
 
-    async def run(self) -> Dict[str, Any]:
+    async def run(self) -> dict[str, Any]:
         """Run check and return result."""
         start_time = time.time()
         try:
@@ -81,7 +83,7 @@ class LLMProviderCheck(HealthCheck):
     def __init__(self):
         super().__init__("llm_providers", critical=True)
 
-    async def check(self) -> Tuple[bool, str]:
+    async def check(self) -> tuple[bool, str]:
         from llm_providers import llm_router
 
         providers = llm_router.get_available_providers()
@@ -100,7 +102,7 @@ class RedisCheck(HealthCheck):
         super().__init__("redis", critical=False)
         self.redis_url = redis_url
 
-    async def check(self) -> Tuple[bool, str]:
+    async def check(self) -> tuple[bool, str]:
         try:
             import aioredis
 
@@ -121,7 +123,7 @@ class MemoryCheck(HealthCheck):
         super().__init__("memory", critical=False)
         self.threshold = threshold_percent
 
-    async def check(self) -> Tuple[bool, str]:
+    async def check(self) -> tuple[bool, str]:
         try:
             import psutil
 
@@ -144,7 +146,7 @@ class DiskCheck(HealthCheck):
         super().__init__("disk", critical=False)
         self.threshold = threshold_percent
 
-    async def check(self) -> Tuple[bool, str]:
+    async def check(self) -> tuple[bool, str]:
         try:
             import psutil
 
@@ -182,7 +184,7 @@ class SuperBrainGovernanceCheck(HealthCheck):
             "Resilience Engine",
         ]
 
-    async def check(self) -> Tuple[bool, str]:
+    async def check(self) -> tuple[bool, str]:
         if not SUPERBRAIN_AVAILABLE:
             return True, "SuperBrain check skipped (not available)"
 
@@ -208,7 +210,7 @@ class SuperBrainGovernanceCheck(HealthCheck):
 
 
 # Global health check registry
-_health_checks: List[HealthCheck] = []
+_health_checks: list[HealthCheck] = []
 _startup_time = time.time()
 
 
@@ -217,7 +219,7 @@ def register_health_check(check: HealthCheck):
     _health_checks.append(check)
 
 
-def get_health_checks() -> List[HealthCheck]:
+def get_health_checks() -> list[HealthCheck]:
     """Get all registered health checks."""
     return _health_checks
 
@@ -234,7 +236,7 @@ def init_default_checks(redis_url: str = None):
     ]
 
 
-async def run_liveness_check() -> Dict[str, Any]:
+async def run_liveness_check() -> dict[str, Any]:
     """Liveness probe - is the app running?"""
     return {
         "status": HealthStatus.HEALTHY,
@@ -244,7 +246,7 @@ async def run_liveness_check() -> Dict[str, Any]:
     }
 
 
-async def run_readiness_check() -> Dict[str, Any]:
+async def run_readiness_check() -> dict[str, Any]:
     """Readiness probe - is the app ready to serve traffic?"""
     if not _health_checks:
         init_default_checks()
@@ -279,7 +281,7 @@ async def run_readiness_check() -> Dict[str, Any]:
     }
 
 
-async def run_startup_check() -> Dict[str, Any]:
+async def run_startup_check() -> dict[str, Any]:
     """Startup probe - has the app finished starting?"""
     # Simple startup check - ensure we can run basic operations
     startup_duration = time.time() - _startup_time
@@ -300,7 +302,7 @@ async def run_startup_check() -> Dict[str, Any]:
     }
 
 
-async def run_full_health_check() -> Dict[str, Any]:
+async def run_full_health_check() -> dict[str, Any]:
     """Run all health checks and return comprehensive status."""
     liveness = await run_liveness_check()
     readiness = await run_readiness_check()

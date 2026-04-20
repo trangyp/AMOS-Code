@@ -9,13 +9,15 @@ Owner: Trang
 Version: 1.0.0
 """
 
+from __future__ import annotations
+
 import json
 import statistics
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class AnomalySeverity(Enum):
@@ -51,7 +53,7 @@ class Anomaly:
     deviation_percent: float
     timestamp: str
     description: str
-    remediation: List[str]
+    remediation: list[str]
     acknowledged: bool = False
     resolved: bool = False
 
@@ -81,9 +83,9 @@ class AnomalyDetector:
         self.analytics_dir.mkdir(parents=True, exist_ok=True)
 
         # Storage
-        self.baselines: Dict[str, MetricBaseline] = {}
-        self.anomalies: List[Anomaly] = []
-        self.recent_metrics: Dict[str, list[float]] = {}
+        self.baselines: dict[str, MetricBaseline] = {}
+        self.anomalies: list[Anomaly] = []
+        self.recent_metrics: dict[str, list[float]] = {}
 
         # Detection thresholds
         self.thresholds = {
@@ -295,7 +297,7 @@ class AnomalyDetector:
 
     def _generate_remediation(
         self, anomaly_type: AnomalyType, subsystem: str, metric: str
-    ) -> List[str]:
+    ) -> list[str]:
         """Generate remediation suggestions based on anomaly type."""
         remediation_map = {
             AnomalyType.HIGH_LOAD: [
@@ -332,7 +334,7 @@ class AnomalyDetector:
 
         return remediation_map.get(anomaly_type, ["Investigate root cause"])
 
-    def check_all_subsystems(self) -> List[Anomaly]:
+    def check_all_subsystems(self) -> list[Anomaly]:
         """Run anomaly detection on all subsystems."""
         detected = []
 
@@ -367,7 +369,7 @@ class AnomalyDetector:
 
         return detected
 
-    def get_active_anomalies(self) -> List[Anomaly]:
+    def get_active_anomalies(self) -> list[Anomaly]:
         """Get all unresolved anomalies."""
         cutoff = (datetime.now(UTC) - timedelta(hours=24)).isoformat()
         return [a for a in self.anomalies if not a.resolved and a.timestamp > cutoff]
@@ -390,7 +392,7 @@ class AnomalyDetector:
                 return True
         return False
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get detector status."""
         active = self.get_active_anomalies()
         critical = sum(1 for a in active if a.severity == AnomalySeverity.CRITICAL)

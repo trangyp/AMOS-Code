@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS - Absolute Meta Operating System by Trang Phan
+"""AMOS - Absolute Meta Operating System by Trang Phan
 
 The Deterministic Cognitive OS with 14 Transparent Layers, 6 Global Laws,
 and Full Observability. Stronger than Devin through transparency.
@@ -23,15 +22,13 @@ Environment Variables:
 Version: 3.0.0
 """
 
+from __future__ import annotations
 
 import os
 import sys
-from pathlib import Path
-
-# Add clawspring to path for backward compatibility
-sys.path.insert(0, str(Path(__file__).parent))
 
 # Import core functionality from clawspring
+# Note: clawspring must be installed as a package: pip install -e .
 from clawspring import main as clawspring_main
 
 # AMOS Branding Constants
@@ -77,7 +74,7 @@ def print_amos_banner(mode: str = "seed"):
 ║   {AMOS_TAGLINE:<56}   ║
 ║   Creator: Trang Phan | v{AMOS_VERSION:<38}   ║
 ║                                                                  ║
-║   {mode_info['name']:<16} ({mode_info['actions']} actions, {len(mode_info['layers'])} layers active)       ║
+║   {mode_info["name"]:<16} ({mode_info["actions"]} actions, {len(mode_info["layers"])} layers active)       ║
 ║   {AMOS_LAYERS} Cognitive Layers • {AMOS_LAWS} Global Laws • Full Transparency          ║
 ║                                                                  ║
 ║   Stronger than Devin through transparency 🏆                   ║
@@ -153,8 +150,7 @@ def print_devin_comparison():
 
 
 def amos_think(query: str) -> dict:
-    """
-    AMOS thinking with Rule of 2 and Rule of 4 analysis.
+    """AMOS thinking with Rule of 2 and Rule of 4 analysis.
 
     This exposes the cognitive process that Devin hides.
     """

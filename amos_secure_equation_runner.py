@@ -18,7 +18,7 @@ from __future__ import annotations
 
 import ast
 import builtins
-from typing import Any
+from typing import Any, Optional
 
 
 class EquationExecutionError(Exception):

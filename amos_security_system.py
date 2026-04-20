@@ -14,6 +14,8 @@ Implements 2025 AI security patterns (SPIFFE/SPIRE, OAuth2, Zero Trust):
 Component #76 - Security & Access Control Layer
 """
 
+from __future__ import annotations
+
 import asyncio
 import hashlib
 import secrets
@@ -22,7 +24,7 @@ import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
+from typing import Any, Optional, Protocol
 
 
 class AuthMethod(Enum):
@@ -85,7 +87,7 @@ class Role(Enum):
 
 
 # Role to permissions mapping
-ROLE_PERMISSIONS: Dict[Role, set[Permission]] = {
+ROLE_PERMISSIONS: dict[Role, set[Permission]] = {
     Role.ADMIN: {
         Permission.SYSTEM_ADMIN,
         Permission.MODEL_WRITE,
@@ -164,8 +166,8 @@ class Principal:
     credentials_hash: str = None
 
     # Authorization
-    roles: List[Role] = field(default_factory=list)
-    custom_permissions: Set[Permission] = field(default_factory=set)
+    roles: list[Role] = field(default_factory=list)
+    custom_permissions: set[Permission] = field(default_factory=set)
 
     # Metadata
     created_at: float = field(default_factory=time.time)
@@ -210,8 +212,8 @@ class AccessToken:
     use_count: int = 0
 
     # Scope and restrictions
-    scopes: List[str] = field(default_factory=list)
-    allowed_ips: List[str] = None
+    scopes: list[str] = field(default_factory=list)
+    allowed_ips: list[str] = None
 
     is_revoked: bool = False
 
@@ -232,7 +234,7 @@ class AccessRequest:
 
     # Request metadata
     request_size: int = 0
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -250,7 +252,7 @@ class AccessDecision:
 
     # Permissions checked
     required_permission: Optional[Permission] = None
-    principal_permissions: Set[Permission] = field(default_factory=set)
+    principal_permissions: set[Permission] = field(default_factory=set)
 
     # Rate limiting
     rate_limit_exceeded: bool = False
@@ -282,11 +284,11 @@ class AuditEvent:
 
     # Result
     success: bool
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: dict[str, Any] = field(default_factory=dict)
 
     # Compliance
     severity: str = "info"  # "info", "warning", "critical"
-    compliance_tags: List[str] = field(default_factory=list)
+    compliance_tags: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -300,11 +302,11 @@ class SecurityPolicy:
     # Policy rules
     resource_pattern: str  # Regex pattern for resources
     action_pattern: str  # Regex pattern for actions
-    allowed_roles: List[Role] = field(default_factory=list)
-    required_permissions: List[Permission] = field(default_factory=list)
+    allowed_roles: list[Role] = field(default_factory=list)
+    required_permissions: list[Permission] = field(default_factory=list)
 
     # Conditions (ABAC)
-    conditions: Dict[str, Any] = field(default_factory=dict)
+    conditions: dict[str, Any] = field(default_factory=dict)
 
     # Effect
     effect: str = "allow"  # "allow" or "deny"
@@ -334,7 +336,7 @@ class InMemorySecretStore:
     """In-memory secret store (for development)."""
 
     def __init__(self):
-        self._secrets: Dict[str, str] = {}
+        self._secrets: dict[str, str] = {}
 
     async def store(self, key: str, value: str) -> bool:
         self._secrets[key] = value
@@ -382,16 +384,16 @@ class AMOSSecuritySystem:
         self.secret_store = secret_store or InMemorySecretStore()
 
         # Storage
-        self.principals: Dict[str, Principal] = {}
-        self.access_tokens: Dict[str, AccessToken] = {}
-        self.audit_log: List[AuditEvent] = []
-        self.policies: Dict[str, SecurityPolicy] = {}
+        self.principals: dict[str, Principal] = {}
+        self.access_tokens: dict[str, AccessToken] = {}
+        self.audit_log: list[AuditEvent] = []
+        self.policies: dict[str, SecurityPolicy] = {}
 
         # Session management
-        self.active_sessions: Dict[str, dict[str, Any]] = {}
+        self.active_sessions: dict[str, dict[str, Any]] = {}
 
         # Rate limiting
-        self.request_counts: Dict[str, list[float]] = {}  # principal_id -> timestamps
+        self.request_counts: dict[str, list[float]] = {}  # principal_id -> timestamps
 
         # Configuration
         self.default_token_ttl = 3600  # 1 hour
@@ -410,11 +412,11 @@ class AMOSSecuritySystem:
         name: str,
         principal_type: str = "user",
         email: str = None,
-        roles: List[Role] = None,
+        roles: list[Role] = None,
         auth_method: AuthMethod = AuthMethod.API_KEY,
         rate_limit: int = 1000,
         quota_daily: int = 10000,
-    ) -> Tuple[Principal, str]:
+    ) -> tuple[Principal, str]:
         """Create a new principal with credentials."""
         principal_id = f"principal_{uuid.uuid4().hex[:12]}"
 
@@ -640,7 +642,7 @@ class AMOSSecuritySystem:
         resource: str,
         action: str,
         success: bool,
-        details: Dict[str, Any] = None,
+        details: dict[str, Any] = None,
         severity: str = "info",
         source_ip: str = None,
         user_agent: str = None,
@@ -672,8 +674,8 @@ class AMOSSecuritySystem:
         description: str,
         resource_pattern: str,
         action_pattern: str,
-        allowed_roles: List[Role],
-        required_permissions: List[Permission] = None,
+        allowed_roles: list[Role],
+        required_permissions: list[Permission] = None,
         effect: str = "allow",
         priority: int = 100,
     ) -> SecurityPolicy:
@@ -750,7 +752,7 @@ class AMOSSecuritySystem:
             principal.quota_used_today = 0
         print("[SecuritySystem] Daily quotas reset")
 
-    def get_audit_summary(self, principal_id: str = None, hours: int = 24) -> Dict[str, Any]:
+    def get_audit_summary(self, principal_id: str = None, hours: int = 24) -> dict[str, Any]:
         """Get audit log summary."""
         cutoff = time.time() - (hours * 3600)
 
@@ -761,7 +763,7 @@ class AMOSSecuritySystem:
         ]
 
         # Count by type
-        event_counts: Dict[str, int] = {}
+        event_counts: dict[str, int] = {}
         for event in events:
             event_counts[event.event_type] = event_counts.get(event.event_type, 0) + 1
 
@@ -776,7 +778,7 @@ class AMOSSecuritySystem:
             "principal_id": principal_id or "all",
         }
 
-    def get_security_report(self) -> Dict[str, Any]:
+    def get_security_report(self) -> dict[str, Any]:
         """Generate a comprehensive security report."""
         active_principals = sum(1 for p in self.principals.values() if p.is_active)
         locked_principals = sum(1 for p in self.principals.values() if p.is_locked)

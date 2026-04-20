@@ -17,11 +17,13 @@ v4 is a living strategic system that:
 - Preserves itself while growing
 """
 
-import pickle
+from __future__ import annotations
+
+import json
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 # ============================================================================
 # 1. PERSISTENCE LAYER (Pe)
@@ -39,13 +41,13 @@ class PersistentState:
     last_updated: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
     # Episodic memory - experiences
-    episodic_memory: List[dict] = field(default_factory=list)
+    episodic_memory: list[dict] = field(default_factory=list)
 
     # Structural memory - learned patterns
-    structural_memory: Dict[str, Any] = field(default_factory=dict)
+    structural_memory: dict[str, Any] = field(default_factory=dict)
 
     # Persistent identity
-    identity: Dict[str, Any] = field(
+    identity: dict[str, Any] = field(
         default_factory=lambda: {
             "version": "v4.0",
             "build_count": 0,
@@ -55,11 +57,11 @@ class PersistentState:
     )
 
     # Open loops - unfinished tasks
-    open_loops: List[dict] = field(default_factory=list)
+    open_loops: list[dict] = field(default_factory=list)
 
     # Session continuity
     previous_session_id: str = None
-    cumulative_metrics: Dict[str, float] = field(
+    cumulative_metrics: dict[str, float] = field(
         default_factory=lambda: {
             "total_cycles": 0,
             "total_value_produced": 0.0,
@@ -77,17 +79,18 @@ class PersistenceManager:
         self.state_dir.mkdir(exist_ok=True)
         self.state_file = self.state_dir / "persistent_state.pkl"
 
-    def save(self, state: PersistentState):
-        """Save persistent state."""
+    def save(self, state: PersistentState) -> None:
+        """Save persistent state using JSON (safer than pickle)."""
         state.last_updated = datetime.now(UTC).isoformat()
-        with open(self.state_file, "wb") as f:
-            pickle.dump(state, f)
+        with open(self.state_file, "w", encoding="utf-8") as f:
+            json.dump(state.__dict__, f, indent=2, default=str)
 
     def load(self) -> Optional[PersistentState]:
         """Load persistent state if exists."""
         if self.state_file.exists():
-            with open(self.state_file, "rb") as f:
-                return pickle.load(f)
+            with open(self.state_file, encoding="utf-8") as f:
+                data = json.load(f)
+                return PersistentState(**data)
         return None
 
     def sync(self, state: PersistentState, results: dict, identity: dict) -> PersistentState:
@@ -133,12 +136,12 @@ class EconomicState:
     x_t* = argmax_x [Revenue(x) - Cost(x) - Risk(x) + Leverage(x) + Compounding(x)]
     """
 
-    opportunities: List[dict] = field(default_factory=list)
-    revenue_streams: Dict[str, float] = field(default_factory=dict)
-    cost_structure: Dict[str, float] = field(default_factory=dict)
-    risk_exposure: Dict[str, float] = field(default_factory=dict)
-    leverage_points: List[str] = field(default_factory=list)
-    compounding_assets: List[str] = field(default_factory=list)
+    opportunities: list[dict] = field(default_factory=list)
+    revenue_streams: dict[str, float] = field(default_factory=dict)
+    cost_structure: dict[str, float] = field(default_factory=dict)
+    risk_exposure: dict[str, float] = field(default_factory=dict)
+    leverage_points: list[str] = field(default_factory=list)
+    compounding_assets: list[str] = field(default_factory=list)
 
 
 class EconomicEngine:
@@ -146,9 +149,9 @@ class EconomicEngine:
 
     def __init__(self):
         self.state = EconomicState()
-        self.transaction_history: List[dict] = []
+        self.transaction_history: list[dict] = []
 
-    def evaluate_action(self, action: dict) -> Dict[str, float]:
+    def evaluate_action(self, action: dict) -> dict[str, float]:
         """Evaluate action by economic criteria.
         Returns: {revenue, cost, risk, leverage, compounding, net_value}
         """
@@ -171,7 +174,7 @@ class EconomicEngine:
             "roi": (revenue - cost) / cost if cost > 0 else float("inf"),
         }
 
-    def select_optimal_action(self, actions: List[dict]) -> dict:
+    def select_optimal_action(self, actions: list[dict]) -> dict:
         """x_t* = argmax_x [Revenue(x) - Cost(x) - Risk(x) + Leverage(x) + Compounding(x)]"""
         if not actions:
             return None
@@ -222,7 +225,7 @@ class ResourcePool:
     optionality: float = 1.0  # Future option value
 
     # Allocations
-    allocations: Dict[str, float] = field(default_factory=dict)
+    allocations: dict[str, float] = field(default_factory=dict)
 
 
 class ResourceAllocator:
@@ -230,9 +233,9 @@ class ResourceAllocator:
 
     def __init__(self):
         self.pool = ResourcePool()
-        self.allocation_history: List[dict] = []
+        self.allocation_history: list[dict] = []
 
-    def allocate(self, demands: List[dict]) -> Dict[str, dict[str, float]]:
+    def allocate(self, demands: list[dict]) -> dict[str, dict[str, float]]:
         """q_t* = argmax_q Σ ω_i · Return_i(q)
         Constraint: Σ Resource(g_i) ≤ Q_t
         """
@@ -299,12 +302,12 @@ class WorldModel:
     Y_{t+1} = Model(Y_t, Signals_t, Outcomes_t)
     """
 
-    market_state: Dict[str, Any] = field(default_factory=dict)
-    institutional_landscape: Dict[str, Any] = field(default_factory=dict)
-    key_actors: Dict[str, Any] = field(default_factory=dict)
-    competitive_position: Dict[str, Any] = field(default_factory=dict)
-    trend_forecasts: Dict[str, Any] = field(default_factory=dict)
-    constraints: Dict[str, Any] = field(default_factory=dict)
+    market_state: dict[str, Any] = field(default_factory=dict)
+    institutional_landscape: dict[str, Any] = field(default_factory=dict)
+    key_actors: dict[str, Any] = field(default_factory=dict)
+    competitive_position: dict[str, Any] = field(default_factory=dict)
+    trend_forecasts: dict[str, Any] = field(default_factory=dict)
+    constraints: dict[str, Any] = field(default_factory=dict)
 
     # Learning
     prediction_accuracy: float = 0.5
@@ -316,8 +319,8 @@ class WorldModelEngine:
 
     def __init__(self):
         self.model = WorldModel()
-        self.signal_history: List[dict] = []
-        self.prediction_errors: List[float] = []
+        self.signal_history: list[dict] = []
+        self.prediction_errors: list[float] = []
 
     def update(self, signals: dict, outcomes: dict):
         """Y_{t+1} = Model(Y_t, Signals_t, Outcomes_t)
@@ -381,7 +384,7 @@ class Goal:
     description: str
     priority: float = 1.0
     expected_value: float = 0.0
-    resource_cost: Dict[str, float] = field(default_factory=dict)
+    resource_cost: dict[str, float] = field(default_factory=dict)
     time_horizon: int = 30  # Days
     risk_score: float = 0.1
     status: str = "active"  # active, completed, deferred
@@ -391,14 +394,14 @@ class GoalPortfolio:
     """Manages portfolio of goals with optimization."""
 
     def __init__(self):
-        self.goals: Dict[str, Goal] = {}
-        self.portfolio_history: List[dict] = []
+        self.goals: dict[str, Goal] = {}
+        self.portfolio_history: list[dict] = []
 
     def add_goal(self, goal: Goal):
         """Add goal to portfolio."""
         self.goals[goal.id] = goal
 
-    def optimize_portfolio(self, available_resources: ResourcePool) -> List[Goal]:
+    def optimize_portfolio(self, available_resources: ResourcePool) -> list[Goal]:
         """g*_{set} = argmax Σ [Value(g_i) - Cost(g_i) - Risk(g_i)]
         Constraint: Σ Resource(g_i) ≤ Q_t
         """
@@ -471,7 +474,7 @@ class SurvivalEngine:
         numerator = self.resilience_score + self.redundancy_score + self.adaptation_score
         return numerator / max(self.fragility_score, 0.1)
 
-    def check_threats(self, state: dict) -> List[dict]:
+    def check_threats(self, state: dict) -> list[dict]:
         """Identify threats to system survival."""
         threats = []
 
@@ -611,7 +614,7 @@ class AMOSv4:
             "survival_score": self.survival.compute_survival(),
         }
 
-    def _generate_actions(self, goals: List[Goal], threats: List[dict]) -> List[dict]:
+    def _generate_actions(self, goals: list[Goal], threats: list[dict]) -> list[dict]:
         """Generate candidate actions from goals and threats."""
         actions = []
 

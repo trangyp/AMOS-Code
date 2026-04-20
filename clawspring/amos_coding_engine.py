@@ -1,11 +1,12 @@
 """AMOS Coding Engine - Domain-specific code production with law compliance."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 
-from amos_execution import get_execution_kernel
-
-from amos_orchestrator import get_orchestrator
-from amos_runtime import get_runtime
+from clawspring.amos_execution import get_execution_kernel
+from clawspring.amos_orchestrator import get_orchestrator
+from clawspring.amos_runtime import get_runtime
 
 
 @dataclass
@@ -15,9 +16,9 @@ class CodeSpec:
     layer: str
     function_name: str
     description: str
-    inputs_required: List[str] = field(default_factory=list)
-    outputs: List[str] = field(default_factory=list)
-    constraints: List[str] = field(default_factory=list)
+    inputs_required: list[str] = field(default_factory=list)
+    outputs: list[str] = field(default_factory=list)
+    constraints: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -28,9 +29,9 @@ class CodeResult:
     function_name: str
     code: str
     explanation: str
-    assumptions: List[str] = field(default_factory=list)
+    assumptions: list[str] = field(default_factory=list)
     gap_acknowledgment: str = ""
-    law_compliance: Dict[str, bool] = field(default_factory=dict)
+    law_compliance: dict[str, bool] = field(default_factory=dict)
     quality_score: float = 0.0
 
 
@@ -45,7 +46,7 @@ class CodingLayer:
         """Generate code for this layer. Override in subclasses."""
         raise NotImplementedError
 
-    def _apply_laws(self, code: str, explanation: str) -> Tuple[bool, dict]:
+    def _apply_laws(self, code: str, explanation: str) -> tuple[bool, dict]:
         """Check code against AMOS global laws."""
         laws = self.runtime.get_law_summary()
         compliance = {law["id"]: True for law in laws[:6]}
@@ -75,15 +76,18 @@ class ArchitectureLayer(CodingLayer):
 Architecture layer implementation following AMOS structural integrity.
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Optional
 
 @dataclass
 class SystemComponent:
     """Core system component with structural integrity."""
+
     name: str
     purpose: str
-    dependencies: List[str]
+    dependencies: list[str]
 
     def validate_structure(self) -> bool:
         """L4: Validate structural integrity."""
@@ -121,6 +125,8 @@ class BackendLayer(CodingLayer):
 {spec.description}
 Backend layer with law-compliant error handling.
 """
+
+from __future__ import annotations
 
 from typing import Any
 import logging
@@ -235,6 +241,8 @@ class AILayer(CodingLayer):
 AI layer with explicit uncertainty handling.
 """
 
+from __future__ import annotations
+
 from typing import Any
 import json
 
@@ -297,7 +305,7 @@ class AIModule:
 class AMOSCodingEngine:
     """Unified coding engine with 9 layers."""
 
-    LAYERS: Dict[str, type[CodingLayer]] = {
+    LAYERS: dict[str, type[CodingLayer]] = {
         "architecture": ArchitectureLayer,
         "backend": BackendLayer,
         "database": DatabaseLayer,
@@ -314,7 +322,7 @@ class AMOSCodingEngine:
         self.runtime = get_runtime()
         self.execution = get_execution_kernel()
         self.orchestrator = get_orchestrator()
-        self._layer_instances: Dict[str, CodingLayer] = {}
+        self._layer_instances: dict[str, CodingLayer] = {}
 
     def _get_layer(self, layer_name: str) -> CodingLayer:
         """Get or create layer instance."""
@@ -328,8 +336,8 @@ class AMOSCodingEngine:
         layer: str,
         function_name: str,
         description: str,
-        inputs: Optional[List[str]] = None,
-        outputs: Optional[List[str]] = None,
+        inputs: list[Optional[str]] = None,
+        outputs: list[Optional[str]] = None,
     ) -> CodeResult:
         """Generate code for specified layer."""
         spec = CodeSpec(
@@ -347,8 +355,8 @@ class AMOSCodingEngine:
         self,
         feature_name: str,
         description: str,
-        layers: Optional[List[str]] = None,
-    ) -> List[CodeResult]:
+        layers: list[Optional[str]] = None,
+    ) -> list[CodeResult]:
         """Run full feature implementation workflow across multiple layers."""
         target_layers = layers or ["architecture", "backend", "database"]
         results = []
@@ -389,8 +397,8 @@ def generate_amos_code(
     layer: str,
     function_name: str,
     description: str,
-    inputs: Optional[List[str]] = None,
-    outputs: Optional[List[str]] = None,
+    inputs: list[Optional[str]] = None,
+    outputs: list[Optional[str]] = None,
 ) -> CodeResult:
     """Quick code generation with AMOS compliance."""
     return get_coding_engine().generate_code(layer, function_name, description, inputs, outputs)

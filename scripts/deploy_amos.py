@@ -39,9 +39,9 @@ class Colors:
 
 def print_header(text: str):
     """Print header."""
-    print(f"\n{Colors.HEADER}{'='*70}{Colors.ENDC}")
+    print(f"\n{Colors.HEADER}{'=' * 70}{Colors.ENDC}")
     print(f"{Colors.BOLD}{text}{Colors.ENDC}")
-    print(f"{Colors.HEADER}{'='*70}{Colors.ENDC}\n")
+    print(f"{Colors.HEADER}{'=' * 70}{Colors.ENDC}\n")
 
 
 def print_success(text: str):
@@ -454,14 +454,14 @@ def main():
         success = deployer.generate_report()
 
     if success:
-        print(f"\n{Colors.OKGREEN}{'='*70}{Colors.ENDC}")
+        print(f"\n{Colors.OKGREEN}{'=' * 70}{Colors.ENDC}")
         print(f"{Colors.BOLD}✓ Operation completed successfully!{Colors.ENDC}")
-        print(f"{Colors.OKGREEN}{'='*70}{Colors.ENDC}\n")
+        print(f"{Colors.OKGREEN}{'=' * 70}{Colors.ENDC}\n")
         sys.exit(0)
     else:
-        print(f"\n{Colors.FAIL}{'='*70}{Colors.ENDC}")
+        print(f"\n{Colors.FAIL}{'=' * 70}{Colors.ENDC}")
         print(f"{Colors.BOLD}✗ Operation failed{Colors.ENDC}")
-        print(f"{Colors.FAIL}{'='*70}{Colors.ENDC}\n")
+        print(f"{Colors.FAIL}{'=' * 70}{Colors.ENDC}\n")
         sys.exit(1)
 
 

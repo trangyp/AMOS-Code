@@ -4,12 +4,16 @@ Generates patches and fixes for repository issues found during autopsy.
 Integrates with repo_doctor invariants and repair planning.
 """
 
+from __future__ import annotations
+
 import re
 import subprocess
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from axiom_one_repo_autopsy import IssueCategory, RepoIssue
 
@@ -21,8 +25,8 @@ class GeneratedFix:
     issue_id: str
     fix_type: str
     description: str
-    files_to_modify: List[str]
-    patches: List[dict[str, Any]]
+    files_to_modify: list[str]
+    patches: list[dict[str, Any]]
     blast_radius: str
     estimated_success_rate: float
     requires_approval: bool
@@ -35,8 +39,8 @@ class FixApplication:
 
     fix_id: str
     success: bool
-    files_modified: List[str]
-    backup_paths: List[str]
+    files_modified: list[str]
+    backup_paths: list[str]
     error_message: str = None
     applied_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
@@ -308,7 +312,7 @@ class CrossDomainImpactAnalyzer:
         source_node_id: str,
         change_type: str,
         max_depth: int = 5,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Analyze cross-domain impact of a change."""
         # Build impact tree
         impact = {
@@ -337,7 +341,7 @@ class CrossDomainImpactAnalyzer:
 
         return impact
 
-    def estimate_blast_radius(self, files_changed: List[str]) -> str:
+    def estimate_blast_radius(self, files_changed: list[str]) -> str:
         """Estimate blast radius from files changed."""
         if any("api" in f or "interface" in f for f in files_changed):
             return "system"

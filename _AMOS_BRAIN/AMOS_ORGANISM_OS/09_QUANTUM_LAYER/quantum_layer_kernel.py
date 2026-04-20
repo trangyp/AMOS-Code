@@ -15,7 +15,9 @@ import math
 import random
 from collections import defaultdict
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from enum import Enum, auto
 from pathlib import Path
 from typing import Any
@@ -40,11 +42,11 @@ class Qubit:
     """
 
     qubit_id: str
-    amplitudes: Dict[str, complex] = field(default_factory=dict)
+    amplitudes: dict[str, complex] = field(default_factory=dict)
     state: QuantumState = QuantumState.SUPERPOSITION
-    entangled_with: List[str] = field(default_factory=list)
+    entangled_with: list[str] = field(default_factory=list)
     created_at: str = ""
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self):
         if not self.created_at:
@@ -94,7 +96,7 @@ class Superposition:
 
     superposition_id: str
     possibilities: dict[str, dict[str, Any]] = field(default_factory=dict)
-    weights: Dict[str, float] = field(default_factory=dict)
+    weights: dict[str, float] = field(default_factory=dict)
     coherence_time: float = 60.0  # Seconds before decoherence
     created_at: str = ""
 
@@ -110,7 +112,7 @@ class Superposition:
             for key in self.weights:
                 self.weights[key] /= total
 
-    def add_possibility(self, id: str, data: Dict[str, Any], weight: float = 1.0):
+    def add_possibility(self, id: str, data: dict[str, Any], weight: float = 1.0):
         """Add a possibility to the superposition."""
         self.possibilities[id] = data
         self.weights[id] = weight
@@ -188,13 +190,13 @@ class QuantumLayerKernel:
         self.logs_path.mkdir(parents=True, exist_ok=True)
 
         # Qubit registry
-        self.qubits: Dict[str, Qubit] = {}
+        self.qubits: dict[str, Qubit] = {}
 
         # Active superpositions
-        self.superpositions: Dict[str, Superposition] = {}
+        self.superpositions: dict[str, Superposition] = {}
 
         # Uncertainty tracking
-        self.uncertainties: Dict[str, Uncertainty] = {}
+        self.uncertainties: dict[str, Uncertainty] = {}
 
         # Entanglement graph
         self.entanglements: dict[str, set[str]] = defaultdict(set)
@@ -285,7 +287,7 @@ class QuantumLayerKernel:
         return superposition
 
     def add_to_superposition(
-        self, superposition_id: str, possibility_id: str, data: Dict[str, Any], weight: float = 1.0
+        self, superposition_id: str, possibility_id: str, data: dict[str, Any], weight: float = 1.0
     ) -> bool:
         """Add a possibility to a superposition."""
         if superposition_id not in self.superpositions:
@@ -306,7 +308,7 @@ class QuantumLayerKernel:
         return result
 
     def quantify_uncertainty(
-        self, variable_id: str, samples: List[float], distribution_type: str = "normal"
+        self, variable_id: str, samples: list[float], distribution_type: str = "normal"
     ) -> Uncertainty:
         """Quantify uncertainty from sample data."""
         if not samples:
@@ -336,12 +338,12 @@ class QuantumLayerKernel:
 
         return uncertainty
 
-    def get_uncertainty(self, variable_id: str) -> Optional[Uncertainty]:
+    def get_uncertainty(self, variable_id: str) -> Uncertainty:
         """Get uncertainty for a variable."""
         return self.uncertainties.get(variable_id)
 
     def explore_paths(
-        self, initial_state: Dict[str, Any], decision_points: list[dict[str, Any]], depth: int = 3
+        self, initial_state: dict[str, Any], decision_points: list[dict[str, Any]], depth: int = 3
     ) -> list[dict[str, Any]]:
         """Multi-path exploration - explore multiple decision branches simultaneously.
         Returns list of possible paths with probabilities.
@@ -384,7 +386,7 @@ class QuantumLayerKernel:
 
     def quantum_decision(
         self, options: list[dict[str, Any]], context: dict[str, Any] = None
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Make a decision using quantum probability.
         Creates superposition of options, then collapses based on context.
         """
@@ -413,7 +415,7 @@ class QuantumLayerKernel:
             "probability": superposition.weights.get(selected_id, 0),
         }
 
-    def get_state(self) -> Dict[str, Any]:
+    def get_state(self) -> dict[str, Any]:
         """Get current quantum layer state."""
         superposition_states = {}
         for sid, sup in self.superpositions.items():

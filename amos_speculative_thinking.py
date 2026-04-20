@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any
 
 """AMOS Speculative Thinking - Medusa-Style Parallel Decoding
 
@@ -36,8 +36,8 @@ class SpeculativeResult:
     """Result from speculative thinking."""
 
     final_state: ThinkingState
-    accepted_steps: List[SpeculativeStep]
-    rejected_steps: List[SpeculativeStep]
+    accepted_steps: list[SpeculativeStep]
+    rejected_steps: list[SpeculativeStep]
     total_iterations: int
     saved_iterations: int
     latency_ms: float
@@ -63,7 +63,7 @@ class SpeculativeThinkingEngine:
         self.kernel = ThinkingKernel(enable_meta_thinking=True)
 
         # Prediction heads - lightweight predictors for future states
-        self.prediction_heads: List[Callable] = [
+        self.prediction_heads: list[Callable] = [
             self._predict_simple_continuation,
             self._predict_goal_convergence,
             self._predict_error_correction,
@@ -140,8 +140,8 @@ class SpeculativeThinkingEngine:
         start = time.perf_counter()
 
         current_state = initial_state.copy()
-        accepted_steps: List[SpeculativeStep] = []
-        rejected_steps: List[SpeculativeStep] = []
+        accepted_steps: list[SpeculativeStep] = []
+        rejected_steps: list[SpeculativeStep] = []
         total_iterations = 0
         saved_iterations = 0
 
@@ -210,7 +210,7 @@ class SpeculativeThinkingEngine:
 
     async def _predict_future_states(
         self, current_state: ThinkingState, n_steps: int
-    ) -> List[ThinkingState]:
+    ) -> list[ThinkingState]:
         """
         Predict future states using all prediction heads in parallel.
         """
@@ -233,8 +233,8 @@ class SpeculativeThinkingEngine:
         return await loop.run_in_executor(None, head, state)
 
     def _verify_states_batch(
-        self, base_state: ThinkingState, candidate_states: List[ThinkingState]
-    ) -> List[tuple[ThinkingState, bool]]:
+        self, base_state: ThinkingState, candidate_states: list[ThinkingState]
+    ) -> list[tuple[ThinkingState, bool]]:
         """
         Verify multiple candidate states against constraints.
 
@@ -295,7 +295,7 @@ class SpeculativeThinkingEngine:
             or state.quality_metrics.overall_quality > 0.95
         )
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get speculative thinking statistics."""
         return {
             "prediction_heads": len(self.prediction_heads),

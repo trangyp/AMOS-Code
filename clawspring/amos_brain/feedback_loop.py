@@ -1,7 +1,9 @@
 """AMOS Cognitive Feedback Loop - Learn from audit history."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 from .cognitive_audit import get_audit_trail
 
@@ -11,7 +13,7 @@ class RoutingInsight:
     """Insight derived from historical routing decisions."""
 
     pattern: str
-    recommended_engines: List[str]
+    recommended_engines: list[str]
     avg_consensus_score: float
     violation_rate: float
     confidence: float
@@ -22,10 +24,10 @@ class CognitiveFeedbackLoop:
 
     def __init__(self):
         self.audit = get_audit_trail()
-        self._insights_cache: List[RoutingInsight] = []
-        self._domain_preferences: Dict[str, list[str]] = {}
+        self._insights_cache: list[RoutingInsight] = []
+        self._domain_preferences: dict[str, list[str]] = {}
 
-    def analyze_patterns(self) -> List[RoutingInsight]:
+    def analyze_patterns(self) -> list[RoutingInsight]:
         """Analyze audit history for routing patterns."""
         stats = self.audit.get_statistics()
         if stats["total_entries"] < 3:
@@ -81,7 +83,7 @@ class CognitiveFeedbackLoop:
         self._insights_cache = insights
         return insights
 
-    def get_engine_recommendations(self, domain: str, base_engines: List[str]) -> List[str]:
+    def get_engine_recommendations(self, domain: str, base_engines: list[str]) -> list[str]:
         """Get engine recommendations based on historical success."""
         # Refresh insights if needed
         if self._insights_cache is None:
@@ -96,7 +98,7 @@ class CognitiveFeedbackLoop:
 
         return base_engines
 
-    def estimate_consensus_quality(self, domain: str, engines: List[str]) -> Tuple[float, str]:
+    def estimate_consensus_quality(self, domain: str, engines: list[str]) -> tuple[float, str]:
         """Estimate expected consensus quality based on history."""
         entries = self.audit.get_by_domain(domain)
         if not entries:
@@ -116,7 +118,7 @@ class CognitiveFeedbackLoop:
 
         return 0.5, "No matching engine combinations"
 
-    def get_similar_task_advice(self, task: str) -> Dict[str, Any]:
+    def get_similar_task_advice(self, task: str) -> dict[str, Any]:
         """Get advice from similar historical tasks."""
         similar = self.audit.find_similar(task, threshold=0.5)
         if not similar:
@@ -180,7 +182,7 @@ class CognitiveFeedbackLoop:
 
 
 # Singleton instance
-_feedback_loop: Optional[CognitiveFeedbackLoop] = None
+_feedback_loop: CognitiveFeedbackLoop | None = None
 
 
 def get_feedback_loop() -> CognitiveFeedbackLoop:
@@ -191,13 +193,13 @@ def get_feedback_loop() -> CognitiveFeedbackLoop:
     return _feedback_loop
 
 
-def get_enhanced_engines(domain: str, base_engines: List[str]) -> List[str]:
+def get_enhanced_engines(domain: str, base_engines: list[str]) -> list[str]:
     """Convenience function to get history-enhanced engine list."""
     loop = get_feedback_loop()
     return loop.get_engine_recommendations(domain, base_engines)
 
 
-def get_task_advice(task: str) -> Dict[str, Any]:
+def get_task_advice(task: str) -> dict[str, Any]:
     """Convenience function to get advice for a task."""
     loop = get_feedback_loop()
     return loop.get_similar_task_advice(task)

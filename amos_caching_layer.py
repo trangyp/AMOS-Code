@@ -20,7 +20,7 @@ import time
 from collections import OrderedDict
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional, Protocol, Tuple
+from typing import Any, Optional, Protocol
 
 import numpy as np
 
@@ -59,14 +59,14 @@ class CacheEntry:
     expires_at: float = None
 
     # For semantic cache
-    embedding: List[float] = None  # Vector embedding for similarity
+    embedding: list[float] = None  # Vector embedding for similarity
     original_query: str = None
 
     # Size tracking
     size_bytes: int = 0
 
     # Tags for categorization
-    tags: List[str] = field(default_factory=list)
+    tags: list[str] = field(default_factory=list)
 
     def is_expired(self) -> bool:
         """Check if entry has expired."""
@@ -263,7 +263,7 @@ class AMOSCachingLayer:
     def __init__(self):
         # Multi-tier cache
         self.memory_cache = InMemoryCacheBackend(max_size=1000, policy=CachePolicy.LRU)
-        self.semantic_cache: Dict[str, SemanticCacheEntry] = {}
+        self.semantic_cache: dict[str, SemanticCacheEntry] = {}
 
         # Configuration
         self.default_ttl = 3600  # 1 hour
@@ -278,7 +278,7 @@ class AMOSCachingLayer:
         self.latency_savings_ms = 0.0
 
         # Cache warming
-        self.warm_queries: List[str] = []
+        self.warm_queries: list[str] = []
 
     async def initialize(self) -> None:
         """Initialize caching layer."""
@@ -287,7 +287,7 @@ class AMOSCachingLayer:
         print(f"  - Semantic similarity threshold: {self.semantic_similarity_threshold}")
         print(f"  - Default TTL: {self.default_ttl}s")
 
-    def _compute_embedding(self, text: str) -> List[float]:
+    def _compute_embedding(self, text: str) -> list[float]:
         """Compute deterministic embedding for text."""
         # In production, use actual embedding model (OpenAI, etc.)
         # For demo, use hash-based pseudo-embedding
@@ -297,7 +297,7 @@ class AMOSCachingLayer:
         embedding = embedding / np.linalg.norm(embedding)
         return embedding.tolist()
 
-    def _compute_similarity(self, emb1: List[float], emb2: List[float]) -> float:
+    def _compute_similarity(self, emb1: list[float], emb2: list[float]) -> float:
         """Compute cosine similarity between embeddings."""
         vec1 = np.array(emb1)
         vec2 = np.array(emb2)
@@ -317,7 +317,7 @@ class AMOSCachingLayer:
 
     async def get_semantic(
         self, query: str, model: str = None, min_similarity: float = None
-    ) -> Tuple[Any, float]:
+    ) -> tuple[Any, float]:
         """Get semantically similar cached response."""
         threshold = min_similarity or self.semantic_similarity_threshold
         query_embedding = self._compute_embedding(query)
@@ -345,7 +345,7 @@ class AMOSCachingLayer:
 
         return None
 
-    async def set(self, key: str, value: Any, ttl: int = None, tags: List[str] = None) -> bool:
+    async def set(self, key: str, value: Any, ttl: int = None, tags: list[str] = None) -> bool:
         """Store in exact-match cache."""
         entry = CacheEntry(
             key=key,
@@ -400,7 +400,7 @@ class AMOSCachingLayer:
         use_semantic: bool = False,
         query: str = None,
         model: str = None,
-    ) -> Tuple[Any, bool]:
+    ) -> tuple[Any, bool]:
         """Get from cache or compute and store."""
         self.total_requests += 1
 
@@ -452,7 +452,7 @@ class AMOSCachingLayer:
 
         return count
 
-    async def warm_cache(self, queries: List[str], model: str = None) -> int:
+    async def warm_cache(self, queries: list[str], model: str = None) -> int:
         """Pre-populate cache with common queries."""
         warmed = 0
 
@@ -473,7 +473,7 @@ class AMOSCachingLayer:
         self.semantic_cache.clear()
         return True
 
-    def get_analytics(self) -> Dict[str, Any]:
+    def get_analytics(self) -> dict[str, Any]:
         """Get cache performance analytics."""
         total = self.cache_hits + self.cache_misses
         hit_rate = self.cache_hits / total if total > 0 else 0.0
@@ -504,14 +504,14 @@ class AMOSCachingLayer:
 ╔════════════════════════════════════════════════════════════╗
 ║            AMOS CACHING LAYER REPORT                       ║
 ╠════════════════════════════════════════════════════════════╣
-  Requests:     {analytics['total_requests']:,}
-  Cache Hits:  {analytics['cache_hits']:,} ({analytics['hit_rate']:.1%})
-  Cache Misses:{analytics['cache_misses']:,} ({analytics['miss_rate']:.1%})
+  Requests:     {analytics["total_requests"]:,}
+  Cache Hits:  {analytics["cache_hits"]:,} ({analytics["hit_rate"]:.1%})
+  Cache Misses:{analytics["cache_misses"]:,} ({analytics["miss_rate"]:.1%})
 ╠════════════════════════════════════════════════════════════╣
-  Cost Savings:     ${analytics['cost_savings_usd']:.2f}
-  Latency Savings:  {analytics['latency_savings_ms']:.0f}ms
+  Cost Savings:     ${analytics["cost_savings_usd"]:.2f}
+  Latency Savings:  {analytics["latency_savings_ms"]:.0f}ms
 ╠════════════════════════════════════════════════════════════╣
-  Semantic Cache: {analytics['semantic_cache_size']} entries
+  Semantic Cache: {analytics["semantic_cache_size"]} entries
 ╚════════════════════════════════════════════════════════════╝
 """
         return report

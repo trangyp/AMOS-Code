@@ -61,7 +61,7 @@ import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class CollaborationMode(Enum):
@@ -93,8 +93,8 @@ class HumanIntent:
 
     # Core intent
     explicit_goal: str
-    implicit_needs: List[str]
-    success_criteria: List[str]
+    implicit_needs: list[str]
+    success_criteria: list[str]
 
     # Cognitive context
     detected_style: HumanCognitiveStyle
@@ -117,11 +117,11 @@ class AISuggestion:
     # Content
     content: str
     reasoning: str
-    supporting_evidence: List[str]
+    supporting_evidence: list[str]
 
     # Confidence and uncertainty
     confidence: float
-    uncertainty_factors: List[str]
+    uncertainty_factors: list[str]
 
     # Human evaluation
     human_rating: float = None
@@ -137,15 +137,15 @@ class CollaborativeReasoningChain:
     started_at: float
 
     # Chain elements (alternating human and AI contributions)
-    elements: List[dict[str, Any]] = field(default_factory=list)
+    elements: list[dict[str, Any]] = field(default_factory=list)
 
     # State
     current_focus: str = ""
-    agreed_conclusions: List[str] = field(default_factory=list)
-    open_questions: List[str] = field(default_factory=list)
+    agreed_conclusions: list[str] = field(default_factory=list)
+    open_questions: list[str] = field(default_factory=list)
     last_updated: float = 0.0
     completed_at: float = 0.0
-    ai_recommended_focus: List[str] = field(default_factory=list)
+    ai_recommended_focus: list[str] = field(default_factory=list)
 
     # Metrics
     human_contributions: int = 0
@@ -162,19 +162,19 @@ class SharedContext:
     last_updated: float = 0.0
 
     # Knowledge
-    facts: Dict[str, Any] = field(default_factory=dict)
-    assumptions: List[str] = field(default_factory=list)
-    constraints: List[str] = field(default_factory=list)
+    facts: dict[str, Any] = field(default_factory=dict)
+    assumptions: list[str] = field(default_factory=list)
+    constraints: list[str] = field(default_factory=list)
 
     # Reasoning state
-    active_hypotheses: List[str] = field(default_factory=list)
-    confirmed_insights: List[str] = field(default_factory=list)
-    rejected_approaches: List[str] = field(default_factory=list)
-    open_questions: List[str] = field(default_factory=list)
+    active_hypotheses: list[str] = field(default_factory=list)
+    confirmed_insights: list[str] = field(default_factory=list)
+    rejected_approaches: list[str] = field(default_factory=list)
+    open_questions: list[str] = field(default_factory=list)
 
     # Collaboration state
-    human_focus_areas: List[str] = field(default_factory=list)
-    ai_recommended_focus: List[str] = field(default_factory=list)
+    human_focus_areas: list[str] = field(default_factory=list)
+    ai_recommended_focus: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -182,13 +182,13 @@ class BidirectionalAdaptation:
     """Records of mutual adaptation between human and AI."""
 
     # AI adapting to human
-    human_style_profile: Dict[str, Any]
-    learned_preferences: Dict[str, Any]
-    effective_explanation_types: List[str]
+    human_style_profile: dict[str, Any]
+    learned_preferences: dict[str, Any]
+    effective_explanation_types: list[str]
 
     # Human adapting to AI (tracked, not controlled)
-    human_adoption_patterns: Dict[str, Any]
-    collaboration_satisfaction_trend: List[float]
+    human_adoption_patterns: dict[str, Any]
+    collaboration_satisfaction_trend: list[float]
 
     # Symbiotic metrics
     synergy_score: float  # How well they work together
@@ -214,9 +214,9 @@ class HumanAICollaboration:
         self.active_chain: Optional[CollaborativeReasoningChain] = None
 
         # History
-        self.intent_history: List[HumanIntent] = []
-        self.suggestion_history: List[AISuggestion] = []
-        self.reasoning_chains: List[CollaborativeReasoningChain] = []
+        self.intent_history: list[HumanIntent] = []
+        self.suggestion_history: list[AISuggestion] = []
+        self.reasoning_chains: list[CollaborativeReasoningChain] = []
 
         # Adaptation
         self.adaptation = BidirectionalAdaptation(
@@ -229,7 +229,7 @@ class HumanAICollaboration:
             mutual_improvement_rate=0.0,
         )
 
-    def parse_human_intent(self, natural_input: str, context: Dict[str, Any] = None) -> HumanIntent:
+    def parse_human_intent(self, natural_input: str, context: dict[str, Any] = None) -> HumanIntent:
         """Parse human natural language input into structured intent.
 
         Uses cognitive style detection to adapt to individual humans.
@@ -317,7 +317,7 @@ class HumanAICollaboration:
         rating: float,  # 0-1
         feedback_text: str,
         was_accepted: bool,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Process human feedback on AI suggestion.
 
         This creates the bidirectional learning loop:
@@ -383,7 +383,7 @@ class HumanAICollaboration:
         chain: CollaborativeReasoningChain,
         contribution: str,
         contribution_type: str = "insight",  # insight, question, correction, confirmation
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Add human contribution to collaborative reasoning chain."""
         element = {
             "type": contribution_type,
@@ -417,7 +417,7 @@ class HumanAICollaboration:
         chain: CollaborativeReasoningChain,
         contribution: str,
         contribution_type: str = "analysis",  # analysis, hypothesis, synthesis, question
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Add AI contribution to collaborative reasoning chain."""
         # Adapt to human style before adding
         adapted_contribution = self._adapt_contribution_to_style(
@@ -453,7 +453,7 @@ class HumanAICollaboration:
 
     def finalize_collaborative_reasoning(
         self, chain: CollaborativeReasoningChain
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Finalize a collaborative reasoning chain with agreed conclusions."""
         # Extract agreed conclusions (simplified; real implementation would analyze chain)
         conclusions = [e["content"] for e in chain.elements if e.get("consensus")]
@@ -477,7 +477,7 @@ class HumanAICollaboration:
             "synergy_score": self.adaptation.synergy_score,
         }
 
-    def get_collaboration_report(self) -> Dict[str, Any]:
+    def get_collaboration_report(self) -> dict[str, Any]:
         """Get comprehensive report on collaboration state."""
         return {
             "current_mode": self.collaboration_mode.name,
@@ -511,7 +511,7 @@ class HumanAICollaboration:
         else:
             return HumanCognitiveStyle.VERBAL
 
-    def _infer_implicit_needs(self, input_text: str, context: dict) -> List[str]:
+    def _infer_implicit_needs(self, input_text: str, context: dict) -> list[str]:
         """Infer implicit needs from explicit input."""
         needs = []
 
@@ -626,7 +626,7 @@ class HumanAICollaboration:
         if rating > 0.7 and suggestion.reasoning:
             self.adaptation.effective_explanation_types.append(suggestion.reasoning[:50])
 
-    def _suggest_focus_areas(self, chain: CollaborativeReasoningChain) -> List[str]:
+    def _suggest_focus_areas(self, chain: CollaborativeReasoningChain) -> list[str]:
         """Suggest focus areas based on chain history."""
         return [f"Explore: {chain.current_focus} (depth {len(chain.elements)})"]
 
@@ -701,7 +701,7 @@ if __name__ == "__main__":
 
     print("\n2. AI Suggestion Generation (Adapted to Style)")
 
-    def mock_reasoning(prompt: str, context: Dict[str, Any]) -> str:
+    def mock_reasoning(prompt: str, context: dict[str, Any]) -> str:
         return "Architecture diagram showing component relationships and data flow"
 
     suggestion = collaboration.generate_ai_suggestion(mock_reasoning)

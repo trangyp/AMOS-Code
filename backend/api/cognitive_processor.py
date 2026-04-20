@@ -1,4 +1,6 @@
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
+
+from typing import Any, Optional
 
 """AMOS Cognitive File Processor API
 
@@ -31,7 +33,7 @@ class CognitiveProcessRequest(BaseModel):
 
     content: str
     source: Optional[str] = None
-    context: Dict[str, Any] = {}
+    context: dict[str, Any] = {}
     max_concurrent: int = 5
     enable_brain: bool = True
 
@@ -47,9 +49,9 @@ class CognitiveProcessResponse(BaseModel):
     failed_chunks: int
     brain_enhanced: bool
     total_processing_time_ms: float
-    cognitive_summary: Dict[str, Any]
-    errors: List[str]
-    chunks: List[dict[str, Any]]
+    cognitive_summary: dict[str, Any]
+    errors: list[str]
+    chunks: list[dict[str, Any]]
 
 
 class CognitiveStatusResponse(BaseModel):
@@ -201,7 +203,7 @@ async def get_cognitive_status() -> CognitiveStatusResponse:
 
 
 @router.post("/analyze-text")
-async def analyze_text_endpoint(text: str = Form(...)) -> Dict[str, Any]:
+async def analyze_text_endpoint(text: str = Form(...)) -> dict[str, Any]:
     """Quick cognitive analysis of text without full file processing."""
     if not COGNITIVE_AVAILABLE:
         raise HTTPException(status_code=503, detail="Cognitive processor not available")

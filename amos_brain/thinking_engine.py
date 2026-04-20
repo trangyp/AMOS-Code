@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional, Any
+from typing import Any, Optional
 
 """AMOS Thinking Engine - State Transformation Subsystem
 
@@ -13,6 +13,7 @@ Key equation: Thinking = S_t → S_{t+1} under goals, constraints, uncertainty
 from dataclasses import dataclass, field
 from enum import Enum
 
+
 class ThinkingMode(Enum):
     """Modes of thinking operation."""
 
@@ -24,6 +25,7 @@ class ThinkingMode(Enum):
     REPAIR = "repair"
     COMMIT = "commit"
 
+
 @dataclass(frozen=True)
 class WorkspaceItem:
     """Item in working memory."""
@@ -33,6 +35,7 @@ class WorkspaceItem:
     activation: float = 1.0
     source: str = "input"
 
+
 @dataclass(frozen=True)
 class Hypothesis:
     """Candidate solution."""
@@ -40,7 +43,8 @@ class Hypothesis:
     id: str
     content: Any
     confidence: float = 0.5
-    evidence: List[str] = field(default_factory=list)
+    evidence: list[str] = field(default_factory=list)
+
 
 @dataclass(frozen=True)
 class Goal:
@@ -50,13 +54,14 @@ class Goal:
     description: str
     priority: float = 1.0
 
+
 @dataclass
 class ThinkingState:
     """Internal thinking state S_t = (W_t, H_t, G_t, E_t, Π_t)."""
 
-    workspace: List[WorkspaceItem] = field(default_factory=list)
-    hypotheses: List[Hypothesis] = field(default_factory=list)
-    goals: List[Goal] = field(default_factory=list)
+    workspace: list[WorkspaceItem] = field(default_factory=list)
+    hypotheses: list[Hypothesis] = field(default_factory=list)
+    goals: list[Goal] = field(default_factory=list)
     iteration: int = 0
     max_iterations: int = 10
     quality_score: float = 0.0
@@ -74,15 +79,17 @@ class ThinkingState:
             convergence_detected=self.convergence_detected,
         )
 
+
 @dataclass
 class ThinkingResult:
     """Result of thinking process."""
 
     final_state: ThinkingState
-    history: List[ThinkingState]
+    history: list[ThinkingState]
     converged: bool
     iterations: int
-    quality_progression: List[float]
+    quality_progression: list[float]
+
 
 class ThinkingEngine:
     """
@@ -102,10 +109,10 @@ class ThinkingEngine:
             max_workspace: Working memory capacity (Miller's law: 7±2)
         """
         self.max_workspace = max_workspace
-        self._history: List[ThinkingState] = []
+        self._history: list[ThinkingState] = []
 
     def initialize(
-        self, problem: str | dict[str, Any], goals: Optional[list[Goal]] = None
+        self, problem: str | dict[str, Any], goals: list[Optional[Goal]] = None
     ) -> ThinkingState:
         """Initialize thinking state from problem."""
         state = ThinkingState()
@@ -128,7 +135,9 @@ class ThinkingEngine:
 
         return state
 
-    def think_step(self, state: ThinkingState, mode: Optional[ThinkingMode] = None) -> ThinkingState:
+    def think_step(
+        self, state: ThinkingState, mode: Optional[ThinkingMode] = None
+    ) -> ThinkingState:
         """Execute single thinking step: S_t → S_{t+1}."""
         new_state = state.copy()
 
@@ -332,7 +341,7 @@ class ThinkingEngine:
 
         return max(0.0, min(1.0, quality))
 
-    def extract_solution(self, state: ThinkingState) -> Dict[str, Any]:
+    def extract_solution(self, state: ThinkingState) -> dict[str, Any]:
         """Extract final solution from thinking state."""
         if not state.hypotheses:
             return {"solution": None, "confidence": 0.0}

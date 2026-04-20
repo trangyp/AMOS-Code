@@ -1,4 +1,6 @@
-from typing import Any, Dict, List, Optional, Tuple
+from __future__ import annotations
+
+from typing import Any
 
 """
 AMOS Learning + Memory Kernel (LMK)
@@ -36,6 +38,9 @@ import logging
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+
+UTC = timezone.utc
+
 UTC = timezone.utc
 from enum import Enum, auto
 from functools import lru_cache
@@ -106,8 +111,7 @@ class FailureType(Enum):
 
 @dataclass
 class MemoryRecord:
-    """
-    Machine-readable memory encoding.
+    """Machine-readable memory encoding.
 
     m_t = Encode(o_t, a_t, c_t, y_t, e_t)
 
@@ -124,14 +128,14 @@ class MemoryRecord:
     timestamp: datetime
 
     # Core experience components
-    observation: Dict[str, Any] = field(default_factory=dict)
-    action: Dict[str, Any] = field(default_factory=dict)
-    context: Dict[str, Any] = field(default_factory=dict)
-    outcome: Dict[str, Any] = field(default_factory=dict)
-    error_signal: Dict[str, Any] = field(default_factory=dict)
+    observation: dict[str, Any] = field(default_factory=dict)
+    action: dict[str, Any] = field(default_factory=dict)
+    context: dict[str, Any] = field(default_factory=dict)
+    outcome: dict[str, Any] = field(default_factory=dict)
+    error_signal: dict[str, Any] = field(default_factory=dict)
 
     # Derived properties
-    abstraction: Dict[str, Any] = field(default_factory=dict)
+    abstraction: dict[str, Any] = field(default_factory=dict)
 
     # Retrieval metrics (0.0 - 1.0)
     relevance: float = 0.5
@@ -140,11 +144,11 @@ class MemoryRecord:
     importance: float = 0.5
 
     # Retrieval structure
-    retrieval_keys: List[str] = field(default_factory=list)
+    retrieval_keys: list[str] = field(default_factory=list)
 
     # Forgetting state
     access_count: int = 0
-    last_accessed: Optional[datetime] = None
+    last_accessed: datetime = None
     decay_rate: float = 0.01
 
     def __post_init__(self):
@@ -191,8 +195,7 @@ class MemoryRecord:
 
 @dataclass
 class MemoryState:
-    """
-    Full learning-memory state L_t:
+    """Full learning-memory state L_t:
 
     L_t = (WM_t, EM_t, SM_t, PM_t, IM_t, XM_t, ErrM_t, Pol_t, Mod_t)
 
@@ -209,22 +212,22 @@ class MemoryState:
     """
 
     # Working Memory - Active temporary cognition
-    working_memory: Dict[str, MemoryRecord] = field(default_factory=dict)
+    working_memory: dict[str, MemoryRecord] = field(default_factory=dict)
 
     # Episodic Memory - Specific past events
-    episodic_memory: Dict[str, MemoryRecord] = field(default_factory=dict)
+    episodic_memory: dict[str, MemoryRecord] = field(default_factory=dict)
 
     # Semantic Memory - Generalized knowledge
-    semantic_memory: Dict[str, MemoryRecord] = field(default_factory=dict)
+    semantic_memory: dict[str, MemoryRecord] = field(default_factory=dict)
 
     # Procedural Memory - How to do things
-    procedural_memory: Dict[str, MemoryRecord] = field(default_factory=dict)
+    procedural_memory: dict[str, MemoryRecord] = field(default_factory=dict)
 
     # Identity Memory - Core continuity
-    identity_memory: Dict[str, MemoryRecord] = field(default_factory=dict)
+    identity_memory: dict[str, MemoryRecord] = field(default_factory=dict)
 
     # Strategic Memory - Long-horizon goals
-    strategic_memory: Dict[str, Any] = field(
+    strategic_memory: dict[str, Any] = field(
         default_factory=lambda: {
             "persistent_goals": [],
             "open_loops": [],
@@ -236,10 +239,10 @@ class MemoryState:
     )
 
     # Error Memory - What failed and why
-    error_memory: Dict[str, MemoryRecord] = field(default_factory=dict)
+    error_memory: dict[str, MemoryRecord] = field(default_factory=dict)
 
     # Policy State - Current behavioral policy
-    policy_state: Dict[str, Any] = field(
+    policy_state: dict[str, Any] = field(
         default_factory=lambda: {
             "routing_policy": {},
             "verification_policy": {},
@@ -249,12 +252,12 @@ class MemoryState:
     )
 
     # World Model State - Current model of environment
-    world_model: Dict[str, Any] = field(
+    world_model: dict[str, Any] = field(
         default_factory=lambda: {"predictors": {}, "constraints": [], "patterns": defaultdict(int)}
     )
 
     # Meta-learning state
-    meta_learning: Dict[str, Any] = field(
+    meta_learning: dict[str, Any] = field(
         default_factory=lambda: {
             "learning_policies": {},
             "policy_scores": defaultdict(float),
@@ -264,10 +267,10 @@ class MemoryState:
     )
 
     # Retrieval index
-    retrieval_index: Dict[str, set[str]] = field(default_factory=lambda: defaultdict(set))
+    retrieval_index: dict[str, set[str]] = field(default_factory=lambda: defaultdict(set))
 
     # Statistics
-    stats: Dict[str, Any] = field(
+    stats: dict[str, Any] = field(
         default_factory=lambda: {
             "total_memories": 0,
             "total_errors": 0,
@@ -293,7 +296,7 @@ class ErrorMemoryEntry:
     failure_type: FailureType
     cause: str
     context_signature: str
-    fix: Optional[str] = None
+    fix: str = None
     repeat_count: int = 1
     first_seen: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     last_seen: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
@@ -319,8 +322,7 @@ class ErrorMemoryEntry:
 
 
 class LearningKernel:
-    """
-    Implements adaptive learning mechanisms.
+    """Implements adaptive learning mechanisms.
 
     Core equation:
         L_{t+1} = Update(L_t, Error_t, Outcome_t, Repetition_t)
@@ -334,10 +336,9 @@ class LearningKernel:
         logger.info("LearningKernel initialized")
 
     def compute_prediction_error(
-        self, prediction: Dict[str, Any], outcome: Dict[str, Any]
-    ) -> Dict[str, float]:
-        """
-        ε_t = Outcome_t - Prediction_t
+        self, prediction: dict[str, Any], outcome: dict[str, Any]
+    ) -> dict[str, float]:
+        """ε_t = Outcome_t - Prediction_t
 
         Returns error signal for learning.
         """
@@ -361,10 +362,9 @@ class LearningKernel:
         return errors
 
     def update_world_model(
-        self, prediction_error: Dict[str, float], context: Dict[str, Any]
-    ) -> Dict[str, Any]:
-        """
-        Mod_{t+1} = Mod_t + η * ε_t
+        self, prediction_error: dict[str, float], context: dict[str, Any]
+    ) -> dict[str, Any]:
+        """Mod_{t+1} = Mod_t + η * ε_t
 
         Updates world model from prediction error.
         """
@@ -386,10 +386,9 @@ class LearningKernel:
         return self.state.world_model
 
     def update_policy(
-        self, update_signal: Dict[str, Any], learning_type: LearningType
-    ) -> Dict[str, Any]:
-        """
-        Pol_{t+1} = Pol_t + η * UpdateSignal_t
+        self, update_signal: dict[str, Any], learning_type: LearningType
+    ) -> dict[str, Any]:
+        """Pol_{t+1} = Pol_t + η * UpdateSignal_t
 
         Updates behavioral policy from learning signal.
         """
@@ -433,9 +432,8 @@ class LearningKernel:
         logger.debug(f"Policy updated for {learning_type.value}")
         return self.state.policy_state
 
-    def replay_update(self, replay_set: List[MemoryRecord]) -> Dict[str, Any]:
-        """
-        Policy_{t+1} = ReplayUpdate(ReplaySet_t, Policy_t)
+    def replay_update(self, replay_set: list[MemoryRecord]) -> dict[str, Any]:
+        """Policy_{t+1} = ReplayUpdate(ReplaySet_t, Policy_t)
 
         Updates policy from replay of critical cases.
         """
@@ -464,9 +462,8 @@ class LearningKernel:
 
         return self.state.policy_state
 
-    def meta_learn(self) -> Dict[str, Any]:
-        """
-        MetaLearn = EvaluateLearning → DetectWeakUpdater → ChangeLearningPolicy
+    def meta_learn(self) -> dict[str, Any]:
+        """MetaLearn = EvaluateLearning → DetectWeakUpdater → ChangeLearningPolicy
 
         Improves the learning system itself.
         """
@@ -502,15 +499,14 @@ class LearningKernel:
 
 
 class MemoryKernel:
-    """
-    Implements memory encoding, storage, retrieval, and consolidation.
+    """Implements memory encoding, storage, retrieval, and consolidation.
 
     Memory = persistent structured state that can influence future cognition
 
     Remembered(m) = 1 iff Retrieve(m) changes future state or action
     """
 
-    def __init__(self, memory_state: Optional[MemoryState] = None):
+    def __init__(self, memory_state: MemoryState = None):
         self.state = memory_state or MemoryState()
         self.storage_threshold = 0.5  # τ_i
         self.error_threshold = 0.3  # τ_e
@@ -519,15 +515,14 @@ class MemoryKernel:
 
     def encode_experience(
         self,
-        observation: Dict[str, Any],
-        action: Dict[str, Any],
-        context: Dict[str, Any],
-        outcome: Dict[str, Any],
-        error_signal: Dict[str, Any],
+        observation: dict[str, Any],
+        action: dict[str, Any],
+        context: dict[str, Any],
+        outcome: dict[str, Any],
+        error_signal: dict[str, Any],
         memory_type: MemoryType = MemoryType.EPISODIC,
     ) -> MemoryRecord:
-        """
-        m_t = Encode(o_t, a_t, c_t, y_t, e_t)
+        """m_t = Encode(o_t, a_t, c_t, y_t, e_t)
 
         Converts experience into memory object.
         """
@@ -560,7 +555,7 @@ class MemoryKernel:
         return record
 
     def _calculate_importance(
-        self, error_signal: Dict[str, Any], outcome: Dict[str, Any], context: Dict[str, Any]
+        self, error_signal: dict[str, Any], outcome: dict[str, Any], context: dict[str, Any]
     ) -> float:
         """Calculate importance score for storage decision."""
         importance = 0.5  # Base
@@ -586,11 +581,11 @@ class MemoryKernel:
 
     def _generate_retrieval_keys(
         self,
-        observation: Dict[str, Any],
-        action: Dict[str, Any],
-        context: Dict[str, Any],
-        outcome: Dict[str, Any],
-    ) -> List[str]:
+        observation: dict[str, Any],
+        action: dict[str, Any],
+        context: dict[str, Any],
+        outcome: dict[str, Any],
+    ) -> list[str]:
         """Generate searchable keys for retrieval."""
         keys = []
 
@@ -615,8 +610,8 @@ class MemoryKernel:
         return keys
 
     def _create_abstraction(
-        self, observation: Dict[str, Any], outcome: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, observation: dict[str, Any], outcome: dict[str, Any]
+    ) -> dict[str, Any]:
         """Create abstract representation for semantic memory."""
         abstraction = {}
 
@@ -631,9 +626,7 @@ class MemoryKernel:
         return abstraction
 
     def should_store(self, record: MemoryRecord) -> bool:
-        """
-        Store(m_t) iff Importance_t ≥ τ_i ∨ Error_t ≥ τ_e ∨ Repetition_t ≥ τ_r
-        """
+        """Store(m_t) iff Importance_t ≥ τ_i ∨ Error_t ≥ τ_e ∨ Repetition_t ≥ τ_r"""
         importance_check = record.importance >= self.storage_threshold
 
         error_magnitude = record.error_signal.get("magnitude", 0.0)
@@ -645,9 +638,7 @@ class MemoryKernel:
         return importance_check or error_check or repetition_check
 
     def store_memory(self, record: MemoryRecord) -> bool:
-        """
-        Store memory in appropriate memory system.
-        """
+        """Store memory in appropriate memory system."""
         if not self.should_store(record):
             logger.debug(f"Memory {record.id} rejected (below thresholds)")
             return False
@@ -682,10 +673,9 @@ class MemoryKernel:
         return True
 
     def retrieve_memory(
-        self, query: str | dict[str, Any], memory_type: Optional[MemoryType] = None, k: int = 5
-    ) -> List[MemoryRecord]:
-        """
-        Retrieve(q) = argmax_m [Similarity(q,m) * Relevance(m) * Freshness(m) * Importance(m) - RetrievalCost(m)]
+        self, query: Union[str, dict][str, Any], memory_type: MemoryType = None, k: int = 5
+    ) -> list[MemoryRecord]:
+        """Retrieve(q) = argmax_m [Similarity(q,m) * Relevance(m) * Freshness(m) * Importance(m) - RetrievalCost(m)]
 
         Recall relevant memories.
         """
@@ -725,7 +715,7 @@ class MemoryKernel:
 
         return results
 
-    def _get_memory_pool(self, memory_type: MemoryType) -> Dict[str, MemoryRecord]:
+    def _get_memory_pool(self, memory_type: MemoryType) -> dict[str, MemoryRecord]:
         """Get the appropriate memory pool."""
         pools = {
             MemoryType.WORKING: self.state.working_memory,
@@ -737,7 +727,7 @@ class MemoryKernel:
         }
         return pools.get(memory_type, self.state.episodic_memory)
 
-    def _score_retrieval(self, record: MemoryRecord, query: str | dict[str, Any]) -> float:
+    def _score_retrieval(self, record: MemoryRecord, query: Union[str, dict][str, Any]) -> float:
         """Score a memory for retrieval relevance."""
         # String query
         if isinstance(query, str):
@@ -761,10 +751,9 @@ class MemoryKernel:
         return score
 
     def consolidate_memory(
-        self, working_memories: List[MemoryRecord], outcomes: List[dict[str, Any]]
-    ) -> Tuple[dict, dict, dict]:
-        """
-        SM_{t+1}, PM_{t+1}, ErrM_{t+1} = Consolidate(WM_t, EM_t, Outcome_t, Repetition_t)
+        self, working_memories: list[MemoryRecord], outcomes: list[dict[str, Any]]
+    ) -> tuple[dict, dict, dict]:
+        """SM_{t+1}, PM_{t+1}, ErrM_{t+1} = Consolidate(WM_t, EM_t, Outcome_t, Repetition_t)
 
         Compress short-term into durable structured memory.
         """
@@ -823,9 +812,8 @@ class MemoryKernel:
 
         return new_semantic, new_procedural, new_error
 
-    def forget_or_archive(self, forgetting_policy: Dict[str, Any]) -> List[str]:
-        """
-        Forget(m_i) iff Relevance_i < τ_r ∧ Freshness_i < τ_f ∧ Importance_i < τ_i
+    def forget_or_archive(self, forgetting_policy: dict[str, Any]) -> list[str]:
+        """Forget(m_i) iff Relevance_i < τ_r ∧ Freshness_i < τ_f ∧ Importance_i < τ_i
 
         Or suppress instead of delete based on policy.
         """
@@ -884,9 +872,8 @@ class MemoryKernel:
 
         return forgotten
 
-    def get_replay_set(self, k: int = 10) -> List[MemoryRecord]:
-        """
-        ReplaySet_t = TopK(Importance + Error + StrategicValue)
+    def get_replay_set(self, k: int = 10) -> list[MemoryRecord]:
+        """ReplaySet_t = TopK(Importance + Error + StrategicValue)
 
         Select memories for replay learning.
         """
@@ -914,10 +901,9 @@ class MemoryKernel:
         return [record for _, record in all_memories[:k]]
 
     def sync_persistent_continuity(
-        self, results: Dict[str, Any], identity_state: Dict[str, Any]
-    ) -> Dict[str, Any]:
-        """
-        P^e_{t+1} = Sync(P^e_t, Result_t, Identity_t, StrategicState_t)
+        self, results: dict[str, Any], identity_state: dict[str, Any]
+    ) -> dict[str, Any]:
+        """P^e_{t+1} = Sync(P^e_t, Result_t, Identity_t, StrategicState_t)
 
         Synchronize persistent continuity across sessions.
         """
@@ -952,8 +938,7 @@ class MemoryKernel:
 
 
 class AMOSLearningMemoryKernel:
-    """
-    Unified Learning + Memory Kernel integrating all components.
+    """Unified Learning + Memory Kernel integrating all components.
 
     Implements full cognitive loop:
         Input → Read → Think → Reason → FormalSemanticCompile → Verify → Control → Act
@@ -967,7 +952,7 @@ class AMOSLearningMemoryKernel:
         - Preserve continuity
     """
 
-    _instance: Optional[AMOSLearningMemoryKernel] = None
+    _instance: AMOSLearningMemoryKernel = None
 
     def __init__(self):
         self.state = MemoryState()
@@ -1009,14 +994,13 @@ class AMOSLearningMemoryKernel:
 
     async def process_outcome(
         self,
-        observation: Dict[str, Any],
-        action: Dict[str, Any],
-        context: Dict[str, Any],
-        outcome: Dict[str, Any],
-        prediction: Dict[str, Any] = None,
-    ) -> Dict[str, Any]:
-        """
-        Full learning loop from experience.
+        observation: dict[str, Any],
+        action: dict[str, Any],
+        context: dict[str, Any],
+        outcome: dict[str, Any],
+        prediction: dict[str, Any] = None,
+    ) -> dict[str, Any]:
+        """Full learning loop from experience.
 
         ObserveOutcome → EncodeMemory → Learn → Consolidate → Persist
         """
@@ -1069,10 +1053,8 @@ class AMOSLearningMemoryKernel:
             "error_magnitude": error_signal.get("magnitude", 0),
         }
 
-    async def learn_from_replay(self, k: int = 10) -> Dict[str, Any]:
-        """
-        Replay critical cases and update policy.
-        """
+    async def learn_from_replay(self, k: int = 10) -> dict[str, Any]:
+        """Replay critical cases and update policy."""
         replay_set = self.memory_kernel.get_replay_set(k)
 
         if not replay_set:
@@ -1087,10 +1069,8 @@ class AMOSLearningMemoryKernel:
             "policy_keys": list(updated_policy.keys()),
         }
 
-    async def consolidate(self) -> Dict[str, Any]:
-        """
-        Run memory consolidation.
-        """
+    async def consolidate(self) -> dict[str, Any]:
+        """Run memory consolidation."""
         working_memories = list(self.state.working_memory.values())
 
         if len(working_memories) < 5:
@@ -1112,24 +1092,20 @@ class AMOSLearningMemoryKernel:
             "error_added": len(new_error),
         }
 
-    async def forget(self) -> Dict[str, Any]:
-        """
-        Apply forgetting to reduce clutter.
-        """
+    async def forget(self) -> dict[str, Any]:
+        """Apply forgetting to reduce clutter."""
         policy = {"mode": ForgetMode.DEPRIORITIZE}
         forgotten = self.memory_kernel.forget_or_archive(policy)
 
         return {"forgotten_count": len(forgotten), "mode": "deprioritize"}
 
     async def retrieve(
-        self, query: str | dict[str, Any], memory_type: Optional[MemoryType] = None, k: int = 5
-    ) -> List[MemoryRecord]:
-        """
-        Retrieve relevant memories.
-        """
+        self, query: Union[str, dict][str, Any], memory_type: MemoryType = None, k: int = 5
+    ) -> list[MemoryRecord]:
+        """Retrieve relevant memories."""
         return self.memory_kernel.retrieve_memory(query, memory_type, k)
 
-    def get_learning_stats(self) -> Dict[str, Any]:
+    def get_learning_stats(self) -> dict[str, Any]:
         """Get learning and memory statistics."""
         return {
             **self.state.stats,
@@ -1150,9 +1126,8 @@ class AMOSLearningMemoryKernel:
             "patterns_learned": len(self.state.world_model.get("patterns", {})),
         }
 
-    def validate_invariants(self) -> Dict[str, bool]:
-        """
-        Validate learning-memory invariants.
+    def validate_invariants(self) -> dict[str, bool]:
+        """Validate learning-memory invariants.
 
         LMI01: Memory must influence future cognition
         LMI02: Learning must change future policy
@@ -1203,12 +1178,12 @@ def get_learning_memory_kernel() -> AMOSLearningMemoryKernel:
 
 
 async def encode_and_learn(
-    observation: Dict[str, Any],
-    action: Dict[str, Any],
-    context: Dict[str, Any],
-    outcome: Dict[str, Any],
-    prediction: Dict[str, Any] = None,
-) -> Dict[str, Any]:
+    observation: dict[str, Any],
+    action: dict[str, Any],
+    context: dict[str, Any],
+    outcome: dict[str, Any],
+    prediction: dict[str, Any] = None,
+) -> dict[str, Any]:
     """Convenience: encode experience and learn from it."""
     lmk = get_learning_memory_kernel()
     if not lmk.initialized:
@@ -1217,7 +1192,7 @@ async def encode_and_learn(
     return await lmk.process_outcome(observation, action, context, outcome, prediction)
 
 
-async def retrieve_relevant_memories(query: str, k: int = 5) -> List[MemoryRecord]:
+async def retrieve_relevant_memories(query: str, k: int = 5) -> list[MemoryRecord]:
     """Convenience: retrieve memories."""
     lmk = get_learning_memory_kernel()
     if not lmk.initialized:

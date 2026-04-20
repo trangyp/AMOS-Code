@@ -46,7 +46,7 @@ import os
 import time
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from typing import Any, Dict
+from typing import Any
 
 # Configure logging
 logging.basicConfig(
@@ -288,7 +288,7 @@ def create_app(
 
     # Add root endpoint
     @app.get("/", tags=["Root"])
-    async def root() -> Dict[str, Any]:
+    async def root() -> dict[str, Any]:
         """Root endpoint with API information."""
         return {
             "name": title,
@@ -310,7 +310,7 @@ def create_app(
 
     # Add status endpoint
     @app.get("/status", tags=["Status"])
-    async def status_endpoint() -> Dict[str, Any]:
+    async def status_endpoint() -> dict[str, Any]:
         """Application status endpoint."""
         uptime = time.time() - app_state.started_at if app_state.started_at else 0
         return {
@@ -398,7 +398,7 @@ def _add_rate_limiting(app: FastAPI) -> None:
         default_limit=default_limit,
         verify_limit=verify_limit,
     )
-    logger.info(f"Rate limiting added: {default_limit}/min default, " f"{verify_limit}/min verify")
+    logger.info(f"Rate limiting added: {default_limit}/min default, {verify_limit}/min verify")
 
 
 def _add_metrics(app: FastAPI) -> None:
@@ -517,7 +517,7 @@ def _add_equation_routers(app: FastAPI) -> None:
     router = APIRouter(prefix="/api/v1/equations", tags=["Equations"])
 
     @router.get("/")
-    async def list_equations() -> Dict[str, Any]:
+    async def list_equations() -> dict[str, Any]:
         """List available equations."""
         return {
             "equations": [],
@@ -526,12 +526,12 @@ def _add_equation_routers(app: FastAPI) -> None:
         }
 
     @router.post("/solve")
-    async def solve_equation(request: Request) -> Dict[str, Any]:
+    async def solve_equation(request: Request) -> dict[str, Any]:
         """Solve an equation."""
         return {"status": "pending", "note": "Integration pending"}
 
     @router.post("/verify")
-    async def verify_equation(request: Request) -> Dict[str, Any]:
+    async def verify_equation(request: Request) -> dict[str, Any]:
         """Verify an equation."""
         return {"status": "pending", "note": "Integration pending"}
 

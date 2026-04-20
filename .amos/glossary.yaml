@@ -1,0 +1,86 @@
+# AMOS Glossary: Human-to-Code Mapping
+# Maps natural language terms to actual code symbols
+
+terms:
+  # Core AMOS Concepts
+  brain:
+    maps_to: [AMOSBrain, BrainKernel, brain_os.py, amos_brain/]
+    description: "Core cognitive runtime and state management"
+
+  organism:
+    maps_to: [AMOSOrganism, AMOS_ORGANISM_OS/, amos_organism.py]
+    description: "Biological-inspired system architecture with 14 layers"
+
+  equation:
+    maps_to: [EquationRegistry, UnifiedEquationRegistry, equation_execution.py, amos_equations/]
+    description: "Executable mathematical and logical equations"
+
+  self_heal:
+    maps_to: [SelfHealingController, amos_self_healing_controller.py, healing/]
+    description: "Automatic recovery and circuit breaker systems"
+
+  health:
+    maps_to: [BrainHealthMonitor, HealthMetric, health_endpoint.py, amos_health/]
+    description: "System health monitoring and metrics"
+
+  runtime:
+    maps_to: [AMOSProductionRuntime, ProductionRuntime, amos_production_runtime.py]
+    description: "Production execution environment"
+
+  kernel:
+    maps_to: [AMOSKernel, L1_deterministic_core.py, amos_kernel/]
+    description: "Core deterministic execution layer (L0-L2)"
+
+  # Business Domain Terms
+  customer:
+    maps_to: [User, Customer, UserModel, amos_multitenancy.py]
+    description: "End user or tenant in the system"
+
+  workspace:
+    maps_to: [Workspace, WorkspaceManager, amos_multitenancy.py]
+    description: "Tenant isolation boundary for multi-tenancy"
+
+  api_key:
+    maps_to: [APIKey, APIKeyManager, api_key_management.py]
+    description: "Authentication credential for API access"
+
+  provider:
+    maps_to: [LLMProvider, ProviderInfo, llm_providers.py]
+    description: "External LLM or AI service provider"
+
+  self_hosted:
+    maps_to: [self_hosted_provider, ollama, lmstudio, local_provider.py]
+    description: "Locally-hosted AI model providers"
+
+  # Technical Terms
+  circuit_breaker:
+    maps_to: [CircuitBreaker, AsyncSafetyManager, async_safety.py]
+    description: "Fault tolerance pattern for failing services"
+
+  webhook:
+    maps_to: [WebhookSubscription, WebhookManager, amos_async_jobs.py]
+    description: "Async event delivery mechanism"
+
+  cache:
+    maps_to: [AMOSCache, get_cache, amos_caching.py]
+    description: "Multi-tier caching system (L1/L2)"
+
+  # Actions
+  bootstrap:
+    maps_to: [bootstrap, BootstrapOrchestrator, amos_bootstrap_orchestrator.py]
+    description: "System initialization sequence"
+
+  activate:
+    maps_to: [activate, AMOSActivate, amos_activate.py]
+    description: "Start and enable system components"
+
+  deploy:
+    maps_to: [deploy, deploy_production.sh, k8s/, helm/]
+    description: "Deploy to production environment"
+
+aliases:
+  "local model": [self_hosted, ollama, lmstudio]
+  "cognitive engine": [brain, AMOSBrain]
+  "production system": [runtime, organism]
+  "tenant": [workspace, customer]
+  "auth": [api_key, authentication, amos_auth_manager.py]

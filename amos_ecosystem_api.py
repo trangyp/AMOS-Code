@@ -21,7 +21,6 @@ Usage:
 """
 
 import subprocess
-import sys
 from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
@@ -39,11 +38,10 @@ except ImportError:
     from flask import Flask, jsonify, request
     from flask_cors import CORS
 
-# Add project to path
-sys.path.insert(0, str(Path(__file__).parent))
+# Import alias modules to set up paths
 
+import AMOS_ORGANISM_OS  # noqa: F401
 from amos_brain import get_amos_integration
-from typing import List
 
 # Pydantic models for request/response
 if FASTAPI_AVAILABLE:
@@ -68,7 +66,7 @@ if FASTAPI_AVAILABLE:
 
     class WorkflowRequest(BaseModel):
         goal: str
-        phases: List[str] = ["analyze", "explore", "generate", "report"]
+        phases: list[str] = ["analyze", "explore", "generate", "report"]
 
 
 @dataclass
@@ -92,7 +90,7 @@ class AMOSEcosystemAPI:
     def __init__(self):
         self.root = Path(__file__).parent
         self.brain = None
-        self.tools: List[ToolInfo] = []
+        self.tools: list[ToolInfo] = []
         self._register_tools()
         self._init_brain()
 
@@ -233,9 +231,10 @@ class AMOSEcosystemAPI:
         async def knowledge_search(q: str = Query(..., description="Search query")):
             try:
                 # Run knowledge explorer
-                cmd = f'python amos_knowledge_explorer.py search "{q}" --json'
+                # SECURITY: Use list args with shell=False to prevent injection
+                cmd = ["python", "amos_knowledge_explorer.py", "search", q, "--json"]
                 result = subprocess.run(
-                    cmd, shell=True, capture_output=True, text=True, timeout=30, cwd=str(self.root)
+                    cmd, shell=False, capture_output=True, text=True, timeout=30, cwd=str(self.root)
                 )
 
                 return {
@@ -249,9 +248,16 @@ class AMOSEcosystemAPI:
         @app.post("/api/v1/projects/generate")
         async def project_generate(request: ProjectRequest):
             try:
-                cmd = f'python amos_project_generator.py create "{request.name}" "{request.description}"'
+                # SECURITY: Use list args with shell=False to prevent injection
+                cmd = [
+                    "python",
+                    "amos_project_generator.py",
+                    "create",
+                    request.name,
+                    request.description,
+                ]
                 result = subprocess.run(
-                    cmd, shell=True, capture_output=True, text=True, timeout=60, cwd=str(self.root)
+                    cmd, shell=False, capture_output=True, text=True, timeout=60, cwd=str(self.root)
                 )
 
                 return {

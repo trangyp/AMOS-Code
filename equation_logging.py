@@ -63,24 +63,27 @@ Environment Variables:
     LOG_RESPONSE_BODY: Log response bodies (default: false)
 """
 
-import sys
+import hashlib
 import json
 import logging
+import re
+import sys
 import traceback
 import uuid
-import hashlib
-import re
-from datetime import datetime, timezone
-UTC = timezone.utc
-from enum import Enum
-from typing import Any, Callable, Dict, List
-from functools import wraps
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
+from collections.abc import Callable
 from contextvars import ContextVar
+from enum import Enum
+from functools import wraps
+from typing import Any
 
 # FastAPI integration
 try:
     from fastapi import Request, Response
     from starlette.middleware.base import BaseHTTPMiddleware
+
     FASTAPI_AVAILABLE = True
 except ImportError:
     FASTAPI_AVAILABLE = False
@@ -91,12 +94,14 @@ except ImportError:
 # Tracing integration for correlation
 try:
     from equation_tracing import get_current_trace_id
+
     TRACING_AVAILABLE = True
 except ImportError:
     TRACING_AVAILABLE = False
 
 try:
     from equation_auth import get_current_user_id
+
     AUTH_AVAILABLE = True
 except ImportError:
     AUTH_AVAILABLE = False
@@ -109,17 +114,19 @@ logger = logging.getLogger("amos_equation_logging")
 # ============================================================================
 
 # Context variables for request tracking
-correlation_id_var: ContextVar[str ] = ContextVar("correlation_id", default=None)
-user_id_var: ContextVar[int ] = ContextVar("user_id", default=None)
-request_path_var: ContextVar[str ] = ContextVar("request_path", default=None)
+correlation_id_var: ContextVar[str] = ContextVar("correlation_id", default=None)
+user_id_var: ContextVar[int] = ContextVar("user_id", default=None)
+request_path_var: ContextVar[str] = ContextVar("request_path", default=None)
 
 
 # ============================================================================
 # Enums and Constants
 # ============================================================================
 
+
 class LogLevel(str, Enum):
     """Log levels."""
+
     DEBUG = "DEBUG"
     INFO = "INFO"
     WARNING = "WARNING"
@@ -129,6 +136,7 @@ class LogLevel(str, Enum):
 
 class AuditAction(str, Enum):
     """Audit trail actions."""
+
     # Equation actions
     EQUATION_CREATED = "equation_created"
     EQUATION_READ = "equation_read"
@@ -163,9 +171,22 @@ class AuditAction(str, Enum):
 
 # Sensitive fields to mask
 SENSITIVE_FIELDS = {
-    "password", "password_hash", "token", "api_key", "secret",
-    "authorization", "cookie", "session", "credit_card", "ssn",
-    "email", "phone", "address", "jwt", "refresh_token", "access_token"
+    "password",
+    "password_hash",
+    "token",
+    "api_key",
+    "secret",
+    "authorization",
+    "cookie",
+    "session",
+    "credit_card",
+    "ssn",
+    "email",
+    "phone",
+    "address",
+    "jwt",
+    "refresh_token",
+    "access_token",
 }
 
 # Field patterns to mask (regex)
@@ -180,6 +201,7 @@ SENSITIVE_PATTERNS = [
 # ============================================================================
 # JSON Formatter
 # ============================================================================
+
 
 class JSONFormatter(logging.Formatter):
     """JSON structured log formatter."""
@@ -224,17 +246,37 @@ class JSONFormatter(logging.Formatter):
             log_data["exception"] = {
                 "type": record.exc_info[0].__name__ if record.exc_info[0] else None,
                 "message": str(record.exc_info[1]) if record.exc_info[1] else None,
-                "stacktrace": traceback.format_exception(*record.exc_info)
+                "stacktrace": traceback.format_exception(*record.exc_info),
             }
 
         # Add extra fields from record
         for key, value in record.__dict__.items():
             if key not in [
-                "name", "msg", "args", "levelname", "levelno", "pathname",
-                "filename", "module", "exc_info", "exc_text", "stack_info",
-                "lineno", "funcName", "created", "msecs", "relativeCreated",
-                "thread", "threadName", "processName", "process", "message",
-                "asctime", "correlation_id", "user_id", "request_path"
+                "name",
+                "msg",
+                "args",
+                "levelname",
+                "levelno",
+                "pathname",
+                "filename",
+                "module",
+                "exc_info",
+                "exc_text",
+                "stack_info",
+                "lineno",
+                "funcName",
+                "created",
+                "msecs",
+                "relativeCreated",
+                "thread",
+                "threadName",
+                "processName",
+                "process",
+                "message",
+                "asctime",
+                "correlation_id",
+                "user_id",
+                "request_path",
             ]:
                 log_data[key] = value
 
@@ -245,16 +287,17 @@ class JSONFormatter(logging.Formatter):
 # Console Formatter (for development)
 # ============================================================================
 
+
 class ColoredFormatter(logging.Formatter):
     """Colored console formatter for development."""
 
     COLORS = {
-        "DEBUG": "\033[36m",      # Cyan
-        "INFO": "\033[32m",       # Green
-        "WARNING": "\033[33m",    # Yellow
-        "ERROR": "\033[31m",      # Red
-        "CRITICAL": "\033[35m",   # Magenta
-        "RESET": "\033[0m"
+        "DEBUG": "\033[36m",  # Cyan
+        "INFO": "\033[32m",  # Green
+        "WARNING": "\033[33m",  # Yellow
+        "ERROR": "\033[31m",  # Red
+        "CRITICAL": "\033[35m",  # Magenta
+        "RESET": "\033[0m",
     }
 
     def format(self, record: logging.LogRecord) -> str:
@@ -272,12 +315,13 @@ class ColoredFormatter(logging.Formatter):
 # Logging Configuration
 # ============================================================================
 
+
 def configure_logging(
     level: str = "INFO",
     format_type: str = "json",
     enable_console: bool = True,
     enable_file: bool = False,
-    file_path: str  = None
+    file_path: str = None,
 ) -> None:
     """Configure structured logging.
 
@@ -306,10 +350,11 @@ def configure_logging(
     # File handler
     if enable_file and file_path:
         from logging.handlers import RotatingFileHandler
+
         file_handler = RotatingFileHandler(
             file_path,
             maxBytes=10 * 1024 * 1024,  # 10MB
-            backupCount=5
+            backupCount=5,
         )
         file_handler.setFormatter(JSONFormatter())
         root_logger.addHandler(file_handler)
@@ -323,25 +368,21 @@ def configure_logging(
 # Logger Factory
 # ============================================================================
 
+
 class StructuredLogger:
     """Structured logger with context support."""
 
     def __init__(self, name: str):
         self._logger = logging.getLogger(name)
 
-    def _log(
-        self,
-        level: int,
-        event: str,
-        **kwargs: Any
-    ) -> None:
+    def _log(self, level: int, event: str, **kwargs: Any) -> None:
         """Internal log method with context."""
         extra = {
             "event": event,
             "correlation_id": correlation_id_var.get(),
             "user_id": user_id_var.get(),
             "request_path": request_path_var.get(),
-            **kwargs
+            **kwargs,
         }
         self._logger.log(level, event, extra=extra)
 
@@ -385,6 +426,7 @@ def get_logger(name: str) -> StructuredLogger:
 # ============================================================================
 # Data Masking
 # ============================================================================
+
 
 def mask_sensitive_data(data: Any) -> Any:
     """Mask sensitive fields in data.
@@ -435,6 +477,7 @@ def hash_identifier(identifier: str) -> str:
 # Audit Trail
 # ============================================================================
 
+
 class AuditLogger:
     """Audit trail logger for compliance."""
 
@@ -444,14 +487,14 @@ class AuditLogger:
 
     def log(
         self,
-        action: AuditAction | str,
-        user_id: int  = None,
-        resource_type: str  = None,
-        resource_id: int | str  = None,
-        details: Dict[str, Any]  = None,
+        action: Union[AuditAction, str],
+        user_id: int = None,
+        resource_type: str = None,
+        resource_id: Union[int, str] = None,
+        details: dict[str, Any] = None,
         success: bool = True,
-        ip_address: str  = None,
-        user_agent: str  = None
+        ip_address: str = None,
+        user_agent: str = None,
     ) -> None:
         """Log an audit event.
 
@@ -482,7 +525,7 @@ class AuditLogger:
             "details": mask_sensitive_data(details or {}),
             "success": success,
             "ip_address": ip_address,
-            "user_agent": user_agent
+            "user_agent": user_agent,
         }
 
         self._logger.info(json.dumps(audit_record, default=str))
@@ -501,14 +544,14 @@ _audit_logger = AuditLogger()
 
 
 def audit_log(
-    action: AuditAction | str,
-    user_id: int  = None,
-    resource_type: str  = None,
-    resource_id: int | str  = None,
-    details: Dict[str, Any]  = None,
+    action: Union[AuditAction, str],
+    user_id: int = None,
+    resource_type: str = None,
+    resource_id: Union[int, str] = None,
+    details: dict[str, Any] = None,
     success: bool = True,
-    ip_address: str  = None,
-    user_agent: str  = None
+    ip_address: str = None,
+    user_agent: str = None,
 ) -> None:
     """Log an audit event.
 
@@ -530,7 +573,7 @@ def audit_log(
         details=details,
         success=success,
         ip_address=ip_address,
-        user_agent=user_agent
+        user_agent=user_agent,
     )
 
 
@@ -538,11 +581,9 @@ def audit_log(
 # Performance Logging
 # ============================================================================
 
+
 def log_performance(
-    operation: str,
-    duration_ms: float,
-    success: bool = True,
-    metadata: Dict[str, Any]  = None
+    operation: str, duration_ms: float, success: bool = True, metadata: dict[str, Any] = None
 ) -> None:
     """Log performance metric.
 
@@ -559,7 +600,7 @@ def log_performance(
         "operation": operation,
         "duration_ms": duration_ms,
         "success": success,
-        **(metadata or {})
+        **(metadata or {}),
     }
 
     # Log slow operations as warnings
@@ -572,10 +613,10 @@ def log_performance(
 class PerformanceTimer:
     """Context manager for timing operations."""
 
-    def __init__(self, operation: str, metadata: Dict[str, Any]  = None):
+    def __init__(self, operation: str, metadata: dict[str, Any] = None):
         self.operation = operation
         self.metadata = metadata or {}
-        self.start_time: datetime  = None
+        self.start_time: datetime = None
         self.duration_ms: float = 0.0
 
     def __enter__(self) -> PerformanceTimer:
@@ -590,7 +631,7 @@ class PerformanceTimer:
                 operation=self.operation,
                 duration_ms=self.duration_ms,
                 success=exc_type is None,
-                metadata=self.metadata
+                metadata=self.metadata,
             )
 
 
@@ -604,6 +645,7 @@ def timed(operation: str, **metadata: Any) -> Callable:
     Returns:
         Decorator function
     """
+
     def decorator(func: Callable) -> Callable:
         @wraps(func)
         async def async_wrapper(*args: Any, **kwargs: Any) -> Any:
@@ -616,6 +658,7 @@ def timed(operation: str, **metadata: Any) -> Callable:
                 return func(*args, **kwargs)
 
         return async_wrapper if func.__code__.co_flags & 0x80 else sync_wrapper
+
     return decorator
 
 
@@ -624,6 +667,7 @@ def timed(operation: str, **metadata: Any) -> Callable:
 # ============================================================================
 
 if FASTAPI_AVAILABLE and BaseHTTPMiddleware:
+
     class LoggingMiddleware(BaseHTTPMiddleware):
         """Middleware for request/response logging."""
 
@@ -632,7 +676,7 @@ if FASTAPI_AVAILABLE and BaseHTTPMiddleware:
             app: Any,
             log_request_body: bool = False,
             log_response_body: bool = False,
-            exclude_paths: List[str]  = None
+            exclude_paths: list[str] = None,
         ):
             super().__init__(app)
             self.log_request_body = log_request_body
@@ -670,7 +714,7 @@ if FASTAPI_AVAILABLE and BaseHTTPMiddleware:
                 "client_ip": request.client.host if request.client else None,
                 "user_agent": request.headers.get("user-agent"),
                 "correlation_id": correlation_id,
-                "user_id": user_id
+                "user_id": user_id,
             }
 
             if self.log_request_body:
@@ -700,7 +744,7 @@ if FASTAPI_AVAILABLE and BaseHTTPMiddleware:
                     "status_code": response.status_code,
                     "duration_ms": duration_ms,
                     "correlation_id": correlation_id,
-                    "user_id": user_id
+                    "user_id": user_id,
                 }
 
                 if self.log_response_body:
@@ -736,7 +780,7 @@ if FASTAPI_AVAILABLE and BaseHTTPMiddleware:
                     duration_ms=duration_ms,
                     correlation_id=correlation_id,
                     error_type=type(e).__name__,
-                    error_message=str(e)
+                    error_message=str(e),
                 )
                 raise
 
@@ -751,11 +795,8 @@ if FASTAPI_AVAILABLE and BaseHTTPMiddleware:
 # Error Tracking
 # ============================================================================
 
-def log_error(
-    error: Exception,
-    context: Dict[str, Any]  = None,
-    level: str = "error"
-) -> None:
+
+def log_error(error: Exception, context: dict[str, Any] = None, level: str = "error") -> None:
     """Log an error with full context.
 
     Args:
@@ -773,7 +814,7 @@ def log_error(
         "correlation_id": correlation_id_var.get(),
         "user_id": user_id_var.get(),
         "request_path": request_path_var.get(),
-        **(context or {})
+        **(context or {}),
     }
 
     # Log with appropriate level
@@ -794,6 +835,7 @@ def log_error(
 # Business Event Logging
 # ============================================================================
 
+
 class BusinessEventLogger:
     """Logger for business events and analytics."""
 
@@ -801,10 +843,7 @@ class BusinessEventLogger:
         self.logger = get_logger("business")
 
     def log_event(
-        self,
-        event_name: str,
-        user_id: int  = None,
-        properties: Dict[str, Any]  = None
+        self, event_name: str, user_id: int = None, properties: dict[str, Any] = None
     ) -> None:
         """Log a business event.
 
@@ -819,7 +858,7 @@ class BusinessEventLogger:
             "user_id": user_id or user_id_var.get(),
             "correlation_id": correlation_id_var.get(),
             "timestamp": datetime.now(timezone.utc).isoformat(),
-            "properties": mask_sensitive_data(properties or {})
+            "properties": mask_sensitive_data(properties or {}),
         }
 
         self.logger.info("business_event", **event_data)
@@ -829,15 +868,11 @@ class BusinessEventLogger:
         self.log_event(
             "equation_created",
             user_id=user_id,
-            properties={"equation_id": equation_id, "domain": domain}
+            properties={"equation_id": equation_id, "domain": domain},
         )
 
     def equation_executed(
-        self,
-        equation_id: int,
-        user_id: int,
-        execution_time_ms: float,
-        success: bool
+        self, equation_id: int, user_id: int, execution_time_ms: float, success: bool
     ) -> None:
         """Log equation execution."""
         self.log_event(
@@ -846,8 +881,8 @@ class BusinessEventLogger:
             properties={
                 "equation_id": equation_id,
                 "execution_time_ms": execution_time_ms,
-                "success": success
-            }
+                "success": success,
+            },
         )
 
     def user_registered(self, user_id: int, registration_method: str) -> None:
@@ -855,7 +890,7 @@ class BusinessEventLogger:
         self.log_event(
             "user_registered",
             user_id=user_id,
-            properties={"registration_method": registration_method}
+            properties={"registration_method": registration_method},
         )
 
 
@@ -867,7 +902,8 @@ business_events = BusinessEventLogger()
 # Utility Functions
 # ============================================================================
 
-def get_correlation_id() -> str :
+
+def get_correlation_id() -> str:
     """Get current correlation ID."""
     return correlation_id_var.get()
 
@@ -877,7 +913,7 @@ def set_correlation_id(correlation_id: str) -> None:
     correlation_id_var.set(correlation_id)
 
 
-def get_current_user_id() -> int :
+def get_current_user_id() -> int:
     """Get current user ID from context."""
     return user_id_var.get()
 
@@ -890,6 +926,7 @@ def set_user_id(user_id: int) -> None:
 # ============================================================================
 # Example Usage
 # ============================================================================
+
 
 async def example_usage():
     """Example usage of logging system."""
@@ -904,12 +941,7 @@ async def example_usage():
     user_id_var.set(42)
 
     # Log structured messages
-    logger.info(
-        "equation_created",
-        equation_id=1,
-        name="Linear Equation",
-        domain="mathematics"
-    )
+    logger.info("equation_created", equation_id=1, name="Linear Equation", domain="mathematics")
 
     logger.warning("high_memory_usage", memory_percent=85.5)
 
@@ -920,19 +952,16 @@ async def example_usage():
         resource_type="equation",
         resource_id=1,
         details={"formula": "y = 2*x + 3"},
-        success=True
+        success=True,
     )
 
     # Business event
-    business_events.equation_created(
-        equation_id=1,
-        user_id=42,
-        domain="mathematics"
-    )
+    business_events.equation_created(equation_id=1, user_id=42, domain="mathematics")
 
     # Performance timing
     with PerformanceTimer("database_query", {"table": "equations"}):
         import asyncio
+
         await asyncio.sleep(0.1)
 
     # Decorator timing
@@ -948,4 +977,5 @@ async def example_usage():
 
 if __name__ == "__main__":
     import asyncio
+
     asyncio.run(example_usage())

@@ -7,12 +7,10 @@ Provides audit, validation, and policy enforcement.
 
 from __future__ import annotations
 
-
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime
 from threading import Lock
-from typing import Any
+from typing import Any, Optional
 
 
 @dataclass
@@ -41,7 +39,7 @@ class MemoryGovernance:
         self._write_count = 0
 
     def write(
-        self, key: str, value: Any, agent_id: str = None, entry_type: str = "general"
+        self, key: str, value: Any, agent_id: Optional[str] = None, entry_type: str = "general"
     ) -> bool:
         """Write to memory through governance layer.
 
@@ -57,7 +55,7 @@ class MemoryGovernance:
         entry = MemoryEntry(
             key=key,
             value=value,
-            timestamp=datetime.now(timezone.utc).isoformat(),
+            timestamp=datetime.now(UTC).isoformat(),
             agent_id=agent_id,
             entry_type=entry_type,
         )
@@ -107,6 +105,34 @@ class MemoryGovernance:
                 "write_count": self._write_count,
                 "audit_entries": len(self._audit_log),
             }
+
+    def store_cognitive_state(self, state) -> bool:
+        """Store cognitive state in memory.
+
+        Args:
+            state: CognitiveState to store
+
+        Returns:
+            True if stored successfully
+        """
+        key = f"cognitive_state:{state.state_id}"
+        value = {
+            "state_id": state.state_id,
+            "query": state.query,
+            "domain": state.domain,
+            "thought_count": len(state.thoughts),
+            "thoughts": [
+                {
+                    "phase": t.phase.name,
+                    "content": t.content,
+                    "confidence": t.confidence,
+                }
+                for t in state.thoughts
+            ],
+            "tool_calls": len(state.tool_calls),
+            "current_phase": state.current_phase.name,
+        }
+        return self.write(key, value, agent_id="cognitive_engine", entry_type="cognitive")
 
     def is_healthy(self) -> bool:
         """Check if memory governance is healthy."""

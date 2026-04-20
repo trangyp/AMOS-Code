@@ -2,7 +2,9 @@
 """AMOS System Integrity Check - Verify all subsystems work together."""
 
 import sys
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 
 
 def check_imports():

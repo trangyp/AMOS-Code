@@ -54,8 +54,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -e . 2>/dev/null || true
-          pip install fastapi uvicorn 2>/dev/null || true
+          pip install -e .
+          pip install fastapi uvicorn
 
       - name: Get changed files
         id: changed-files

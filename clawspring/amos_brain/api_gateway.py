@@ -7,11 +7,7 @@ FastAPI-based with automatic documentation.
 
 import sys
 from datetime import datetime
-from typing import Any, Dict, List
-
-sys.path.insert(0, ".")
-sys.path.insert(0, "clawspring")
-sys.path.insert(0, "clawspring/amos_brain")
+from typing import Any
 
 try:
     from fastapi import BackgroundTasks, FastAPI, HTTPException
@@ -34,7 +30,7 @@ class RouteRequest(BaseModel):
     """Cognitive routing request."""
 
     task: str
-    context: Dict[str, Any] = None
+    context: dict[str, Any] = None
 
 
 class RouteResponse(BaseModel):
@@ -42,7 +38,7 @@ class RouteResponse(BaseModel):
 
     domain: str
     risk_level: str
-    engines: List[str]
+    engines: list[str]
     confidence: float
 
 
@@ -57,7 +53,7 @@ class HealthResponse(BaseModel):
     """Health check response."""
 
     status: str
-    components: Dict[str, str]
+    components: dict[str, str]
     timestamp: str
 
 

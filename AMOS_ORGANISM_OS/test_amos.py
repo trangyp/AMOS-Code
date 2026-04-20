@@ -3,13 +3,6 @@
 Validates all components work correctly.
 """
 
-import sys
-from pathlib import Path
-
-# Add paths
-sys.path.insert(0, str(Path(__file__).parent))
-sys.path.insert(0, str(Path(__file__).parent / "agents"))
-
 
 def test_organism():
     """Test AMOS Organism initialization."""

@@ -1,16 +1,20 @@
 """AMOS Brain Cognitive Monitor - Observability and monitoring system."""
 
+from __future__ import annotations
+
 import json
 import logging
 import time
 from collections.abc import Callable
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from .laws import GlobalLaws
+
+UTC = UTC
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +26,7 @@ class MetricPoint:
     timestamp: float
     metric_type: str
     value: float
-    labels: Dict[str, str]
+    labels: dict[str, str]
 
 
 @dataclass
@@ -55,10 +59,10 @@ class CognitiveMonitor:
         self.storage_path = storage_path or Path.home() / ".amos_brain" / "monitor"
         self.storage_path.mkdir(parents=True, exist_ok=True)
 
-        self._metrics: List[MetricPoint] = []
-        self._alerts: List[Alert] = []
-        self._audit_log: List[dict] = []
-        self._hooks: List[Callable] = []
+        self._metrics: list[MetricPoint] = []
+        self._alerts: list[Alert] = []
+        self._audit_log: list[dict] = []
+        self._hooks: list[Callable] = []
 
         # Thresholds
         self.thresholds = {
@@ -75,7 +79,7 @@ class CognitiveMonitor:
         processing_time_ms: int,
         law_violations: int,
         confidence: str,
-        kernels_used: List[str],
+        kernels_used: list[str],
     ):
         """Record reasoning metrics."""
         timestamp = time.time()
@@ -134,7 +138,7 @@ class CognitiveMonitor:
         self._trigger_hooks("reasoning", task_description, processing_time_ms)
 
     def record_tool_decision(
-        self, tool_name: str, approved: bool, risk_level: str, violations: List[dict]
+        self, tool_name: str, approved: bool, risk_level: str, violations: list[dict]
     ):
         """Record tool decision metrics."""
         timestamp = time.time()
@@ -271,7 +275,7 @@ class CognitiveMonitor:
 
         return compliance
 
-    def detect_anomalies(self) -> List[dict]:
+    def detect_anomalies(self) -> list[dict]:
         """Detect anomalies in recent metrics."""
         anomalies = []
 
@@ -312,7 +316,7 @@ class CognitiveMonitor:
 
         return anomalies
 
-    def get_alerts(self, acknowledged: bool  = None) -> List[Alert]:
+    def get_alerts(self, acknowledged: bool = None) -> list[Alert]:
         """Get alerts, optionally filtered."""
         if acknowledged is None:
             return self._alerts

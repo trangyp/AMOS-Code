@@ -13,10 +13,12 @@ from __future__ import annotations
 
 import sys
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
+
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 # Add paths for imports
 AMOS_ROOT = Path(__file__).parent
@@ -86,11 +88,11 @@ class BrainSemanticsBridge:
 
     def __init__(self):
         self.semantics_kernel = get_formal_semantics_kernel()
-        self.thinking_kernel: ThinkingKernel | None = None
-        self.reasoning_kernel: ReasoningKernel | None = None
-        self.superbrain: SuperBrainRuntime | None = None
+        self.thinking_kernel: Optional[ThinkingKernel] = None
+        self.reasoning_kernel: Optional[ReasoningKernel] = None
+        self.superbrain: Optional[SuperBrainRuntime] = None
         self._initialized = False
-        self._math_engine: Any | None = None
+        self._math_engine: Optional[Any] = None
 
     def initialize(self) -> dict[str, bool]:
         """Initialize all brain connections."""
@@ -300,7 +302,7 @@ class BrainSemanticsBridge:
 
 
 # Singleton instance
-_bridge: BrainSemanticsBridge | None = None
+_bridge: Optional[BrainSemanticsBridge] = None
 
 
 def get_brain_semantics_bridge() -> BrainSemanticsBridge:

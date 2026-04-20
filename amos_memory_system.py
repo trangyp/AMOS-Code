@@ -23,7 +23,7 @@ import json
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 @dataclass
@@ -34,7 +34,7 @@ class MemoryEntry:
     timestamp: float = field(default_factory=time.time)
     memory_type: str = "unknown"  # working, short_term, episodic, semantic, procedural
     importance: float = 0.5  # 0.0-1.0
-    tags: List[str] = field(default_factory=list)
+    tags: list[str] = field(default_factory=list)
     source: str = ""  # agent_id, user, system
     session_id: str = ""
     access_count: int = 0
@@ -56,8 +56,8 @@ class WorkingMemory:
 
     def __init__(self, capacity: int = 10):
         self.capacity = capacity
-        self._entries: List[MemoryEntry] = []
-        self._context: Dict[str, Any] = {}
+        self._entries: list[MemoryEntry] = []
+        self._context: dict[str, Any] = {}
 
     def add(self, content: str, source: str = "") -> None:
         """Add to working memory with LRU eviction."""
@@ -95,8 +95,8 @@ class ShortTermMemory:
 
     def __init__(self, max_entries: int = 100):
         self.max_entries = max_entries
-        self._entries: List[MemoryEntry] = []
-        self._checkpoints: Dict[str, dict] = {}
+        self._entries: list[MemoryEntry] = []
+        self._checkpoints: dict[str, dict] = {}
 
     def add_interaction(self, user_input: str, agent_response: str, session_id: str = "") -> None:
         """Record conversation turn."""
@@ -132,11 +132,11 @@ class ShortTermMemory:
         # In real implementation, would restore full state
         return True
 
-    def get_recent(self, n: int = 10) -> List[MemoryEntry]:
+    def get_recent(self, n: int = 10) -> list[MemoryEntry]:
         """Get n most recent entries."""
         return self._entries[-n:]
 
-    def search(self, query: str) -> List[MemoryEntry]:
+    def search(self, query: str) -> list[MemoryEntry]:
         """Simple keyword search."""
         query_lower = query.lower()
         results = [e for e in self._entries if query_lower in e.content.lower()]
@@ -153,7 +153,7 @@ class EpisodicMemory:
     def __init__(self, storage_path: Optional[Path] = None):
         self.storage_path = storage_path or Path.home() / ".amos" / "episodic_memory"
         self.storage_path.mkdir(parents=True, exist_ok=True)
-        self._episodes: List[dict] = []
+        self._episodes: list[dict] = []
         self._load_episodes()
 
     def _load_episodes(self) -> None:
@@ -174,9 +174,9 @@ class EpisodicMemory:
         session_id: str,
         task: str,
         outcome: str,
-        agents_used: List[str],
+        agents_used: list[str],
         law_compliance: bool,
-        lessons_learned: List[str],
+        lessons_learned: list[str],
     ) -> None:
         """Record complete session as episode."""
         episode = {
@@ -192,7 +192,7 @@ class EpisodicMemory:
         self._episodes.append(episode)
         self._save_episodes()
 
-    def find_similar_episodes(self, task_description: str) -> List[dict]:
+    def find_similar_episodes(self, task_description: str) -> list[dict]:
         """Find episodes similar to current task."""
         # Simple keyword matching - in production would use embeddings
         keywords = set(task_description.lower().split())
@@ -208,7 +208,7 @@ class EpisodicMemory:
         scored.sort(reverse=True)
         return [ep[1] for ep in scored[:5]]
 
-    def get_lessons_for_task(self, task_type: str) -> List[str]:
+    def get_lessons_for_task(self, task_type: str) -> list[str]:
         """Extract learned lessons for task type."""
         lessons = []
         for episode in self._episodes:
@@ -229,8 +229,8 @@ class SemanticMemory:
         self.storage_path.mkdir(parents=True, exist_ok=True)
 
         # Knowledge graph: entities and relationships
-        self._entities: Dict[str, dict] = {}
-        self._facts: List[dict] = []
+        self._entities: dict[str, dict] = {}
+        self._facts: list[dict] = []
         self._load_knowledge()
 
     def _load_knowledge(self) -> None:
@@ -274,7 +274,7 @@ class SemanticMemory:
         """Query entity information."""
         return self._entities.get(entity_id)
 
-    def query_facts(self, subject: str = None, predicate: str = None) -> List[dict]:
+    def query_facts(self, subject: str = None, predicate: str = None) -> list[dict]:
         """Query facts by subject or predicate."""
         results = self._facts
         if subject:
@@ -283,7 +283,7 @@ class SemanticMemory:
             results = [f for f in results if f["predicate"] == predicate]
         return results
 
-    def infer_relationship(self, entity1: str, entity2: str) -> List[str]:
+    def infer_relationship(self, entity1: str, entity2: str) -> list[str]:
         """Find relationship paths between entities."""
         # Simple 1-hop inference
         direct = [
@@ -304,7 +304,7 @@ class ProceduralMemory:
     def __init__(self, storage_path: Optional[Path] = None):
         self.storage_path = storage_path or Path.home() / ".amos" / "procedural_memory"
         self.storage_path.mkdir(parents=True, exist_ok=True)
-        self._procedures: Dict[str, dict] = {}
+        self._procedures: dict[str, dict] = {}
         self._load_procedures()
 
     def _load_procedures(self) -> None:
@@ -321,7 +321,7 @@ class ProceduralMemory:
             json.dump(self._procedures, f, indent=2)
 
     def learn_procedure(
-        self, task_pattern: str, steps: List[str], success_rate: float = 0.0
+        self, task_pattern: str, steps: list[str], success_rate: float = 0.0
     ) -> None:
         """Learn or update procedure for task pattern."""
         if task_pattern not in self._procedures:
@@ -425,9 +425,9 @@ class AMOSMemoryManager:
         self,
         task: str,
         outcome: str,
-        agents_used: List[str],
+        agents_used: list[str],
         law_compliance: bool,
-        lessons_learned: List[str],
+        lessons_learned: list[str],
     ) -> None:
         """Record complete episode to long-term memory."""
         self.episodic.record_episode(

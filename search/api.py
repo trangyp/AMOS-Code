@@ -6,7 +6,7 @@ Author: AMOS Search Team
 Version: 2.0.0
 """
 
-from typing import Any, Dict, List
+from typing import Any
 
 from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel, Field
@@ -21,7 +21,7 @@ class SearchRequest(BaseModel):
     """Search request body."""
 
     query: str = Field(default="", description="Search query string")
-    tags: List[str] = Field(default=[], description="Filter by tags")
+    tags: list[str] = Field(default=[], description="Filter by tags")
     category: str = Field(None, description="Filter by category")
     author: str = Field(None, description="Filter by author")
     verified_only: bool = Field(False, description="Only verified equations")
@@ -42,18 +42,18 @@ class SearchResultItem(BaseModel):
     name: str
     formula: str
     description: str
-    tags: List[str]
+    tags: list[str]
     author: str
     created_at: str
-    highlights: Dict[str, list[str]]
+    highlights: dict[str, list[str]]
 
 
 class FacetCounts(BaseModel):
     """Facet aggregation counts."""
 
-    tags: Dict[str, int]
-    categories: Dict[str, int]
-    authors: Dict[str, int]
+    tags: dict[str, int]
+    categories: dict[str, int]
+    authors: dict[str, int]
 
 
 class SearchResponseModel(BaseModel):
@@ -64,23 +64,23 @@ class SearchResponseModel(BaseModel):
     page: int
     per_page: int
     total_pages: int
-    results: List[SearchResultItem]
+    results: list[SearchResultItem]
     facets: FacetCounts
-    suggestions: List[str]
+    suggestions: list[str]
 
 
 class SuggestResponse(BaseModel):
     """Auto-suggest response."""
 
     query: str
-    suggestions: List[str]
+    suggestions: list[str]
 
 
 class SimilarEquationsResponse(BaseModel):
     """Similar equations response."""
 
     equation_id: str
-    similar: List[SearchResultItem]
+    similar: list[SearchResultItem]
 
 
 # Dependency injection
@@ -99,7 +99,7 @@ async def search_equations(
 ) -> SearchResponseModel:
     """Search equations with filters and facets."""
     # Build filters
-    filters: Dict[str, Any] = {}
+    filters: dict[str, Any] = {}
     if request.tags:
         filters["tags"] = request.tags
     if request.category:
@@ -157,7 +157,7 @@ async def search_equations(
 @router.get("/", response_model=SearchResponseModel)
 async def search_equations_get(
     q: str = Query(default="", description="Search query"),
-    tags: List[str] = Query(default=[], description="Filter by tags"),
+    tags: list[str] = Query(default=[], description="Filter by tags"),
     category: str = Query(None, description="Filter by category"),
     author: str = Query(None, description="Filter by author"),
     verified: bool = Query(False, description="Only verified equations"),
@@ -222,7 +222,7 @@ async def get_similar_equations(
 @router.post("/admin/reindex")
 async def reindex_all(
     search: EquationSearchEngine = Depends(get_search_engine),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Admin: Reindex all equations from database."""
     # This would typically fetch from database
     # For demo, return status
@@ -236,7 +236,7 @@ async def reindex_all(
 @router.get("/admin/health")
 async def search_health(
     search: EquationSearchEngine = Depends(get_search_engine),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Check search engine health."""
     health = await search.health_check()
     return health
@@ -246,7 +246,7 @@ async def search_health(
 async def get_popular_tags(
     limit: int = Query(default=20, ge=1, le=100),
     search: EquationSearchEngine = Depends(get_search_engine),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Get popular tags with counts."""
     # Simple aggregation query
     body = {"size": 0, "aggs": {"popular_tags": {"terms": {"field": "tags", "size": limit}}}}

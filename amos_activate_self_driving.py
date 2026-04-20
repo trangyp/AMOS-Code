@@ -12,9 +12,6 @@ Usage: python amos_activate_self_driving.py [goal]
 """
 
 import sys
-from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).parent))
 
 
 def activate_self_driving():

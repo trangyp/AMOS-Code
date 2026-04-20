@@ -1,9 +1,11 @@
 """Rule Validator — Business rule validation for AMOS."""
 
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from enum import Enum
-from typing import Any, Dict, List
+from typing import Any
 
 
 class RuleType(Enum):
@@ -42,7 +44,7 @@ class ValidationResult:
     outcome: ValidationOutcome
     target: str
     message: str
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: dict[str, Any] = field(default_factory=dict)
     timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
 
@@ -50,8 +52,8 @@ class RuleValidator:
     """Validates business and operational rules."""
 
     def __init__(self):
-        self._rules: Dict[str, Rule] = {}
-        self._history: List[ValidationResult] = []
+        self._rules: dict[str, Rule] = {}
+        self._history: list[ValidationResult] = []
         self._setup_default_rules()
 
     def _setup_default_rules(self):
@@ -82,7 +84,7 @@ class RuleValidator:
         self._rules[rule.id] = rule
         return rule.id
 
-    def validate(self, target: str, context: Dict[str, Any] = None) -> List[ValidationResult]:
+    def validate(self, target: str, context: dict[str, Any] = None) -> list[ValidationResult]:
         """Validate target against all enabled rules."""
         results = []
         ctx = context or {}
@@ -97,7 +99,7 @@ class RuleValidator:
 
         return results
 
-    def _check_rule(self, rule: Rule, target: str, context: Dict[str, Any]) -> ValidationResult:
+    def _check_rule(self, rule: Rule, target: str, context: dict[str, Any]) -> ValidationResult:
         """Check a single rule."""
         # Simple rule checking - can be extended
         if rule.rule_type == RuleType.REQUIRED:
@@ -117,17 +119,17 @@ class RuleValidator:
             details={"rule_type": rule.rule_type.value},
         )
 
-    def _check_required(self, rule: Rule, target: str, context: Dict[str, Any]) -> bool:
+    def _check_required(self, rule: Rule, target: str, context: dict[str, Any]) -> bool:
         """Check required condition."""
         # Simplified implementation
         return True
 
-    def _check_forbidden(self, rule: Rule, target: str, context: Dict[str, Any]) -> bool:
+    def _check_forbidden(self, rule: Rule, target: str, context: dict[str, Any]) -> bool:
         """Check if forbidden condition exists."""
         # Simplified implementation
         return False
 
-    def status(self) -> Dict[str, Any]:
+    def status(self) -> dict[str, Any]:
         """Get validator status."""
         failures = [r for r in self._history if r.outcome == ValidationOutcome.FAIL]
         return {

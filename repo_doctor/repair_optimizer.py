@@ -11,6 +11,7 @@ Subject to:
 Uses Z3 SMT solver for constraint satisfaction and optimization.
 """
 
+from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
@@ -29,11 +30,11 @@ class RepairAction:
     blast_radius: float  # Files/modules affected
     entanglement_risk: float  # Probability of breaking coupled systems
     energy_reduction: float  # Predicted energy drop
-    restored_invariants: List[BasisState]
+    restored_invariants: list[BasisState]
     command: str  # Actual shell command to execute
     description: str
 
-    def total_cost(self, weights: Dict[str, float]  = None) -> float:
+    def total_cost(self, weights: dict[str, float] = None) -> float:
         """Calculate weighted total cost."""
         w = weights or {"edit": 1.0, "blast": 1.0, "entanglement": 1.0, "energy": 1.0}
         return (
@@ -59,7 +60,7 @@ class RepairAction:
 class RepairPlan:
     """A complete repair plan with ordered actions."""
 
-    actions: List[RepairAction]
+    actions: list[RepairAction]
     total_cost: float
     expected_final_energy: float
     risk_score: float
@@ -114,8 +115,8 @@ class RepairOptimizer:
         self.H = Hamiltonian()
 
     def generate_actions(
-        self, failed_invariants: List[BasisState], state: StateVector
-    ) -> List[RepairAction]:
+        self, failed_invariants: list[BasisState], state: StateVector
+    ) -> list[RepairAction]:
         """Generate repair actions for failed invariants."""
         actions = []
 
@@ -128,7 +129,7 @@ class RepairOptimizer:
 
     def _create_action_for_invariant(
         self, invariant: BasisState, state: StateVector
-    ) -> Optional[RepairAction]:
+    ) -> RepairAction | None:
         """Create a repair action for a specific invariant failure."""
         # Map invariants to repair commands
         action_map = {
@@ -281,9 +282,9 @@ class RepairOptimizer:
 
     def optimize_plan(
         self,
-        failed_invariants: List[BasisState],
+        failed_invariants: list[BasisState],
         state: StateVector,
-        constraints: Dict[str, Any]  = None,
+        constraints: dict[str, Any] = None,
     ) -> RepairPlan:
         """
         Generate optimized repair plan.

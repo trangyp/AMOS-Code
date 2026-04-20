@@ -29,24 +29,29 @@ Creator: Trang Phan
 Version: 3.1.0
 """
 
-import os
+from __future__ import annotations
+
 import asyncio
-from typing import Any, Callable, Dict, List
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timezone, timedelta
-UTC = timezone.utc
-from enum import Enum
+from datetime import UTC, datetime, timedelta, timezone
+from typing import Any
+
+UTC = UTC
 import json
 from collections import defaultdict
+from enum import Enum
+
+from agent_knowledge import recall, remember_fact
+from ai_governance import governance_engine
 
 # Import AMOS subsystems
-from amos_brain_orchestrator import amos_brain, TaskResult
-from agent_knowledge import knowledge_manager, remember_fact, recall
-from ai_governance import governance_engine
+from amos_brain_orchestrator import TaskResult, amos_brain
 
 
 class EvolutionStrategy(Enum):
     """Strategies for agent self-improvement."""
+
     FEEDBACK_LOOP = "feedback_loop"
     META_LEARNING = "meta_learning"
     SELF_PLAY = "self_play"
@@ -57,6 +62,7 @@ class EvolutionStrategy(Enum):
 
 class ImprovementType(Enum):
     """Types of improvements agents can make."""
+
     PROMPT_ENGINEERING = "prompt_engineering"
     TOOL_SELECTION = "tool_selection"
     REASONING_STRATEGY = "reasoning_strategy"
@@ -68,6 +74,7 @@ class ImprovementType(Enum):
 @dataclass
 class PerformanceMetrics:
     """Performance metrics for an agent."""
+
     agent_id: str
     timestamp: str
     task_count: int = 0
@@ -76,7 +83,7 @@ class PerformanceMetrics:
     avg_cost_usd: float = 0.0
     error_rate: float = 0.0
     user_satisfaction: float = 0.0  # 0-1 scale
-    strategy_effectiveness: Dict[str, float] = field(default_factory=dict)
+    strategy_effectiveness: dict[str, float] = field(default_factory=dict)
 
     def success_rate(self) -> float:
         """Calculate success rate."""
@@ -88,28 +95,30 @@ class PerformanceMetrics:
 @dataclass
 class EvolutionOpportunity:
     """Identified opportunity for agent improvement."""
+
     opportunity_id: str
     agent_id: str
     improvement_type: str
     current_performance: float
     target_performance: float
     confidence: float  # 0-1
-    evidence: List[dict[str, Any]]
+    evidence: list[dict[str, Any]]
     proposed_solution: str
     estimated_impact: str
-    risks: List[str]
+    risks: list[str]
     created_at: str
 
 
 @dataclass
 class ImprovementResult:
     """Result of an improvement attempt."""
+
     improvement_id: str
     agent_id: str
     opportunity_id: str
     success: bool
-    before_metrics: Dict[str, float]
-    after_metrics: Dict[str, float]
+    before_metrics: dict[str, float]
+    after_metrics: dict[str, float]
     improvement_percent: float
     strategy_applied: str
     deployed_at: str
@@ -119,6 +128,7 @@ class ImprovementResult:
 @dataclass
 class ConsensusVote:
     """Vote from an agent in consensus decision."""
+
     agent_id: str
     proposal_id: str
     vote: str  # "for", "against", "abstain"
@@ -131,11 +141,9 @@ class PerformanceTracker:
     """Track and analyze agent performance."""
 
     def __init__(self):
-        self.metrics_history: Dict[str, list[PerformanceMetrics]] = defaultdict(list)
-        self.baselines: Dict[str, PerformanceMetrics] = {}
-        self.trends: Dict[str, dict[str, list[float]]] = defaultdict(
-            lambda: defaultdict(list)
-        )
+        self.metrics_history: dict[str, list[PerformanceMetrics]] = defaultdict(list)
+        self.baselines: dict[str, PerformanceMetrics] = {}
+        self.trends: dict[str, dict[str, list[float]]] = defaultdict(lambda: defaultdict(list))
 
     async def record_task_result(self, agent_id: str, result: TaskResult):
         """Record a task execution result."""
@@ -150,31 +158,31 @@ class PerformanceTracker:
 
         # Update averages
         metrics.avg_latency_ms = (
-            (metrics.avg_latency_ms * (metrics.task_count - 1) + result.latency_ms)
-            / metrics.task_count
-        )
+            metrics.avg_latency_ms * (metrics.task_count - 1) + result.latency_ms
+        ) / metrics.task_count
         metrics.avg_cost_usd = (
-            (metrics.avg_cost_usd * (metrics.task_count - 1) + result.cost_usd)
-            / metrics.task_count
-        )
+            metrics.avg_cost_usd * (metrics.task_count - 1) + result.cost_usd
+        ) / metrics.task_count
 
         # Calculate error rate
         metrics.error_rate = (metrics.task_count - metrics.success_count) / metrics.task_count
 
         # Store in knowledge base
         await remember_fact(
-            content=json.dumps({
-                "agent_id": agent_id,
-                "task_id": result.task_id,
-                "success": result.success,
-                "latency_ms": result.latency_ms,
-                "cost_usd": result.cost_usd,
-                "violations": result.violations,
-                "timestamp": result.timestamp
-            }),
+            content=json.dumps(
+                {
+                    "agent_id": agent_id,
+                    "task_id": result.task_id,
+                    "success": result.success,
+                    "latency_ms": result.latency_ms,
+                    "cost_usd": result.cost_usd,
+                    "violations": result.violations,
+                    "timestamp": result.timestamp,
+                }
+            ),
             source="performance_tracker",
             memory_type="episodic",
-            agent_id=agent_id
+            agent_id=agent_id,
         )
 
     def _get_or_create_metrics(self, agent_id: str, date: str) -> PerformanceMetrics:
@@ -185,13 +193,12 @@ class PerformanceTracker:
 
         # Create new metrics
         metrics = PerformanceMetrics(
-            agent_id=agent_id,
-            timestamp=datetime.now(timezone.utc).isoformat()
+            agent_id=agent_id, timestamp=datetime.now(timezone.utc).isoformat()
         )
         self.metrics_history[agent_id].append(metrics)
         return metrics
 
-    def get_performance_trend(self, agent_id: str, metric: str, days: int = 7) -> List[float]:
+    def get_performance_trend(self, agent_id: str, metric: str, days: int = 7) -> list[float]:
         """Get performance trend for a metric."""
         history = self.metrics_history.get(agent_id, [])
         if not history:
@@ -218,7 +225,9 @@ class PerformanceTracker:
 
         # Check for downward trend
         recent_avg = sum(success_rates[-3:]) / 3
-        previous_avg = sum(success_rates[-6:-3]) / 3 if len(success_rates) >= 6 else success_rates[0]
+        previous_avg = (
+            sum(success_rates[-6:-3]) / 3 if len(success_rates) >= 6 else success_rates[0]
+        )
 
         return (previous_avg - recent_avg) > threshold
 
@@ -228,39 +237,39 @@ class EvolutionOpportunityDetector:
 
     def __init__(self, performance_tracker: PerformanceTracker):
         self.performance_tracker = performance_tracker
-        self.opportunities: List[EvolutionOpportunity] = []
+        self.opportunities: list[EvolutionOpportunity] = []
         self.detection_rules = self._load_detection_rules()
 
-    def _load_detection_rules(self) -> List[dict[str, Any]]:
+    def _load_detection_rules(self) -> list[dict[str, Any]]:
         """Load rules for detecting improvement opportunities."""
         return [
             {
                 "name": "high_error_rate",
                 "condition": lambda m: m.error_rate > 0.2,
                 "improvement_type": ImprovementType.ERROR_RECOVERY,
-                "confidence_boost": 0.8
+                "confidence_boost": 0.8,
             },
             {
                 "name": "high_latency",
                 "condition": lambda m: m.avg_latency_ms > 2000,
                 "improvement_type": ImprovementType.REASONING_STRATEGY,
-                "confidence_boost": 0.7
+                "confidence_boost": 0.7,
             },
             {
                 "name": "high_cost",
                 "condition": lambda m: m.avg_cost_usd > 0.1,
                 "improvement_type": ImprovementType.TOOL_SELECTION,
-                "confidence_boost": 0.6
+                "confidence_boost": 0.6,
             },
             {
                 "name": "low_satisfaction",
                 "condition": lambda m: m.user_satisfaction < 0.6,
                 "improvement_type": ImprovementType.PROMPT_ENGINEERING,
-                "confidence_boost": 0.75
-            }
+                "confidence_boost": 0.75,
+            },
         ]
 
-    async def analyze_agent(self, agent_id: str) -> List[EvolutionOpportunity]:
+    async def analyze_agent(self, agent_id: str) -> list[EvolutionOpportunity]:
         """Analyze an agent for improvement opportunities."""
         import uuid
 
@@ -286,12 +295,12 @@ class EvolutionOpportunityDetector:
                     evidence=[
                         {"metric": "error_rate", "value": latest.error_rate},
                         {"metric": "success_rate", "value": latest.success_rate()},
-                        {"metric": "avg_latency_ms", "value": latest.avg_latency_ms}
+                        {"metric": "avg_latency_ms", "value": latest.avg_latency_ms},
                     ],
                     proposed_solution=self._generate_solution(rule["improvement_type"]),
                     estimated_impact="20-30% performance improvement",
                     risks=["May introduce new failure modes", "Requires validation"],
-                    created_at=datetime.now(timezone.utc).isoformat()
+                    created_at=datetime.now(timezone.utc).isoformat(),
                 )
                 opportunities.append(opportunity)
                 self.opportunities.append(opportunity)
@@ -310,11 +319,11 @@ class EvolutionOpportunityDetector:
             ImprovementType.TOOL_SELECTION: "Optimize tool selection algorithm based on cost-performance trade-offs",
             ImprovementType.PROMPT_ENGINEERING: "A/B test prompt variations and adopt highest-performing templates",
             ImprovementType.KNOWLEDGE_RETRIEVAL: "Adjust top_k and embedding models based on query patterns",
-            ImprovementType.COLLABORATION_PATTERN: "Form agent coalitions for complex multi-step tasks"
+            ImprovementType.COLLABORATION_PATTERN: "Form agent coalitions for complex multi-step tasks",
         }
         return solutions.get(improvement_type, "Analyze and optimize")
 
-    async def _detect_pattern_opportunities(self, agent_id: str) -> List[EvolutionOpportunity]:
+    async def _detect_pattern_opportunities(self, agent_id: str) -> list[EvolutionOpportunity]:
         """Detect opportunities based on failure patterns."""
         import uuid
 
@@ -324,7 +333,7 @@ class EvolutionOpportunityDetector:
         recall_result = await recall(
             query=f"{agent_id} task failures error patterns",
             agent_id=agent_id,
-            memory_type="episodic"
+            memory_type="episodic",
         )
 
         if recall_result.chunks:
@@ -354,7 +363,7 @@ class EvolutionOpportunityDetector:
                         proposed_solution=f"Address {failure_type} through targeted error handling",
                         estimated_impact=f"Reduce {failure_type} by 50%",
                         risks=["Requires careful testing"],
-                        created_at=datetime.now(timezone.utc).isoformat()
+                        created_at=datetime.now(timezone.utc).isoformat(),
                     )
                     opportunities.append(opp)
                     self.opportunities.append(opp)
@@ -368,15 +377,15 @@ class SelfImprovementEngine:
     def __init__(
         self,
         performance_tracker: PerformanceTracker,
-        opportunity_detector: EvolutionOpportunityDetector
+        opportunity_detector: EvolutionOpportunityDetector,
     ):
         self.performance_tracker = performance_tracker
         self.opportunity_detector = opportunity_detector
-        self.improvement_history: List[ImprovementResult] = []
-        self.active_improvements: Dict[str, ImprovementResult] = {}
-        self.improvement_strategies: Dict[str, Callable] = self._load_strategies()
+        self.improvement_history: list[ImprovementResult] = []
+        self.active_improvements: dict[str, ImprovementResult] = {}
+        self.improvement_strategies: dict[str, Callable] = self._load_strategies()
 
-    def _load_strategies(self) -> Dict[str, Callable]:
+    def _load_strategies(self) -> dict[str, Callable]:
         """Load improvement strategies."""
         return {
             ImprovementType.PROMPT_ENGINEERING.value: self._improve_prompts,
@@ -384,13 +393,11 @@ class SelfImprovementEngine:
             ImprovementType.REASONING_STRATEGY.value: self._optimize_reasoning,
             ImprovementType.ERROR_RECOVERY.value: self._improve_error_handling,
             ImprovementType.KNOWLEDGE_RETRIEVAL.value: self._optimize_knowledge,
-            ImprovementType.COLLABORATION_PATTERN.value: self._improve_collaboration
+            ImprovementType.COLLABORATION_PATTERN.value: self._improve_collaboration,
         }
 
     async def apply_improvement(
-        self,
-        agent_id: str,
-        opportunity: EvolutionOpportunity
+        self, agent_id: str, opportunity: EvolutionOpportunity
     ) -> ImprovementResult:
         """Apply an improvement to an agent."""
         import uuid
@@ -400,8 +407,7 @@ class SelfImprovementEngine:
 
         # Get improvement strategy
         strategy = self.improvement_strategies.get(
-            opportunity.improvement_type,
-            self._default_improvement
+            opportunity.improvement_type, self._default_improvement
         )
 
         # Apply improvement
@@ -424,7 +430,7 @@ class SelfImprovementEngine:
             after_metrics=after_metrics,
             improvement_percent=improvement_percent,
             strategy_applied=opportunity.proposed_solution,
-            deployed_at=datetime.now(timezone.utc).isoformat()
+            deployed_at=datetime.now(timezone.utc).isoformat(),
         )
 
         self.improvement_history.append(result)
@@ -432,22 +438,24 @@ class SelfImprovementEngine:
 
         # Store in knowledge base
         await remember_fact(
-            content=json.dumps({
-                "improvement_id": result.improvement_id,
-                "agent_id": agent_id,
-                "opportunity": opportunity.improvement_type,
-                "success": success,
-                "improvement_percent": improvement_percent,
-                "strategy": opportunity.proposed_solution
-            }),
+            content=json.dumps(
+                {
+                    "improvement_id": result.improvement_id,
+                    "agent_id": agent_id,
+                    "opportunity": opportunity.improvement_type,
+                    "success": success,
+                    "improvement_percent": improvement_percent,
+                    "strategy": opportunity.proposed_solution,
+                }
+            ),
             source="self_improvement_engine",
             memory_type="semantic",
-            agent_id=agent_id
+            agent_id=agent_id,
         )
 
         return result
 
-    def _get_current_metrics(self, agent_id: str) -> Dict[str, float]:
+    def _get_current_metrics(self, agent_id: str) -> dict[str, float]:
         """Get current performance metrics."""
         history = self.performance_tracker.metrics_history.get(agent_id, [])
         if not history:
@@ -458,14 +466,10 @@ class SelfImprovementEngine:
             "success_rate": latest.success_rate(),
             "avg_latency_ms": latest.avg_latency_ms,
             "avg_cost_usd": latest.avg_cost_usd,
-            "error_rate": latest.error_rate
+            "error_rate": latest.error_rate,
         }
 
-    def _calculate_improvement(
-        self,
-        before: Dict[str, float],
-        after: Dict[str, float]
-    ) -> float:
+    def _calculate_improvement(self, before: dict[str, float], after: dict[str, float]) -> float:
         """Calculate improvement percentage."""
         if not before or not after:
             return 0.0
@@ -503,7 +507,7 @@ class SelfImprovementEngine:
             "You are an expert AI assistant with self-improvement capabilities.",
             "Learn from each interaction and adapt your approach.",
             "Use available tools efficiently and optimize for both accuracy and speed.",
-            "When uncertain, seek clarification rather than making assumptions."
+            "When uncertain, seek clarification rather than making assumptions.",
         ]
 
         return f"{base_prompt}\n\n" + "\n".join(optimizations)
@@ -530,7 +534,9 @@ class SelfImprovementEngine:
         agent.config["reasoning_threshold"] = 3  # Steps before switching strategies
         return True
 
-    async def _improve_error_handling(self, agent_id: str, opportunity: EvolutionOpportunity) -> bool:
+    async def _improve_error_handling(
+        self, agent_id: str, opportunity: EvolutionOpportunity
+    ) -> bool:
         """Improve error handling."""
         agent = amos_brain.agents.get(agent_id)
         if not agent:
@@ -553,7 +559,9 @@ class SelfImprovementEngine:
         agent.config["knowledge_threshold"] = 0.75
         return True
 
-    async def _improve_collaboration(self, agent_id: str, opportunity: EvolutionOpportunity) -> bool:
+    async def _improve_collaboration(
+        self, agent_id: str, opportunity: EvolutionOpportunity
+    ) -> bool:
         """Improve collaboration patterns."""
         agent = amos_brain.agents.get(agent_id)
         if not agent:
@@ -591,8 +599,8 @@ class MultiAgentConsensus:
     """Multi-agent consensus and voting system."""
 
     def __init__(self):
-        self.votes: Dict[str, list[ConsensusVote]] = defaultdict(list)
-        self.proposals: Dict[str, dict[str, Any]] = {}
+        self.votes: dict[str, list[ConsensusVote]] = defaultdict(list)
+        self.proposals: dict[str, dict[str, Any]] = {}
 
     async def propose(
         self,
@@ -600,7 +608,7 @@ class MultiAgentConsensus:
         proposer_id: str,
         proposal_type: str,
         description: str,
-        affected_agents: List[str]
+        affected_agents: list[str],
     ) -> bool:
         """Create a proposal for agent consensus."""
         self.proposals[proposal_id] = {
@@ -611,7 +619,7 @@ class MultiAgentConsensus:
             "affected_agents": affected_agents,
             "status": "voting",
             "created_at": datetime.now(timezone.utc).isoformat(),
-            "deadline": (datetime.now(timezone.utc) + timedelta(minutes=5)).isoformat()
+            "deadline": (datetime.now(timezone.utc) + timedelta(minutes=5)).isoformat(),
         }
 
         # Notify affected agents
@@ -622,15 +630,9 @@ class MultiAgentConsensus:
         return True
 
     async def vote(
-        self,
-        agent_id: str,
-        proposal_id: str,
-        vote: str,
-        confidence: float,
-        reasoning: str
+        self, agent_id: str, proposal_id: str, vote: str, confidence: float, reasoning: str
     ) -> bool:
         """Cast a vote on a proposal."""
-        import uuid
 
         consensus_vote = ConsensusVote(
             agent_id=agent_id,
@@ -638,7 +640,7 @@ class MultiAgentConsensus:
             vote=vote,
             confidence=confidence,
             reasoning=reasoning,
-            timestamp=datetime.now(timezone.utc).isoformat()
+            timestamp=datetime.now(timezone.utc).isoformat(),
         )
 
         self.votes[proposal_id].append(consensus_vote)
@@ -676,7 +678,7 @@ class MultiAgentConsensus:
         if for_ratio >= 0.6:  # 60% threshold
             proposal["status"] = "accepted"
             proposal["consensus_reached"] = True
-            print(f"Proposal {proposal_id} accepted with {for_ratio*100:.1f}% support")
+            print(f"Proposal {proposal_id} accepted with {for_ratio * 100:.1f}% support")
         elif against_votes > for_votes:
             proposal["status"] = "rejected"
             proposal["consensus_reached"] = False
@@ -687,7 +689,7 @@ class MultiAgentConsensus:
         # Would integrate with messaging system
         print(f"Notifying agent {agent_id} about proposal {proposal_id}")
 
-    def get_proposal_status(self, proposal_id: str) -> Dict[str, Any]:
+    def get_proposal_status(self, proposal_id: str) -> dict[str, Any]:
         """Get the status of a proposal."""
         proposal = self.proposals.get(proposal_id, {})
         votes = self.votes.get(proposal_id, [])
@@ -696,13 +698,8 @@ class MultiAgentConsensus:
             **proposal,
             "vote_count": len(votes),
             "votes": [
-                {
-                    "agent_id": v.agent_id,
-                    "vote": v.vote,
-                    "confidence": v.confidence
-                }
-                for v in votes
-            ]
+                {"agent_id": v.agent_id, "vote": v.vote, "confidence": v.confidence} for v in votes
+            ],
         }
 
 
@@ -713,8 +710,7 @@ class AMOSSelfEvolvingEngine:
         self.performance_tracker = PerformanceTracker()
         self.opportunity_detector = EvolutionOpportunityDetector(self.performance_tracker)
         self.improvement_engine = SelfImprovementEngine(
-            self.performance_tracker,
-            self.opportunity_detector
+            self.performance_tracker, self.opportunity_detector
         )
         self.consensus = MultiAgentConsensus()
         self.evolution_loop_task = None
@@ -757,27 +753,29 @@ class AMOSSelfEvolvingEngine:
                     opportunities = await self.opportunity_detector.analyze_agent(agent_id)
 
                     if opportunities:
-                        print(f"📈 Found {len(opportunities)} evolution opportunities for {agent_id}")
+                        print(
+                            f"📈 Found {len(opportunities)} evolution opportunities for {agent_id}"
+                        )
 
                         # Auto-apply high-confidence improvements
                         for opp in opportunities:
                             if opp.confidence >= 0.8:
                                 # Check governance
                                 validation = await governance_engine.validate_input(
-                                    agent_id,
-                                    f"Apply improvement: {opp.proposed_solution}"
+                                    agent_id, f"Apply improvement: {opp.proposed_solution}"
                                 )
 
                                 if validation["valid"]:
                                     result = await self.improvement_engine.apply_improvement(
-                                        agent_id,
-                                        opp
+                                        agent_id, opp
                                     )
 
                                     if result.success:
-                                        print(f"✅ Applied improvement: {result.improvement_percent:.1f}% better")
+                                        print(
+                                            f"✅ Applied improvement: {result.improvement_percent:.1f}% better"
+                                        )
                                     else:
-                                        print(f"⚠️ Improvement failed")
+                                        print("⚠️ Improvement failed")
 
                 # Wait before next cycle
                 await asyncio.sleep(300)  # 5 minutes
@@ -792,14 +790,13 @@ class AMOSSelfEvolvingEngine:
         """Record a task result for tracking."""
         await self.performance_tracker.record_task_result(agent_id, result)
 
-    def get_agent_improvements(self, agent_id: str) -> List[ImprovementResult]:
+    def get_agent_improvements(self, agent_id: str) -> list[ImprovementResult]:
         """Get improvement history for an agent."""
         return [
-            imp for imp in self.improvement_engine.improvement_history
-            if imp.agent_id == agent_id
+            imp for imp in self.improvement_engine.improvement_history if imp.agent_id == agent_id
         ]
 
-    def get_performance_summary(self, agent_id: str) -> Dict[str, Any]:
+    def get_performance_summary(self, agent_id: str) -> dict[str, Any]:
         """Get performance summary for an agent."""
         metrics = self.performance_tracker.metrics_history.get(agent_id, [])
         if not metrics:
@@ -817,7 +814,7 @@ class AMOSSelfEvolvingEngine:
             "success_rate_trend": trend,
             "total_tasks": sum(m.task_count for m in metrics),
             "improvements_applied": len(self.get_agent_improvements(agent_id)),
-            "regression_detected": self.performance_tracker.detect_performance_regression(agent_id)
+            "regression_detected": self.performance_tracker.detect_performance_regression(agent_id),
         }
 
 
@@ -841,6 +838,6 @@ async def record_agent_performance(agent_id: str, result: TaskResult):
     await self_evolving_engine.record_task(agent_id, result)
 
 
-def get_agent_evolution_summary(agent_id: str) -> Dict[str, Any]:
+def get_agent_evolution_summary(agent_id: str) -> dict[str, Any]:
     """Get evolution summary for an agent."""
     return self_evolving_engine.get_performance_summary(agent_id)

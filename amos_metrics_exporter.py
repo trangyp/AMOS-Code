@@ -30,9 +30,11 @@ Version: 1.0.0
 Phase: 14
 """
 
+from __future__ import annotations
+
 import time
 from contextlib import contextmanager
-from typing import Any, Optional, Tuple
+from typing import Any, Optional
 
 # Prometheus client
 try:
@@ -302,7 +304,7 @@ class AMOSMetricsExporter:
     # Metrics Export
     # ============================================
 
-    def get_metrics(self) -> Tuple[str, str]:
+    def get_metrics(self) -> tuple[str, str]:
         """
         Get metrics in Prometheus format.
 

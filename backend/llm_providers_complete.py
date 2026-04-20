@@ -16,32 +16,34 @@ Owner: Trang
 Version: 2.0.0
 """
 
+from __future__ import annotations
 
+import json
 import os
-import asyncio
 import time
 from abc import ABC, abstractmethod
-from typing import Any, AsyncGenerator, Dict, List, Optional, Tuple
-from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
-import aiohttp
-import json
-from pathlib import Path
+from collections.abc import AsyncGenerator
+from dataclasses import dataclass
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 
 # Import cognitive bridge for integration
-import sys
+from pathlib import Path
+
+import aiohttp
+
 REPO_ROOT = Path(__file__).parent.parent
-sys.path.insert(0, str(REPO_ROOT))
-from clawspring.amos_cognitive_bridge import get_cognitive_bridge, CognitiveContext
+from clawspring.amos_cognitive_bridge import CognitiveContext, get_cognitive_bridge
 
 # Cache integration
 try:
     from amos_distributed_cache import (
-        get_cached_llm_response,
         cache_llm_response,
         compute_prompt_hash,
+        get_cached_llm_response,
     )
+
     CACHE_AVAILABLE = True
 except ImportError:
     CACHE_AVAILABLE = False
@@ -49,6 +51,7 @@ except ImportError:
 # SuperBrain integration
 try:
     from amos_brain import get_super_brain
+
     SUPERBRAIN_AVAILABLE = True
 except ImportError:
     SUPERBRAIN_AVAILABLE = False
@@ -57,45 +60,48 @@ except ImportError:
 @dataclass
 class Message:
     """Standard message format for all providers."""
+
     role: str  # system, user, assistant, tool
     content: str
-    metadata: dict  = None
+    metadata: dict = None
 
 
 @dataclass
 class LLMResponse:
     """Standardized LLM response."""
+
     content: str
     model: str
     provider: str
-    usage: Dict[str, int]
+    usage: dict[str, int]
     latency_ms: float
     timestamp: str
-    raw_response: dict  = None
-    biological_context: dict  = None  # UBI context integration
+    raw_response: dict = None
+    biological_context: dict = None  # UBI context integration
 
 
 @dataclass
 class LLMRequest:
     """Standardized LLM request."""
-    messages: List[Message]
-    model: str  = None
+
+    messages: list[Message]
+    model: str = None
     temperature: float = 0.7
-    max_tokens: int  = None
+    max_tokens: int = None
     stream: bool = False
-    metadata: dict  = None
+    metadata: dict = None
     # Biological context from UBI Engine
-    biological_context: Optional[CognitiveContext] = None
+    biological_context: CognitiveContext = None
 
 
 class BaseProvider(ABC):
     """Abstract base class for LLM providers."""
 
-    def __init__(self, name: str, api_key: str  = None, base_url: str  = None):
+    def __init__(self, name: str, api_key: str = None, base_url: str = None):
         self.name = name
         self.api_key = api_key
         self.base_url = base_url
-        self._session: aiohttp.ClientSession  = None
+        self._session: aiohttp.ClientSession = None
         self._enabled = bool(api_key) if name != "ollama" else True  # Ollama doesn't need API key
 
     async def _get_session(self) -> aiohttp.ClientSession:
@@ -120,7 +126,7 @@ class BaseProvider(ABC):
         pass
 
     @abstractmethod
-    async def get_available_models(self) -> List[str]:
+    async def get_available_models(self) -> list[str]:
         """Get list of available models."""
         pass
 
@@ -147,7 +153,7 @@ class OllamaProvider(BaseProvider):
 
     def __init__(self, base_url: str = "http://localhost:11434"):
         super().__init__("ollama", api_key=None, base_url=base_url)
-        self._available_models: List[str] = []
+        self._available_models: list[str] = []
 
     async def _check_ollama_running(self) -> bool:
         """Check if Ollama server is running."""
@@ -162,7 +168,7 @@ class OllamaProvider(BaseProvider):
             pass
         return False
 
-    async def get_available_models(self) -> List[str]:
+    async def get_available_models(self) -> list[str]:
         """Get list of available local models."""
         if await self._check_ollama_running():
             return self._available_models if self._available_models else self.DEFAULT_MODELS
@@ -174,10 +180,7 @@ class OllamaProvider(BaseProvider):
         session = await self._get_session()
 
         # Prepare messages for Ollama format
-        messages = [
-            {"role": msg.role, "content": msg.content}
-            for msg in request.messages
-        ]
+        messages = [{"role": msg.role, "content": msg.content} for msg in request.messages]
 
         # Add biological context if available
         system_prompt = ""
@@ -192,7 +195,7 @@ class OllamaProvider(BaseProvider):
             "stream": False,
             "options": {
                 "temperature": request.temperature,
-            }
+            },
         }
 
         if request.max_tokens:
@@ -200,9 +203,7 @@ class OllamaProvider(BaseProvider):
 
         try:
             async with session.post(
-                f"{self.base_url}/api/chat",
-                json=payload,
-                timeout=aiohttp.ClientTimeout(total=120)
+                f"{self.base_url}/api/chat", json=payload, timeout=aiohttp.ClientTimeout(total=120)
             ) as resp:
                 if resp.status != 200:
                     raise Exception(f"Ollama error: {resp.status}")
@@ -220,9 +221,13 @@ class OllamaProvider(BaseProvider):
                     timestamp=datetime.now(timezone.utc).isoformat(),
                     raw_response=data,
                     biological_context={
-                        "cognitive_load": request.biological_context.cognitive_load if request.biological_context else None,
-                        "emotional_state": request.biological_context.emotional_state if request.biological_context else None,
-                    }
+                        "cognitive_load": request.biological_context.cognitive_load
+                        if request.biological_context
+                        else None,
+                        "emotional_state": request.biological_context.emotional_state
+                        if request.biological_context
+                        else None,
+                    },
                 )
         except Exception as e:
             raise Exception(f"Ollama completion failed: {e}")
@@ -231,10 +236,7 @@ class OllamaProvider(BaseProvider):
         """Stream a chat completion from Ollama."""
         session = await self._get_session()
 
-        messages = [
-            {"role": msg.role, "content": msg.content}
-            for msg in request.messages
-        ]
+        messages = [{"role": msg.role, "content": msg.content} for msg in request.messages]
 
         # Add biological context
         if request.biological_context:
@@ -247,14 +249,12 @@ class OllamaProvider(BaseProvider):
             "stream": True,
             "options": {
                 "temperature": request.temperature,
-            }
+            },
         }
 
         try:
             async with session.post(
-                f"{self.base_url}/api/chat",
-                json=payload,
-                timeout=aiohttp.ClientTimeout(total=300)
+                f"{self.base_url}/api/chat", json=payload, timeout=aiohttp.ClientTimeout(total=300)
             ) as resp:
                 async for line in resp.content:
                     if line:
@@ -278,11 +278,11 @@ class OpenAIProvider(BaseProvider):
         "gpt-3.5-turbo",
     ]
 
-    def __init__(self, api_key: str  = None):
+    def __init__(self, api_key: str = None):
         api_key = api_key or os.getenv("OPENAI_API_KEY")
         super().__init__("openai", api_key, base_url="https://api.openai.com/v1")
 
-    async def get_available_models(self) -> List[str]:
+    async def get_available_models(self) -> list[str]:
         """Get available OpenAI models."""
         if not self._enabled:
             return []
@@ -293,10 +293,7 @@ class OpenAIProvider(BaseProvider):
         start_time = time.time()
         session = await self._get_session()
 
-        messages = [
-            {"role": msg.role, "content": msg.content}
-            for msg in request.messages
-        ]
+        messages = [{"role": msg.role, "content": msg.content} for msg in request.messages]
 
         # Add biological context
         if request.biological_context:
@@ -320,7 +317,7 @@ class OpenAIProvider(BaseProvider):
                     "Content-Type": "application/json",
                 },
                 json=payload,
-                timeout=aiohttp.ClientTimeout(total=60)
+                timeout=aiohttp.ClientTimeout(total=60),
             ) as resp:
                 if resp.status != 200:
                     error = await resp.text()
@@ -338,9 +335,13 @@ class OpenAIProvider(BaseProvider):
                     timestamp=datetime.now(timezone.utc).isoformat(),
                     raw_response=data,
                     biological_context={
-                        "cognitive_load": request.biological_context.cognitive_load if request.biological_context else None,
-                        "emotional_state": request.biological_context.emotional_state if request.biological_context else None,
-                    }
+                        "cognitive_load": request.biological_context.cognitive_load
+                        if request.biological_context
+                        else None,
+                        "emotional_state": request.biological_context.emotional_state
+                        if request.biological_context
+                        else None,
+                    },
                 )
         except Exception as e:
             raise Exception(f"OpenAI completion failed: {e}")
@@ -349,10 +350,7 @@ class OpenAIProvider(BaseProvider):
         """Stream a chat completion from OpenAI."""
         session = await self._get_session()
 
-        messages = [
-            {"role": msg.role, "content": msg.content}
-            for msg in request.messages
-        ]
+        messages = [{"role": msg.role, "content": msg.content} for msg in request.messages]
 
         if request.biological_context:
             system_prompt = request.biological_context.to_prompt_injection()
@@ -373,14 +371,14 @@ class OpenAIProvider(BaseProvider):
                     "Content-Type": "application/json",
                 },
                 json=payload,
-                timeout=aiohttp.ClientTimeout(total=120)
+                timeout=aiohttp.ClientTimeout(total=120),
             ) as resp:
                 async for line in resp.content:
                     if line and line.strip():
-                        line_str = line.decode('utf-8').strip()
-                        if line_str.startswith('data: '):
+                        line_str = line.decode("utf-8").strip()
+                        if line_str.startswith("data: "):
                             data_str = line_str[6:]
-                            if data_str == '[DONE]':
+                            if data_str == "[DONE]":
                                 break
                             try:
                                 data = json.loads(data_str)
@@ -406,7 +404,7 @@ class ProviderManager:
     """
 
     def __init__(self):
-        self.providers: Dict[str, BaseProvider] = {}
+        self.providers: dict[str, BaseProvider] = {}
         self._cognitive_bridge = get_cognitive_bridge()
         self._setup_providers()
 
@@ -422,12 +420,12 @@ class ProviderManager:
 
     async def complete(
         self,
-        messages: List[Message],
-        model: str  = None,
-        provider: str  = None,
+        messages: list[Message],
+        model: str = None,
+        provider: str = None,
         temperature: float = 0.7,
-        biological_context_description: str  = None,
-        **kwargs
+        biological_context_description: str = None,
+        **kwargs,
     ) -> LLMResponse:
         """Complete a request with intelligent routing.
 
@@ -451,22 +449,22 @@ class ProviderManager:
             model=model,
             temperature=temperature,
             biological_context=biological_context,
-            metadata=kwargs
+            metadata=kwargs,
         )
 
         # CANONICAL: Validate LLM call via SuperBrain ActionGate
         if SUPERBRAIN_AVAILABLE:
             try:
                 brain = get_super_brain()
-                if brain and hasattr(brain, 'action_gate'):
+                if brain and hasattr(brain, "action_gate"):
                     action_result = brain.action_gate.validate_action(
                         agent_id="llm_provider",
                         action="llm_complete",
                         details={
                             "model": model or "auto",
                             "provider": provider or "auto",
-                            "message_count": len(messages)
-                        }
+                            "message_count": len(messages),
+                        },
                     )
                     if not action_result.authorized:
                         raise Exception(f"LLM call blocked by SuperBrain: {action_result.reason}")
@@ -488,7 +486,7 @@ class ProviderManager:
                     latency_ms=0.0,
                     timestamp=datetime.now(timezone.utc).isoformat(),
                     raw_response=None,
-                    biological_context=None
+                    biological_context=None,
                 )
 
         # Select provider
@@ -508,7 +506,7 @@ class ProviderManager:
             if SUPERBRAIN_AVAILABLE:
                 try:
                     brain = get_super_brain()
-                    if brain and hasattr(brain, 'record_audit'):
+                    if brain and hasattr(brain, "record_audit"):
                         brain.record_audit(
                             action="llm_complete",
                             agent_id="llm_provider",
@@ -516,8 +514,8 @@ class ProviderManager:
                                 "model": response.model,
                                 "provider": response.provider,
                                 "latency_ms": response.latency_ms,
-                                "tokens": response.usage.get("total_tokens", 0)
-                            }
+                                "tokens": response.usage.get("total_tokens", 0),
+                            },
                         )
                 except Exception:
                     pass
@@ -532,12 +530,12 @@ class ProviderManager:
 
     async def complete_stream(
         self,
-        messages: List[Message],
-        model: str  = None,
-        provider: str  = None,
+        messages: list[Message],
+        model: str = None,
+        provider: str = None,
         temperature: float = 0.7,
-        biological_context_description: str  = None,
-        **kwargs
+        biological_context_description: str = None,
+        **kwargs,
     ) -> AsyncGenerator[str, None]:
         """Stream a completion with biological context."""
         biological_context = None
@@ -551,7 +549,7 @@ class ProviderManager:
             model=model,
             temperature=temperature,
             biological_context=biological_context,
-            metadata=kwargs
+            metadata=kwargs,
         )
 
         selected_provider = await self._select_provider(provider, model)
@@ -566,11 +564,7 @@ class ProviderManager:
         except Exception as e:
             yield f"[Error: {e}]"
 
-    async def _select_provider(
-        self,
-        preferred: str ,
-        model: str
-    ) -> Optional[BaseProvider]:
+    async def _select_provider(self, preferred: str, model: str) -> BaseProvider:
         """Select best provider based on preference and availability."""
         # If preferred specified, try it
         if preferred and preferred in self.providers:
@@ -605,7 +599,7 @@ class ProviderManager:
         except Exception:
             return False
 
-    async def get_available_models(self) -> Dict[str, list[str]]:
+    async def get_available_models(self) -> dict[str, list[str]]:
         """Get all available models from all providers."""
         models = {}
         for name, provider in self.providers.items():
@@ -623,7 +617,7 @@ class ProviderManager:
 
 
 # Singleton instance
-_provider_manager: Optional[ProviderManager] = None
+_provider_manager: ProviderManager = None
 
 
 def get_provider_manager() -> ProviderManager:
@@ -635,32 +629,22 @@ def get_provider_manager() -> ProviderManager:
 
 
 # Convenience functions
-async def complete(
-    prompt: str,
-    biological_context: str  = None,
-    model: str  = None,
-    **kwargs
-) -> str:
+async def complete(prompt: str, biological_context: str = None, model: str = None, **kwargs) -> str:
     """Simple completion with biological awareness."""
     manager = get_provider_manager()
 
     messages = [Message(role="user", content=prompt)]
 
     response = await manager.complete(
-        messages=messages,
-        model=model,
-        biological_context_description=biological_context,
-        **kwargs
+        messages=messages, model=model, biological_context_description=biological_context, **kwargs
     )
 
     return response.content
 
 
 async def complete_with_context(
-    prompt: str,
-    user_state_description: str,
-    model: str  = None
-) -> Tuple[str, dict]:
+    prompt: str, user_state_description: str, model: str = None
+) -> tuple[str, dict]:
     """Complete with full context including UI guidelines."""
     from clawspring.amos_cognitive_bridge import get_cognitive_bridge
 
@@ -672,10 +656,6 @@ async def complete_with_context(
     guidelines = bridge.get_response_guidelines()
 
     # Complete with biological context
-    content = await complete(
-        prompt=prompt,
-        biological_context=user_state_description,
-        model=model
-    )
+    content = await complete(prompt=prompt, biological_context=user_state_description, model=model)
 
     return content, guidelines

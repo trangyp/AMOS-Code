@@ -30,10 +30,8 @@ New state vector amplitudes:
 
 from __future__ import annotations
 
-
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
 
 # Import meta-pathology detection
 try:
@@ -109,7 +107,7 @@ class MetaArchitectureBridge:
     - Diagnostic self-integrity checking
     """
 
-    def __init__(self, repo_path: str | Path):
+    def __init__(self, repo_path: Union[str, Path]):
         self.repo_path = Path(repo_path)
         self._engine: Optional[MetaPathologyEngine] = None
 
@@ -307,6 +305,6 @@ class MetaArchitectureBridge:
         return max(0.0, 1.0 - (total_issues * 0.1))
 
 
-def get_meta_architecture_bridge(repo_path: str | Path = None) -> MetaArchitectureBridge:
+def get_meta_architecture_bridge(repo_path: Union[str, Path] = None) -> MetaArchitectureBridge:
     """Factory function to get meta-architecture bridge instance."""
     return MetaArchitectureBridge(repo_path or ".")

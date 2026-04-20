@@ -7,7 +7,9 @@ Creator: Trang Phan
 Version: 3.0.0
 """
 
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
+
+from typing import Any, Optional
 
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
@@ -34,7 +36,7 @@ class CanonQueryRequest(BaseModel):
 
     query: str
     domain: str = "general"
-    context: Optional[Dict[str, Any] ] = None
+    context: dict[str, Optional[Any]] = None
 
 
 class CanonQueryResponse(BaseModel):
@@ -42,18 +44,18 @@ class CanonQueryResponse(BaseModel):
 
     query: str
     domain: str
-    canon_terms_used: List[str]
-    canon_agents_consulted: List[str]
-    canon_engines_referenced: List[str]
+    canon_terms_used: list[str]
+    canon_agents_consulted: list[str]
+    canon_engines_referenced: list[str]
     response: str
     confidence: float
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
 
 
 @router.get("/domains/suggest")
 async def suggest_domains(
     q: str = Query(..., description="Query string to analyze"),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Get domain suggestions based on query content.
 
     Example:
@@ -113,8 +115,8 @@ async def canon_query_endpoint(
 @router.post("/query/multi-domain")
 async def multi_domain_query(
     request: CanonQueryRequest,
-    domains: List[str] = Query(..., description="Domains to query"),
-) -> List[CanonQueryResponse]:
+    domains: list[str] = Query(..., description="Domains to query"),
+) -> list[CanonQueryResponse]:
     """Query across multiple domains and aggregate results.
 
     Example:
@@ -156,7 +158,7 @@ class CanonOrchestrateRequest(BaseModel):
 
     task: str
     domain: str = "general"
-    context: Optional[Dict[str, Any] ] = None
+    context: dict[str, Optional[Any]] = None
 
 
 class CanonOrchestrateResponse(BaseModel):
@@ -165,10 +167,10 @@ class CanonOrchestrateResponse(BaseModel):
     task_id: str
     success: bool
     result: str
-    canon_context: Dict[str, Any]
-    reasoning_path: List[str]
-    memories_accessed: List[str]
-    patterns_applied: List[str]
+    canon_context: dict[str, Any]
+    reasoning_path: list[str]
+    memories_accessed: list[str]
+    patterns_applied: list[str]
     processing_time_ms: float
 
 
@@ -219,14 +221,14 @@ async def canon_orchestrate_endpoint(
 
 
 @router.get("/canon/status")
-async def canon_status() -> Dict[str, Any]:
+async def canon_status() -> dict[str, Any]:
     """Get Canon integration status.
 
     Returns information about Canon loader status, available terms,
     agents, and engines.
     """
-    from amos_canon_integration import get_canon_loader
     from amos_brain.canon_bridge import get_canon_bridge
+    from amos_canon_integration import get_canon_loader
 
     try:
         canon_loader = get_canon_loader()

@@ -36,11 +36,12 @@ import asyncio
 import sys
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 # Add paths
 _AMOS_ROOT = Path(__file__).parent.resolve()
@@ -67,7 +68,7 @@ class TestCase:
     result: TestResult
     duration_ms: float
     error_message: str = ""
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -81,7 +82,7 @@ class TestReport:
     skipped: int = 0
     errors: int = 0
     duration_seconds: float = 0.0
-    test_cases: List[TestCase] = field(default_factory=list)
+    test_cases: list[TestCase] = field(default_factory=list)
     production_ready: bool = False
 
 
@@ -128,9 +129,9 @@ class AMOSProductionReadinessTest:
             print("\n⚡ QUICK MODE: Running critical tests only\n")
 
         for category_name, test_func in test_categories:
-            print(f"\n{'='*80}")
+            print(f"\n{'=' * 80}")
             print(f" {category_name}")
-            print(f"{'='*80}")
+            print(f"{'=' * 80}")
 
             try:
                 await test_func()
@@ -426,7 +427,7 @@ class AMOSProductionReadinessTest:
         name: str,
         result: TestResult,
         error_message: str = "",
-        details: Dict[str, Any] = None,
+        details: dict[str, Any] = None,
     ):
         """Record test result."""
         self.report.total_tests += 1

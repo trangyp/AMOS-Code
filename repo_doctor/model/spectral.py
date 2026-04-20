@@ -130,7 +130,7 @@ class SpectralAnalyzer:
 
     def __init__(self, repo_path: str):
         self.repo_path = repo_path
-        self.laplacian: Optional[GraphLaplacian] = None
+        self.laplacian: GraphLaplacian | None = None
 
     def build_from_imports(self, import_graph: dict[str, list[str]]) -> None:
         """Build Laplacian from import graph."""

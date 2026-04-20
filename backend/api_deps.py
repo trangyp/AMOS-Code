@@ -7,12 +7,10 @@ Creator: Trang Phan
 Version: 3.0.0
 """
 
-
 from collections.abc import AsyncGenerator
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from typing import Optional
 
 # Import AMOS authentication system
 try:

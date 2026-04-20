@@ -15,7 +15,9 @@ import threading
 import time
 from collections import defaultdict, deque
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import UTC, datetime
+
+UTC = UTC, timedelta
 from enum import Enum, auto
 from pathlib import Path
 from typing import Any
@@ -89,7 +91,7 @@ class EfficiencyReport:
     cpu_efficiency: float  # 0-1
     memory_efficiency: float
     disk_efficiency: float
-    recommendations: List[str]
+    recommendations: list[str]
     timestamp: str = ""
 
     def __post_init__(self):
@@ -113,7 +115,7 @@ class MetabolismKernel:
         self.logs_path.mkdir(parents=True, exist_ok=True)
 
         # Metrics storage - circular buffers for time series
-        self.metrics_history: Dict[str, deque] = {
+        self.metrics_history: dict[str, deque] = {
             "cpu": deque(maxlen=1000),
             "memory": deque(maxlen=1000),
             "disk": deque(maxlen=100),
@@ -121,7 +123,7 @@ class MetabolismKernel:
         }
 
         # Resource usage snapshots
-        self.resource_snapshots: List[ResourceUsage] = []
+        self.resource_snapshots: list[ResourceUsage] = []
         self.max_snapshots = 1000
 
         # Subsystem resource tracking
@@ -339,7 +341,7 @@ class MetabolismKernel:
             recommendations=recommendations or ["System operating within normal parameters"],
         )
 
-    def garbage_collect(self) -> Dict[str, Any]:
+    def garbage_collect(self) -> dict[str, Any]:
         """Perform garbage collection and cleanup."""
         results = {
             "memory_freed": 0,
@@ -377,7 +379,7 @@ class MetabolismKernel:
         # Deques handle this automatically via maxlen
         pass
 
-    def optimize(self) -> List[str]:
+    def optimize(self) -> list[str]:
         """Apply optimizations based on current state."""
         optimizations = []
 
@@ -406,7 +408,7 @@ class MetabolismKernel:
         """Get resource usage breakdown by subsystem."""
         return dict(self.subsystem_usage)
 
-    def get_metrics_summary(self, minutes: int = 5) -> Dict[str, Any]:
+    def get_metrics_summary(self, minutes: int = 5) -> dict[str, Any]:
         """Get metrics summary for recent period."""
         cutoff = datetime.now(UTC) - timedelta(minutes=minutes)
 
@@ -425,7 +427,7 @@ class MetabolismKernel:
 
         return summary
 
-    def get_state(self) -> Dict[str, Any]:
+    def get_state(self) -> dict[str, Any]:
         """Get current metabolism state."""
         usage = self.get_current_usage()
         efficiency = self.analyze_efficiency()

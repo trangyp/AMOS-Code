@@ -3,7 +3,7 @@
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 try:
     from .engine_executor import ExecutionResult, execute_cognitive_task
@@ -17,7 +17,7 @@ class AgentPerspective:
 
     agent_id: str
     engine_name: str
-    reasoning: Dict[str, Any]
+    reasoning: dict[str, Any]
     confidence: float
     execution_time_ms: float
 
@@ -27,13 +27,13 @@ class ConsensusResult:
     """Synthesized result from multiple cognitive agents."""
 
     task: str
-    perspectives: List[AgentPerspective]
+    perspectives: list[AgentPerspective]
     agreement_score: float
     consensus_view: str
-    dissenting_views: List[str]
+    dissenting_views: list[str]
     recommended_action: str
-    laws_checked: List[str]
-    violations_found: List[str]
+    laws_checked: list[str]
+    violations_found: list[str]
     total_execution_time_ms: float
 
 
@@ -45,10 +45,10 @@ class MultiAgentOrchestrator:
 
     def __init__(self, max_workers: int = 4):
         self.max_workers = max_workers
-        self._consensus_history: List[ConsensusResult] = []
+        self._consensus_history: list[ConsensusResult] = []
 
     def execute_parallel(
-        self, task: str, engines: List[str], require_consensus: bool = True
+        self, task: str, engines: list[str], require_consensus: bool = True
     ) -> ConsensusResult:
         """Execute task through multiple engines in parallel.
 
@@ -59,6 +59,7 @@ class MultiAgentOrchestrator:
 
         Returns:
             ConsensusResult with perspectives and synthesis
+
         """
         start = time.time()
         perspectives = []
@@ -106,7 +107,7 @@ class MultiAgentOrchestrator:
         )
 
     def _synthesize_consensus(
-        self, task: str, perspectives: List[AgentPerspective], start_time: float
+        self, task: str, perspectives: list[AgentPerspective], start_time: float
     ) -> ConsensusResult:
         """Synthesize consensus from multiple perspectives."""
         if not perspectives:
@@ -178,7 +179,7 @@ class MultiAgentOrchestrator:
             total_execution_time_ms=(time.time() - start_time) * 1000,
         )
 
-    def _check_consensus_laws(self, perspectives: List[AgentPerspective]) -> List[str]:
+    def _check_consensus_laws(self, perspectives: list[AgentPerspective]) -> list[str]:
         """Check global laws against the consensus result."""
         violations = []
 
@@ -195,7 +196,7 @@ class MultiAgentOrchestrator:
 
         return violations
 
-    def get_consensus_history(self) -> List[ConsensusResult]:
+    def get_consensus_history(self) -> list[ConsensusResult]:
         """Get history of all consensus executions."""
         return self._consensus_history.copy()
 
@@ -248,7 +249,7 @@ class MultiAgentOrchestrator:
 
 
 # Singleton instance
-_orchestrator: Optional[MultiAgentOrchestrator] = None
+_orchestrator: MultiAgentOrchestrator | None = None
 
 
 def get_orchestrator() -> MultiAgentOrchestrator:
@@ -259,7 +260,7 @@ def get_orchestrator() -> MultiAgentOrchestrator:
     return _orchestrator
 
 
-def run_cognitive_consensus(task: str, engines: List[str] = None) -> ConsensusResult:
+def run_cognitive_consensus(task: str, engines: list[str] = None) -> ConsensusResult:
     """Convenience function to run multi-agent consensus."""
     orchestrator = get_orchestrator()
     if engines is None:

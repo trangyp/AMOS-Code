@@ -12,27 +12,35 @@ import asyncio
 import json
 import os
 from contextlib import asynccontextmanager
-from typing import Any, AsyncIterator, Dict, List, Optional
+from typing import Any
 
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Depends, HTTPException, status
+# Use amos-universe contracts
+from amos_universe.contracts.pydantic import (
+    ApiError,
+    BaseEvent,
+    BrainRunRequest,
+    BrainRunResponse,
+    ChatRequest,
+    ChatResponse,
+    ErrorCode,
+    EventType,
+    ModelInfo,
+    ModelRequest,
+    ModelResponse,
+    RepoFixRequest,
+    RepoFixResult,
+    RepoScanRequest,
+    RepoScanResult,
+    WorkflowRunRequest,
+    WorkflowRunResponse,
+)
+from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 
-# Use amos-universe contracts
-from amos_universe.contracts.pydantic import (
-    ChatRequest, ChatResponse,
-    RepoScanRequest, RepoScanResult,
-    RepoFixRequest, RepoFixResult,
-    ModelRequest, ModelResponse, ModelInfo,
-    WorkflowRunRequest, WorkflowRunResponse,
-    BrainRunRequest, BrainRunResponse,
-    ApiError, ErrorCode,
-    BaseEvent, EventType,
-)
-
 # Import LLM router
-from amos_platform.core.llm_router import LLMRouter, LLMBackend
+from amos_platform.core.llm_router import LLMRouter
 
 # Import event bus
 from amos_platform.events.bus import EventBus
@@ -43,11 +51,11 @@ __version__ = "1.0.0"
 
 class GatewayState:
     """Shared state for the API gateway."""
-    
+
     def __init__(self):
-        self.llm_router: Optional[LLMRouter] = None
-        self.event_bus: Optional[EventBus] = None
-        self.active_connections: List[WebSocket] = []
+        self.llm_router: LLMRouter | None = None
+        self.event_bus: EventBus | None = None
+        self.active_connections: list[WebSocket] = []
         self.startup_time: float = 0.0
 
 
@@ -59,26 +67,27 @@ async def lifespan(app: FastAPI):
     """Manage application lifespan."""
     # Startup
     print("🚀 AMOS Platform API Gateway starting...")
-    
+
     # Initialize LLM router
     state.llm_router = LLMRouter()
     await state.llm_router.initialize()
-    
+
     # Initialize event bus
     redis_url = os.getenv("REDIS_URL", "redis://localhost:6379")
     state.event_bus = EventBus(redis_url=redis_url)
     await state.event_bus.connect()
-    
+
     # Start event listener in background
     asyncio.create_task(_listen_for_events())
-    
+
     import time
+
     state.startup_time = time.time()
-    
+
     print(f"✅ Gateway ready - {__version__}")
-    
+
     yield
-    
+
     # Shutdown
     print("🛑 Shutting down gateway...")
     if state.event_bus:
@@ -90,7 +99,7 @@ async def _listen_for_events():
     """Background task to listen for events and broadcast to WebSockets."""
     if not state.event_bus:
         return
-    
+
     async for event in state.event_bus.listen():
         # Broadcast to all connected WebSockets
         disconnected = []
@@ -99,7 +108,7 @@ async def _listen_for_events():
                 await ws.send_json(event.to_dict())
             except Exception:
                 disconnected.append(ws)
-        
+
         # Clean up disconnected clients
         for ws in disconnected:
             if ws in state.active_connections:
@@ -143,8 +152,9 @@ app.add_middleware(GZipMiddleware, minimum_size=1000)
 # Health & Status Endpoints
 # =============================================================================
 
+
 @app.get("/", tags=["root"])
-async def root() -> Dict[str, Any]:
+async def root() -> dict[str, Any]:
     """API information."""
     return {
         "name": "AMOS Platform API",
@@ -155,31 +165,33 @@ async def root() -> Dict[str, Any]:
 
 
 @app.get("/v1/health", tags=["health"])
-async def health_check() -> Dict[str, Any]:
+async def health_check() -> dict[str, Any]:
     """Health check endpoint."""
     import time
-    
+
     health = {
         "status": "healthy",
         "version": __version__,
         "uptime_seconds": time.time() - state.startup_time if state.startup_time else 0,
         "services": {
             "llm_router": "healthy" if state.llm_router else "unavailable",
-            "event_bus": "healthy" if state.event_bus and state.event_bus.is_connected else "unavailable",
+            "event_bus": "healthy"
+            if state.event_bus and state.event_bus.is_connected
+            else "unavailable",
         },
         "active_websocket_connections": len(state.active_connections),
     }
-    
+
     # Check if any service is unhealthy
     if any(s != "healthy" for s in health["services"].values()):
         health["status"] = "degraded"
         return JSONResponse(content=health, status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
-    
+
     return health
 
 
 @app.get("/v1/status", tags=["status"])
-async def system_status() -> Dict[str, Any]:
+async def system_status() -> dict[str, Any]:
     """Detailed system status."""
     return {
         "gateway": {
@@ -187,7 +199,9 @@ async def system_status() -> Dict[str, Any]:
             "active_connections": len(state.active_connections),
         },
         "llm": {
-            "backends_discovered": list(state.llm_router._backends.keys()) if state.llm_router else [],
+            "backends_discovered": list(state.llm_router._backends.keys())
+            if state.llm_router
+            else [],
         },
         "events": {
             "bus_connected": state.event_bus.is_connected if state.event_bus else False,
@@ -199,31 +213,30 @@ async def system_status() -> Dict[str, Any]:
 # Chat Endpoints
 # =============================================================================
 
+
 @app.post("/v1/chat", response_model=ChatResponse, tags=["chat"])
 async def chat_endpoint(request: ChatRequest) -> ChatResponse:
     """Chat completion endpoint.
-    
+
     Processes chat messages and returns AI-generated responses.
     """
     try:
         # Route to appropriate model via LLM router
         if not state.llm_router:
             raise HTTPException(
-                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-                detail="LLM router not available"
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="LLM router not available"
             )
-        
+
         # Get available models
         models = await state.llm_router.list_models()
         if not models:
             raise HTTPException(
-                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-                detail="No LLM models available"
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="No LLM models available"
             )
-        
+
         # Select model (auto or specified)
         model_id = request.model or models[0].model_id
-        
+
         # Execute chat
         response = await state.llm_router.chat(
             model=model_id,
@@ -235,7 +248,7 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
             max_tokens=request.max_tokens,
             stream=False,
         )
-        
+
         return ChatResponse(
             message=response.get("content", ""),
             conversation_id=request.context.conversation_id or "new",
@@ -243,13 +256,13 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
             model=model_id,
             usage=response.get("usage", {}),
         )
-        
+
     except HTTPException:
         raise
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Chat processing failed: {str(e)}"
+            detail=f"Chat processing failed: {str(e)}",
         )
 
 
@@ -257,12 +270,13 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
 # Model/LLM Endpoints
 # =============================================================================
 
+
 @app.get("/v1/models", response_model=list[ModelInfo], tags=["models"])
-async def list_models() -> List[ModelInfo]:
+async def list_models() -> list[ModelInfo]:
     """List available LLM models."""
     if not state.llm_router:
         return []
-    
+
     return await state.llm_router.list_models()
 
 
@@ -271,10 +285,9 @@ async def run_model(request: ModelRequest) -> ModelResponse:
     """Run inference on a specific model."""
     if not state.llm_router:
         raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="LLM router not available"
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="LLM router not available"
         )
-    
+
     try:
         response = await state.llm_router.chat(
             model=request.model_id,
@@ -283,18 +296,18 @@ async def run_model(request: ModelRequest) -> ModelResponse:
             max_tokens=request.max_tokens,
             stream=request.stream,
         )
-        
+
         return ModelResponse(
             model_id=request.model_id,
             content=response.get("content", ""),
             usage=response.get("usage", {}),
             finish_reason=response.get("finish_reason", "stop"),
         )
-        
+
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Model execution failed: {str(e)}"
+            detail=f"Model execution failed: {str(e)}",
         )
 
 
@@ -302,34 +315,37 @@ async def run_model(request: ModelRequest) -> ModelResponse:
 # Repository Endpoints
 # =============================================================================
 
+
 @app.post("/v1/repo/scan", response_model=RepoScanResult, tags=["repo"])
 async def scan_repository(request: RepoScanRequest) -> RepoScanResult:
     """Scan a repository for issues.
-    
+
     This is a placeholder implementation. In production, this would:
     - Queue the scan as an async job
     - Use repo-doctor or similar tools
     - Publish events as scan progresses
     """
     import uuid
-    
+
     scan_id = f"scan_{uuid.uuid4().hex[:8]}"
-    
+
     # Publish event
     if state.event_bus:
-        await state.event_bus.publish(BaseEvent(
-            event_type=EventType.REPO_SCAN_STARTED,
-            metadata={
-                "event_id": f"evt_{uuid.uuid4().hex}",
-                "timestamp": datetime.now(timezone.utc).isoformat(),
-                "source": "amos-platform",
-            },
-            payload={
-                "scan_id": scan_id,
-                "repo_url": request.repo_path,
-            }
-        ))
-    
+        await state.event_bus.publish(
+            BaseEvent(
+                event_type=EventType.REPO_SCAN_STARTED,
+                metadata={
+                    "event_id": f"evt_{uuid.uuid4().hex}",
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "source": "amos-platform",
+                },
+                payload={
+                    "scan_id": scan_id,
+                    "repo_url": request.repo_path,
+                },
+            )
+        )
+
     # Return initial result (async processing would continue in background)
     return RepoScanResult(
         scan_id=scan_id,
@@ -344,11 +360,11 @@ async def scan_repository(request: RepoScanRequest) -> RepoScanResult:
 @app.post("/v1/repo/fix", response_model=RepoFixResult, tags=["repo"])
 async def fix_repository(request: RepoFixRequest) -> RepoFixResult:
     """Apply fixes to a repository.
-    
+
     Placeholder for automated fix application.
     """
     import uuid
-    
+
     return RepoFixResult(
         fix_id=f"fix_{uuid.uuid4().hex[:8]}",
         scan_id=request.scan_id,
@@ -363,14 +379,15 @@ async def fix_repository(request: RepoFixRequest) -> RepoFixResult:
 # Workflow Endpoints
 # =============================================================================
 
+
 @app.post("/v1/workflow/run", response_model=WorkflowRunResponse, tags=["workflow"])
 async def run_workflow(request: WorkflowRunRequest) -> WorkflowRunResponse:
     """Execute a workflow.
-    
+
     Placeholder for workflow orchestration.
     """
     import uuid
-    
+
     return WorkflowRunResponse(
         workflow_id=request.workflow_id,
         execution_id=f"exec_{uuid.uuid4().hex[:8]}",
@@ -384,14 +401,15 @@ async def run_workflow(request: WorkflowRunRequest) -> WorkflowRunResponse:
 # Brain/Cognitive Endpoints
 # =============================================================================
 
+
 @app.post("/v1/brain/run", response_model=BrainRunResponse, tags=["brain"])
 async def run_brain(request: BrainRunRequest) -> BrainRunResponse:
     """Execute AMOS brain cycle.
-    
+
     Placeholder for cognitive processing.
     """
     import uuid
-    
+
     return BrainRunResponse(
         execution_id=f"brain_{uuid.uuid4().hex[:8]}",
         status="completed",
@@ -405,8 +423,9 @@ async def run_brain(request: BrainRunRequest) -> BrainRunResponse:
 # Universe/Contract Endpoints
 # =============================================================================
 
+
 @app.get("/v1/universe/event-types", tags=["universe"])
-async def list_event_types() -> Dict[str, Any]:
+async def list_event_types() -> dict[str, Any]:
     """List all canonical event types."""
     return {
         "event_types": [
@@ -424,30 +443,35 @@ async def list_event_types() -> Dict[str, Any]:
 # WebSocket Endpoint
 # =============================================================================
 
+
 @app.websocket("/v1/ws/stream")
 async def websocket_endpoint(websocket: WebSocket):
     """WebSocket for real-time event streaming."""
     await websocket.accept()
     state.active_connections.append(websocket)
-    
+
     try:
         while True:
             # Receive client messages (subscriptions, etc.)
             data = await websocket.receive_text()
             message = json.loads(data)
-            
+
             # Handle subscription requests
             if message.get("action") == "subscribe":
                 event_types = message.get("event_types", [])
-                await websocket.send_json({
-                    "type": "subscribed",
-                    "event_types": event_types,
-                })
-            
+                await websocket.send_json(
+                    {
+                        "type": "subscribed",
+                        "event_types": event_types,
+                    }
+                )
+
             # Handle ping
             elif message.get("action") == "ping":
-                await websocket.send_json({"type": "pong", "timestamp": datetime.now(timezone.utc).isoformat()})
-                
+                await websocket.send_json(
+                    {"type": "pong", "timestamp": datetime.now(timezone.utc).isoformat()}
+                )
+
     except WebSocketDisconnect:
         if websocket in state.active_connections:
             state.active_connections.remove(websocket)
@@ -459,6 +483,7 @@ async def websocket_endpoint(websocket: WebSocket):
 # =============================================================================
 # Error Handlers
 # =============================================================================
+
 
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request, exc: HTTPException):
@@ -488,14 +513,28 @@ async def general_exception_handler(request, exc: Exception):
 
 # Import routes
 from datetime import datetime, timezone
+
 UTC = timezone.utc
+
+
+# Gateway singleton instance
+_gateway_instance: FastAPI | None = None
+
+
+def get_gateway() -> FastAPI:
+    """Get the AMOS Platform API Gateway (FastAPI app)."""
+    global _gateway_instance
+    if _gateway_instance is None:
+        _gateway_instance = app
+    return _gateway_instance
+
 
 if __name__ == "__main__":
     import uvicorn
-    
+
     port = int(os.getenv("PORT", 8000))
     host = os.getenv("HOST", "0.0.0.0")
-    
+
     uvicorn.run(
         "amos_platform.api.gateway:app",
         host=host,

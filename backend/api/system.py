@@ -10,10 +10,11 @@ Version: 3.0.0
 
 import asyncio
 import time
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
 
 import psutil
+
+UTC = UTC
 from fastapi import APIRouter, HTTPException
 
 from ..llm_providers import llm_router

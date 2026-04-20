@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """Temporal substrate for repository evolution tracking.
 
 Tracks repository state across commits:
@@ -10,7 +12,6 @@ import subprocess
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
 
 
 @dataclass
@@ -21,9 +22,9 @@ class CommitState:
     timestamp: datetime
     author: str
     message: str
-    state_vector: Dict[str, float] = field(default_factory=dict)
+    state_vector: dict[str, float] = field(default_factory=dict)
     energy: float = 0.0
-    invariant_results: Dict[str, bool] = field(default_factory=dict)
+    invariant_results: dict[str, bool] = field(default_factory=dict)
 
     @property
     def is_valid(self) -> bool:
@@ -37,7 +38,7 @@ class DriftMeasurement:
 
     from_commit: str
     to_commit: str
-    delta_vector: Dict[str, float] = field(default_factory=dict)
+    delta_vector: dict[str, float] = field(default_factory=dict)
     drift_norm: float = 0.0
     failed_invariants: list[str] = field(default_factory=list)
 
@@ -65,7 +66,7 @@ class TemporalSubstrate:
 
     def __init__(self, repo_path: str):
         self.repo_path = Path(repo_path).resolve()
-        self._state_cache: Dict[str, CommitState] = {}
+        self._state_cache: dict[str, CommitState] = {}
 
     def get_commit_history(self, max_commits: int = 100) -> list[CommitState]:
         """Get commit history from git log.
@@ -136,7 +137,7 @@ class TemporalSubstrate:
             Drift measurement
         """
         # Compute delta vector
-        delta: Dict[str, float] = {}
+        delta: dict[str, float] = {}
         all_keys = set(from_state.state_vector.keys()) | set(to_state.state_vector.keys())
 
         for key in all_keys:

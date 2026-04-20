@@ -13,7 +13,7 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from .execution_slot import ExecutionSlot, SlotMode
 
@@ -38,20 +38,20 @@ class SubTask:
     task_id: str
     description: str
     role: AgentRole
-    dependencies: List[str] = field(default_factory=list)
+    dependencies: list[str] = field(default_factory=list)
     status: TaskStatus = TaskStatus.PENDING
-    result: Dict[str, Any] = None
+    result: dict[str, Any] = None
     error: str = None
 
 
 @dataclass
 class TaskDAG:
-    tasks: Dict[str, SubTask] = field(default_factory=dict)
+    tasks: dict[str, SubTask] = field(default_factory=dict)
 
     def add_task(self, task: SubTask) -> None:
         self.tasks[task.task_id] = task
 
-    def get_ready_tasks(self) -> List[SubTask]:
+    def get_ready_tasks(self) -> list[SubTask]:
         completed = {t.task_id for t in self.tasks.values() if t.status == TaskStatus.COMPLETED}
         return [
             t
@@ -72,7 +72,7 @@ class Swarm:
     def __init__(self, config: Optional[SwarmConfig] = None):
         self.config = config or SwarmConfig()
         self.executor = ThreadPoolExecutor(max_workers=self.config.max_parallel_workers)
-        self._slots: Dict[str, ExecutionSlot] = {}
+        self._slots: dict[str, ExecutionSlot] = {}
 
     async def execute_dag(self, dag: TaskDAG, parent_slot: ExecutionSlot) -> TaskDAG:
         """Execute a task DAG in parallel."""
@@ -98,7 +98,7 @@ class Swarm:
 
         return dag
 
-    async def _execute_task(self, task: SubTask, parent: ExecutionSlot) -> Dict[str, Any]:
+    async def _execute_task(self, task: SubTask, parent: ExecutionSlot) -> dict[str, Any]:
         """Execute a single subtask."""
         # Create child slot
         child = ExecutionSlot.create_local(

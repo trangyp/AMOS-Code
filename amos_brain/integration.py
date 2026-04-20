@@ -57,9 +57,7 @@ class AMOSBrainIntegration:
             "gap_rules": self.brain.get_gap_rules(),
         }
 
-    def pre_process(
-        self, user_message: str, context: dict[str, Any]  = None
-    ) -> dict[str, Any]:
+    def pre_process(self, user_message: str, context: dict[str, Any] = None) -> dict[str, Any]:
         """Pre-process user message through AMOS brain.
 
         Enforces L1 (Law of Law) and checks operational scope.
@@ -201,7 +199,7 @@ Prohibited: direct physical control, financial execution, medical treatment, leg
     def analyze_with_rules(
         self,
         problem: str,
-        context: dict[str, Any]  = None,
+        context: dict[str, Any] = None,
     ) -> dict[str, Any]:
         """Analyze a problem using Rule of 2 and Rule of 4."""
         return self.reasoning.full_analysis(problem, context)

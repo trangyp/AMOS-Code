@@ -35,12 +35,12 @@ Version: 2.0.0
 import argparse
 import subprocess
 import sys
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 from pathlib import Path
 
 from amos_brain import decide, think, validate
-from typing import List
 
 
 def print_banner():
@@ -236,7 +236,7 @@ def cmd_brain(args):
         print(f"❌ Error: {e}")
 
 
-def cmd_runtime(args: List[str]) -> None:
+def cmd_runtime(args: list[str]) -> None:
     """Production runtime control."""
     if not args:
         print("\n🚀 AMOS Production Runtime")
@@ -277,7 +277,7 @@ def cmd_runtime(args: List[str]) -> None:
         print(f"❌ Unknown runtime command: {cmd}")
 
 
-def cmd_equations(args: List[str]) -> None:
+def cmd_equations(args: list[str]) -> None:
     """Equation execution and search."""
     if not args:
         print("\n🧮 AMOS Equations")
@@ -320,7 +320,7 @@ def cmd_equations(args: List[str]) -> None:
         print("❌ Unknown command or missing arguments")
 
 
-def cmd_selfheal(args: List[str]) -> None:
+def cmd_selfheal(args: list[str]) -> None:
     """Self-healing control."""
     if not args:
         print("\n🔄 AMOS Self-Healing")
@@ -359,7 +359,7 @@ def cmd_selfheal(args: List[str]) -> None:
         print(f"❌ Unknown command: {cmd}")
 
 
-def cmd_config(args: List[str]) -> None:
+def cmd_config(args: list[str]) -> None:
     """Configuration management."""
     print("\n⚙️  AMOS Configuration")
     print("=" * 60)
@@ -371,7 +371,7 @@ def cmd_config(args: List[str]) -> None:
     print("  Escalation Threshold: 3")
 
 
-def cmd_logs(args: List[str]) -> None:
+def cmd_logs(args: list[str]) -> None:
     """View system logs."""
     print("\n📜 AMOS System Logs")
     print("=" * 60)

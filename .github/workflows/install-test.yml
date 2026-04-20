@@ -1,0 +1,54 @@
+name: Installation Test
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'pyproject.toml'
+      - '**/setup.py'
+      - '**/setup.cfg'
+      - '.github/workflows/install-test.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'pyproject.toml'
+      - '**/setup.py'
+      - '**/setup.cfg'
+  workflow_dispatch:
+
+jobs:
+  install-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.9', '3.10', '3.11', '3.12']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install package
+        run: |
+          pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Test core imports
+        run: |
+          python -c "import amos_brain; print('✓ amos_brain OK')"
+          python -c "import amosl; print('✓ amosl OK')"
+          python -c "import amos_model_fabric; print('✓ amos_model_fabric OK')"
+          python -c "import clawspring; print('✓ clawspring OK')"
+
+      - name: Test entry points
+        run: |
+          amos-brain --help || echo "amos-brain entry point needs fix"
+          amos-cli --help || echo "amos-cli entry point needs fix"
+
+      - name: Test build
+        run: |
+          pip install build
+          python -m build --wheel

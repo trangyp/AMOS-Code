@@ -11,8 +11,6 @@ except ImportError:
     try:
         from amos_organism_runner import AmosOrganism
     except ImportError:
-        raise ImportError(
-            "AmosOrganism not found. Ensure AMOS_ORGANISM_OS is in the path."
-        )
+        raise ImportError("AmosOrganism not found. Ensure AMOS_ORGANISM_OS is in the path.")
 
 __all__ = ["AmosOrganism"]

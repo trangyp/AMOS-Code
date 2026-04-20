@@ -11,6 +11,7 @@ Creator: Trang Phan
 Version: 1.0.0
 """
 
+from __future__ import annotations
 
 import asyncio
 import os

@@ -7,10 +7,12 @@ Owner: Trang
 Version: 1.0.0
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class JobStatus(Enum):
@@ -54,7 +56,7 @@ class ArchivalJob:
     scheduled_at: datetime
     started_at: datetime = None
     completed_at: datetime = None
-    memory_ids: List[str] = field(default_factory=list)
+    memory_ids: list[str] = field(default_factory=list)
     processed_count: int = 0
     failed_count: int = 0
     error_message: str = None
@@ -69,15 +71,15 @@ class ArchivalScheduler:
 
     def __init__(self, config: Optional[ScheduleConfig] = None):
         self.config = config or ScheduleConfig()
-        self.jobs: Dict[str, ArchivalJob] = {}
-        self.job_queue: List[str] = []
-        self.running_jobs: List[str] = []
+        self.jobs: dict[str, ArchivalJob] = {}
+        self.job_queue: list[str] = []
+        self.running_jobs: list[str] = []
         self.last_schedule_time: datetime = None
 
     def schedule_job(
         self,
         name: str,
-        memory_ids: List[str],
+        memory_ids: list[str],
         priority: JobPriority = JobPriority.NORMAL,
         scheduled_at: datetime = None,
     ) -> ArchivalJob:
@@ -211,7 +213,7 @@ class ArchivalScheduler:
 
         return True
 
-    def get_next_jobs(self, count: int = 1) -> List[ArchivalJob]:
+    def get_next_jobs(self, count: int = 1) -> list[ArchivalJob]:
         """Get next jobs to process."""
         available_slots = self.config.max_concurrent_jobs - len(self.running_jobs)
         count = min(count, available_slots, len(self.job_queue))
@@ -224,11 +226,11 @@ class ArchivalScheduler:
 
         return jobs
 
-    def get_jobs_by_status(self, status: JobStatus) -> List[ArchivalJob]:
+    def get_jobs_by_status(self, status: JobStatus) -> list[ArchivalJob]:
         """Get all jobs with a specific status."""
         return [j for j in self.jobs.values() if j.status == status]
 
-    def get_scheduler_stats(self) -> Dict[str, Any]:
+    def get_scheduler_stats(self) -> dict[str, Any]:
         """Get scheduler statistics."""
         return {
             "total_jobs": len(self.jobs),

@@ -12,9 +12,10 @@ Implements the Field lens of the 5-lens mathematical regime:
 
 from collections import defaultdict
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
-from typing import Any, Dict, List, Optional, Protocol, Tuple
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
+from typing import Any, Optional, Protocol
 
 import numpy as np
 
@@ -41,7 +42,7 @@ class FieldState:
     values: np.ndarray
     momenta: np.ndarray = None
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         if self.momenta is None:
@@ -130,12 +131,12 @@ class FieldDynamics:
     def __init__(self, lagrangian: Lagrangian, config: Optional[FieldConfig] = None) -> None:
         self.lagrangian = lagrangian
         self.config = config or FieldConfig()
-        self.history: List[FieldState] = []
-        self._action_history: List[float] = []
-        self._conserved_quantities: Dict[str, list[float]] = defaultdict(list)
+        self.history: list[FieldState] = []
+        self._action_history: list[float] = []
+        self._conserved_quantities: dict[str, list[float]] = defaultdict(list)
         self._initialized_at = datetime.now(timezone.utc).isoformat()
 
-    def initialize_field(self, shape: Tuple[int, ...], initializer: str = "vacuum") -> FieldState:
+    def initialize_field(self, shape: tuple[int, ...], initializer: str = "vacuum") -> FieldState:
         """Initialize field configuration."""
         if initializer == "vacuum":
             values = np.zeros(shape)
@@ -250,7 +251,7 @@ class FieldDynamics:
 
         return new_state
 
-    def evolve(self, n_steps: int, initial_state: Optional[FieldState] = None) -> List[FieldState]:
+    def evolve(self, n_steps: int, initial_state: Optional[FieldState] = None) -> list[FieldState]:
         """Evolve field for n timesteps."""
         states = []
         state = initial_state or (
@@ -300,7 +301,7 @@ class FieldDynamics:
 
         return charge * (self.config.dx**phi.ndim)
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """Get field dynamics metrics."""
         return {
             "history_length": len(self.history),

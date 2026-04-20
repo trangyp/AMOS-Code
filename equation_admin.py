@@ -52,23 +52,19 @@ Environment Variables:
     ADMIN_LOG_LEVEL: Logging level (default: INFO)
 """
 
-import os
-import sys
-import json
 import asyncio
 import logging
-from datetime import datetime
-from pathlib import Path
-from enum import Enum
+import sys
 
 # Typer imports
 try:
     import typer
-    from typer import Typer, Option, Argument
-    from rich.console import Console
-    from rich.table import Table
-    from rich.panel import Panel
     from rich import box
+    from rich.console import Console
+    from rich.panel import Panel
+    from rich.table import Table
+    from typer import Argument, Option, Typer
+
     TYPER_AVAILABLE = True
 except ImportError:
     TYPER_AVAILABLE = False
@@ -77,50 +73,56 @@ except ImportError:
 
 # Set up logging
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger("amos_admin")
 
 # Import existing modules
 try:
-    from equation_config import get_settings, Settings
+    from equation_config import Settings, get_settings
+
     CONFIG_AVAILABLE = True
 except ImportError:
     CONFIG_AVAILABLE = False
 
 try:
     from equation_migrations import MigrationManager
+
     MIGRATIONS_AVAILABLE = True
 except ImportError:
     MIGRATIONS_AVAILABLE = False
 
 try:
-    from equation_flags import FlagManager, FeatureFlag, FlagType
+    from equation_flags import FeatureFlag, FlagManager, FlagType
+
     FLAGS_AVAILABLE = True
 except ImportError:
     FLAGS_AVAILABLE = False
 
 try:
-    from amos_cache import get_redis_client, clear_cache
+    from amos_cache import clear_cache, get_redis_client
+
     CACHE_AVAILABLE = True
 except ImportError:
     CACHE_AVAILABLE = False
 
 try:
     from equation_exports import ExportManager
+
     EXPORTS_AVAILABLE = True
 except ImportError:
     EXPORTS_AVAILABLE = False
 
 try:
     from equation_imports import ImportManager
+
     IMPORTS_AVAILABLE = True
 except ImportError:
     IMPORTS_AVAILABLE = False
 
 try:
-    from equation_database import get_engine, async_session
+    from equation_database import async_session, get_engine
+
     DATABASE_AVAILABLE = True
 except ImportError:
     DATABASE_AVAILABLE = False
@@ -134,7 +136,7 @@ if TYPER_AVAILABLE:
         name="amos-admin",
         help="AMOS Equation System Administrative CLI",
         add_completion=True,
-        rich_markup_mode="rich"
+        rich_markup_mode="rich",
     )
     console = Console()
 else:
@@ -145,15 +147,18 @@ else:
 # Helper Functions
 # ============================================================================
 
+
 def print_banner():
     """Print CLI banner."""
     if console:
-        console.print(Panel.fit(
-            "[bold blue]AMOS Equation Admin CLI[/bold blue]\n"
-            "[dim]Production-grade system management[/dim]",
-            border_style="blue",
-            box=box.ROUNDED
-        ))
+        console.print(
+            Panel.fit(
+                "[bold blue]AMOS Equation Admin CLI[/bold blue]\n"
+                "[dim]Production-grade system management[/dim]",
+                border_style="blue",
+                box=box.ROUNDED,
+            )
+        )
     else:
         print("""
 ╔═══════════════════════════════════════════════════════════════╗
@@ -161,6 +166,7 @@ def print_banner():
 ║              Production-grade System Management               ║
 ╚═══════════════════════════════════════════════════════════════╝
         """)
+
 
 def check_module(module_name: str, available: bool) -> bool:
     """Check if module is available and print status."""
@@ -172,6 +178,7 @@ def check_module(module_name: str, available: bool) -> bool:
         return False
     return True
 
+
 # ============================================================================
 # Database Commands
 # ============================================================================
@@ -182,7 +189,7 @@ if TYPER_AVAILABLE:
     @db_app.command("migrate")
     def db_migrate(
         revision: str = Option("head", help="Target revision"),
-        dry_run: bool = Option(False, help="Show changes without applying")
+        dry_run: bool = Option(False, help="Show changes without applying"),
     ):
         """Run database migrations."""
         if not check_module("Migrations", MIGRATIONS_AVAILABLE):
@@ -205,7 +212,7 @@ if TYPER_AVAILABLE:
     @db_app.command("seed")
     def db_seed(
         count: int = Option(50, help="Number of records to seed"),
-        domain: str = Option("math", help="Domain for seed data")
+        domain: str = Option("math", help="Domain for seed data"),
     ):
         """Seed database with test data."""
         if not check_module("Database", DATABASE_AVAILABLE):
@@ -216,6 +223,7 @@ if TYPER_AVAILABLE:
 
             # Create sample equations
             from equation_services import EquationService
+
             service = await EquationService.create()
 
             sample_equations = [
@@ -241,7 +249,7 @@ if TYPER_AVAILABLE:
     @db_app.command("reset")
     def db_reset(
         confirm: bool = Option(False, help="Confirm destructive operation"),
-        keep_users: bool = Option(True, help="Preserve user accounts")
+        keep_users: bool = Option(True, help="Preserve user accounts"),
     ):
         """Reset database (DANGER: Destroys all data)."""
         if not confirm:
@@ -289,7 +297,7 @@ if TYPER_AVAILABLE:
     @flags_app.command("list")
     def flags_list(
         active_only: bool = Option(False, help="Show only active flags"),
-        tag: str  = Option(None, help="Filter by tag")
+        tag: str = Option(None, help="Filter by tag"),
     ):
         """List all feature flags."""
         if not check_module("Feature Flags", FLAGS_AVAILABLE):
@@ -313,13 +321,7 @@ if TYPER_AVAILABLE:
                     continue
 
                 enabled_str = "✓" if flag.enabled else "✗"
-                table.add_row(
-                    flag.key,
-                    flag.name,
-                    flag.type.value,
-                    flag.status.value,
-                    enabled_str
-                )
+                table.add_row(flag.key, flag.name, flag.type.value, flag.status.value, enabled_str)
 
             console.print(table)
 
@@ -328,7 +330,7 @@ if TYPER_AVAILABLE:
     @flags_app.command("enable")
     def flags_enable(
         key: str = Argument(..., help="Flag key"),
-        rollout: int = Option(100, help="Rollout percentage (0-100)")
+        rollout: int = Option(100, help="Rollout percentage (0-100)"),
     ):
         """Enable a feature flag."""
         if not check_module("Feature Flags", FLAGS_AVAILABLE):
@@ -336,18 +338,13 @@ if TYPER_AVAILABLE:
 
         async def run_enable():
             manager = FlagManager()
-            await manager.update_flag(key, {
-                "enabled": True,
-                "rollout_percentage": rollout
-            })
+            await manager.update_flag(key, {"enabled": True, "rollout_percentage": rollout})
             console.print(f"[green]✓ Enabled flag: {key} ({rollout}%)[/green]")
 
         asyncio.run(run_enable())
 
     @flags_app.command("disable")
-    def flags_disable(
-        key: str = Argument(..., help="Flag key")
-    ):
+    def flags_disable(key: str = Argument(..., help="Flag key")):
         """Disable a feature flag."""
         if not check_module("Feature Flags", FLAGS_AVAILABLE):
             raise typer.Exit(1)
@@ -364,7 +361,7 @@ if TYPER_AVAILABLE:
         key: str = Argument(..., help="Unique flag key"),
         name: str = Option(..., help="Flag name"),
         description: str = Option("", help="Flag description"),
-        flag_type: FlagType = Option(FlagType.BOOLEAN, help="Flag type")
+        flag_type: FlagType = Option(FlagType.BOOLEAN, help="Flag type"),
     ):
         """Create a new feature flag."""
         if not check_module("Feature Flags", FLAGS_AVAILABLE):
@@ -373,11 +370,7 @@ if TYPER_AVAILABLE:
         async def run_create():
             manager = FlagManager()
             flag = FeatureFlag(
-                key=key,
-                name=name,
-                description=description,
-                type=flag_type,
-                status="active"
+                key=key, name=name, description=description, type=flag_type, status="active"
             )
             await manager.create_flag(flag)
             console.print(f"[green]✓ Created flag: {key}[/green]")
@@ -394,9 +387,7 @@ if TYPER_AVAILABLE:
     cache_app = Typer(help="Cache operations")
 
     @cache_app.command("clear")
-    def cache_clear(
-        pattern: str = Option("*", help="Key pattern to clear")
-    ):
+    def cache_clear(pattern: str = Option("*", help="Key pattern to clear")):
         """Clear cache entries."""
         if not check_module("Cache", CACHE_AVAILABLE):
             raise typer.Exit(1)
@@ -472,6 +463,7 @@ if TYPER_AVAILABLE:
 
         # Database connectivity
         if DATABASE_AVAILABLE:
+
             async def check_db():
                 try:
                     engine = get_engine()
@@ -484,6 +476,7 @@ if TYPER_AVAILABLE:
 
         # Cache connectivity
         if CACHE_AVAILABLE:
+
             async def check_cache():
                 try:
                     redis = await get_redis_client()
@@ -506,9 +499,7 @@ if TYPER_AVAILABLE:
     config_app = Typer(help="Configuration management")
 
     @config_app.command("show")
-    def config_show(
-        sensitive: bool = Option(False, help="Show sensitive values")
-    ):
+    def config_show(sensitive: bool = Option(False, help="Show sensitive values")):
         """Show current configuration."""
         if not check_module("Config", CONFIG_AVAILABLE):
             raise typer.Exit(1)
@@ -546,10 +537,11 @@ if TYPER_AVAILABLE:
 # ============================================================================
 
 if TYPER_AVAILABLE:
+
     @app.callback()
     def main(
         verbose: bool = Option(False, help="Enable verbose output"),
-        version: bool = Option(False, help="Show version")
+        version: bool = Option(False, help="Show version"),
     ):
         """AMOS Equation Admin CLI - Production-grade system management."""
         if version:
@@ -567,6 +559,7 @@ else:
         print_banner()
         print("Typer not available. Please install: pip install typer[all]")
         sys.exit(1)
+
 
 if __name__ == "__main__":
     if TYPER_AVAILABLE and app:

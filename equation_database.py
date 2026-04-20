@@ -49,11 +49,13 @@ import asyncio
 import logging
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from decimal import Decimal
 from enum import Enum as PyEnum
 from functools import wraps
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 # SQLAlchemy 2.0 imports
 try:
@@ -142,7 +144,7 @@ class Base(DeclarativeBase, AsyncAttrs):
         self.is_deleted = True
         self.deleted_at = datetime.now(UTC)
 
-    def to_dict(self, exclude: Set[str] = None) -> Dict[str, Any]:
+    def to_dict(self, exclude: set[str] = None) -> dict[str, Any]:
         """Convert model to dictionary."""
         exclude = exclude or set()
         result = {}
@@ -326,11 +328,11 @@ class DatabaseManager:
     """Manages database engine and session lifecycle."""
 
     def __init__(self) -> None:
-        self.engine: Optional[AsyncEngine] = None
+        self.engine: AsyncEngine = None
         self.session_maker: async_sessionmaker = None
         self._initialized = False
 
-    async def initialize(self, settings: Optional[Settings] = None) -> None:
+    async def initialize(self, settings: Settings = None) -> None:
         """Initialize database engine and session maker."""
         if self._initialized:
             return
@@ -418,7 +420,7 @@ class DatabaseManager:
 _db_manager = DatabaseManager()
 
 
-async def initialize_database(settings: Optional[Settings] = None) -> None:
+async def initialize_database(settings: Settings = None) -> None:
     """Initialize the database system."""
     await _db_manager.initialize(settings)
 
@@ -461,14 +463,14 @@ class BaseRepository:
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
 
-    async def get_by_id(self, model: type, id: int) -> Optional[Any]:
+    async def get_by_id(self, model: type, id: int) -> Any:
         """Get record by ID."""
         result = await self.session.execute(
             select(model).where(and_(model.id == id, not_(model.is_deleted)))
         )
         return result.scalar_one_or_none()
 
-    async def get_all(self, model: type, skip: int = 0, limit: int = 100, **filters) -> List[Any]:
+    async def get_all(self, model: type, skip: int = 0, limit: int = 100, **filters) -> list[Any]:
         """Get all records with pagination and filters."""
         query = select(model).where(not_(model.is_deleted))
 
@@ -496,7 +498,7 @@ class BaseRepository:
 class EquationRepository(BaseRepository):
     """Repository for Equation operations."""
 
-    async def get_by_name(self, name: str) -> Optional[Equation]:
+    async def get_by_name(self, name: str) -> Equation:
         """Get equation by name."""
         result = await self.session.execute(
             select(Equation).where(
@@ -505,7 +507,7 @@ class EquationRepository(BaseRepository):
         )
         return result.scalar_one_or_none()
 
-    async def get_by_domain(self, domain: str, skip: int = 0, limit: int = 100) -> List[Equation]:
+    async def get_by_domain(self, domain: str, skip: int = 0, limit: int = 100) -> list[Equation]:
         """Get equations by domain."""
         result = await self.session.execute(
             select(Equation)
@@ -544,7 +546,7 @@ class EquationRepository(BaseRepository):
 
     async def search(
         self, query: str, domain: str = None, skip: int = 0, limit: int = 100
-    ) -> List[Equation]:
+    ) -> list[Equation]:
         """Search equations by name or description."""
         search_pattern = f"%{query}%"
 
@@ -591,7 +593,7 @@ class ExecutionRepository(BaseRepository):
         await self.session.refresh(execution)
         return execution
 
-    async def get_by_request_id(self, request_id: str) -> Optional[EquationExecution]:
+    async def get_by_request_id(self, request_id: str) -> EquationExecution:
         """Get execution by request ID."""
         result = await self.session.execute(
             select(EquationExecution).where(EquationExecution.request_id == request_id)
@@ -600,7 +602,7 @@ class ExecutionRepository(BaseRepository):
 
     async def get_recent_by_equation(
         self, equation_id: int, limit: int = 10
-    ) -> List[EquationExecution]:
+    ) -> list[EquationExecution]:
         """Get recent executions for an equation."""
         result = await self.session.execute(
             select(EquationExecution)
@@ -612,7 +614,7 @@ class ExecutionRepository(BaseRepository):
 
     async def get_statistics(
         self, equation_id: int = None, start_date: datetime = None, end_date: datetime = None
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Get execution statistics."""
         query = select(EquationExecution)
 
@@ -643,14 +645,14 @@ class ExecutionRepository(BaseRepository):
 class UserRepository(BaseRepository):
     """Repository for User operations."""
 
-    async def get_by_username(self, username: str) -> Optional[User]:
+    async def get_by_username(self, username: str) -> User:
         """Get user by username."""
         result = await self.session.execute(
             select(User).where(and_(User.username == username, not_(User.is_deleted)))
         )
         return result.scalar_one_or_none()
 
-    async def get_by_email(self, email: str) -> Optional[User]:
+    async def get_by_email(self, email: str) -> User:
         """Get user by email."""
         result = await self.session.execute(
             select(User).where(and_(User.email == email, not_(User.is_deleted)))
@@ -674,7 +676,7 @@ class UserRepository(BaseRepository):
 class ApiKeyRepository(BaseRepository):
     """Repository for ApiKey operations."""
 
-    async def get_by_key_hash(self, key_hash: str) -> Optional[ApiKey]:
+    async def get_by_key_hash(self, key_hash: str) -> ApiKey:
         """Get API key by hash."""
         result = await self.session.execute(
             select(ApiKey).where(
@@ -700,7 +702,7 @@ class ApiKeyRepository(BaseRepository):
 # ============================================================================
 
 
-async def check_database_health() -> Dict[str, Any]:
+async def check_database_health() -> dict[str, Any]:
     """Check database connectivity and health.
 
     Returns:
@@ -768,7 +770,7 @@ def with_retry(max_retries: int = 3, delay: float = 0.1):
 # ============================================================================
 
 
-def get_alembic_config() -> Dict[str, Any]:
+def get_alembic_config() -> dict[str, Any]:
     """Get Alembic configuration dictionary.
 
     Usage in alembic.ini:

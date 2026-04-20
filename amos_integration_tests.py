@@ -20,7 +20,6 @@ import sys
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, List
 
 # Add project to path
 sys.path.insert(0, str(Path(__file__).parent))
@@ -49,10 +48,10 @@ class AMOSIntegrationTests:
     """
 
     def __init__(self):
-        self.results: List[TestResult] = []
+        self.results: list[TestResult] = []
         self.start_time: float = None
 
-    def run_all(self) -> Dict[str, any]:
+    def run_all(self) -> dict[str, any]:
         """Run complete integration test suite."""
         print("=" * 70)
         print("  🧪 AMOS INTEGRATION TEST SUITE - Round 15")
@@ -295,7 +294,7 @@ class AMOSIntegrationTests:
             )
         )
 
-    def _generate_report(self) -> Dict[str, any]:
+    def _generate_report(self) -> dict[str, any]:
         """Generate comprehensive test report."""
         total_time = time.time() - self.start_time if self.start_time else 0
 

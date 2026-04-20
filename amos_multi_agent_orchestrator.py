@@ -13,15 +13,17 @@ Implements 2025 A2A protocol patterns (Google A2A, Meta Agent2Agent):
 Component #81 - Multi-Agent Orchestration Layer
 """
 
+from __future__ import annotations
+
 import asyncio
 import json
 import time
 import uuid
+from collections import defaultdict
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Protocol, Set
-from collections import defaultdict
-from typing import Callable, Protocol
+from typing import Any, Protocol
 
 import aiohttp
 import websockets
@@ -68,9 +70,9 @@ class AgentCapability:
     description: str
 
     # Capability metadata
-    skills: List[str] = field(default_factory=list)
-    input_schema: Dict[str, Any] = field(default_factory=dict)
-    output_schema: Dict[str, Any] = field(default_factory=dict)
+    skills: list[str] = field(default_factory=list)
+    input_schema: dict[str, Any] = field(default_factory=dict)
+    output_schema: dict[str, Any] = field(default_factory=dict)
 
     # Performance metrics
     avg_latency_ms: float = 0.0
@@ -78,7 +80,7 @@ class AgentCapability:
 
     # Constraints
     max_concurrent_tasks: int = 5
-    supported_languages: List[str] = field(default_factory=lambda: ["en"])
+    supported_languages: list[str] = field(default_factory=lambda: ["en"])
 
 
 @dataclass
@@ -94,7 +96,7 @@ class Agent:
     owner: str = "amos_system"
 
     # Capabilities
-    capabilities: List[AgentCapability] = field(default_factory=list)
+    capabilities: list[AgentCapability] = field(default_factory=list)
 
     # Status
     status: AgentStatus = AgentStatus.IDLE
@@ -103,13 +105,13 @@ class Agent:
     total_tasks_failed: int = 0
 
     # Connection
-    endpoint_url: Optional[str] = None
-    auth_token: Optional[str] = None
+    endpoint_url: str = None
+    auth_token: str = None
 
     # Metadata
     registered_at: float = field(default_factory=time.time)
     last_heartbeat: float = field(default_factory=time.time)
-    tags: List[str] = field(default_factory=list)
+    tags: list[str] = field(default_factory=list)
 
     def has_capability(self, skill: str) -> bool:
         """Check if agent has a specific skill."""
@@ -140,16 +142,16 @@ class A2AMessage:
     recipient_id: str
 
     # Content
-    payload: Dict[str, Any] = field(default_factory=dict)
+    payload: dict[str, Any] = field(default_factory=dict)
 
     # Metadata
     timestamp: float = field(default_factory=time.time)
-    correlation_id: Optional[str] = None  # For request-response pairing
+    correlation_id: str = None  # For request-response pairing
     priority: int = 5  # 1-10, lower is higher priority
 
     # Tracking
     delivered: bool = False
-    delivery_timestamp: Optional[float] = None
+    delivery_timestamp: float = None
 
 
 @dataclass
@@ -162,28 +164,28 @@ class Task:
 
     # Assignment
     creator_id: str
-    assigned_agent_id: Optional[str] = None
+    assigned_agent_id: str = None
 
     # Status
     status: TaskStatus = TaskStatus.PENDING
 
     # Content
-    input_data: Dict[str, Any] = field(default_factory=dict)
-    output_data: Dict[str, Any] = field(default_factory=dict)
-    artifacts: List[dict[str, Any]] = field(default_factory=list)
+    input_data: dict[str, Any] = field(default_factory=dict)
+    output_data: dict[str, Any] = field(default_factory=dict)
+    artifacts: list[dict[str, Any]] = field(default_factory=list)
 
     # Timing
     created_at: float = field(default_factory=time.time)
-    started_at: Optional[float] = None
-    completed_at: Optional[float] = None
+    started_at: float = None
+    completed_at: float = None
 
     # Dependencies
-    parent_task_id: Optional[str] = None
-    dependent_task_ids: List[str] = field(default_factory=list)
+    parent_task_id: str = None
+    dependent_task_ids: list[str] = field(default_factory=list)
 
     # Result
     success: bool = False
-    error_message: Optional[str] = None
+    error_message: str = None
 
 
 @dataclass
@@ -195,21 +197,21 @@ class CollaborationSession:
     description: str
 
     # Participants
-    agent_ids: List[str] = field(default_factory=list)
-    coordinator_id: Optional[str] = None
+    agent_ids: list[str] = field(default_factory=list)
+    coordinator_id: str = None
 
     # Tasks
-    task_ids: List[str] = field(default_factory=list)
+    task_ids: list[str] = field(default_factory=list)
 
     # Status
     status: str = "active"  # active, paused, completed
 
     # Timeline
     created_at: float = field(default_factory=time.time)
-    completed_at: Optional[float] = None
+    completed_at: float = None
 
     # Shared context
-    shared_context: Dict[str, Any] = field(default_factory=dict)
+    shared_context: dict[str, Any] = field(default_factory=dict)
 
 
 class AgentTransport(Protocol):
@@ -219,7 +221,7 @@ class AgentTransport(Protocol):
         """Send a message to an agent."""
         ...
 
-    async def receive_messages(self, agent_id: str) -> List[A2AMessage]:
+    async def receive_messages(self, agent_id: str) -> list[A2AMessage]:
         """Receive messages for an agent."""
         ...
 
@@ -228,7 +230,7 @@ class InMemoryAgentTransport:
     """In-memory transport for development."""
 
     def __init__(self):
-        self.message_queues: Dict[str, list[A2AMessage]] = defaultdict(list)
+        self.message_queues: dict[str, list[A2AMessage]] = defaultdict(list)
 
     async def send_message(self, message: A2AMessage) -> bool:
         self.message_queues[message.recipient_id].append(message)
@@ -236,7 +238,7 @@ class InMemoryAgentTransport:
         message.delivery_timestamp = time.time()
         return True
 
-    async def receive_messages(self, agent_id: str) -> List[A2AMessage]:
+    async def receive_messages(self, agent_id: str) -> list[A2AMessage]:
         messages = self.message_queues[agent_id].copy()
         self.message_queues[agent_id] = []
         return messages
@@ -261,7 +263,7 @@ class HTTPAgentTransport:
         self,
         base_url: str = "http://localhost:8000",
         ws_url: str = "ws://localhost:8000/ws",
-        auth_token: Optional[str] = None,
+        auth_token: str = None,
         timeout: float = 30.0,
         max_retries: int = 3,
     ):
@@ -272,10 +274,10 @@ class HTTPAgentTransport:
         self.max_retries = max_retries
 
         # Connection management
-        self._session: aiohttp.ClientSession | None = None
-        self._ws_connection: websockets.WebSocketClientProtocol | None = None
-        self._message_buffer: Dict[str, list[A2AMessage]] = defaultdict(list)
-        self._connected_agents: Set[str] = set()
+        self._session: aiohttp.Optional[ClientSession] = None
+        self._ws_connection: websockets.Optional[WebSocketClientProtocol] = None
+        self._message_buffer: dict[str, list[A2AMessage]] = defaultdict(list)
+        self._connected_agents: set[str] = set()
         self._lock = asyncio.Lock()
 
     async def _get_session(self) -> aiohttp.ClientSession:
@@ -337,7 +339,7 @@ class HTTPAgentTransport:
                 if attempt < self.max_retries - 1:
                     await asyncio.sleep(2**attempt)
                     continue
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 if attempt < self.max_retries - 1:
                     await asyncio.sleep(2**attempt)
                     continue
@@ -346,9 +348,9 @@ class HTTPAgentTransport:
         self._message_buffer[message.recipient_id].append(message)
         return False
 
-    async def receive_messages(self, agent_id: str) -> List[A2AMessage]:
+    async def receive_messages(self, agent_id: str) -> list[A2AMessage]:
         """Receive messages via WebSocket or HTTP polling."""
-        messages: List[A2AMessage] = []
+        messages: list[A2AMessage] = []
 
         # First, check buffered messages
         if agent_id in self._message_buffer and self._message_buffer[agent_id]:
@@ -369,9 +371,9 @@ class HTTPAgentTransport:
 
         return messages
 
-    async def _receive_via_websocket(self, agent_id: str) -> List[A2AMessage]:
+    async def _receive_via_websocket(self, agent_id: str) -> list[A2AMessage]:
         """Receive messages via WebSocket connection."""
-        messages: List[A2AMessage] = []
+        messages: list[A2AMessage] = []
 
         if not self._ws_connection or self._ws_connection.closed:
             headers = {}
@@ -409,7 +411,7 @@ class HTTPAgentTransport:
                 message.delivered = True
                 message.delivery_timestamp = time.time()
                 messages.append(message)
-        except asyncio.TimeoutError:
+        except TimeoutError:
             # No more messages available right now
             pass
         except websockets.exceptions.ConnectionClosed:
@@ -417,7 +419,7 @@ class HTTPAgentTransport:
 
         return messages
 
-    async def _receive_via_http(self, agent_id: str) -> List[A2AMessage]:
+    async def _receive_via_http(self, agent_id: str) -> list[A2AMessage]:
         """Receive messages via HTTP polling."""
         session = await self._get_session()
         url = f"{self.base_url}/a2a/messages/{agent_id}"
@@ -429,7 +431,7 @@ class HTTPAgentTransport:
             ) as response:
                 if response.status == 200:
                     data = await response.json()
-                    messages: List[A2AMessage] = []
+                    messages: list[A2AMessage] = []
                     for msg_data in data.get("messages", []):
                         message = A2AMessage(
                             message_id=msg_data["message_id"],
@@ -484,26 +486,26 @@ class AMOSMultiAgentOrchestrator:
     - All 80 components: Agent-accessible capabilities
     """
 
-    def __init__(self, transport: Optional[AgentTransport] = None):
+    def __init__(self, transport: AgentTransport = None):
         self.transport = transport or InMemoryAgentTransport()
 
         # Agent registry
-        self.agents: Dict[str, Agent] = {}
-        self.agent_by_capability: Dict[str, set[str]] = defaultdict(set)
+        self.agents: dict[str, Agent] = {}
+        self.agent_by_capability: dict[str, set[str]] = defaultdict(set)
 
         # Task management
-        self.tasks: Dict[str, Task] = {}
-        self.agent_tasks: Dict[str, set[str]] = defaultdict(set)
+        self.tasks: dict[str, Task] = {}
+        self.agent_tasks: dict[str, set[str]] = defaultdict(set)
 
         # Collaboration
-        self.sessions: Dict[str, CollaborationSession] = {}
+        self.sessions: dict[str, CollaborationSession] = {}
 
         # Message tracking
-        self.message_history: List[A2AMessage] = []
+        self.message_history: list[A2AMessage] = []
         self.max_history = 1000
 
         # Callbacks
-        self.task_callbacks: Dict[str, list[Callable]] = defaultdict(list)
+        self.task_callbacks: dict[str, list[Callable]] = defaultdict(list)
 
     async def initialize(self) -> None:
         """Initialize the multi-agent orchestrator."""
@@ -518,9 +520,9 @@ class AMOSMultiAgentOrchestrator:
         name: str,
         description: str,
         agent_type: str = "internal",
-        capabilities: Optional[List[AgentCapability ]] = None,
-        endpoint_url: Optional[str] = None,
-        tags: Optional[List[str]] = None,
+        capabilities: list[AgentCapability] = None,
+        endpoint_url: str = None,
+        tags: list[str] = None,
     ) -> Agent:
         """Register a new agent in the ecosystem."""
         agent_id = f"agent_{uuid.uuid4().hex[:12]}"
@@ -564,7 +566,7 @@ class AMOSMultiAgentOrchestrator:
 
     def find_agents_by_capability(
         self, skill: str, min_success_rate: float = 0.8, require_available: bool = True
-    ) -> List[Agent]:
+    ) -> list[Agent]:
         """Find agents with a specific capability."""
         matching = []
 
@@ -593,7 +595,7 @@ class AMOSMultiAgentOrchestrator:
 
         return matching
 
-    def find_best_agent(self, skill: str) -> Optional[Agent]:
+    def find_best_agent(self, skill: str) -> Agent:
         """Find the best available agent for a skill."""
         agents = self.find_agents_by_capability(skill)
         return agents[0] if agents else None
@@ -603,10 +605,10 @@ class AMOSMultiAgentOrchestrator:
         task_type: str,
         description: str,
         creator_id: str,
-        input_data: Optional[Dict[str, Any ]] = None,
-        preferred_agent_id: Optional[str] = None,
-        required_skills: Optional[List[str]] = None,
-    ) -> Optional[Task]:
+        input_data: dict[str, Any] = None,
+        preferred_agent_id: str = None,
+        required_skills: list[str] = None,
+    ) -> Task:
         """Create and optionally assign a task."""
         task_id = f"task_{uuid.uuid4().hex[:12]}"
 
@@ -696,8 +698,8 @@ class AMOSMultiAgentOrchestrator:
         self,
         task_id: str,
         success: bool,
-        output_data: Optional[Dict[str, Any ]] = None,
-        error_message: Optional[str] = None,
+        output_data: dict[str, Any] = None,
+        error_message: str = None,
     ) -> bool:
         """Complete a task."""
         task = self.tasks.get(task_id)
@@ -750,7 +752,7 @@ class AMOSMultiAgentOrchestrator:
         return True
 
     async def create_collaboration(
-        self, name: str, description: str, agent_ids: List[str], coordinator_id: Optional[str] = None
+        self, name: str, description: str, agent_ids: list[str], coordinator_id: str = None
     ) -> CollaborationSession:
         """Create a collaboration session."""
         session_id = f"session_{uuid.uuid4().hex[:12]}"
@@ -791,8 +793,8 @@ class AMOSMultiAgentOrchestrator:
         sender_id: str,
         recipient_id: str,
         message_type: MessageType,
-        payload: Dict[str, Any],
-        correlation_id: Optional[str] = None,
+        payload: dict[str, Any],
+        correlation_id: str = None,
     ) -> bool:
         """Send a message between agents."""
         message = A2AMessage(
@@ -813,7 +815,7 @@ class AMOSMultiAgentOrchestrator:
 
         return success
 
-    def get_agent_stats(self, agent_id: str) -> Optional[Dict[str, Any ]]:
+    def get_agent_stats(self, agent_id: str) -> dict[str, Any]:
         """Get statistics for an agent."""
         agent = self.agents.get(agent_id)
         if not agent:
@@ -839,7 +841,7 @@ class AMOSMultiAgentOrchestrator:
             / max(1, len([t for t in tasks if t.completed_at])),
         }
 
-    def get_orchestrator_summary(self) -> Dict[str, Any]:
+    def get_orchestrator_summary(self) -> dict[str, Any]:
         """Get summary of orchestrator state."""
         return {
             "total_agents": len(self.agents),
@@ -997,7 +999,7 @@ async def demo_multi_agent_orchestrator():
     await orchestrator.start_task(research_task.task_id)
     await orchestrator.start_task(writing_task.task_id)
     await orchestrator.start_task(code_task.task_id)
-    print(f"  ✓ Started all tasks")
+    print("  ✓ Started all tasks")
 
     # Simulate work and complete
     await asyncio.sleep(0.1)
@@ -1007,19 +1009,19 @@ async def demo_multi_agent_orchestrator():
         success=True,
         output_data={"findings": ["Solar costs dropped 80%", "Wind adoption growing"]},
     )
-    print(f"  ✓ Research task completed")
+    print("  ✓ Research task completed")
 
     await orchestrator.complete_task(
         writing_task.task_id,
         success=True,
         output_data={"article": "Renewable energy is transforming..."},
     )
-    print(f"  ✓ Writing task completed")
+    print("  ✓ Writing task completed")
 
     await orchestrator.complete_task(
         code_task.task_id, success=False, error_message="Rate limit exceeded"
     )
-    print(f"  ✓ Code task completed (with error)")
+    print("  ✓ Code task completed (with error)")
 
     print("\n[5] Creating collaboration session...")
 
@@ -1040,7 +1042,7 @@ async def demo_multi_agent_orchestrator():
         message_type=MessageType.ARTIFACT_DELIVERY,
         payload={"artifact_type": "research_notes", "content": "Solar energy trends 2025..."},
     )
-    print(f"  ✓ Sent artifact from Research → Writer")
+    print("  ✓ Sent artifact from Research → Writer")
 
     await orchestrator.send_agent_message(
         sender_id=writer_agent.agent_id,
@@ -1048,7 +1050,7 @@ async def demo_multi_agent_orchestrator():
         message_type=MessageType.COLLABORATION_REQUEST,
         payload={"request": "Please review draft article", "deadline": "2025-01-15"},
     )
-    print(f"  ✓ Sent review request from Writer → Reviewer")
+    print("  ✓ Sent review request from Writer → Reviewer")
 
     print("\n[7] Agent statistics...")
 

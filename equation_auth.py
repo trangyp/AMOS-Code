@@ -50,14 +50,18 @@ Environment Variables:
     REFRESH_TOKEN_EXPIRE_DAYS: Refresh token lifetime
 """
 
+from __future__ import annotations
+
 import hashlib
 import logging
 import secrets
 import uuid
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
+
+UTC = UTC
 from enum import Enum
 from functools import wraps
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 # JWT handling
 try:
@@ -164,7 +168,7 @@ class Permission(str, Enum):
 
 
 # Role-to-permissions mapping
-ROLE_PERMISSIONS: Dict[UserRole, list[Permission]] = {
+ROLE_PERMISSIONS: dict[UserRole, list[Permission]] = {
     UserRole.SUPERUSER: list(Permission),  # All permissions
     UserRole.ADMIN: [
         Permission.EQUATIONS_READ,
@@ -260,7 +264,7 @@ class TokenManager:
         self.algorithm = algorithm
         self.access_token_expire_minutes = access_token_expire_minutes
         self.refresh_token_expire_days = refresh_token_expire_days
-        self._blacklisted_tokens: Set[str] = set()
+        self._blacklisted_tokens: set[str] = set()
 
     def _get_secret_key(self) -> str:
         """Get secret key from settings or generate one."""
@@ -273,7 +277,7 @@ class TokenManager:
         # Fallback - generate a temporary key (not for production)
         return secrets.token_urlsafe(32)
 
-    def create_access_token(self, data: Dict[str, Any], expires_delta: timedelta = None) -> str:
+    def create_access_token(self, data: dict[str, Any], expires_delta: timedelta = None) -> str:
         """Create JWT access token."""
         if not JWT_AVAILABLE:
             raise ImportError("PyJWT required for token generation")
@@ -296,7 +300,7 @@ class TokenManager:
 
         return jwt.encode(to_encode, self.secret_key, algorithm=self.algorithm)
 
-    def create_refresh_token(self, data: Dict[str, Any]) -> str:
+    def create_refresh_token(self, data: dict[str, Any]) -> str:
         """Create JWT refresh token."""
         if not JWT_AVAILABLE:
             raise ImportError("PyJWT required for token generation")
@@ -310,7 +314,7 @@ class TokenManager:
 
         return jwt.encode(to_encode, self.secret_key, algorithm=self.algorithm)
 
-    def decode_token(self, token: str) -> Dict[str, Any]:
+    def decode_token(self, token: str) -> dict[str, Any]:
         """Decode and validate JWT token."""
         if not JWT_AVAILABLE:
             raise ImportError("PyJWT required for token validation")
@@ -329,13 +333,13 @@ class TokenManager:
         """Add token to blacklist (logout)."""
         self._blacklisted_tokens.add(token)
 
-    def verify_token_type(self, payload: Dict[str, Any], expected_type: str) -> bool:
+    def verify_token_type(self, payload: dict[str, Any], expected_type: str) -> bool:
         """Verify token type matches expected."""
         return payload.get("type") == expected_type
 
 
 # Global token manager
-_token_manager: Optional[TokenManager] = None
+_token_manager: TokenManager | None = None
 
 
 def get_token_manager() -> TokenManager:
@@ -381,7 +385,7 @@ else:
 class AuthenticationError(Exception):
     """Authentication error with details."""
 
-    def __init__(self, message: str, status_code: int = 401, headers: Dict[str, str] = None):
+    def __init__(self, message: str, status_code: int = 401, headers: dict[str, str] = None):
         self.message = message
         self.status_code = status_code
         self.headers = headers
@@ -443,7 +447,7 @@ async def get_current_user(
     raise credentials_exception
 
 
-async def _authenticate_api_key(api_key: str, session: AsyncSession) -> Optional[User]:
+async def _authenticate_api_key(api_key: str, session: AsyncSession) -> User | None:
     """Authenticate using API key."""
     if not DATABASE_AVAILABLE:
         return None
@@ -790,7 +794,7 @@ class AuthEndpoints:
 # ============================================================================
 
 
-def create_api_key(user_id: int, name: str, scopes: List[str] = None) -> str:
+def create_api_key(user_id: int, name: str, scopes: list[str] = None) -> str:
     """Create a new API key for a user.
 
     Args:
@@ -811,7 +815,7 @@ def create_api_key(user_id: int, name: str, scopes: List[str] = None) -> str:
     return api_key
 
 
-def verify_token(token: str) -> Dict[str, Any]:
+def verify_token(token: str) -> dict[str, Any]:
     """Verify a JWT token and return payload.
 
     Args:

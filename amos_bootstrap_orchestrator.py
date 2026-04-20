@@ -17,15 +17,18 @@ Usage:
     await orchestrator.shutdown()
 """
 
+from __future__ import annotations
+
 import asyncio
 import logging
 import signal
 import sys
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from amos_async_safety import get_safety_manager
 from amos_brain_health_monitor import get_brain_health_monitor
@@ -59,11 +62,11 @@ class BootstrapStatus:
     phase: BootstrapPhase
     timestamp: str
     progress_pct: float
-    subsystems_ready: List[str]
-    subsystems_failed: List[str]
+    subsystems_ready: list[str]
+    subsystems_failed: list[str]
     health_score: float
-    errors: List[str] = field(default_factory=list)
-    warnings: List[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
 
 
 class BootstrapOrchestrator:
@@ -97,8 +100,8 @@ class BootstrapOrchestrator:
         self._initialized = True
 
         self._phase = BootstrapPhase.IDLE
-        self._status_history: List[BootstrapStatus] = []
-        self._subsystems: Dict[str, Any] = {}
+        self._status_history: list[BootstrapStatus] = []
+        self._subsystems: dict[str, Any] = {}
         self._shutdown_event = asyncio.Event()
         self._health_monitor: Optional[Any] = None
         self._safety_manager: Optional[Any] = None
@@ -478,7 +481,7 @@ class BootstrapOrchestrator:
         actual = len(self._subsystems)
         return min(actual / expected_subsystems, 1.0)
 
-    def get_health_status(self) -> Dict[str, Any]:
+    def get_health_status(self) -> dict[str, Any]:
         """Get current health status from all subsystems."""
         status = {"phase": self._phase.value, "subsystems": {}, "overall_health": 0.0}
 

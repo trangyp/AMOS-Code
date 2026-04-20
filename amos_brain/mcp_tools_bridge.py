@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any
 
 """AMOS MCP Tools Bridge - Connect MCP tools to SuperBrain.
@@ -21,14 +23,8 @@ Safety:
   - Audit logging
 """
 
-import sys
+# Import from root-level module
 from pathlib import Path
-
-# Add repo root to path
-REPO_ROOT = Path(__file__).parent.parent
-if str(REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT))
-
 
 from amos_mcp_tools import CodeExecutionTool, FilesystemTool, GitTool, ToolResult, WebSearchTool
 

@@ -8,14 +8,17 @@ Real-time WebSocket server for:
 - Bidirectional commands
 """
 
+from __future__ import annotations
+
 import asyncio
 import json
 import logging
 import uuid
 from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
-UTC = timezone.utc
-from typing import Any, Dict, Optional
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
+from typing import Any, Optional
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -26,7 +29,7 @@ class WSMessage:
     """WebSocket message format."""
 
     type: str
-    payload: Dict[str, Any]
+    payload: dict[str, Any]
     timestamp: str
     message_id: str
 
@@ -35,9 +38,9 @@ class AgentCommandCenter:
     """WebSocket command center for agent fleet."""
 
     def __init__(self):
-        self.clients: Dict[str, Any] = {}
-        self.active_tasks: Dict[str, dict] = {}
-        self.agent_status: Dict[str, str] = {}
+        self.clients: dict[str, Any] = {}
+        self.active_tasks: dict[str, dict] = {}
+        self.agent_status: dict[str, str] = {}
 
     async def register_client(self, client_id: str, websocket) -> None:
         """Register new WebSocket client."""

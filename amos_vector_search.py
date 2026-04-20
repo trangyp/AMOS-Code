@@ -20,12 +20,16 @@ Version: 1.0.0
 Phase: 20
 """
 
+from __future__ import annotations
+
 import hashlib
 import os
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from enum import Enum
-from typing import Any, Dict, List, Optional, Protocol, TypeVar
+from typing import Any, Optional, Protocol, TypeVar
 
 # SQLAlchemy imports
 from sqlalchemy import Index, String, Text, select
@@ -106,7 +110,7 @@ class SearchResult:
     id: str
     content_type: ContentType
     content: str
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
     similarity_score: float
     distance: float
 
@@ -116,7 +120,7 @@ class RAGContext:
     """Context for RAG (Retrieval-Augmented Generation)."""
 
     query: str
-    retrieved_chunks: List[SearchResult]
+    retrieved_chunks: list[SearchResult]
     context_text: str = ""
     token_count: int = 0
 
@@ -200,7 +204,7 @@ if DB_AVAILABLE:
 class EmbeddingProvider(Protocol):
     """Protocol for embedding providers."""
 
-    async def embed(self, texts: List[str]) -> List[list[float]]:
+    async def embed(self, texts: list[str]) -> list[list[float]]:
         """Generate embeddings for texts."""
         ...
 
@@ -215,7 +219,7 @@ class LocalEmbeddingProvider:
         self.model_name = model_name
         self._model = None
 
-    async def embed(self, texts: List[str]) -> List[list[float]]:
+    async def embed(self, texts: list[str]) -> list[list[float]]:
         """Generate embeddings using local model."""
         if self._model is None:
             try:
@@ -241,7 +245,7 @@ class OpenAIEmbeddingProvider:
         self.api_key = api_key or os.getenv("OPENAI_API_KEY")
         self.model = model
 
-    async def embed(self, texts: List[str]) -> List[list[float]]:
+    async def embed(self, texts: list[str]) -> list[list[float]]:
         """Generate embeddings using OpenAI API."""
         try:
             import openai
@@ -293,9 +297,9 @@ class VectorSearchService:
         content_type: ContentType,
         source_id: str,
         content: str,
-        metadata: Dict[str, Any] = None,
+        metadata: dict[str, Any] = None,
         tenant_id: str = None,
-        embedding: List[float] = None,
+        embedding: list[float] = None,
     ) -> Optional[VectorEmbedding]:
         """
         Add content with embedding to vector store.
@@ -368,11 +372,11 @@ class VectorSearchService:
         self,
         session: AsyncSession,
         query: str,
-        content_types: List[ContentType] = None,
+        content_types: list[ContentType] = None,
         top_k: int = DEFAULT_TOP_K,
         tenant_id: str = None,
         similarity_threshold: float = SIMILARITY_THRESHOLD,
-    ) -> List[SearchResult]:
+    ) -> list[SearchResult]:
         """
         Perform semantic similarity search.
 
@@ -451,12 +455,12 @@ class VectorSearchService:
         self,
         session: AsyncSession,
         query: str,
-        content_types: List[ContentType] = None,
+        content_types: list[ContentType] = None,
         top_k: int = DEFAULT_TOP_K,
         tenant_id: str = None,
         vector_weight: float = 0.7,
         keyword_weight: float = 0.3,
-    ) -> List[SearchResult]:
+    ) -> list[SearchResult]:
         """
         Hybrid search combining vector similarity and keyword matching.
 
@@ -499,8 +503,8 @@ class VectorSearchService:
             keyword_rows = keyword_result.scalars().all()
 
             # Combine scores
-            scores: Dict[str, float] = {}
-            content_map: Dict[str, VectorEmbedding] = {}
+            scores: dict[str, float] = {}
+            content_map: dict[str, VectorEmbedding] = {}
 
             # Vector scores
             for result in vector_results:
@@ -587,7 +591,7 @@ class RAGService:
         self,
         session: AsyncSession,
         query: str,
-        content_types: List[ContentType] = None,
+        content_types: list[ContentType] = None,
         tenant_id: str = None,
         max_chunks: int = 5,
     ) -> RAGContext:
@@ -622,9 +626,9 @@ class RAGService:
         self,
         session: AsyncSession,
         query: str,
-        content_types: List[ContentType] = None,
+        content_types: list[ContentType] = None,
         tenant_id: str = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Answer a query using RAG.
 
@@ -660,18 +664,18 @@ if FASTAPI_AVAILABLE and DB_AVAILABLE:
 
     class SearchRequest(BaseModel):
         query: str = Field(..., min_length=1, max_length=1000)
-        content_types: List[str] = None
+        content_types: list[str] = None
         top_k: int = Field(default=10, ge=1, le=100)
         hybrid: bool = False
 
     class SearchResponse(BaseModel):
-        results: List[dict[str, Any]]
+        results: list[dict[str, Any]]
         total: int
         query: str
 
     class RAGRequest(BaseModel):
         query: str = Field(..., min_length=1, max_length=2000)
-        content_types: List[str] = None
+        content_types: list[str] = None
 
     @router.post("/search", response_model=SearchResponse)
     async def semantic_search_endpoint(
@@ -715,7 +719,7 @@ if FASTAPI_AVAILABLE and DB_AVAILABLE:
         request: RAGRequest,
         session: AsyncSession = Depends(get_database_session),
         tenant_id: str = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """RAG (Retrieval-Augmented Generation) endpoint."""
         rag_service = RAGService()
 

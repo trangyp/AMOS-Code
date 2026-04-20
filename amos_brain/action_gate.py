@@ -9,10 +9,11 @@ All actions are audited and permission-checked.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
 from threading import Lock
 from typing import Any
+
+UTC = UTC
 
 
 @dataclass
@@ -32,7 +33,7 @@ class ActionResult:
 
     success: bool
     output: Any
-    error: str = None
+    error: str | None = None
     execution_time_ms: float = 0.0
 
 
@@ -52,7 +53,7 @@ class ActionGate:
         self._execution_count = 0
 
     def execute_tool(
-        self, tool_name: str, inputs: dict[str, Any], agent_id: str = None
+        self, tool_name: str, inputs: dict[str, Any], agent_id: str | None = None
     ) -> dict[str, Any]:
         """Execute tool through authorized path only.
 

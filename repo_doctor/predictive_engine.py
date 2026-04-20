@@ -407,7 +407,7 @@ class PredictiveArchitectureEngine:
     to predict future architecture failures before they occur.
     """
 
-    def __init__(self, repo_path: str | Path = None):
+    def __init__(self, repo_path: Union[str, Path] = None):
         self.repo_path = Path(repo_path) if repo_path else Path(".")
         self.pattern_recognizer = PatternRecognizer()
         self.correlation_analyzer = CorrelationAnalyzer()
@@ -618,6 +618,6 @@ class PredictiveArchitectureEngine:
         return [w for w in self.warnings if w.timestamp > cutoff]
 
 
-def get_predictive_engine(repo_path: str | Path = None) -> PredictiveArchitectureEngine:
+def get_predictive_engine(repo_path: Union[str, Path] = None) -> PredictiveArchitectureEngine:
     """Factory function to get predictive engine instance."""
     return PredictiveArchitectureEngine(repo_path)

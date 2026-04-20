@@ -16,10 +16,12 @@ Owner: Trang Phan
 Version: 2.0.0
 """
 
+from __future__ import annotations
+
 import time
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 # FastAPI for gateway
 try:
@@ -94,7 +96,7 @@ class RouteConfig:
 
     path: str
     target_url: str
-    methods: List[str]
+    methods: list[str]
     requires_auth: bool = True
     requires_governance: bool = True
     rate_limit_tier: str = "standard"  # standard, premium, unlimited
@@ -105,7 +107,7 @@ class APIGateway:
     """SuperBrain API Gateway with unified access control."""
 
     # Routes for 12 systems
-    ROUTES: Dict[str, RouteConfig] = {
+    ROUTES: dict[str, RouteConfig] = {
         # Core API routes
         "production_api": RouteConfig(
             path="/api/v1/production",
@@ -230,9 +232,9 @@ class APIGateway:
         self.config = config or GatewayConfig()
         self._redis: redis.Redis = None
         self._brain = None
-        self._circuits: Dict[str, CircuitState] = {}
-        self._circuit_failures: Dict[str, int] = {}
-        self._circuit_last_failure: Dict[str, float] = {}
+        self._circuits: dict[str, CircuitState] = {}
+        self._circuit_failures: dict[str, int] = {}
+        self._circuit_last_failure: dict[str, float] = {}
 
         # Initialize connections
         if REDIS_AVAILABLE:
@@ -457,7 +459,7 @@ class APIGateway:
         except Exception:
             return True  # Fail open
 
-    def _get_rate_limit_status(self) -> Dict[str, Any]:
+    def _get_rate_limit_status(self) -> dict[str, Any]:
         """Get current rate limit status."""
         if not self._redis:
             return {"status": "redis_unavailable"}

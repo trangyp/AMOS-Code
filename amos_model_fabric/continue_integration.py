@@ -7,7 +7,7 @@ https://docs.continue.dev/guides/ollama-guide
 import json
 import logging
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +20,7 @@ class ContinueConfigGenerator:
         self.config_dir = Path.home() / ".continue"
         self.config_file = self.config_dir / "config.yaml"
 
-    def generate_config(self, models: Optional[List[dict[str, Any]] ] = None) -> Dict[str, Any]:
+    def generate_config(self, models: Optional[list[dict[str, Any]]] = None) -> dict[str, Any]:
         """Generate Continue.dev configuration."""
         if not models:
             models = self._get_default_models()
@@ -28,13 +28,15 @@ class ContinueConfigGenerator:
         # Build Continue models configuration
         continue_models = []
         for model in models:
-            continue_models.append({
-                "title": model["name"],
-                "provider": "openai",  # LiteLLM exposes OpenAI-compatible API
-                "model": model["id"],
-                "apiBase": self.proxy_url,
-                "apiKey": "sk-amos-local",
-            })
+            continue_models.append(
+                {
+                    "title": model["name"],
+                    "provider": "openai",  # LiteLLM exposes OpenAI-compatible API
+                    "model": model["id"],
+                    "apiBase": self.proxy_url,
+                    "apiKey": "sk-amos-local",
+                }
+            )
 
         # Primary model (first available)
         primary = continue_models[0] if continue_models else None
@@ -52,7 +54,11 @@ class ContinueConfigGenerator:
         }
 
         # Add tab autocomplete model if we have a fast one
-        fast_models = [m for m in models if any(x in m["id"] for x in ["qwen2.5-coder", "codellama", "deepseek-coder"])]
+        fast_models = [
+            m
+            for m in models
+            if any(x in m["id"] for x in ["qwen2.5-coder", "codellama", "deepseek-coder"])
+        ]
         if fast_models:
             config["tabAutocompleteModel"] = {
                 "title": f"Autocomplete ({fast_models[0]['name']})",
@@ -78,7 +84,7 @@ class ContinueConfigGenerator:
 
         return config
 
-    def _get_default_models(self) -> List[dict[str, Any]]:
+    def _get_default_models(self) -> list[dict[str, Any]]:
         """Get default model list for Continue."""
         return [
             {
@@ -98,7 +104,7 @@ class ContinueConfigGenerator:
             },
         ]
 
-    def write_config(self, config: Optional[Dict[str, Any] ] = None) -> Path:
+    def write_config(self, config: Optional[dict[str, Any]] = None) -> Path:
         """Write Continue configuration to ~/.continue/config.yaml."""
         import yaml
 
@@ -111,8 +117,8 @@ class ContinueConfigGenerator:
 
     def install_extension(self) -> bool:
         """Open VS Code to install Continue extension."""
-        import subprocess
         import shutil
+        import subprocess
 
         code_cmd = shutil.which("code")
         if not code_cmd:
@@ -133,8 +139,8 @@ class ContinueConfigGenerator:
 
     def open_vscode(self) -> bool:
         """Open VS Code."""
-        import subprocess
         import shutil
+        import subprocess
 
         code_cmd = shutil.which("code")
         if not code_cmd:
@@ -148,7 +154,7 @@ class ContinueConfigGenerator:
             logger.error(f"Failed to open VS Code: {e}")
             return False
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get Continue configuration status."""
         status = {
             "config_exists": self.config_file.exists(),
@@ -159,6 +165,7 @@ class ContinueConfigGenerator:
         if self.config_file.exists():
             try:
                 import yaml
+
                 config = yaml.safe_load(self.config_file.read_text())
                 status["models_configured"] = len(config.get("models", []))
                 status["autocomplete_configured"] = "tabAutocompleteModel" in config
@@ -183,9 +190,9 @@ def main():
 
     if args.command == "setup":
         gen.write_config()
-        print(f"\nContinue configuration:")
+        print("\nContinue configuration:")
         print(f"  Config: {gen.config_file}")
-        print(f"\nNext steps:")
+        print("\nNext steps:")
         print("  1. Start LiteLLM proxy: python -m amos_model_fabric.litellm_setup start")
         print("  2. Install Continue extension: code --install-extension continue.continue")
         print("  3. Restart VS Code")

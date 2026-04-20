@@ -7,18 +7,16 @@ Integrates mathematical framework components:
 - Audit Exporter (report generation)
 """
 
+from __future__ import annotations
 
 import json
 import time
 from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 try:
-    import sys
-
-    sys.path.insert(0, str(Path(__file__).parent.parent.parent))
     from amos_superbrain_equation_bridge import (
         CoreMLEquations,
         DistributedSystemsEquations,
@@ -57,7 +55,7 @@ class EquationExecutionContext:
 
     equation_name: str
     domain: str
-    inputs: Dict[str, Any]
+    inputs: dict[str, Any]
     timestamp: str
     execution_time_ms: float = 0.0
     success: bool = True
@@ -70,11 +68,11 @@ class MathFrameworkIntegration:
     def __init__(self, enable_audit: bool = True):
         self.enable_audit = enable_audit and AUDIT_LOGGER_AVAILABLE
         self._superbrain: dict = None
-        self._framework_engine: Optional[MathematicalFrameworkEngine] = None
-        self._audit_logger: Optional[MathFrameworkAuditLogger] = None
-        self._audit_exporter: Optional[AuditExporter] = None
-        self._executions: List[EquationExecutionContext] = []
-        self._equation_registry: Dict[str, Any] = {}
+        self._framework_engine: MathematicalFrameworkEngine | None = None
+        self._audit_logger: MathFrameworkAuditLogger | None = None
+        self._audit_exporter: AuditExporter | None = None
+        self._executions: list[EquationExecutionContext] = []
+        self._equation_registry: dict[str, Any] = {}
         self._initialize()
 
     def _initialize(self) -> None:
@@ -117,7 +115,7 @@ class MathFrameworkIntegration:
         )
         print(f"[MathFrameworkIntegration] Registered {len(self._equation_registry)} equations")
 
-    def execute(self, name: str, inputs: Dict[str, Any], domain: str = None) -> Dict[str, Any]:
+    def execute(self, name: str, inputs: dict[str, Any], domain: str = None) -> dict[str, Any]:
         """Execute an equation with automatic audit logging."""
         start_time = time.time()
         timestamp = datetime.now().isoformat()
@@ -160,7 +158,7 @@ class MathFrameworkIntegration:
                 self._audit_logger.log_validation("equation", False, 0.0, 1, {"error": str(e)})
             return {"success": False, "equation": name, "error": str(e)}
 
-    def get_execution_history(self, limit: int = 100) -> List[dict[str, Any]]:
+    def get_execution_history(self, limit: int = 100) -> list[dict[str, Any]]:
         """Get equation execution history."""
         return [asdict(ctx) for ctx in self._executions[-limit:]]
 
@@ -172,7 +170,7 @@ class MathFrameworkIntegration:
         path = Path(output_path)
         return self._audit_exporter.export_math_audit(path, format)
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """Get execution statistics."""
         total = len(self._executions)
         successful = sum(1 for e in self._executions if e.success)
@@ -191,7 +189,7 @@ class MathFrameworkIntegration:
 
 
 # Global instance
-_integration: Optional[MathFrameworkIntegration] = None
+_integration: MathFrameworkIntegration | None = None
 
 
 def get_math_framework_integration() -> MathFrameworkIntegration:

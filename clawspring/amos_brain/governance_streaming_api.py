@@ -31,6 +31,8 @@ Owner: Trang Phan
 Version: 1.0.0
 """
 
+from __future__ import annotations
+
 import asyncio
 import json
 import time
@@ -38,7 +40,7 @@ from collections import deque
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 # WebSocket support
 try:
@@ -97,7 +99,7 @@ class StreamEvent:
 
     event_type: StreamEventType
     timestamp: float
-    data: Dict[str, Any]
+    data: dict[str, Any]
     priority: str = "normal"  # low, normal, high, critical
 
     def to_json(self) -> str:
@@ -116,9 +118,9 @@ class SubscriptionConfig:
     """Client subscription configuration."""
 
     client_id: str
-    event_types: List[StreamEventType] = field(default_factory=list)
+    event_types: list[StreamEventType] = field(default_factory=list)
     min_priority: str = "low"
-    filter_patterns: List[str] = field(default_factory=list)
+    filter_patterns: list[str] = field(default_factory=list)
     max_events_per_minute: int = 60
 
 
@@ -128,8 +130,7 @@ class SubscriptionConfig:
 
 
 class GovernanceStreamingAPI:
-    """
-    Real-time streaming API for AMOS governance system.
+    """Real-time streaming API for AMOS governance system.
 
     Features:
     - WebSocket broadcasting to multiple clients
@@ -148,18 +149,18 @@ class GovernanceStreamingAPI:
 
     def __init__(
         self,
-        coordinator: Optional[UnifiedGovernanceCoordinator] = None,
+        coordinator: UnifiedGovernanceCoordinator | None = None,
         port: int = 8767,
     ):
         self.port = port
         self._coordinator = coordinator
 
         # State
-        self._clients: Dict[str, WebSocketServerProtocol] = {}
-        self._subscriptions: Dict[str, SubscriptionConfig] = {}
+        self._clients: dict[str, WebSocketServerProtocol] = {}
+        self._subscriptions: dict[str, SubscriptionConfig] = {}
         self._event_history: deque[StreamEvent] = deque(maxlen=1000)
         self._running = False
-        self._server: Optional[Any] = None
+        self._server: Any | None = None
 
         # Statistics
         self._stats = {
@@ -426,9 +427,7 @@ class GovernanceStreamingAPI:
     def on_cycle_completed(self, cycle_result: dict) -> None:
         """Called when governance cycle completes."""
         priority = "normal"
-        if cycle_result.get("status") == "error":
-            priority = "high"
-        elif cycle_result.get("issues_remediated", 0) > 0:
+        if cycle_result.get("status") == "error" or cycle_result.get("issues_remediated", 0) > 0:
             priority = "high"
 
         event = StreamEvent(
@@ -565,7 +564,7 @@ class GovernanceStreamingAPI:
     # API
     # ==========================================================================
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get streaming API statistics."""
         return {
             **self._stats,
@@ -583,7 +582,7 @@ class GovernanceStreamingAPI:
 
 
 def create_governance_streaming_api(
-    coordinator: Optional[UnifiedGovernanceCoordinator] = None,
+    coordinator: UnifiedGovernanceCoordinator | None = None,
     port: int = 8767,
 ) -> GovernanceStreamingAPI:
     """Factory function to create governance streaming API."""
@@ -674,7 +673,7 @@ if __name__ == "__main__":
     print("-" * 50)
     print(f"Events in buffer: {len(api._event_history)}")
     for i, event in enumerate(api._event_history):
-        print(f"  {i+1}. {event.event_type.value} ({event.priority})")
+        print(f"  {i + 1}. {event.event_type.value} ({event.priority})")
 
     print("\n" + "=" * 70)
     print("All tests passed!")

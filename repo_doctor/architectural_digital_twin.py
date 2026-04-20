@@ -1,4 +1,5 @@
-"""Architectural Digital Twin & Simulation Engine (Layer 17).
+"""
+Architectural Digital Twin & Simulation Engine (Layer 17).
 
 Provides simulation and "what-if" scenario modeling for architecture.
 
@@ -142,7 +143,7 @@ class ArchitecturalDigitalTwin:
     """
 
     def __init__(self):
-        self.current_state: Optional[ArchitectureState] = None
+        self.current_state: ArchitectureState | None = None
         self.state_history: list[ArchitectureState] = []
         self.simulations: list[SimulationResult] = []
         self.forecasts: list[InvariantForecast] = []
@@ -208,7 +209,7 @@ class ArchitecturalDigitalTwin:
         return 0.7  # Placeholder
 
     def simulate_change(
-        self, change: ArchitecturalChange, base_state: Optional[ArchitectureState] = None
+        self, change: ArchitecturalChange, base_state: ArchitectureState | None = None
     ) -> SimulationResult:
         """
         Simulate the impact of an architectural change.
@@ -219,6 +220,7 @@ class ArchitecturalDigitalTwin:
 
         Returns:
             Simulation result with predicted outcomes
+
         """
         base = base_state or self.current_state
         if not base:
@@ -329,6 +331,7 @@ class ArchitecturalDigitalTwin:
 
         Returns:
             Forecast with violation predictions per invariant
+
         """
         if not self.state_history:
             raise ValueError("No state history for forecasting")
@@ -391,6 +394,7 @@ class ArchitecturalDigitalTwin:
 
         Returns:
             List of simulation results for each step
+
         """
         results = []
         current = self.current_state
@@ -414,6 +418,7 @@ class ArchitecturalDigitalTwin:
 
         Returns:
             Recommendations with risk assessment
+
         """
         results = []
         total_risk = 0

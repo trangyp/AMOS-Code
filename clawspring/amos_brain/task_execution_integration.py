@@ -1,14 +1,13 @@
+from __future__ import annotations
+
 """AMOS Task Execution Integration - Bridge cognitive tasks to organism execution."""
 
-import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, Optional, Union
+from typing import Any
 
-# Add organism OS to path - use relative path from this file
+# Define organism path
 ORGANISM_PATH = Path(__file__).parent.parent.parent / "AMOS_ORGANISM_OS"
-if str(ORGANISM_PATH) not in sys.path:
-    sys.path.insert(0, str(ORGANISM_PATH))
 
 
 @dataclass
@@ -20,7 +19,7 @@ class ExecutionOutcome:
     error: str
     duration_ms: float
     execution_type: str
-    artifacts: Dict[str, Any]
+    artifacts: dict[str, Any]
 
 
 class TaskExecutionIntegration:
@@ -112,7 +111,7 @@ class TaskExecutionIntegration:
         return mapping.get(domain, "analysis")
 
     def _fallback_execution(
-        self, task_id: str, exec_type: str, params: Dict[str, Any]
+        self, task_id: str, exec_type: str, params: dict[str, Any]
     ) -> ExecutionOutcome:
         """Fallback execution when organism executor unavailable."""
         import time
@@ -142,7 +141,7 @@ class TaskExecutionIntegration:
                 pass
         return []
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get task execution integration status."""
         return {
             "initialized": self._initialized,
@@ -153,10 +152,10 @@ class TaskExecutionIntegration:
 
 
 # Singleton instance
-_task_execution_integration: Optional[TaskExecutionIntegration] = None
+_task_execution_integration: TaskExecutionIntegration | None = None
 
 
-def get_task_execution_integration() -> Union[TaskExecutionIntegration, None]:
+def get_task_execution_integration() -> TaskExecutionIntegration | None:
     """Get or create singleton task execution integration."""
     global _task_execution_integration
     if _task_execution_integration is None:

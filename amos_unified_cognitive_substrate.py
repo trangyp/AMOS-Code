@@ -35,12 +35,10 @@ Architecture:
 
 from __future__ import annotations
 
-
-
 import time
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class ReasoningMode(Enum):
@@ -61,20 +59,20 @@ class SubstrateState:
     """
 
     # AMOSL symbolic state
-    amosl_state: Dict[str, Any] = field(default_factory=dict)
+    amosl_state: dict[str, Any] = field(default_factory=dict)
 
     # Equation bridge mathematical state
-    equation_cache: Dict[str, Any] = field(default_factory=dict)
+    equation_cache: dict[str, Any] = field(default_factory=dict)
 
     # Causal graph state
-    causal_graph: Dict[str, list[tuple[str, float]]] = field(default_factory=dict)
+    causal_graph: dict[str, list[tuple[str, float]]] = field(default_factory=dict)
 
     # World model spatial state
-    world_objects: Dict[str, dict[str, Any]] = field(default_factory=dict)
-    spatial_relations: List[tuple[str, str, str]] = field(default_factory=list)
+    world_objects: dict[str, dict[str, Any]] = field(default_factory=dict)
+    spatial_relations: list[tuple[str, str, str]] = field(default_factory=list)
 
     # Consensus state from multi-agent orchestration
-    agent_confidences: Dict[str, float] = field(default_factory=dict)
+    agent_confidences: dict[str, float] = field(default_factory=dict)
 
     # Temporal tracking
     timestamp: float = field(default_factory=time.time)
@@ -90,9 +88,9 @@ class ReasoningResult:
     result: Any
     confidence: float
     execution_time_ms: float
-    invariant_violations: List[str] = field(default_factory=list)
-    used_equations: List[str] = field(default_factory=list)
-    causal_chains: List[list[str]] = field(default_factory=list)
+    invariant_violations: list[str] = field(default_factory=list)
+    used_equations: list[str] = field(default_factory=list)
+    causal_chains: list[list[str]] = field(default_factory=list)
 
 
 class UnifiedCognitiveSubstrate:
@@ -128,7 +126,7 @@ class UnifiedCognitiveSubstrate:
             self._amosl_runtime = RuntimeKernel()
         return self._amosl_runtime
 
-    def reason_mathematical(self, equation_name: str, inputs: Dict[str, Any]) -> ReasoningResult:
+    def reason_mathematical(self, equation_name: str, inputs: dict[str, Any]) -> ReasoningResult:
         """Execute mathematical reasoning via equation bridge.
 
         Uses Phase 15 equations where applicable:
@@ -160,7 +158,7 @@ class UnifiedCognitiveSubstrate:
             used_equations=[equation_name],
         )
 
-    def reason_causal(self, symptom: str, data: Dict[str, Any]) -> ReasoningResult:
+    def reason_causal(self, symptom: str, data: dict[str, Any]) -> ReasoningResult:
         """Execute causal reasoning to find true root causes.
 
         Integrates with Causal Architecture Intelligence to distinguish
@@ -192,7 +190,7 @@ class UnifiedCognitiveSubstrate:
             causal_chains=causal_chains,
         )
 
-    def reason_hybrid(self, query: str, context: Dict[str, Any]) -> ReasoningResult:
+    def reason_hybrid(self, query: str, context: dict[str, Any]) -> ReasoningResult:
         """Execute hybrid reasoning combining multiple modalities.
 
         Uses Phase 15 multi_agent_consensus to aggregate results
@@ -240,7 +238,7 @@ class UnifiedCognitiveSubstrate:
             execution_time_ms=(time.time() - start) * 1000,
         )
 
-    def step(self, action: Dict[str, Any]) -> SubstrateState:
+    def step(self, action: dict[str, Any]) -> SubstrateState:
         """Execute one substrate step with state evolution.
 
         Implements: Σ_{t+1} = Φ(Σ_t, action)
@@ -271,7 +269,7 @@ class UnifiedCognitiveSubstrate:
         ]
         return "\n".join(lines)
 
-    def _identify_root_causes(self, symptom: str, data: Dict[str, Any]) -> List[tuple[str, float]]:
+    def _identify_root_causes(self, symptom: str, data: dict[str, Any]) -> list[tuple[str, float]]:
         """Identify potential root causes of symptom."""
         # Simplified causal analysis
         root_causes = []
@@ -290,7 +288,7 @@ class UnifiedCognitiveSubstrate:
 
         return root_causes
 
-    def _trace_causal_chain(self, cause: str, symptom: str, data: Dict[str, Any]) -> List[str]:
+    def _trace_causal_chain(self, cause: str, symptom: str, data: dict[str, Any]) -> list[str]:
         """Trace causal chain from cause to symptom."""
         # Simplified chain tracing
         return [cause, "intermediate", symptom]

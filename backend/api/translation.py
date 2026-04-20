@@ -4,7 +4,9 @@ AMOS Translation Layer API Endpoints
 Human-to-Machine Semantic Alignment via REST API
 """
 
-from typing import Any, Dict, List
+from __future__ import annotations
+
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
@@ -26,10 +28,10 @@ class TranslateRequest(BaseModel):
 
     raw_text: str = Field(..., description="Raw human utterance")
     language: str = Field(default="en", description="Language code")
-    dialogue_context: Dict[str, Any] = Field(
+    dialogue_context: dict[str, Any] = Field(
         default_factory=dict, description="Previous dialogue context"
     )
-    memory_context: Dict[str, Any] = Field(
+    memory_context: dict[str, Any] = Field(
         default_factory=dict, description="User memory/knowledge context"
     )
 
@@ -78,13 +80,13 @@ class TranslateResponse(BaseModel):
 
     utterance_id: str
     raw_text: str
-    speech_acts: List[SpeechActOutput]
-    semantic_units: List[SemanticUnitOutput]
+    speech_acts: list[SpeechActOutput]
+    semantic_units: list[SemanticUnitOutput]
     human_state: HumanStateOutput
-    ambiguities: List[AmbiguityOutput]
+    ambiguities: list[AmbiguityOutput]
     semantic_confidence: float
     requires_clarification: bool
-    clarification_targets: List[str]
+    clarification_targets: list[str]
     compiled_goal: CompiledGoalOutput
     execution_allowed: bool
 
@@ -180,7 +182,7 @@ async def get_translation_status(
 
 
 @router.get("/bug-classes")
-async def get_translation_bug_classes() -> Dict[str, Any]:
+async def get_translation_bug_classes() -> dict[str, Any]:
     """
     Get documented translation bug classes.
 
@@ -201,7 +203,7 @@ async def get_translation_bug_classes() -> Dict[str, Any]:
 
 
 @router.get("/guard-rules")
-async def get_translation_guard_rules() -> List[dict[str, str]]:
+async def get_translation_guard_rules() -> list[dict[str, str]]:
     """
     Get translation guard rules.
 

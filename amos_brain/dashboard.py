@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from datetime import datetime, timezone, timedelta
-UTC = timezone.utc
-from typing import Any
+from datetime import UTC, datetime, timedelta, timezone
+
+# Python 3.9 compatibility - UTC is only in 3.11+
+UTC = UTC
+from typing import Any, Optional
 
 from amos_brain import get_amos_integration
 from amos_brain.memory import BrainMemory, get_brain_memory

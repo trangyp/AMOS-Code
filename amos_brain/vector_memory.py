@@ -40,14 +40,14 @@ References:
 - RAG (Retrieval-Augmented Generation) patterns
 """
 
+from __future__ import annotations
 
 import hashlib
 import logging
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -55,6 +55,7 @@ logger = logging.getLogger(__name__)
 # ============================================================================
 # Data Models
 # ============================================================================
+
 
 @dataclass
 class VectorMemoryEntry:
@@ -68,11 +69,12 @@ class VectorMemoryEntry:
         timestamp: Entry timestamp
         score: Similarity score (set after search)
     """
+
     id: str
     content: str
-    embedding: List[float ] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
-    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    embedding: list[float] = None
+    metadata: dict[str, Any] = field(default_factory=dict)
+    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
     score: float = 0.0
 
 
@@ -85,6 +87,7 @@ class SearchResult:
         score: Similarity score (0-1, higher is better)
         distance: Distance metric (lower is better)
     """
+
     entry: VectorMemoryEntry
     score: float
     distance: float
@@ -93,6 +96,7 @@ class SearchResult:
 # ============================================================================
 # Vector Memory Service
 # ============================================================================
+
 
 class VectorMemoryService:
     """Vector memory service with semantic search capabilities.
@@ -108,8 +112,8 @@ class VectorMemoryService:
         self,
         collection_name: str = "amos_memory",
         embedding_model: str = "all-MiniLM-L6-v2",
-        persist_directory: str  = None,
-        similarity_threshold: float = 0.7
+        persist_directory: str = None,
+        similarity_threshold: float = 0.7,
     ):
         """Initialize vector memory service.
 
@@ -148,20 +152,17 @@ class VectorMemoryService:
 
             # Create client with persistence
             self._chroma_client = chromadb.Client(
-                Settings(
-                    chroma_db_impl="duckdb+parquet",
-                    persist_directory=self.persist_directory
-                )
+                Settings(chroma_db_impl="duckdb+parquet", persist_directory=self.persist_directory)
             )
 
             # Get or create collection
             self._collection = self._chroma_client.get_or_create_collection(
-                name=self.collection_name,
-                metadata={"hnsw:space": "cosine"}
+                name=self.collection_name, metadata={"hnsw:space": "cosine"}
             )
 
             # Initialize embedding model
             from sentence_transformers import SentenceTransformer
+
             self._embedding_model = SentenceTransformer(self.embedding_model_name)
 
             self._initialized = True
@@ -169,13 +170,15 @@ class VectorMemoryService:
             return True
 
         except ImportError as e:
-            logger.error(f"Missing dependencies: {e}. Run: pip install chromadb sentence-transformers")
+            logger.error(
+                f"Missing dependencies: {e}. Run: pip install chromadb sentence-transformers"
+            )
             return False
         except Exception as e:
             logger.error(f"Failed to initialize VectorMemoryService: {e}")
             return False
 
-    def embed(self, text: str) -> List[float]:
+    def embed(self, text: str) -> list[float]:
         """Generate embedding vector for text.
 
         Args:
@@ -195,8 +198,8 @@ class VectorMemoryService:
         self,
         entry_id: str,
         content: str,
-        metadata: Dict[str, Any ] = None,
-        embedding: List[float ] = None
+        metadata: dict[str, Any] = None,
+        embedding: list[float] = None,
     ) -> bool:
         """Store content in vector memory.
 
@@ -219,15 +222,12 @@ class VectorMemoryService:
 
             # Prepare metadata
             meta = metadata or {}
-            meta["timestamp"] = datetime.now(timezone.utc).isoformat()
+            meta["timestamp"] = datetime.now(UTC).isoformat()
             meta["content_hash"] = hashlib.md5(content.encode()).hexdigest()[:8]
 
             # Store in ChromaDB
             self._collection.add(
-                ids=[entry_id],
-                embeddings=[embedding],
-                documents=[content],
-                metadatas=[meta]
+                ids=[entry_id], embeddings=[embedding], documents=[content], metadatas=[meta]
             )
 
             logger.debug(f"Stored vector entry: {entry_id}")
@@ -238,12 +238,8 @@ class VectorMemoryService:
             return False
 
     def search(
-        self,
-        query: str,
-        k: int = 5,
-        filter: Dict[str, Any ] = None,
-        min_score: float  = None
-    ) -> List[SearchResult]:
+        self, query: str, k: int = 5, filter: dict[str, Any] = None, min_score: float = None
+    ) -> list[SearchResult]:
         """Semantic search over vector memory.
 
         Args:
@@ -270,7 +266,7 @@ class VectorMemoryService:
                 query_embeddings=[query_embedding],
                 n_results=k,
                 where=filter,
-                include=["documents", "metadatas", "distances"]
+                include=["documents", "metadatas", "distances"],
             )
 
             # Convert to SearchResult objects
@@ -289,14 +285,10 @@ class VectorMemoryService:
                         id=doc_id,
                         content=results["documents"][0][i],
                         metadata=results["metadatas"][0][i],
-                        score=score
+                        score=score,
                     )
 
-                    search_results.append(SearchResult(
-                        entry=entry,
-                        score=score,
-                        distance=distance
-                    ))
+                    search_results.append(SearchResult(entry=entry, score=score, distance=distance))
 
             # Sort by score descending
             search_results.sort(key=lambda x: x.score, reverse=True)
@@ -346,7 +338,7 @@ class VectorMemoryService:
             logger.error(f"Failed to clear collection: {e}")
             return False
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get vector memory statistics.
 
         Returns:
@@ -363,7 +355,7 @@ class VectorMemoryService:
                 "entries": count,
                 "embedding_model": self.embedding_model_name,
                 "similarity_threshold": self.similarity_threshold,
-                "persist_directory": self.persist_directory
+                "persist_directory": self.persist_directory,
             }
         except Exception as e:
             logger.error(f"Failed to get stats: {e}")
@@ -373,6 +365,7 @@ class VectorMemoryService:
 # ============================================================================
 # Memory Architecture Integration
 # ============================================================================
+
 
 class MemoryVectorBridge:
     """Bridge between tiered memory and vector memory.
@@ -406,15 +399,15 @@ class MemoryVectorBridge:
 
         try:
             # Extract content from entry
-            content = getattr(entry, 'content', str(entry))
-            entry_id = getattr(entry, 'id', hashlib.md5(content.encode()).hexdigest())
+            content = getattr(entry, "content", str(entry))
+            entry_id = getattr(entry, "id", hashlib.md5(content.encode()).hexdigest())
 
             # Build metadata
             metadata = {
-                "memory_type": getattr(entry, 'memory_type', 'unknown'),
-                "session_id": getattr(entry, 'session_id', None),
-                "priority": getattr(entry, 'priority', 0),
-                "source": "memory_architecture"
+                "memory_type": getattr(entry, "memory_type", "unknown"),
+                "session_id": getattr(entry, "session_id", None),
+                "priority": getattr(entry, "priority", 0),
+                "source": "memory_architecture",
             }
 
             # Store in vector memory
@@ -424,12 +417,7 @@ class MemoryVectorBridge:
             logger.warning(f"Failed to index memory entry: {e}")
             return False
 
-    def search_memory(
-        self,
-        query: str,
-        memory_type: str  = None,
-        k: int = 5
-    ) -> List[SearchResult]:
+    def search_memory(self, query: str, memory_type: str = None, k: int = 5) -> list[SearchResult]:
         """Search memory using semantic query.
 
         Args:
@@ -449,9 +437,8 @@ class MemoryVectorBridge:
 
 # ============================================================================
 # Singleton Instance
-# ============================================================================
+# ============================================================================_vector_memory_instance: Optional[VectorMemoryService] = None
 
-_vector_memory_instance: Optional[VectorMemoryService] = None
 
 def get_vector_memory() -> VectorMemoryService:
     """Get or create singleton vector memory instance.
@@ -478,7 +465,8 @@ def get_memory_vector_bridge() -> MemoryVectorBridge:
 # Health Check
 # ============================================================================
 
-def check_vector_memory_health() -> Dict[str, Any]:
+
+def check_vector_memory_health() -> dict[str, Any]:
     """Check vector memory system health.
 
     Returns:
@@ -493,21 +481,17 @@ def check_vector_memory_health() -> Dict[str, Any]:
                 "status": "healthy",
                 "initialized": True,
                 "entries": stats.get("entries", 0),
-                "model": stats.get("embedding_model")
+                "model": stats.get("embedding_model"),
             }
         else:
             return {
                 "status": "unhealthy",
                 "initialized": False,
-                "error": stats.get("error", "Unknown error")
+                "error": stats.get("error", "Unknown error"),
             }
 
     except Exception as e:
-        return {
-            "status": "error",
-            "initialized": False,
-            "error": str(e)
-        }
+        return {"status": "error", "initialized": False, "error": str(e)}
 
 
 # ============================================================================

@@ -14,14 +14,10 @@ Owner: Trang
 
 import sys
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 # Add paths
 REPO_ROOT = Path(__file__).parent
-sys.path.insert(0, str(REPO_ROOT))
-sys.path.insert(0, str(REPO_ROOT / "AMOS_ORGANISM_OS"))
-sys.path.insert(0, str(REPO_ROOT / "clawspring"))
-sys.path.insert(0, str(REPO_ROOT / "amos_brain"))
 
 
 class TestResult:
@@ -38,12 +34,12 @@ class UnifiedIntegrationTestSuite:
     """Test suite for unified AMOS integration."""
 
     def __init__(self):
-        self.results: List[TestResult] = []
+        self.results: list[TestResult] = []
         self.runtime = None
         self.organism = None
         self.brain = None
 
-    def run_all_tests(self) -> Dict[str, Any]:
+    def run_all_tests(self) -> dict[str, Any]:
         """Run complete test suite."""
         print("=" * 70)
         print("AMOS UNIFIED INTEGRATION TEST SUITE")
@@ -559,7 +555,7 @@ class UnifiedIntegrationTestSuite:
             self.results.append(TestResult("Adaptation System", False, str(e)))
             print(f"  ❌ Adaptation system: FAILED - {e}")
 
-    def _generate_report(self) -> Dict[str, Any]:
+    def _generate_report(self) -> dict[str, Any]:
         """Generate final test report."""
         print("\n" + "=" * 70)
         print("TEST RESULTS SUMMARY")

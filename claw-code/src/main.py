@@ -14,7 +14,6 @@ from .session_store import load_session
 from .setup import run_setup
 from .tool_pool import assemble_tool_pool
 from .tools import execute_tool, get_tool, get_tools, render_tool_index
-from typing import List
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -131,7 +130,7 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def main(argv: List[str] = None) -> int:
+def main(argv: list[str] = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
     manifest = build_port_manifest()

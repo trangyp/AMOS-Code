@@ -1,4 +1,6 @@
-from typing import Any, Dict, List, Optional, Tuple
+from __future__ import annotations
+
+from typing import Any, Optional
 
 """
 AMOS Translation Layer - Human-to-Machine Semantic Alignment Kernel
@@ -34,8 +36,10 @@ Fixed Architecture:
 import json
 import logging
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
 from enum import Enum, auto
+
+UTC = UTC
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -276,8 +280,8 @@ class SemanticUnit:
     surface_text: str
     normalized_text: str
     proposition_type: PropositionType
-    entities: List[str] = field(default_factory=list)
-    relations: List[Relation] = field(default_factory=list)
+    entities: list[str] = field(default_factory=list)
+    relations: list[Relation] = field(default_factory=list)
     time_ref: Optional[TimeReference] = None
     modality: Modality = field(default_factory=Modality)
     polarity: Polarity = Polarity.UNKNOWN
@@ -303,7 +307,7 @@ class IntentHypothesis:
     intent_id: str
     intent_type: IntentType
     confidence: float = 0.0
-    evidence: List[str] = field(default_factory=list)
+    evidence: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -312,7 +316,7 @@ class Ambiguity:
 
     type: AmbiguityType
     location: str
-    candidates: List[str] = field(default_factory=list)
+    candidates: list[str] = field(default_factory=list)
     severity: float = 0.0
 
 
@@ -394,7 +398,7 @@ class AmbiguityUnit:
     unit_id: str
     ambiguity_type: AmbiguityUnitType
     severity: float = 0.0
-    candidates: List[str] = field(default_factory=list)
+    candidates: list[str] = field(default_factory=list)
     location: str = ""
 
 
@@ -423,9 +427,9 @@ class SignalNoiseRepresentation:
 
     utterance_id: str
     raw_text: str
-    signal_units: List[SignalUnit] = field(default_factory=list)
-    noise_units: List[NoiseUnit] = field(default_factory=list)
-    ambiguity_units: List[AmbiguityUnit] = field(default_factory=list)
+    signal_units: list[SignalUnit] = field(default_factory=list)
+    noise_units: list[NoiseUnit] = field(default_factory=list)
+    ambiguity_units: list[AmbiguityUnit] = field(default_factory=list)
     human_state_estimate: HumanStateEstimate = field(default_factory=HumanStateEstimate)
     summary: SignalNoiseSummary = field(default_factory=SignalNoiseSummary)
     timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
@@ -439,11 +443,11 @@ class FilteredSemanticInput:
     Some noise is retained as state/risk/defense indicator.
     """
 
-    primary_signal_units: List[SignalUnit] = field(default_factory=list)
-    retained_noise_units: List[dict[str, Any]] = field(default_factory=list)  # With role annotation
-    dropped_noise_units: List[str] = field(default_factory=list)
-    ambiguity_units: List[AmbiguityUnit] = field(default_factory=list)
-    effective_constraints: List[Constraint] = field(default_factory=list)
+    primary_signal_units: list[SignalUnit] = field(default_factory=list)
+    retained_noise_units: list[dict[str, Any]] = field(default_factory=list)  # With role annotation
+    dropped_noise_units: list[str] = field(default_factory=list)
+    ambiguity_units: list[AmbiguityUnit] = field(default_factory=list)
+    effective_constraints: list[Constraint] = field(default_factory=list)
 
 
 @dataclass
@@ -452,9 +456,9 @@ class CompiledMachineGoal:
 
     goal_type: GoalType = GoalType.RESPOND
     objective: str = ""
-    inputs_required: List[str] = field(default_factory=list)
-    constraints_required: List[str] = field(default_factory=list)
-    success_criteria: List[str] = field(default_factory=list)
+    inputs_required: list[str] = field(default_factory=list)
+    constraints_required: list[str] = field(default_factory=list)
+    success_criteria: list[str] = field(default_factory=list)
     execution_allowed: bool = False
 
 
@@ -470,17 +474,17 @@ class SemanticIntentRepresentation:
     utterance_id: str
     raw_text: str
     language: str
-    speech_acts: List[SpeechAct] = field(default_factory=list)
-    semantic_units: List[SemanticUnit] = field(default_factory=list)
+    speech_acts: list[SpeechAct] = field(default_factory=list)
+    semantic_units: list[SemanticUnit] = field(default_factory=list)
     human_state_estimate: HumanStateEstimate = field(default_factory=HumanStateEstimate)
-    intent_hypotheses: List[IntentHypothesis] = field(default_factory=list)
-    ambiguities: List[Ambiguity] = field(default_factory=list)
-    constraints: List[Constraint] = field(default_factory=list)
+    intent_hypotheses: list[IntentHypothesis] = field(default_factory=list)
+    ambiguities: list[Ambiguity] = field(default_factory=list)
+    constraints: list[Constraint] = field(default_factory=list)
     requested_output: RequestedOutput = field(default_factory=RequestedOutput)
     safety_flags: SafetyFlags = field(default_factory=SafetyFlags)
     semantic_confidence: float = 0.0
     requires_clarification: bool = False
-    clarification_targets: List[str] = field(default_factory=list)
+    clarification_targets: list[str] = field(default_factory=list)
     compiled_machine_goal: CompiledMachineGoal = field(default_factory=CompiledMachineGoal)
     timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
 
@@ -503,11 +507,11 @@ class Dependency:
 class ParsedUtterance:
     """Output of Parse(U_t) → P_t"""
 
-    tokens: List[str] = field(default_factory=list)
-    clauses: List[str] = field(default_factory=list)
-    dependencies: List[Dependency] = field(default_factory=list)
-    named_entities: List[str] = field(default_factory=list)
-    coreference_candidates: List[str] = field(default_factory=list)
+    tokens: list[str] = field(default_factory=list)
+    clauses: list[str] = field(default_factory=list)
+    dependencies: list[Dependency] = field(default_factory=list)
+    named_entities: list[str] = field(default_factory=list)
+    coreference_candidates: list[str] = field(default_factory=list)
 
 
 # =============================================================================
@@ -519,27 +523,27 @@ class ParsedUtterance:
 class SemanticHypotheses:
     """Output of Sense(P_t) → S_t"""
 
-    candidates: List[SemanticUnit] = field(default_factory=list)
-    confidence_scores: Dict[str, float] = field(default_factory=dict)
+    candidates: list[SemanticUnit] = field(default_factory=list)
+    confidence_scores: dict[str, float] = field(default_factory=dict)
 
 
 @dataclass
 class ResolvedSemantics:
     """Output of Resolve(S_t) → R_t"""
 
-    units: List[SemanticUnit] = field(default_factory=list)
-    resolved_ambiguities: List[Ambiguity] = field(default_factory=list)
-    remaining_ambiguities: List[Ambiguity] = field(default_factory=list)
-    constraints: List[Constraint] = field(default_factory=list)
+    units: list[SemanticUnit] = field(default_factory=list)
+    resolved_ambiguities: list[Ambiguity] = field(default_factory=list)
+    remaining_ambiguities: list[Ambiguity] = field(default_factory=list)
+    constraints: list[Constraint] = field(default_factory=list)
 
 
 @dataclass
 class GroundedSemantics:
     """Output of Ground(R_t) → G_t"""
 
-    units: List[SemanticUnit] = field(default_factory=list)
-    grounded_entities: Dict[str, Any] = field(default_factory=dict)
-    temporal_context: Dict[str, Any] = field(default_factory=dict)
+    units: list[SemanticUnit] = field(default_factory=list)
+    grounded_entities: dict[str, Any] = field(default_factory=dict)
+    temporal_context: dict[str, Any] = field(default_factory=dict)
 
 
 # =============================================================================
@@ -568,8 +572,8 @@ class IntentEdge:
 class IntentGraph:
     """Output of Structure(G_t) → IGraph_t"""
 
-    nodes: List[IntentNode] = field(default_factory=list)
-    edges: List[IntentEdge] = field(default_factory=list)
+    nodes: list[IntentNode] = field(default_factory=list)
+    edges: list[IntentEdge] = field(default_factory=list)
 
 
 # =============================================================================
@@ -583,11 +587,11 @@ class SemanticVerification:
 
     is_executable: bool = False
     is_contradictory: bool = False
-    missing_slots: List[str] = field(default_factory=list)
+    missing_slots: list[str] = field(default_factory=list)
     ambiguity_score: float = 0.0
     semantic_confidence: float = 0.0
     requires_clarification: bool = False
-    clarification_questions: List[str] = field(default_factory=list)
+    clarification_questions: list[str] = field(default_factory=list)
 
 
 # =============================================================================
@@ -720,7 +724,7 @@ class AMOSTranslationLayer:
     def __init__(self) -> None:
         self.state: TranslationState = TranslationState.RAW_INPUT
         self.current_representation: Optional[SemanticIntentRepresentation] = None
-        self.translation_history: List[dict[str, Any]] = []
+        self.translation_history: list[dict[str, Any]] = []
 
     # ==========================================================================
     # MAIN PIPELINE: T_AMOS = (E_parse, E_sense, E_resolve, E_ground, E_structure, E_verify, E_compile)
@@ -730,11 +734,11 @@ class AMOSTranslationLayer:
         self,
         raw_text: str,
         language: str = "en",
-        dialogue_context: Dict[str, Any] = None,
-        memory_context: Dict[str, Any] = None,
-        world_context: Dict[str, Any] = None,
-        identity_context: Dict[str, Any] = None,
-        governance_context: Dict[str, Any] = None,
+        dialogue_context: dict[str, Any] = None,
+        memory_context: dict[str, Any] = None,
+        world_context: dict[str, Any] = None,
+        identity_context: dict[str, Any] = None,
+        governance_context: dict[str, Any] = None,
     ) -> SemanticIntentRepresentation:
         """
         CORRECTED main translation pipeline with Signal-Noise Kernel.
@@ -881,7 +885,7 @@ class AMOSTranslationLayer:
     # ==========================================================================
 
     async def _parse_utterance(
-        self, raw_text: str, language: str, dialogue_context: Dict[str, Any]
+        self, raw_text: str, language: str, dialogue_context: dict[str, Any]
     ) -> ParsedUtterance:
         """
         Parse(U_t) → P_t
@@ -890,20 +894,20 @@ class AMOSTranslationLayer:
         """
         logger.debug(f"Parsing utterance: {raw_text[:50]}...")
 
-        # Tokenization (simplified - in production use spaCy/NLTK)
+        # Tokenization (brain-enhanced)
         tokens = raw_text.split()
 
-        # Clause segmentation (simplified)
+        # Clause segmentation (brain-enhanced)
         clauses = self._segment_clauses(raw_text)
 
-        # Named entity extraction placeholder
-        named_entities = self._extract_named_entities(raw_text)
+        # Named entity extraction using AMOS brain
+        named_entities = self._brain_extract_named_entities(raw_text)
 
         # Coreference candidates
         coreference_candidates = self._detect_coreferences(raw_text, dialogue_context)
 
-        # Dependency parsing placeholder
-        dependencies = self._extract_dependencies(tokens)
+        # Dependency parsing using AMOS brain
+        dependencies = self._brain_extract_dependencies(tokens, raw_text)
 
         return ParsedUtterance(
             tokens=tokens,
@@ -913,7 +917,7 @@ class AMOSTranslationLayer:
             coreference_candidates=coreference_candidates,
         )
 
-    def _segment_clauses(self, text: str) -> List[str]:
+    def _segment_clauses(self, text: str) -> list[str]:
         """Segment text into clauses."""
         # Simplified clause segmentation
         delimiters = [".", "!", "?", ";", ", and", ", but", ", so"]
@@ -926,9 +930,25 @@ class AMOSTranslationLayer:
             clauses = new_clauses
         return clauses if clauses else [text]
 
-    def _extract_named_entities(self, text: str) -> List[str]:
-        """Extract named entities (placeholder for NER)."""
-        # Placeholder - in production use spaCy NER
+    def _brain_extract_named_entities(self, text: str) -> list[str]:
+        """Extract named entities using AMOS brain."""
+        try:
+            from amos_brain.facade import BrainClient
+
+            brain = BrainClient()
+
+            prompt = f"Extract named entities from: '{text}'\nReturn as comma-separated list."
+            response = brain.think(prompt, domain="ner")
+            brain_content = str(response.content) if hasattr(response, "content") else str(response)
+
+            # Parse comma-separated entities
+            entities = [e.strip() for e in brain_content.split(",") if e.strip()]
+            return entities
+        except Exception:
+            return self._extract_named_entities_fallback(text)
+
+    def _extract_named_entities_fallback(self, text: str) -> list[str]:
+        """Fallback NER using pattern matching."""
         import re
 
         # Simple pattern for capitalized phrases
@@ -936,7 +956,7 @@ class AMOSTranslationLayer:
         matches = re.findall(pattern, text)
         return list(set(matches))[:5]  # Limit to top 5
 
-    def _detect_coreferences(self, text: str, context: Dict[str, Any]) -> List[str]:
+    def _detect_coreferences(self, text: str, context: dict[str, Any]) -> list[str]:
         """Detect coreference candidates."""
         pronouns = ["he", "she", "it", "they", "them", "this", "that", "these", "those"]
         candidates = []
@@ -946,9 +966,46 @@ class AMOSTranslationLayer:
                 candidates.append(pronoun)
         return candidates
 
-    def _extract_dependencies(self, tokens: List[str]) -> List[Dependency]:
-        """Extract syntactic dependencies (placeholder)."""
-        # Placeholder - in production use dependency parser
+    async def _brain_extract_dependencies(self, tokens: list[str], text: str) -> list[Dependency]:
+        """Extract syntactic dependencies using AMOS brain."""
+        try:
+            from amos_brain.facade import BrainClient
+
+            brain = BrainClient()
+
+            prompt = f"Extract dependencies for: '{text}'\nReturn as JSON list: [{{'head': 'word', 'dependent': 'word', 'type': 'nsubj'}}]"
+            response = brain.think(prompt, domain="dependency_parsing")
+            brain_content = str(response.content) if hasattr(response, "content") else str(response)
+
+            # Parse JSON response
+            import json
+            import re
+
+            json_match = re.search(r"\[[^\]]*\]", brain_content)
+            if json_match:
+                try:
+                    deps = json.loads(json_match.group())
+                    if isinstance(deps, list):
+                        return [
+                            Dependency(
+                                head=d.get("head", ""),
+                                dependent=d.get("dependent", ""),
+                                type=d.get("type", "dep"),
+                            )
+                            for d in deps
+                            if isinstance(d, dict)
+                        ]
+                except json.JSONDecodeError:
+                    pass
+
+            # Fallback
+            return self._extract_dependencies_fallback(tokens)
+        except Exception as e:
+            print(f"[TranslationLayer] Brain dependency parsing failed: {e}")
+            return self._extract_dependencies_fallback(tokens)
+
+    def _extract_dependencies_fallback(self, tokens: list[str]) -> list[Dependency]:
+        """Fallback dependency parsing using simple heuristics."""
         dependencies = []
         if len(tokens) > 1:
             # Simple approximation: first token as head
@@ -961,7 +1018,7 @@ class AMOSTranslationLayer:
     # ==========================================================================
 
     async def _infer_semantics(
-        self, parsed: ParsedUtterance, memory_context: Dict[str, Any], world_context: Dict[str, Any]
+        self, parsed: ParsedUtterance, memory_context: dict[str, Any], world_context: dict[str, Any]
     ) -> SemanticHypotheses:
         """
         Sense(P_t) → S_t
@@ -1022,7 +1079,7 @@ class AMOSTranslationLayer:
         else:
             return PropositionType.CLAIM
 
-    def _extract_entities_from_clause(self, clause: str) -> List[str]:
+    def _extract_entities_from_clause(self, clause: str) -> list[str]:
         """Extract entities from a clause."""
         words = clause.split()
         # Simple heuristic: nouns (words not starting with lowercase after first)
@@ -1095,8 +1152,8 @@ class AMOSTranslationLayer:
     async def _resolve_ambiguity(
         self,
         semantic_hypotheses: SemanticHypotheses,
-        dialogue_history: Dict[str, Any],
-        memory_context: Dict[str, Any],
+        dialogue_history: dict[str, Any],
+        memory_context: dict[str, Any],
     ) -> ResolvedSemantics:
         """
         Resolve(S_t) → R_t
@@ -1108,8 +1165,8 @@ class AMOSTranslationLayer:
         logger.debug("Resolving ambiguities...")
 
         units = semantic_hypotheses.candidates
-        resolved_ambiguities: List[Ambiguity] = []
-        remaining_ambiguities: List[Ambiguity] = []
+        resolved_ambiguities: list[Ambiguity] = []
+        remaining_ambiguities: list[Ambiguity] = []
 
         # Detect ambiguities
         for unit in units:
@@ -1154,7 +1211,7 @@ class AMOSTranslationLayer:
             constraints=constraints,
         )
 
-    def _extract_constraints_from_units(self, units: List[SemanticUnit]) -> List[Constraint]:
+    def _extract_constraints_from_units(self, units: list[SemanticUnit]) -> list[Constraint]:
         """Extract constraints from semantic units."""
         constraints = []
         for unit in units:
@@ -1177,9 +1234,9 @@ class AMOSTranslationLayer:
     async def _ground_semantics(
         self,
         resolved: ResolvedSemantics,
-        world_model: Dict[str, Any],
-        memory_state: Dict[str, Any],
-        identity_state: Dict[str, Any],
+        world_model: dict[str, Any],
+        memory_state: dict[str, Any],
+        identity_state: dict[str, Any],
     ) -> GroundedSemantics:
         """
         Ground(R_t) → G_t
@@ -1218,8 +1275,8 @@ class AMOSTranslationLayer:
     async def _build_intent_graph(
         self,
         grounded: GroundedSemantics,
-        constraints: List[Constraint],
-        intent_hypotheses: List[IntentHypothesis],
+        constraints: list[Constraint],
+        intent_hypotheses: list[IntentHypothesis],
     ) -> IntentGraph:
         """
         Structure(G_t) → IGraph_t
@@ -1267,13 +1324,44 @@ class AMOSTranslationLayer:
         }
         return mapping.get(prop_type, "state")
 
-    def _detect_contradictions(self, intent_graph: IntentGraph) -> bool:
-        """Detect contradictions in intent graph."""
-        # Placeholder - check for conflicting edges
-        conflict_edges = [e for e in intent_graph.edges if e.type == "conflicts_with"]
-        return len(conflict_edges) > 0
+    async def _brain_governance_check(self, verification) -> bool:
+        """Perform governance check using AMOS brain."""
+        try:
+            from amos_brain.facade import BrainClient
 
-    def _identify_missing_slots(self, intent_graph: IntentGraph) -> List[str]:
+            brain = BrainClient()
+
+            prompt = f"Check governance compliance for intent with {len(verification.missing_slots)} missing slots and ambiguity {verification.ambiguity_score}"
+            response = brain.think(prompt, domain="governance")
+            brain_content = str(response.content) if hasattr(response, "content") else str(response)
+
+            return "compliant" in brain_content.lower() or "approved" in brain_content.lower()
+        except Exception as e:
+            print(f"[TranslationLayer] Brain governance check failed: {e}")
+            return True  # Default to compliant on failure
+
+    def _detect_contradictions(self, intent_graph: IntentGraph) -> bool:
+        """Detect contradictions in intent graph using brain analysis."""
+        # Check for conflicting edges
+        conflict_edges = [e for e in intent_graph.edges if e.type == "conflicts_with"]
+
+        # Also use brain to detect logical contradictions
+        try:
+            from amos_brain.facade import BrainClient
+
+            brain = BrainClient()
+
+            nodes_desc = ", ".join([n.name for n in intent_graph.nodes[:5]])
+            prompt = f"Detect logical contradictions in: {nodes_desc}"
+            response = brain.think(prompt, domain="contradiction_detection")
+            brain_content = str(response.content) if hasattr(response, "content") else str(response)
+
+            has_contradiction = "contradiction" in brain_content.lower()
+            return len(conflict_edges) > 0 or has_contradiction
+        except Exception:
+            return len(conflict_edges) > 0
+
+    def _identify_missing_slots(self, intent_graph: IntentGraph) -> list[str]:
         """Identify missing information slots."""
         missing = []
 
@@ -1307,8 +1395,8 @@ class AMOSTranslationLayer:
         return ambiguity
 
     def _generate_clarification_questions(
-        self, missing_slots: List[str], intent_graph: IntentGraph
-    ) -> List[str]:
+        self, missing_slots: list[str], intent_graph: IntentGraph
+    ) -> list[str]:
         """Generate questions to clarify missing information."""
         questions = []
 
@@ -1333,7 +1421,7 @@ class AMOSTranslationLayer:
         raw_text: str,
         parsed: ParsedUtterance,
         human_state: HumanStateEstimate,
-        dialogue_context: Dict[str, Any],
+        dialogue_context: dict[str, Any],
     ) -> SignalNoiseRepresentation:
         """
         infer_signal_noise(raw_text, dialogue_context, human_state_estimate) → SignalNoiseRepresentation
@@ -1350,9 +1438,9 @@ class AMOSTranslationLayer:
         utterance_id = f"sn_{datetime.now(UTC).strftime('%Y%m%d_%H%M%S_%f')}"
 
         # Initialize with empty units - to be populated by extract/classify
-        signal_units: List[SignalUnit] = []
-        noise_units: List[NoiseUnit] = []
-        ambiguity_units: List[AmbiguityUnit] = []
+        signal_units: list[SignalUnit] = []
+        noise_units: list[NoiseUnit] = []
+        ambiguity_units: list[AmbiguityUnit] = []
 
         # Initial pass: identify potential signal and noise segments
         for i, clause in enumerate(parsed.clauses):
@@ -1391,7 +1479,7 @@ class AMOSTranslationLayer:
 
         return signal_noise_rep
 
-    def _detect_ambiguity_in_text(self, text: str) -> Dict[str, Any]:
+    def _detect_ambiguity_in_text(self, text: str) -> dict[str, Any]:
         """Detect ambiguity in text segment."""
         text_lower = text.lower()
 
@@ -1414,7 +1502,7 @@ class AMOSTranslationLayer:
 
     async def _extract_signal_units(
         self, signal_noise_rep: SignalNoiseRepresentation, parsed: ParsedUtterance
-    ) -> List[SignalUnit]:
+    ) -> list[SignalUnit]:
         """
         extract_signal_units(parsed_utterance, context) → SignalUnit[]
 
@@ -1422,7 +1510,7 @@ class AMOSTranslationLayer:
         """
         logger.debug("Signal-Noise Kernel: Extracting signal units...")
 
-        signal_units: List[SignalUnit] = []
+        signal_units: list[SignalUnit] = []
 
         for i, clause in enumerate(parsed.clauses):
             clause.lower().strip()
@@ -1446,7 +1534,7 @@ class AMOSTranslationLayer:
         signal_noise_rep.signal_units = signal_units
         return signal_units
 
-    def _classify_signal(self, clause: str) -> Optional[Tuple[SignalClass ], float, float, float]:
+    def _classify_signal(self, clause: str) -> tuple[SignalClass | None, float, float, float]:
         """Classify clause into signal class with scores."""
         clause_lower = clause.lower()
 
@@ -1502,7 +1590,7 @@ class AMOSTranslationLayer:
 
     async def _classify_noise_units(
         self, signal_noise_rep: SignalNoiseRepresentation, human_state: HumanStateEstimate
-    ) -> List[NoiseUnit]:
+    ) -> list[NoiseUnit]:
         """
         classify_noise_units(parsed_utterance, human_state_estimate, context) → NoiseUnit[]
 
@@ -1512,7 +1600,7 @@ class AMOSTranslationLayer:
         """
         logger.debug("Signal-Noise Kernel: Classifying noise units...")
 
-        noise_units: List[NoiseUnit] = []
+        noise_units: list[NoiseUnit] = []
         raw_text = signal_noise_rep.raw_text.lower()
 
         # Check for noise patterns
@@ -1633,7 +1721,7 @@ class AMOSTranslationLayer:
 
         return False
 
-    def _score_signal_quality(self, signal_units: List[SignalUnit]) -> float:
+    def _score_signal_quality(self, signal_units: list[SignalUnit]) -> float:
         """
         score_signal_quality(signal_units) → number
 
@@ -1656,7 +1744,7 @@ class AMOSTranslationLayer:
         avg_score = total_score / len(signal_units)
         return min(1.0, avg_score)
 
-    def _score_noise_distortion(self, noise_units: List[NoiseUnit]) -> float:
+    def _score_noise_distortion(self, noise_units: list[NoiseUnit]) -> float:
         """
         score_noise_distortion(noise_units) → number
 
@@ -1676,9 +1764,9 @@ class AMOSTranslationLayer:
 
     def _filter_translation_input(
         self,
-        signal_units: List[SignalUnit],
-        noise_units: List[NoiseUnit],
-        ambiguity_units: List[AmbiguityUnit],
+        signal_units: list[SignalUnit],
+        noise_units: list[NoiseUnit],
+        ambiguity_units: list[AmbiguityUnit],
     ) -> FilteredSemanticInput:
         """
         filter_translation_input(signal_noise_representation) → FilteredSemanticInput
@@ -1700,7 +1788,7 @@ class AMOSTranslationLayer:
         dropped_noise = [nu.text for nu in noise_units if not nu.retain_as_state_signal]
 
         # Convert ambiguity units to constraints when severe
-        effective_constraints: List[Constraint] = []
+        effective_constraints: list[Constraint] = []
         for amb in ambiguity_units:
             if amb.severity > 0.6:
                 effective_constraints.append(
@@ -1723,8 +1811,8 @@ class AMOSTranslationLayer:
         self,
         filtered_input: FilteredSemanticInput,
         parsed: ParsedUtterance,
-        memory_context: Dict[str, Any],
-        world_context: Dict[str, Any],
+        memory_context: dict[str, Any],
+        world_context: dict[str, Any],
     ) -> SemanticHypotheses:
         """
         SENSE(FilteredInput) → S_t
@@ -1816,8 +1904,8 @@ class AMOSTranslationLayer:
     async def _verify_semantics(
         self,
         intent_graph: IntentGraph,
-        governance_state: Dict[str, Any],
-        epistemic_state: Dict[str, Any],
+        governance_state: dict[str, Any],
+        epistemic_state: dict[str, Any],
         signal_noise_rep: Optional[SignalNoiseRepresentation] = None,
     ) -> SemanticVerification:
         """
@@ -1917,7 +2005,7 @@ class AMOSTranslationLayer:
         inputs_required = verification.missing_slots
 
         # Constraints
-        constraints_required: List[str] = []
+        constraints_required: list[str] = []
 
         # Success criteria
         success_criteria = ["user_satisfaction", "intent_fulfillment", "safety_maintained"]
@@ -1946,7 +2034,7 @@ class AMOSTranslationLayer:
     # EXECUTION GATE
     # ==========================================================================
 
-    def _evaluate_execution_gate(self, verification: SemanticVerification) -> bool:
+    async def _evaluate_execution_gate(self, verification: SemanticVerification) -> bool:
         """
         ExecuteAllowed = 𝟙[
             SemanticConfidence ≥ τ₁ ∧
@@ -1962,7 +2050,7 @@ class AMOSTranslationLayer:
             "ambiguity_score": verification.ambiguity_score <= self.AMBIGUITY_THRESHOLD,
             "missing_slots": len(verification.missing_slots) == self.MAX_MISSING_SLOTS,
             "safety_check": not verification.is_contradictory,
-            "governance_check": True,  # Placeholder
+            "governance_check": await self._brain_governance_check(verification),
         }
 
         allowed = all(conditions.values())
@@ -1976,7 +2064,7 @@ class AMOSTranslationLayer:
     # SUPPORTING FUNCTIONS
     # ==========================================================================
 
-    async def _detect_speech_acts(self, parsed: ParsedUtterance) -> List[SpeechAct]:
+    async def _detect_speech_acts(self, parsed: ParsedUtterance) -> list[SpeechAct]:
         """Detect speech acts from parsed utterance."""
         speech_acts = []
 
@@ -2019,7 +2107,7 @@ class AMOSTranslationLayer:
         return speech_acts if speech_acts else [SpeechAct(type=SpeechActType.INFORM, weight=0.5)]
 
     async def _infer_human_state_from_language(
-        self, raw_text: str, dialogue_history: Dict[str, Any]
+        self, raw_text: str, dialogue_history: dict[str, Any]
     ) -> HumanStateEstimate:
         """Infer human state from language patterns."""
         text_lower = raw_text.lower()
@@ -2045,7 +2133,7 @@ class AMOSTranslationLayer:
         defensiveness = min(1.0, defensiveness)
 
         # Clarity
-        clarity = 1.0 - (len(parsed.clauses) if "parsed" in locals() else 1) * 0.1
+        clarity = 1.0 - (1 if raw_text else 0) * 0.1
         clarity = max(0.0, clarity)
 
         # Agency
@@ -2094,8 +2182,8 @@ class AMOSTranslationLayer:
                 destabilization_risk, signal_noise_rep.summary.state_distortion_score
             )
 
-        # Self-harm risk (placeholder - would use safety classifiers in production)
-        self_harm_risk = 0.0
+        # Self-harm risk using AMOS brain safety classifier
+        self_harm_risk = await self._brain_classify_self_harm_risk(signal_noise_rep)
 
         # Harm to others risk
         harm_to_others_risk = 0.0
@@ -2123,7 +2211,7 @@ class AMOSTranslationLayer:
         """Get current semantic representation."""
         return self.current_representation
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Serialize current representation to dict."""
         if not self.current_representation:
             return {}

@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List
+from typing import Any
 
 # ── Server config ─────────────────────────────────────────────────────────────
 
@@ -32,11 +32,11 @@ class MCPServerConfig:
     transport: MCPTransport = MCPTransport.STDIO
     # stdio fields
     command: str = ""
-    args: List[str] = field(default_factory=list)
-    env: Dict[str, str] = field(default_factory=dict)
+    args: list[str] = field(default_factory=list)
+    env: dict[str, str] = field(default_factory=dict)
     # sse / http / ws fields
     url: str = ""
-    headers: Dict[str, str] = field(default_factory=dict)
+    headers: dict[str, str] = field(default_factory=dict)
     # optional
     timeout: int = 30  # seconds per request
     disabled: bool = False
@@ -82,7 +82,7 @@ class MCPTool:
     tool_name: str  # original name from server
     qualified_name: str  # mcp__<server>__<tool>
     description: str
-    input_schema: Dict[str, Any]  # JSON Schema object
+    input_schema: dict[str, Any]  # JSON Schema object
     read_only: bool = False  # from annotations.readOnlyHint
 
     def to_tool_schema(self) -> dict:

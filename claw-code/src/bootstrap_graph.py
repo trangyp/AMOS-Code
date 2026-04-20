@@ -1,10 +1,9 @@
 from dataclasses import dataclass
-from typing import Tuple
 
 
 @dataclass(frozen=True)
 class BootstrapGraph:
-    stages: Tuple[str, ...]
+    stages: tuple[str, ...]
 
     def as_markdown(self) -> str:
         lines = ["# Bootstrap Graph", ""]

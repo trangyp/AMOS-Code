@@ -41,7 +41,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt || true
+        pip install -r requirements.txt
         pip install pytest pytest-asyncio pytest-cov aiohttp
 
     - name: Run unit tests
@@ -75,20 +75,20 @@ jobs:
     - name: Lint with flake8
       run: |
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        flake8 . --count --exit-zero --max-complexity=15 --max-line-length=100 --statistics
+        flake8 . --count --max-complexity=15 --max-line-length=100 --statistics
 
     - name: Check formatting with black
       run: |
-        black --check . || echo "Formatting issues found"
+        black --check .
 
     - name: Import sort check
       run: |
-        isort --check-only . || echo "Import sorting issues found"
+        isort --check-only .
 
     - name: Security check with bandit
       run: |
-        bandit -r . -f json -o bandit-report.json || true
-        cat bandit-report.json || echo "No security issues found"
+        bandit -r . -f json -o bandit-report.json
+        cat bandit-report.json
 
   # Phase 3: Integration Test
   integration:
@@ -125,7 +125,7 @@ jobs:
 
     - name: Run integration tests
       run: |
-        python test_unified_integration.py || true
+        python test_unified_integration.py
 
     - name: Test API endpoints
       run: |

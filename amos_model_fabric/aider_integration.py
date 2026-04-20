@@ -4,12 +4,14 @@ Real integration with Aider for repo-wide editing via terminal.
 https://aider.chat/docs/llms/ollama.html
 """
 
+from __future__ import annotations
+
 import json
 import logging
 import subprocess
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -23,10 +25,13 @@ class AiderIntegration:
 
     def is_installed(self) -> bool:
         """Check if Aider is installed."""
-        return subprocess.run(
-            ["aider", "--version"],
-            capture_output=True,
-        ).returncode == 0
+        return (
+            subprocess.run(
+                ["aider", "--version"],
+                capture_output=True,
+            ).returncode
+            == 0
+        )
 
     def install(self) -> bool:
         """Install Aider via pip."""
@@ -41,35 +46,31 @@ class AiderIntegration:
             logger.error(f"Failed to install Aider: {e}")
             return False
 
-    def generate_config(self) -> Dict[str, Any]:
+    def generate_config(self) -> dict[str, Any]:
         """Generate Aider configuration for LiteLLM proxy."""
         config = {
             # Use LiteLLM proxy as OpenAI-compatible endpoint
             "openai-api-base": self.proxy_url,
             "openai-api-key": "sk-amos-local",
             "model": "openai/ollama/qwen2.5-coder:14b",
-
             # Editor settings
             "edit-format": "diff",
             "stream": True,
             "pretty": True,
-
             # Git settings
             "auto-commits": True,
             "dirty-commits": False,
             "commit-prompt": "Commit changes with a concise, descriptive message",
-
             # Security
             "confirm-ask": True,  # Ask before making changes
             "code-theme": "monokai",
-
             # Files
             "file-context": True,
             "voice": False,  # Disabled by default
         }
         return config
 
-    def write_config(self, config: Optional[Dict[str, Any] ] = None) -> Path:
+    def write_config(self, config: Optional[dict[str, Any]] = None) -> Path:
         """Write Aider configuration."""
         import yaml
 
@@ -80,7 +81,7 @@ class AiderIntegration:
 
     def start_aider(
         self,
-        files: Optional[List[str] ] = None,
+        files: Optional[list[str]] = None,
         message: Optional[str] = None,
         model: str = "ollama/qwen2.5-coder:14b",
     ) -> subprocess.Popen:
@@ -91,9 +92,12 @@ class AiderIntegration:
 
         cmd = [
             "aider",
-            "--openai-api-base", self.proxy_url,
-            "--openai-api-key", "sk-amos-local",
-            "--model", f"openai/{model}",
+            "--openai-api-base",
+            self.proxy_url,
+            "--openai-api-key",
+            "sk-amos-local",
+            "--model",
+            f"openai/{model}",
         ]
 
         if files:
@@ -107,18 +111,22 @@ class AiderIntegration:
     def run_once(
         self,
         message: str,
-        files: Optional[List[str] ] = None,
+        files: Optional[list[str]] = None,
         model: str = "ollama/qwen2.5-coder:14b",
     ) -> str:
         """Run Aider once with a message and return output."""
         cmd = [
             "aider",
-            "--openai-api-base", self.proxy_url,
-            "--openai-api-key", "sk-amos-local",
-            "--model", f"openai/{model}",
+            "--openai-api-base",
+            self.proxy_url,
+            "--openai-api-key",
+            "sk-amos-local",
+            "--model",
+            f"openai/{model}",
             "--yes",  # Non-interactive mode
             "--no-auto-commits",
-            "--message", message,
+            "--message",
+            message,
         ]
 
         if files:
@@ -132,7 +140,7 @@ class AiderIntegration:
 
         return result.stdout + result.stderr
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get Aider integration status."""
         status = {
             "installed": self.is_installed(),
@@ -176,11 +184,13 @@ def main():
             print("Installing Aider...")
             aider.install()
         aider.write_config()
-        print(f"\nAider configured:")
+        print("\nAider configured:")
         print(f"  Config: {aider.config_file}")
         print(f"  Proxy: {aider.proxy_url}")
-        print(f"\nUsage:")
-        print(f"  aider --openai-api-base {aider.proxy_url} --model openai/ollama/qwen2.5-coder:14b")
+        print("\nUsage:")
+        print(
+            f"  aider --openai-api-base {aider.proxy_url} --model openai/ollama/qwen2.5-coder:14b"
+        )
 
     elif args.command == "status":
         status = aider.get_status()

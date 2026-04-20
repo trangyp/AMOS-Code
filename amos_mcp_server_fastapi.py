@@ -8,29 +8,29 @@ Provides MCP-compatible endpoints for AMOS Brain:
 Compatible with Python 3.9+ (no mcp sdk required)
 """
 
+from __future__ import annotations
+
 import json
-import sys
-from datetime import datetime, timezone
-UTC = timezone.utc
-from pathlib import Path
+from datetime import UTC, datetime
+from typing import Any, Optional
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
-from typing import Any, Dict, List, Optional
 
-# Setup paths
-AMOS_ROOT = Path(__file__).parent.resolve()
-sys.path.insert(0, str(AMOS_ROOT))
-sys.path.insert(0, str(AMOS_ROOT / "clawspring"))
-sys.path.insert(0, str(AMOS_ROOT / "clawspring" / "amos_brain"))
-
-# Import AMOS brain
+# Import AMOS brain - using proper package imports
 try:
-    from amos_kernel_runtime import AMOSKernelRuntime, StateGraph
-    from clawspring.amos_brain.integrated_brain_api import get_unified_brain_api
-    from amos_unified_equation_registry import UnifiedEquationRegistry
     import uvicorn
+
+    from clawspring.amos_brain.amos_kernel_runtime import AMOSKernelRuntime, StateGraph
+    from clawspring.amos_brain.integrated_brain_api import get_unified_brain_api
+
+    # UnifiedEquationRegistry may be unavailable if not in proper package
+    try:
+        from amos_unified_equation_registry import UnifiedEquationRegistry
+    except ImportError:
+        UnifiedEquationRegistry = None
+
     BRAIN_AVAILABLE = True
 except ImportError as e:
     BRAIN_AVAILABLE = False
@@ -76,7 +76,7 @@ class MCPResource(BaseModel):
 class MCPPrompt(BaseModel):
     name: str
     description: str
-    arguments: Optional[List[Dict[str, Any]]] = None
+    arguments: list[dict[str, Optional[Any]]] = None
 
 
 class MCPToolCallRequest(BaseModel):
@@ -90,7 +90,7 @@ class MCPGetResourceRequest(BaseModel):
 
 class MCPGetPromptRequest(BaseModel):
     name: str
-    arguments: Optional[dict] = None
+    arguments: dict | None = None
 
 
 # ============================================================================
@@ -132,7 +132,7 @@ class AMOSMCPServer:
             }
 
         @self.app.get("/mcp/tools")
-        async def list_tools() -> List[MCPTool]:
+        async def list_tools() -> list[MCPTool]:
             """List available MCP tools."""
             return [
                 MCPTool(
@@ -190,7 +190,7 @@ class AMOSMCPServer:
                 raise HTTPException(status_code=404, detail=f"Tool not found: {request.name}")
 
         @self.app.get("/mcp/resources")
-        async def list_resources() -> List[MCPResource]:
+        async def list_resources() -> list[MCPResource]:
             """List available resources."""
             return [
                 MCPResource(
@@ -230,7 +230,7 @@ class AMOSMCPServer:
             }
 
         @self.app.get("/mcp/prompts")
-        async def list_prompts() -> List[MCPPrompt]:
+        async def list_prompts() -> list[MCPPrompt]:
             """List available prompts."""
             return [
                 MCPPrompt(
@@ -324,7 +324,6 @@ Observe → Update → Generate → Simulate → Filter → Collapse → Execute
 
         # Try to load equation from unified registry
         try:
-
             registry = UnifiedEquationRegistry()
             await registry.initialize()
 
@@ -377,7 +376,7 @@ The AMOS brain can provide deeper analysis when integrated with the full cogniti
         status = f"""AMOS System Status:
 
 - **Brain Kernel**: {"Available" if BRAIN_AVAILABLE else "Not Available"}
-- **Timestamp**: {datetime.now(timezone.utc).isoformat()}
+- **Timestamp**: {datetime.now(UTC).isoformat()}
 - **Version**: 28-phase architecture
 - **MCP Server**: Active
 
@@ -393,7 +392,7 @@ Use rtk gain to view token savings.
 """
         return {"content": [MCPTextContent(text=status).dict()], "isError": False}
 
-    async def _get_resource_content(self, uri: str) -> Optional[Dict[str, Any]]:
+    async def _get_resource_content(self, uri: str) -> dict[str, Optional[Any]]:
         """Get resource content by URI."""
         if uri == "amos://docs/architecture":
             return {
@@ -524,5 +523,4 @@ async def startup():
 
 
 if __name__ == "__main__":
-
     uvicorn.run(app, host="0.0.0.0", port=8001)

@@ -10,15 +10,8 @@ System: AMOS vInfinity
 
 from __future__ import annotations
 
-
-import sys
-from pathlib import Path
-from typing import Optional
-
-# Add organism to path
-ORGANISM_PATH = Path(__file__).parent.parent / "AMOS_ORGANISM_OS"
-if str(ORGANISM_PATH) not in sys.path:
-    sys.path.insert(0, str(ORGANISM_PATH))
+# Import from proper package (no sys.path hack needed)
+# AMOS_ORGANISM_OS is now a proper package included in pyproject.toml
 
 
 class BrainOrganismBridge:

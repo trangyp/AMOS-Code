@@ -1,16 +1,14 @@
 """AMOS Brain API - Real brain-powered endpoints."""
 
-import sys
-from pathlib import Path
-from typing import Any, Dict
+from __future__ import annotations
+
+from typing import Any
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-# Add brain path
-_AMOS_ROOT = Path(__file__).parent.parent.parent.resolve()
-sys.path.insert(0, str(_AMOS_ROOT / "clawspring" / "amos_brain"))
-
+# Import alias modules to set up paths
+import clawspring.amos_brain  # noqa: F401
 from amos_brain_working import think
 
 router = APIRouter(prefix="/brain", tags=["brain"])
@@ -20,7 +18,7 @@ class BrainRequest(BaseModel):
     """Request to brain."""
 
     message: str
-    context: Dict[str, Any] = {}
+    context: dict[str, Any] = {}
 
 
 class BrainResponse(BaseModel):
@@ -50,7 +48,7 @@ async def brain_think(request: BrainRequest) -> BrainResponse:
 
 
 @router.get("/status")
-async def brain_status() -> Dict[str, Any]:
+async def brain_status() -> dict[str, Any]:
     """Get brain status."""
     result = think("Check brain status", {"check": True})
     return {

@@ -48,7 +48,7 @@ class ContractAnalyzer:
         [A_public, A_runtime] = A_public·A_runtime - A_runtime·A_public
     """
 
-    def __init__(self, repo_path: str | Path):
+    def __init__(self, repo_path: Union[str, Path]):
         self.repo_path = Path(repo_path).resolve()
         self.public_api: Dict[str, APIFunction] = {}
         self.runtime_api: Dict[str, APIFunction] = {}

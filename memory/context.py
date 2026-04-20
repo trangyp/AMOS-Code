@@ -6,7 +6,6 @@ Provides:
   truncate_index_content()  — line + byte truncation with warning
 """
 
-
 from .scan import memory_freshness_text
 from .store import (
     INDEX_FILENAME,
@@ -16,7 +15,6 @@ from .store import (
     search_memory,
 )
 from .types import MEMORY_SYSTEM_PROMPT
-from typing import List
 
 # ── Index truncation ───────────────────────────────────────────────────────
 
@@ -76,7 +74,7 @@ def get_memory_context(include_guidance: bool = False) -> str:
                           (MEMORY_SYSTEM_PROMPT). Normally False since the
                           system prompt template already includes brief guidance.
     """
-    parts: List[str] = []
+    parts: list[str] = []
 
     # User-level index
     user_content = get_index_content("user")
@@ -106,8 +104,8 @@ def find_relevant_memories(
     query: str,
     max_results: int = 5,
     use_ai: bool = False,
-    config: dict  = None,
-) -> List[dict]:
+    config: dict = None,
+) -> list[dict]:
     """Find memories relevant to a query.
 
     Strategy:
@@ -159,7 +157,7 @@ def _ai_select_memories(
     candidates: list,
     max_results: int,
     config: dict,
-) -> List[dict]:
+) -> list[dict]:
     """Use a fast AI call to select the most relevant memories from candidates.
 
     Falls back to keyword results on any error.

@@ -10,26 +10,26 @@ Combines all brain capabilities into a unified interface:
 
 Uses real BrainClient facade and MasterOrchestrator.
 """
+from __future__ import annotations
 
 
 import sys
 import time
 import uuid
 from datetime import datetime, timezone
-
-UTC = timezone.utc
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
+
+UTC = timezone.utc
 
 # Setup paths
 AMOS_ROOT = Path(__file__).parent.parent.parent.resolve()
 for p in [AMOS_ROOT, AMOS_ROOT / "clawspring", AMOS_ROOT / "amos_brain"]:
     if str(p) not in sys.path:
-        sys.path.insert(0, str(p))
 
 # Import brain components
 try:
@@ -72,9 +72,9 @@ class UnifiedRequest(BaseModel):
 
     operation: OperationType
     input: str = Field(..., min_length=1)
-    context: Dict[str, Any] = Field(default_factory=dict)
+    context: dict[str, Any] = Field(default_factory=dict)
     priority: str = Field(default="MEDIUM")
-    options: Dict[str, Any] = Field(default_factory=dict)
+    options: dict[str, Any] = Field(default_factory=dict)
 
 
 class UnifiedResponse(BaseModel):
@@ -83,14 +83,14 @@ class UnifiedResponse(BaseModel):
     operation: str
     request_id: str
     status: str
-    result: Dict[str, Any]
+    result: dict[str, Any]
     brain_used: bool
     processing_time_ms: float
     timestamp: str
 
 
-# Global instances
-_brain_client: Optional[BrainClient] = None
+#Global instances
+_brain_client: Optional[BrainClient] =None
 _orchestrator: Optional[MasterOrchestrator] = None
 
 
@@ -134,7 +134,7 @@ async def process_unified(request: UnifiedRequest) -> UnifiedResponse:
         raise HTTPException(status_code=503, detail="Brain not available")
 
     try:
-        result: Dict[str, Any] = {}
+        result: dict[str, Any] = {}
 
         if request.operation == OperationType.THINK and brain:
             result = brain.think(request.input, request.context)
@@ -212,7 +212,7 @@ async def process_unified(request: UnifiedRequest) -> UnifiedResponse:
 
 
 @router.get("/operations")
-async def list_operations() -> Dict[str, Any]:
+async def list_operations() -> dict[str, Any]:
     """List available brain operations and their status."""
     brain = _get_brain()
     orchestrator = _get_orchestrator()
@@ -261,7 +261,7 @@ def _get_operation_description(op: OperationType) -> str:
 
 
 @router.get("/health")
-async def unified_health() -> Dict[str, Any]:
+async def unified_health() -> dict[str, Any]:
     """Check unified API health and component status."""
     brain = _get_brain()
     orchestrator = _get_orchestrator()

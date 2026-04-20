@@ -32,7 +32,7 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 
 @dataclass
@@ -41,10 +41,10 @@ class GovernanceCycle:
 
     cycle_id: str
     timestamp: float
-    repo_doctor_results: Dict[str, Any] = field(default_factory=dict)
-    brain_decisions: List[dict[str, Any]] = field(default_factory=list)
-    evolution_contracts: List[dict[str, Any]] = field(default_factory=list)
-    learning_patterns: List[dict[str, Any]] = field(default_factory=list)
+    repo_doctor_results: dict[str, Any] = field(default_factory=dict)
+    brain_decisions: list[dict[str, Any]] = field(default_factory=list)
+    evolution_contracts: list[dict[str, Any]] = field(default_factory=list)
+    learning_patterns: list[dict[str, Any]] = field(default_factory=list)
     success: bool = False
     energy_before: float = 0.0
     energy_after: float = 0.0
@@ -61,9 +61,9 @@ class AutonomousGovernanceOrchestrator:
     def __init__(self, repo_path: str = ".") -> None:
         """Initialize the autonomous governance orchestrator."""
         self.repo_path = Path(repo_path)
-        self.cycles: List[GovernanceCycle] = []
+        self.cycles: list[GovernanceCycle] = []
         self.is_running = False
-        self.governance_log: List[dict] = []
+        self.governance_log: list[dict] = []
 
         # Initialize subsystems (lazy loading)
         self._repo_doctor: Any = None
@@ -119,7 +119,7 @@ class AutonomousGovernanceOrchestrator:
                 return None
         return self._learning
 
-    def diagnose(self) -> Dict[str, Any]:
+    def diagnose(self) -> dict[str, Any]:
         """
         Phase 1: Diagnose repository state using Repo Doctor Ω∞∞∞.
 
@@ -167,7 +167,7 @@ class AutonomousGovernanceOrchestrator:
 
         return results
 
-    def synthesize_repairs(self, diagnosis: Dict[str, Any]) -> List[dict[str, Any]]:
+    def synthesize_repairs(self, diagnosis: dict[str, Any]) -> list[dict[str, Any]]:
         """
         Phase 2: Synthesize repairs using AMOS Brain.
 
@@ -207,7 +207,7 @@ class AutonomousGovernanceOrchestrator:
         print(f"  ✓ Total repairs synthesized: {len(repairs)}")
         return repairs
 
-    def evolve(self, repairs: List[dict[str, Any]]) -> Dict[str, Any]:
+    def evolve(self, repairs: list[dict[str, Any]]) -> dict[str, Any]:
         """
         Phase 3: Implement repairs using Self-Evolution Engine.
 
@@ -253,7 +253,7 @@ class AutonomousGovernanceOrchestrator:
 
         return results
 
-    def learn(self, cycle: GovernanceCycle) -> Dict[str, Any]:
+    def learn(self, cycle: GovernanceCycle) -> dict[str, Any]:
         """
         Phase 4: Learn from cycle outcome.
 
@@ -312,9 +312,9 @@ class AutonomousGovernanceOrchestrator:
         Diagnose → Synthesize → Evolve → Learn
         """
         cycle_id = f"cycle-{int(time.time())}"
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print(f"GOVERNANCE CYCLE: {cycle_id}")
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
 
         cycle = GovernanceCycle(
             cycle_id=cycle_id,
@@ -350,9 +350,9 @@ class AutonomousGovernanceOrchestrator:
         self.cycles.append(cycle)
 
         # Print summary
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print("CYCLE SUMMARY")
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
         print(f"  Energy: {cycle.energy_before:.6f} → {cycle.energy_after:.6f}")
         print(f"  Repairs: {len(repairs)}")
         print(f"  Success: {cycle.success}")
@@ -368,9 +368,9 @@ class AutonomousGovernanceOrchestrator:
             interval: Seconds between cycles
             max_cycles: Maximum cycles (None = infinite)
         """
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print("AUTONOMOUS GOVERNANCE ACTIVATED")
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
         print(f"Interval: {interval}s")
         print(f"Max cycles: {max_cycles or 'unlimited'}")
         print(f"Repository: {self.repo_path}")

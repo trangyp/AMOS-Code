@@ -10,8 +10,10 @@ Persists reasoning to BrainMemory.
 import ast
 import subprocess
 import sys
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
+
+UTC = UTC
 
 # Add repo to path
 sys.path.insert(0, str(Path(__file__).parent))

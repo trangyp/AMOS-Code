@@ -27,7 +27,6 @@ Version: 6.0.0
 
 from __future__ import annotations
 
-
 import base64
 import hashlib
 import hmac
@@ -39,7 +38,32 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
 from functools import wraps
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
+
+# Optional cryptography imports for production
+try:
+    from cryptography.hazmat.primitives import serialization
+    from cryptography.hazmat.primitives.asymmetric import ec, ed25519, rsa
+    from cryptography.hazmat.primitives.asymmetric.padding import PKCS1v15
+    from cryptography.hazmat.primitives.hashes import SHA256
+
+    CRYPTO_AVAILABLE = True
+except ImportError:
+    CRYPTO_AVAILABLE = False
+
+try:
+    import bcrypt
+
+    BCRYPT_AVAILABLE = True
+except ImportError:
+    BCRYPT_AVAILABLE = False
+
+try:
+    import boto3
+
+    AWS_AVAILABLE = True
+except ImportError:
+    AWS_AVAILABLE = False
 
 
 class TokenAlgorithm(Enum):
@@ -70,9 +94,9 @@ class User:
     id: str
     username: str
     email: str
-    roles: List[str] = field(default_factory=list)
-    permissions: Set[str] = field(default_factory=set)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    roles: list[str] = field(default_factory=list)
+    permissions: set[str] = field(default_factory=set)
+    metadata: dict[str, Any] = field(default_factory=dict)
     created_at: float = field(default_factory=time.time)
     last_login: float = None
     is_active: bool = True
@@ -92,11 +116,11 @@ class Role:
 
     name: str
     description: str
-    permissions: Set[str] = field(default_factory=set)
-    parent_roles: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    permissions: set[str] = field(default_factory=set)
+    parent_roles: list[str] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
-    def get_all_permissions(self, role_registry: Dict[str, "Role"]) -> set[str]:
+    def get_all_permissions(self, role_registry: dict[str, Role]) -> set[str]:
         """Get all permissions including inherited."""
         all_perms = set(self.permissions)
         for parent_name in self.parent_roles:
@@ -114,7 +138,7 @@ class Permission:
     description: str
     resource: str  # e.g., "api", "user", "config"
     action: str  # e.g., "read", "write", "delete"
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -124,18 +148,18 @@ class JWTPayload:
     # Standard claims (RFC 7519)
     iss: str  # Issuer - MUST validate
     sub: str  # Subject (user ID)
-    aud: List[str]  # Audience - MUST validate
+    aud: list[str]  # Audience - MUST validate
     exp: float  # Expiration time
     nbf: float  # Not before
     iat: float  # Issued at
     jti: str  # JWT ID (for revocation)
 
     # Custom claims
-    roles: List[str] = field(default_factory=list)
-    permissions: List[str] = field(default_factory=list)
+    roles: list[str] = field(default_factory=list)
+    permissions: list[str] = field(default_factory=list)
     token_type: str = TokenType.ACCESS.value
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "iss": self.iss,
@@ -151,7 +175,7 @@ class JWTPayload:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> JWTPayload:
+    def from_dict(cls, data: dict[str, Any]) -> JWTPayload:
         """Create from dictionary."""
         return cls(
             iss=data.get("iss", ""),
@@ -172,10 +196,11 @@ class AuthResult:
     """Result of authentication/authorization check."""
 
     success: bool
-    user: Optional[User] = None
-    token: str = None
-    error: str = None
-    permissions: Set[str] = field(default_factory=set)
+    user: User | None = None
+    token: str = ""
+    refresh_token: str = ""
+    error: str = ""
+    permissions: set[str] = field(default_factory=set)
 
 
 class JWTManager:
@@ -193,7 +218,7 @@ class JWTManager:
     def __init__(
         self,
         issuer: str = "https://amos.api",
-        audience: List[str] = None,
+        audience: list[str] = None,
         algorithm: TokenAlgorithm = TokenAlgorithm.ES256,
         access_token_ttl: int = 3600,  # 1 hour
         refresh_token_ttl: int = 604800,  # 7 days
@@ -204,21 +229,35 @@ class JWTManager:
         self.access_token_ttl = access_token_ttl
         self.refresh_token_ttl = refresh_token_ttl
 
-        # Key management (in production, use proper key management service)
-        self._signing_keys: Dict[str, Any] = {}
-        self._current_key_id: str = None
-        self._revoked_tokens: Set[str] = set()
+        # Key management with proper cryptography
+        self._signing_keys: dict[str, Any] = {}
+        self._current_key_id: str = ""
+        self._revoked_tokens: set[str] = set()
         self._lock = threading.RLock()
 
-        # Initialize with demo key
-        self._generate_demo_key()
+        # Initialize with production key
+        self._generate_signing_key()
 
-    def _generate_demo_key(self) -> None:
-        """Generate demo signing key (use proper KMS in production)."""
+    def _generate_signing_key(self) -> None:
+        """Generate cryptographic signing key using Ed25519 or ECDSA."""
         key_id = secrets.token_hex(8)
-        # In production, use proper cryptographic keys
-        # This is a demo implementation
-        self._signing_keys[key_id] = secrets.token_hex(32)
+
+        if CRYPTO_AVAILABLE and self.algorithm == TokenAlgorithm.EdDSA:
+            # Use Ed25519 for best security
+            private_key = ed25519.Ed25519PrivateKey.generate()
+            self._signing_keys[key_id] = private_key
+        elif CRYPTO_AVAILABLE and self.algorithm == TokenAlgorithm.ES256:
+            # Use ECDSA with P-256
+            private_key = ec.generate_private_key(ec.SECP256R1())
+            self._signing_keys[key_id] = private_key
+        elif CRYPTO_AVAILABLE and self.algorithm == TokenAlgorithm.RS256:
+            # Use RSA-2048
+            private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+            self._signing_keys[key_id] = private_key
+        else:
+            # Fallback to HMAC-SHA256 with secure random key
+            self._signing_keys[key_id] = secrets.token_bytes(32)
+
         self._current_key_id = key_id
 
     def _base64_encode(self, data: bytes) -> str:
@@ -236,7 +275,7 @@ class JWTManager:
         self,
         user: User,
         token_type: TokenType = TokenType.ACCESS,
-        custom_claims: Dict[str, Any] = None,
+        custom_claims: dict[str, Any] = None,
     ) -> str:
         """
         Create JWT token following best practices.
@@ -297,15 +336,34 @@ class JWTManager:
         return f"{header_b64}.{payload_b64}.{signature_b64}"
 
     def _sign(self, message: str) -> str:
-        """Sign message (demo - use proper crypto in production)."""
-        key = self._signing_keys.get(self._current_key_id, "")
-        return hmac.new(key.encode(), message.encode(), hashlib.sha256).hexdigest()
+        """Sign message using proper cryptography."""
+        key = self._signing_keys.get(self._current_key_id)
+        if key is None:
+            raise ValueError("No signing key available")
+
+        message_bytes = message.encode()
+
+        if CRYPTO_AVAILABLE and isinstance(key, ed25519.Ed25519PrivateKey):
+            # Ed25519 signing
+            signature = key.sign(message_bytes)
+            return base64.urlsafe_b64encode(signature).rstrip(b"=").decode("ascii")
+        elif CRYPTO_AVAILABLE and isinstance(key, ec.EllipticCurvePrivateKey):
+            # ECDSA signing
+            signature = key.sign(message_bytes, ec.ECDSA(SHA256()))
+            return base64.urlsafe_b64encode(signature).rstrip(b"=").decode("ascii")
+        elif CRYPTO_AVAILABLE and isinstance(key, rsa.RSAPrivateKey):
+            # RSA signing
+            signature = key.sign(message_bytes, PKCS1v15(), SHA256())
+            return base64.urlsafe_b64encode(signature).rstrip(b"=").decode("ascii")
+        else:
+            # HMAC-SHA256 fallback
+            return hmac.new(key, message_bytes, hashlib.sha256).hexdigest()
 
     def validate_token(
         self,
         token: str,
         expected_type: TokenType = TokenType.ACCESS,
-        required_permissions: List[str] = None,
+        required_permissions: list[str] = None,
     ) -> AuthResult:
         """
         Validate JWT token following 2025 best practices.
@@ -424,10 +482,10 @@ class RBACManager:
     """
 
     def __init__(self):
-        self._users: Dict[str, User] = {}
-        self._roles: Dict[str, Role] = {}
-        self._permissions: Dict[str, Permission] = {}
-        self._permission_cache: Dict[str, set[str]] = {}
+        self._users: dict[str, User] = {}
+        self._roles: dict[str, Role] = {}
+        self._permissions: dict[str, Permission] = {}
+        self._permission_cache: dict[str, set[str]] = {}
         self._lock = threading.RLock()
 
         # Initialize default roles
@@ -519,7 +577,7 @@ class RBACManager:
 
     def _calculate_user_permissions(self, user: User) -> None:
         """Calculate effective permissions from roles."""
-        effective_perms: Set[str] = set()
+        effective_perms: set[str] = set()
 
         for role_name in user.roles:
             if role_name in self._roles:
@@ -583,17 +641,17 @@ class RBACManager:
 
             return False
 
-    def get_user(self, user_id: str) -> Optional[User]:
+    def get_user(self, user_id: str) -> User | None:
         """Get user by ID."""
         with self._lock:
             return self._users.get(user_id)
 
-    def list_roles(self) -> List[Role]:
+    def list_roles(self) -> list[Role]:
         """List all roles."""
         with self._lock:
             return list(self._roles.values())
 
-    def list_users(self) -> List[User]:
+    def list_users(self) -> list[User]:
         """List all users."""
         with self._lock:
             return list(self._users.values())
@@ -611,15 +669,15 @@ class APIKeyManager:
     """
 
     def __init__(self):
-        self._keys: Dict[str, dict[str, Any]] = {}
+        self._keys: dict[str, dict[str, Any]] = {}
         self._lock = threading.RLock()
 
     def generate_key(
         self,
         service_name: str,
-        roles: List[str],
+        roles: list[str],
         expires_in_days: int = 365,
-        metadata: Dict[str, Any] = None,
+        metadata: dict[str, Any] = None,
     ) -> str:
         """Generate new API key."""
         with self._lock:
@@ -644,7 +702,7 @@ class APIKeyManager:
 
             return full_key
 
-    def validate_key(self, key: str) -> Dict[str, Any]:
+    def validate_key(self, key: str) -> dict[str, Any]:
         """Validate and return key info."""
         with self._lock:
             key_hash = hashlib.sha256(key.encode()).hexdigest()
@@ -690,13 +748,14 @@ class AuthSystem:
         self._create_demo_users()
 
     def _create_demo_users(self) -> None:
-        """Create demo users for testing."""
+        """Create demo users for testing with password hashes."""
         # Admin user
         admin = User(
             id="user_admin_001",
             username="admin",
             email="admin@amos.local",
             roles=["admin"],
+            metadata={"password_hash": self._hash_password("admin")},
         )
         self.rbac.create_user(admin)
 
@@ -706,6 +765,7 @@ class AuthSystem:
             username="developer",
             email="dev@amos.local",
             roles=["developer"],
+            metadata={"password_hash": self._hash_password("dev")},
         )
         self.rbac.create_user(dev)
 
@@ -715,33 +775,70 @@ class AuthSystem:
             username="user",
             email="user@amos.local",
             roles=["user"],
+            metadata={"password_hash": self._hash_password("user")},
         )
         self.rbac.create_user(user)
+
+    def _hash_password(self, password: str) -> str:
+        """Hash password using bcrypt."""
+        if BCRYPT_AVAILABLE:
+            salt = bcrypt.gensalt(rounds=12)
+            return bcrypt.hashpw(password.encode(), salt).decode()
+        else:
+            # Fallback to PBKDF2 with SHA256
+            salt = secrets.token_hex(16)
+            hash_val = hashlib.pbkdf2_hmac("sha256", password.encode(), salt.encode(), 100000)
+            return f"pbkdf2:{salt}:{hash_val.hex()}"
+
+    def _verify_password(self, password: str, password_hash: str) -> bool:
+        """Verify password against hash."""
+        if BCRYPT_AVAILABLE and password_hash.startswith("$2"):
+            return bcrypt.checkpw(password.encode(), password_hash.encode())
+        elif password_hash.startswith("pbkdf2:"):
+            parts = password_hash.split(":")
+            if len(parts) == 3:
+                salt, stored_hash = parts[1], parts[2]
+                computed = hashlib.pbkdf2_hmac("sha256", password.encode(), salt.encode(), 100000)
+                return computed.hex() == stored_hash
+        return False
 
     def authenticate_user(
         self,
         username: str,
-        password: str,  # In production, verify against hashed password
+        password: str,
     ) -> AuthResult:
         """Authenticate user and return tokens."""
         # Find user by username
         user = None
+        user_hash = None
         for u in self.rbac.list_users():
             if u.username == username:
                 user = u
+                # Get stored password hash from metadata
+                user_hash = u.metadata.get("password_hash")
                 break
 
         if not user:
             return AuthResult(success=False, error="Invalid credentials")
 
-        # In production, verify password hash here
-        # For demo, we accept any password
+        # Verify password hash
+        if user_hash and not self._verify_password(password, user_hash):
+            return AuthResult(success=False, error="Invalid credentials")
 
         # Generate tokens
         access_token = self.jwt.create_token(user, TokenType.ACCESS)
         refresh_token = self.jwt.create_token(user, TokenType.REFRESH)
 
-        return AuthResult(success=True, user=user, token=access_token, permissions=user.permissions)
+        # Update last login
+        user.last_login = time.time()
+
+        return AuthResult(
+            success=True,
+            user=user,
+            token=access_token,
+            refresh_token=refresh_token,
+            permissions=user.permissions,
+        )
 
     def authenticate_api_key(self, key: str) -> AuthResult:
         """Authenticate using API key."""
@@ -792,7 +889,7 @@ class AuthSystem:
 
 
 # Global auth system instance
-_global_auth_system: Optional[AuthSystem] = None
+_global_auth_system: AuthSystem | None = None
 
 
 def get_auth_system() -> AuthSystem:
@@ -874,7 +971,7 @@ def demo_auth_system():
             for p in perms:
                 print(f"      - {p}")
         else:
-            print(f"      - {list(perms)[:3]}... (+{len(perms)-3} more)")
+            print(f"      - {list(perms)[:3]}... (+{len(perms) - 3} more)")
 
     # 2. User Authentication
     print("\n[2] JWT User Authentication (Curity Best Practices)")

@@ -14,11 +14,12 @@ Creator: Trang Phan
 Version: 3.0.0
 """
 
+from __future__ import annotations
 
 from collections.abc import Callable
 from datetime import datetime, timedelta
 from functools import wraps
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 from fastapi import Header, HTTPException, Request
 from pydantic import BaseModel
@@ -26,7 +27,7 @@ from pydantic import BaseModel
 # API Version Configuration
 CURRENT_VERSION = "v1"
 SUPPORTED_VERSIONS = ["v1"]
-DEPRECATED_VERSIONS: Dict[str, dict[str, Any]] = {}
+DEPRECATED_VERSIONS: dict[str, dict[str, Any]] = {}
 SUNSET_NOTICE_DAYS = 90  # Days before deprecated version is removed
 
 
@@ -62,7 +63,7 @@ class DeprecationInfo:
 
 
 # Version registry
-VERSION_REGISTRY: Dict[str, VersionInfo] = {
+VERSION_REGISTRY: dict[str, VersionInfo] = {
     "v1": VersionInfo(
         version="v1",
         status="current",
@@ -94,7 +95,7 @@ def add_deprecation_headers(response: Any, deprecation_info: DeprecationInfo) ->
 
     if deprecation_info.alternative_endpoint:
         response.headers["Link"] = (
-            f"<{deprecation_info.alternative_endpoint}>; " 'rel="successor-version"'
+            f'<{deprecation_info.alternative_endpoint}>; rel="successor-version"'
         )
 
     return response
@@ -179,7 +180,7 @@ class APIVersionManager:
 
     def __init__(self):
         self.versions = VERSION_REGISTRY.copy()
-        self.deprecated_endpoints: Dict[str, DeprecationInfo] = {}
+        self.deprecated_endpoints: dict[str, DeprecationInfo] = {}
 
     def register_version(self, version_info: VersionInfo) -> None:
         """Register a new API version."""
@@ -204,7 +205,7 @@ class APIVersionManager:
         if version in SUPPORTED_VERSIONS:
             SUPPORTED_VERSIONS.remove(version)
 
-    def get_versions(self) -> Dict[str, VersionInfo]:
+    def get_versions(self) -> dict[str, VersionInfo]:
         """Get all registered versions."""
         return self.versions
 
@@ -248,7 +249,7 @@ class VersionListResponse(BaseModel):
 
     current_version: str
     supported_versions: list
-    versions: Dict[str, VersionInfo]
+    versions: dict[str, VersionInfo]
 
 
 class DeprecationNoticeResponse(BaseModel):

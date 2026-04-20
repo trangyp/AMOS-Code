@@ -5,6 +5,8 @@ Fleet-wide repair planning with preview/apply tracking.
 Inspired by Sourcegraph Batch Changes.
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
@@ -27,11 +29,11 @@ class RemediationBatch:
     batch_id: str
     name: str
     description: str
-    target_repos: List[str]
+    target_repos: list[str]
     changes: list[dict[str, Any]]
     status: BatchStatus = BatchStatus.PREVIEW
     applied_count: int = 0
-    failed_repos: List[str] = field(default_factory=list)
+    failed_repos: list[str] = field(default_factory=list)
 
     def progress_percentage(self) -> float:
         """Calculate progress percentage."""
@@ -49,14 +51,14 @@ class BatchRemediationPlanner:
     """
 
     def __init__(self):
-        self.batches: Dict[str, RemediationBatch] = {}
+        self.batches: dict[str, RemediationBatch] = {}
 
     def create_batch(
         self,
         batch_id: str,
         name: str,
         description: str,
-        target_repos: List[str],
+        target_repos: list[str],
         changes: list[dict[str, Any]],
     ) -> RemediationBatch:
         """
@@ -75,7 +77,7 @@ class BatchRemediationPlanner:
         self.batches[batch_id] = batch
         return batch
 
-    def preview_batch(self, batch_id: str) -> Dict[str, Any]:
+    def preview_batch(self, batch_id: str) -> dict[str, Any]:
         """
         Preview what changes would be applied.
 
@@ -98,7 +100,7 @@ class BatchRemediationPlanner:
         self,
         batch_id: str,
         dry_run: bool = False,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Apply batch changes to target repos.
 
@@ -147,7 +149,7 @@ class BatchRemediationPlanner:
         self,
         batch_id: str,
         new_changes: list[dict[str, Any]],
-    ) -> Optional[RemediationBatch]:
+    ) -> RemediationBatch | None:
         """
         Update an existing batch with new changes.
 
@@ -164,7 +166,7 @@ class BatchRemediationPlanner:
 
         return batch
 
-    def get_batch_status(self, batch_id: str) -> Dict[str, Any]:
+    def get_batch_status(self, batch_id: str) -> dict[str, Any]:
         """Get current status of a batch."""
         batch = self.batches.get(batch_id)
         if not batch:
@@ -180,7 +182,7 @@ class BatchRemediationPlanner:
             "failed": len(batch.failed_repos),
         }
 
-    def _estimate_impact(self, batch: RemediationBatch) -> Dict[str, Any]:
+    def _estimate_impact(self, batch: RemediationBatch) -> dict[str, Any]:
         """Estimate impact of batch changes."""
         return {
             "repos_affected": len(batch.target_repos),

@@ -1,4 +1,5 @@
-"""Repo Doctor Security Scanner - Deterministic Verification Envelope
+"""
+Repo Doctor Security Scanner - Deterministic Verification Envelope
 
 Security-first pipeline that all AI patches must pass before being trusted.
 Integrates open-source security tools: Semgrep, Trivy, Gitleaks, OSV-Scanner.
@@ -18,6 +19,7 @@ import logging
 import subprocess
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+
 UTC = timezone.utc
 from enum import Enum
 from pathlib import Path
@@ -28,6 +30,7 @@ logger = logging.getLogger(__name__)
 
 class Severity(Enum):
     """Security finding severity levels."""
+
     INFO = "info"
     LOW = "low"
     MEDIUM = "medium"
@@ -38,36 +41,39 @@ class Severity(Enum):
 @dataclass
 class SecurityFinding:
     """Single security finding from any scanner."""
+
     tool: str
     rule_id: str
     severity: Severity
     message: str
-    file_path: Optional[str] = None
-    line_number: Optional[int] = None
-    column: Optional[int] = None
-    snippet: Optional[str] = None
-    fix: Optional[str] = None
+    file_path: str = None
+    line_number: int = None
+    column: int = None
+    snippet: str = None
+    fix: str = None
     metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
 class ScanResult:
     """Result from a single security scanner."""
+
     tool: str
     passed: bool
     findings: list[SecurityFinding] = field(default_factory=list)
     execution_time_ms: float = 0.0
-    error_message: Optional[str] = None
-    raw_output: Optional[str] = None
+    error_message: str = None
+    raw_output: str = None
 
 
 @dataclass
 class VerificationReceipt:
     """Receipt for a complete security verification run."""
+
     receipt_id: str
     timestamp: str
     repository_path: str
-    commit_hash: Optional[str]
+    commit_hash: str
     scan_results: list[ScanResult]
     overall_passed: bool
     critical_count: int = 0
@@ -80,7 +86,7 @@ class VerificationReceipt:
 class SemgrepScanner:
     """Semgrep CE static code analysis."""
 
-    def __init__(self, config_path: Optional[str] = None):
+    def __init__(self, config_path: str = None):
         self.config_path = config_path
         self.rules = [
             "p/security-audit",
@@ -90,14 +96,15 @@ class SemgrepScanner:
             "p/python",
         ]
 
-    async def scan(self, repo_path: Path, targets: Optional[list[str] ] = None) -> ScanResult:
+    async def scan(self, repo_path: Path, targets: list[str] = None) -> ScanResult:
         """Run Semgrep scan on repository."""
         start = datetime.now(timezone.utc)
         cmd = [
             "semgrep",
             "--json",
             "--quiet",
-            "--config", self.config_path or "auto",
+            "--config",
+            self.config_path or "auto",
         ]
         for rule in self.rules:
             cmd.extend(["--config", rule])
@@ -174,8 +181,10 @@ class TrivyScanner:
         cmd = [
             "trivy",
             "fs",
-            "--format", "json",
-            "--scanners", "vuln,config,secret",
+            "--format",
+            "json",
+            "--scanners",
+            "vuln,config,secret",
             str(repo_path),
         ]
 
@@ -266,9 +275,12 @@ class GitleaksScanner:
         cmd = [
             "gitleaks",
             "detect",
-            "--source", str(repo_path),
-            "--report-format", "json",
-            "--report-path", "/dev/stdout",
+            "--source",
+            str(repo_path),
+            "--report-format",
+            "json",
+            "--report-path",
+            "/dev/stdout",
             "--verbose",
         ]
         if scan_history:
@@ -336,7 +348,8 @@ class OSVScanner:
         cmd = [
             "osv-scanner",
             "scan",
-            "--format", "json",
+            "--format",
+            "json",
             str(repo_path),
         ]
 
@@ -361,7 +374,9 @@ class OSVScanner:
                                     tool="osv-scanner",
                                     rule_id=vuln.get("id", "unknown"),
                                     severity=self._map_severity(
-                                        vuln.get("database_specific", {}).get("severity", "MODERATE")
+                                        vuln.get("database_specific", {}).get(
+                                            "severity", "MODERATE"
+                                        )
                                     ),
                                     message=vuln.get("summary", "Vulnerability detected"),
                                     file_path=result_item.get("source", {}).get("path"),
@@ -411,7 +426,8 @@ class RuffScanner:
         cmd = [
             "ruff",
             "check",
-            "--output-format", "json",
+            "--output-format",
+            "json",
             str(repo_path),
         ]
 
@@ -489,7 +505,9 @@ class PyrightScanner:
                         finding = SecurityFinding(
                             tool="pyright",
                             rule_id=diagnostic.get("rule", "type-error"),
-                            severity=Severity.MEDIUM if diagnostic.get("severity") == "error" else Severity.LOW,
+                            severity=Severity.MEDIUM
+                            if diagnostic.get("severity") == "error"
+                            else Severity.LOW,
                             message=diagnostic.get("message", ""),
                             file_path=diagnostic.get("file"),
                             line_number=diagnostic.get("range", {}).get("start", {}).get("line"),
@@ -517,7 +535,8 @@ class PyrightScanner:
 
 
 class SecurityVerificationEngine:
-    """Unified security verification engine.
+    """
+    Unified security verification engine.
 
     Runs all security scanners and produces a deterministic receipt.
     This is the gate that all AI patches must pass through.
@@ -549,10 +568,11 @@ class SecurityVerificationEngine:
     async def verify(
         self,
         repo_path: Path,
-        commit_hash: Optional[str] = None,
-        receipt_id: Optional[str] = None,
+        commit_hash: str = None,
+        receipt_id: str = None,
     ) -> VerificationReceipt:
-        """Run full security verification pipeline.
+        """
+        Run full security verification pipeline.
 
         Args:
             repo_path: Path to repository to scan
@@ -561,6 +581,7 @@ class SecurityVerificationEngine:
 
         Returns:
             VerificationReceipt with all findings and overall status
+
         """
         import uuid
 
@@ -584,27 +605,23 @@ class SecurityVerificationEngine:
         critical_count = sum(
             1 for r in scan_results for f in r.findings if f.severity == Severity.CRITICAL
         )
-        high_count = sum(
-            1 for r in scan_results for f in r.findings if f.severity == Severity.HIGH
-        )
+        high_count = sum(1 for r in scan_results for f in r.findings if f.severity == Severity.HIGH)
         medium_count = sum(
             1 for r in scan_results for f in r.findings if f.severity == Severity.MEDIUM
         )
-        low_count = sum(
-            1 for r in scan_results for f in r.findings if f.severity == Severity.LOW
-        )
+        low_count = sum(1 for r in scan_results for f in r.findings if f.severity == Severity.LOW)
 
         # Determine blocking findings
         blocking_findings = [
-            f for r in scan_results
+            f
+            for r in scan_results
             for f in r.findings
             if f.severity in (Severity.CRITICAL, Severity.HIGH)
         ]
 
         # Overall pass: no critical findings, all scanners ran
-        overall_passed = (
-            critical_count == 0
-            and all(r.passed or not r.error_message for r in scan_results)
+        overall_passed = critical_count == 0 and all(
+            r.passed or not r.error_message for r in scan_results
         )
 
         return VerificationReceipt(
@@ -624,18 +641,18 @@ class SecurityVerificationEngine:
     def format_receipt(self, receipt: VerificationReceipt) -> str:
         """Format verification receipt as human-readable report."""
         lines = [
-            f"╔══════════════════════════════════════════════════════════════╗",
-            f"║           SECURITY VERIFICATION RECEIPT                      ║",
-            f"╠══════════════════════════════════════════════════════════════╣",
+            "╔══════════════════════════════════════════════════════════════╗",
+            "║           SECURITY VERIFICATION RECEIPT                      ║",
+            "╠══════════════════════════════════════════════════════════════╣",
             f"║ Receipt ID: {receipt.receipt_id:<46} ║",
             f"║ Timestamp:  {receipt.timestamp[:19]:<46} ║",
             f"║ Repository: {receipt.repository_path[-46:]:<46} ║",
-            f"╠══════════════════════════════════════════════════════════════╣",
+            "╠══════════════════════════════════════════════════════════════╣",
             f"║ STATUS: {'PASS ✅' if receipt.overall_passed else 'FAIL ❌':<52} ║",
-            f"╠══════════════════════════════════════════════════════════════╣",
-            f"║ Findings Summary:                                            ║",
+            "╠══════════════════════════════════════════════════════════════╣",
+            "║ Findings Summary:                                            ║",
             f"║   Critical: {receipt.critical_count:<3} │ High: {receipt.high_count:<3} │ Medium: {receipt.medium_count:<3} │ Low: {receipt.low_count:<3}     ║",
-            f"╠══════════════════════════════════════════════════════════════╣",
+            "╠══════════════════════════════════════════════════════════════╣",
         ]
 
         for result in receipt.scan_results:
@@ -647,17 +664,19 @@ class SecurityVerificationEngine:
                 f"{result.execution_time_ms:>5.0f}ms)"
             )
 
-        lines.extend([
-            f"╠══════════════════════════════════════════════════════════════╣",
-            f"║ Blocking Findings: {len(receipt.blocking_findings):<39} ║",
-            f"╚══════════════════════════════════════════════════════════════╝",
-        ])
+        lines.extend(
+            [
+                "╠══════════════════════════════════════════════════════════════╣",
+                f"║ Blocking Findings: {len(receipt.blocking_findings):<39} ║",
+                "╚══════════════════════════════════════════════════════════════╝",
+            ]
+        )
 
         return "\n".join(lines)
 
 
 # Global singleton
-_security_engine: Optional[SecurityVerificationEngine] = None
+_security_engine: SecurityVerificationEngine = None
 
 
 def get_security_engine() -> SecurityVerificationEngine:

@@ -8,11 +8,11 @@ Version: 1.0.0
 """
 
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
-UTC = timezone.utc
+UTC = UTC
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class RulePriority(Enum):
@@ -70,7 +70,7 @@ class ViolationReport:
     high_count: int
     medium_count: int
     low_count: int
-    violations: List[Violation] = field(default_factory=list)
+    violations: list[Violation] = field(default_factory=list)
 
 
 class CanonEnforcer:
@@ -80,8 +80,8 @@ class CanonEnforcer:
     """
 
     def __init__(self):
-        self.rules: Dict[str, CanonRule] = {}
-        self.violations: List[Violation] = []
+        self.rules: dict[str, CanonRule] = {}
+        self.violations: list[Violation] = []
         self._load_default_rules()
 
     def _load_default_rules(self):
@@ -144,7 +144,7 @@ class CanonEnforcer:
         self.rules[rule.id] = rule
         return True
 
-    def check_compliance(self, context: str, data: Dict[str, Any]) -> List[Violation]:
+    def check_compliance(self, context: str, data: dict[str, Any]) -> list[Violation]:
         """Check compliance against all enabled rules."""
         violations = []
 
@@ -160,7 +160,9 @@ class CanonEnforcer:
 
         return violations
 
-    def _check_rule(self, rule: CanonRule, context: str, data: Dict[str, Any]) -> Optional[Violation]:
+    def _check_rule(
+        self, rule: CanonRule, context: str, data: dict[str, Any]
+    ) -> Optional[Violation]:
         """Check a single rule against data."""
         # Placeholder for actual rule checking logic
         # In production, this would evaluate the condition
@@ -195,7 +197,7 @@ class CanonEnforcer:
                 return True
         return False
 
-    def get_rules_by_category(self, category: RuleCategory) -> List[CanonRule]:
+    def get_rules_by_category(self, category: RuleCategory) -> list[CanonRule]:
         """Get all rules in a category."""
         return [r for r in self.rules.values() if r.category == category]
 

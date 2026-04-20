@@ -8,14 +8,16 @@ Version: 2.0.0
 
 from __future__ import annotations
 
-from typing import Any
+import asyncio
+import json
+import os
 import time
+from typing import Any, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 
 from backend.auth import User, get_current_user
-
 from backend.data_pipeline import (
     DataPipelineService,
     data_pipeline,
@@ -92,8 +94,7 @@ async def create_etl_job(
 
     # Define extract function based on source type
     def extract_fn() -> list[dict[str, Any]]:
-        # In production, this would connect to actual source
-        return []
+        return _extract_from_source(request.source_type, request.name)
 
     # Define transform function
     def transform_fn(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -107,8 +108,7 @@ async def create_etl_job(
 
     # Define load function
     def load_fn(records: list[dict[str, Any]]) -> int:
-        # In production, this would write to actual sink
-        return len(records)
+        return _load_to_sink(request.sink_type, records, request.name)
 
     job_id = service.create_etl_job(
         name=request.name,
@@ -212,11 +212,23 @@ async def ingest_to_stream(
             detail=f"Stream processor {processor_name} not found",
         )
 
-    # In production, this would actually ingest to the processor
+    # Actually ingest to the processor
+    processor = service._processors.get(processor_name)
+    if processor:
+        ingested = 0
+        for record in request.records:
+            if asyncio.run(processor.ingest(record)):
+                ingested += 1
+        return {
+            "processor": processor_name,
+            "records_received": len(request.records),
+            "records_ingested": ingested,
+            "status": "ingested" if ingested == len(request.records) else "partial",
+        }
     return {
         "processor": processor_name,
         "records_received": len(request.records),
-        "status": "accepted",
+        "status": "processor_not_found",
     }
 
 
@@ -251,3 +263,151 @@ async def get_pipeline_stats(
 ) -> dict[str, Any]:
     """Get overall pipeline statistics."""
     return service.get_stats()
+
+
+def _extract_from_source(source_type: str, job_name: str) -> list[dict[str, Any]]:
+    """Extract data from various source types.
+
+    Args:
+        source_type: Type of source (api, file, database, stream)
+        job_name: Name of the ETL job for context
+
+    Returns:
+        List of extracted records
+    """
+
+    records: list[dict[str, Any]] = []
+
+    if source_type == "api":
+        # Try to fetch from configured API endpoint
+        api_url = os.getenv(f"ETL_API_URL_{job_name.upper()}", "")
+        if api_url:
+            try:
+                import requests
+
+                resp = requests.get(api_url, timeout=30)
+                if resp.status_code == 200:
+                    data = resp.json()
+                    records = data if isinstance(data, list) else [data]
+            except Exception as e:
+                print(f"[ETL] API extraction failed: {e}")
+
+    elif source_type == "file":
+        # Read from configured file path
+        file_path = os.getenv(f"ETL_FILE_PATH_{job_name.upper()}", "")
+        if file_path and os.path.exists(file_path):
+            try:
+                with open(file_path) as f:
+                    if file_path.endswith(".json"):
+                        records = json.load(f)
+                    elif file_path.endswith(".csv"):
+                        import csv
+
+                        reader = csv.DictReader(f)
+                        records = list(reader)
+            except Exception as e:
+                print(f"[ETL] File extraction failed: {e}")
+
+    elif source_type == "database":
+        # Query from configured database
+        db_url = os.getenv(f"ETL_DB_URL_{job_name.upper()}", "")
+        if db_url:
+            try:
+                import sqlalchemy as sa
+
+                engine = sa.create_engine(db_url)
+                with engine.connect() as conn:
+                    result = conn.execute(sa.text("SELECT * FROM source_table"))
+                    records = [dict(row) for row in result.mappings()]
+            except Exception as e:
+                print(f"[ETL] Database extraction failed: {e}")
+
+    elif source_type == "stream":
+        # Read from Redis stream
+        try:
+            import redis
+
+            r = redis.from_url(os.getenv("REDIS_URL", "redis://localhost:6379/0"))
+            stream_key = f"etl:{job_name}:input"
+            messages = r.xread({stream_key: "0"}, count=100, block=1000)
+            for stream, entries in messages:
+                for msg_id, fields in entries:
+                    records.append({k.decode(): v.decode() for k, v in fields.items()})
+        except Exception as e:
+            print(f"[ETL] Stream extraction failed: {e}")
+
+    return records if isinstance(records, list) else []
+
+
+def _load_to_sink(sink_type: str, records: list[dict[str, Any]], job_name: str) -> int:
+    """Load data to various sink types.
+
+    Args:
+        sink_type: Type of sink (api, file, database, stream)
+        records: Records to load
+        job_name: Name of the ETL job for context
+
+    Returns:
+        Number of records loaded
+    """
+
+    if not records:
+        return 0
+
+    loaded = 0
+
+    if sink_type == "api":
+        api_url = os.getenv(f"ETL_SINK_API_URL_{job_name.upper()}", "")
+        if api_url:
+            try:
+                import requests
+
+                resp = requests.post(api_url, json=records, timeout=30)
+                if resp.status_code in (200, 201):
+                    loaded = len(records)
+            except Exception as e:
+                print(f"[ETL] API load failed: {e}")
+
+    elif sink_type == "file":
+        file_path = os.getenv(f"ETL_SINK_FILE_PATH_{job_name.upper()}", "")
+        if file_path:
+            try:
+                os.makedirs(os.path.dirname(file_path) or ".", exist_ok=True)
+                with open(file_path, "w") as f:
+                    json.dump(records, f, default=str)
+                loaded = len(records)
+            except Exception as e:
+                print(f"[ETL] File load failed: {e}")
+
+    elif sink_type == "database":
+        db_url = os.getenv(f"ETL_SINK_DB_URL_{job_name.upper()}", "")
+        if db_url:
+            try:
+                import sqlalchemy as sa
+
+                engine = sa.create_engine(db_url)
+                with engine.connect() as conn:
+                    # Insert records into target table
+                    table_name = os.getenv(f"ETL_SINK_TABLE_{job_name.upper()}", "target_table")
+                    conn.execute(
+                        sa.text(f"INSERT INTO {table_name} SELECT * FROM (VALUES :data)"),
+                        {"data": records},
+                    )
+                    conn.commit()
+                loaded = len(records)
+            except Exception as e:
+                print(f"[ETL] Database load failed: {e}")
+
+    elif sink_type == "stream":
+        try:
+            import redis
+
+            r = redis.from_url(os.getenv("REDIS_URL", "redis://localhost:6379/0"))
+            stream_key = f"etl:{job_name}:output"
+            for record in records:
+                r.xadd(stream_key, record)
+            loaded = len(records)
+        except Exception as e:
+            print(f"[ETL] Stream load failed: {e}")
+
+    return loaded

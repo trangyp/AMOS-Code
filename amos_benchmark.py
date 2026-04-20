@@ -4,7 +4,6 @@ import time
 import tracemalloc
 from dataclasses import dataclass
 from statistics import mean
-from typing import List
 
 
 @dataclass
@@ -41,7 +40,7 @@ class AMOSBenchmark:
             ops_per_sec=1000.0 / mean_ms if mean_ms > 0 else 0,
         )
 
-    def run_all(self) -> List[BenchmarkResult]:
+    def run_all(self) -> list[BenchmarkResult]:
         """Run all benchmarks."""
         results = []
 

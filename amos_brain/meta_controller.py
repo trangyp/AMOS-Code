@@ -7,7 +7,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from functools import lru_cache
-from typing import Any, Dict, List
+from typing import Any, Optional
 
 from .laws import GlobalLaws
 from .loader import get_brain
@@ -31,12 +31,12 @@ class SubTask:
 
     task_id: str
     description: str
-    dependencies: List[str]
+    dependencies: list[str]
     status: TaskStatus
     created_at: str
-    completed_at: str  = None
+    completed_at: str = None
     result: Any = None
-    law_violations: List[dict] = field(default_factory=list)
+    law_violations: list[dict] = field(default_factory=list)
     retry_count: int = 0
 
 
@@ -47,7 +47,7 @@ class WorkflowPlan:
     plan_id: str
     goal: str
     domain: str
-    subtasks: List[SubTask]
+    subtasks: list[SubTask]
     created_at: str
     status: str = "active"
     current_step: int = 0
@@ -69,7 +69,7 @@ class MetaCognitiveController:
         self.processor = BrainTaskProcessor()
         self.laws = GlobalLaws()
         self.state_manager = get_state_manager()
-        self._active_plans: Dict[str, WorkflowPlan] = {}
+        self._active_plans: dict[str, WorkflowPlan] = {}
         self._max_retries = 3
 
     def orchestrate(

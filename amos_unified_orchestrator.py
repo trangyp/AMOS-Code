@@ -30,7 +30,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 # Add paths for imports
 sys.path.insert(0, str(Path(__file__).parent))
@@ -71,7 +71,7 @@ class OrchestratorState:
     brain_connected: bool = False
     subsystems_online: int = 0
     subsystems_total: int = 14
-    active_workflows: List[str] = field(default_factory=list)
+    active_workflows: list[str] = field(default_factory=list)
     last_check: str = None
 
 
@@ -105,7 +105,7 @@ class AMOSUnifiedOrchestrator:
 
     def __init__(self):
         self.amos = None
-        self.subsystems: Dict[str, SubsystemInfo] = {}
+        self.subsystems: dict[str, SubsystemInfo] = {}
         self.state = OrchestratorState()
         self._initialize_subsystems()
 
@@ -121,7 +121,7 @@ class AMOSUnifiedOrchestrator:
                 loaded=False,
             )
 
-    def initialize(self) -> Dict[str, Any]:
+    def initialize(self) -> dict[str, Any]:
         """Initialize the unified orchestrator.
 
         Phase 1: Connect to AMOS Brain
@@ -216,7 +216,7 @@ class AMOSUnifiedOrchestrator:
 
         return False
 
-    def _validate_integration(self) -> Dict[str, Any]:
+    def _validate_integration(self) -> dict[str, Any]:
         """Validate that all components can work together."""
         checks = {
             "brain_api_accessible": self.amos is not None,
@@ -236,7 +236,7 @@ class AMOSUnifiedOrchestrator:
         checks["operational"] = all(checks.values())
         return checks
 
-    def orchestrate_task(self, task: str, context: dict = None) -> Dict[str, Any]:
+    def orchestrate_task(self, task: str, context: dict = None) -> dict[str, Any]:
         """Orchestrate a task through the unified system.
 
         Uses brain cognition + organism execution.
@@ -275,7 +275,7 @@ class AMOSUnifiedOrchestrator:
             "completed": execution.get("success", False),
         }
 
-    def _route_task(self, task: str, analysis: dict) -> Dict[str, Any]:
+    def _route_task(self, task: str, analysis: dict) -> dict[str, Any]:
         """Route task to appropriate subsystems."""
         task_lower = task.lower()
         subsystems = []
@@ -318,7 +318,7 @@ class AMOSUnifiedOrchestrator:
             "primary": subsystems[0] if subsystems else None,
         }
 
-    def _execute_via_muscle(self, task: str, routing: dict) -> Dict[str, Any]:
+    def _execute_via_muscle(self, task: str, routing: dict) -> dict[str, Any]:
         """Execute task through MUSCLE subsystem."""
         muscle = self.subsystems.get("06_MUSCLE")
 
@@ -338,7 +338,7 @@ class AMOSUnifiedOrchestrator:
             "result": f"Task '{task[:40]}...' executed through {len(routing.get('subsystems', []))} subsystems",
         }
 
-    def _track_resources(self, task: str) -> Dict[str, Any]:
+    def _track_resources(self, task: str) -> dict[str, Any]:
         """Track resource usage through BLOOD subsystem."""
         blood = self.subsystems.get("04_BLOOD")
 
@@ -353,7 +353,7 @@ class AMOSUnifiedOrchestrator:
             "budget_impact": "minimal",
         }
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get comprehensive system status."""
         subsystem_status = {
             name: {

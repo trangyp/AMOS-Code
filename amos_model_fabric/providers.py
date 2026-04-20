@@ -11,8 +11,10 @@ Unified adapters for local model backends:
 import json
 import logging
 from abc import ABC, abstractmethod
-from datetime import datetime
-from typing import Any, Dict, List
+from datetime import UTC, datetime
+
+UTC = UTC
+from typing import Any
 
 import aiohttp
 
@@ -28,15 +30,15 @@ class BaseProvider(ABC):
         self,
         provider_type: ProviderType,
         base_url: str,
-        api_key: str = None,
+        api_key: str | None = None,
         timeout: float = 120.0,
     ):
         self.provider_type = provider_type
         self.base_url = base_url.rstrip("/")
         self.api_key = api_key
         self.timeout = timeout
-        self._session: aiohttp.ClientSession = None
-        self._available_models: List[str] = []
+        self._session: aiohttp.ClientSession | None = None
+        self._available_models: list[str] = []
 
     async def _get_session(self) -> aiohttp.ClientSession:
         """Get or create HTTP session."""
@@ -47,7 +49,7 @@ class BaseProvider(ABC):
             )
         return self._session
 
-    def _default_headers(self) -> Dict[str, str]:
+    def _default_headers(self) -> dict[str, str]:
         """Default headers for requests."""
         headers = {"Content-Type": "application/json"}
         if self.api_key:
@@ -70,7 +72,7 @@ class BaseProvider(ABC):
         pass
 
     @abstractmethod
-    async def list_models(self) -> List[str]:
+    async def list_models(self) -> list[str]:
         """List available models."""
         pass
 
@@ -104,7 +106,7 @@ class OllamaProvider(BaseProvider):
             logger.debug(f"Ollama health check failed: {e}")
             return False
 
-    async def list_models(self) -> List[str]:
+    async def list_models(self) -> list[str]:
         """List available Ollama models."""
         try:
             session = await self._get_session()
@@ -124,7 +126,7 @@ class OllamaProvider(BaseProvider):
         session = await self._get_session()
         model = request.model or "qwen2.5-coder:14b"
 
-        payload: Dict[str, Any] = {
+        payload: dict[str, Any] = {
             "model": model,
             "messages": request.messages,
             "stream": False,
@@ -157,7 +159,7 @@ class OllamaProvider(BaseProvider):
         session = await self._get_session()
         model = request.model or "qwen2.5-coder:14b"
 
-        payload: Dict[str, Any] = {
+        payload: dict[str, Any] = {
             "model": model,
             "messages": request.messages,
             "stream": True,
@@ -203,7 +205,7 @@ class OpenAICompatibleProvider(BaseProvider):
             logger.debug(f"Health check failed: {e}")
             return False
 
-    async def list_models(self) -> List[str]:
+    async def list_models(self) -> list[str]:
         """List available models."""
         try:
             session = await self._get_session()
@@ -219,7 +221,7 @@ class OpenAICompatibleProvider(BaseProvider):
 
     def _convert_request(self, request: FabricRequest) -> dict:
         """Convert FabricRequest to OpenAI format."""
-        payload: Dict[str, Any] = {
+        payload: dict[str, Any] = {
             "model": request.model or "local-model",
             "messages": request.messages,
             "temperature": request.temperature,
@@ -297,7 +299,7 @@ class LMStudioProvider(OpenAICompatibleProvider):
     def __init__(
         self,
         base_url: str = "http://localhost:1234",
-        api_key: str = None,
+        api_key: str | None = None,
         timeout: float = 120.0,
     ):
         super().__init__(ProviderType.LM_STUDIO, base_url, api_key or "lm-studio", timeout)
@@ -320,7 +322,7 @@ class VLLMProvider(OpenAICompatibleProvider):
     def __init__(
         self,
         base_url: str = "http://localhost:8000",
-        api_key: str = None,
+        api_key: str | None = None,
         timeout: float = 120.0,
     ):
         super().__init__(ProviderType.VLLM, base_url, api_key, timeout)
@@ -332,7 +334,7 @@ class SGLangProvider(OpenAICompatibleProvider):
     def __init__(
         self,
         base_url: str = "http://localhost:30000",
-        api_key: str = None,
+        api_key: str | None = None,
         timeout: float = 120.0,
     ):
         super().__init__(ProviderType.SGLANG, base_url, api_key, timeout)
@@ -340,8 +342,8 @@ class SGLangProvider(OpenAICompatibleProvider):
 
 def create_provider(
     provider_type: ProviderType,
-    base_url: str = None,
-    api_key: str = None,
+    base_url: str | None = None,
+    api_key: str | None = None,
 ) -> BaseProvider:
     """Factory function to create provider instances."""
     urls = {

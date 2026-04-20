@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 """Context Mapper — Maps environment context to semantic meaning for AMOS."""
 
 from dataclasses import dataclass, field
-from datetime import datetime
-from typing import Any, Dict, List, Optional
+from datetime import UTC, datetime
+from typing import Any, Optional
 
 
 @dataclass
@@ -12,8 +14,8 @@ class ContextMap:
     id: str
     source: str  # e.g., file path, directory
     context_type: str  # e.g., "project", "module", "task"
-    properties: Dict[str, Any] = field(default_factory=dict)
-    semantic_tags: List[str] = field(default_factory=list)
+    properties: dict[str, Any] = field(default_factory=dict)
+    semantic_tags: list[str] = field(default_factory=list)
     created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
 
@@ -28,11 +30,11 @@ class ContextMapper:
     """
 
     def __init__(self):
-        self._maps: Dict[str, ContextMap] = {}
-        self._tag_index: Dict[str, list[str]] = {}
+        self._maps: dict[str, ContextMap] = {}
+        self._tag_index: dict[str, list[str]] = {}
 
     def map_context(
-        self, source: str, context_type: str = None, properties: Dict[str, Any] = None
+        self, source: str, context_type: str = None, properties: dict[str, Any] = None
     ) -> ContextMap:
         """Create a context map for a source."""
         import uuid
@@ -77,8 +79,8 @@ class ContextMapper:
             return "general"
 
     def _generate_tags(
-        self, source: str, context_type: str, properties: Dict[str, Any]
-    ) -> List[str]:
+        self, source: str, context_type: str, properties: dict[str, Any]
+    ) -> list[str]:
         """Generate semantic tags for context."""
         tags = [context_type]
 
@@ -96,7 +98,7 @@ class ContextMapper:
 
         return list(set(tags))
 
-    def find_by_tag(self, tag: str) -> List[ContextMap]:
+    def find_by_tag(self, tag: str) -> list[ContextMap]:
         """Find context maps by tag."""
         ids = self._tag_index.get(tag, [])
         return [self._maps[mid] for mid in ids if mid in self._maps]
@@ -108,7 +110,7 @@ class ContextMapper:
                 return map_obj
         return None
 
-    def map_directory(self, path: str = ".") -> List[ContextMap]:
+    def map_directory(self, path: str = ".") -> list[ContextMap]:
         """Map all files in directory."""
         import os
 
@@ -131,7 +133,7 @@ class ContextMapper:
 
         return maps
 
-    def status(self) -> Dict[str, Any]:
+    def status(self) -> dict[str, Any]:
         """Get mapper status."""
         return {
             "total_maps": len(self._maps),
@@ -139,9 +141,9 @@ class ContextMapper:
             "by_type": self._count_by_type(),
         }
 
-    def _count_by_type(self) -> Dict[str, int]:
+    def _count_by_type(self) -> dict[str, int]:
         """Count maps by type."""
-        counts: Dict[str, int] = {}
+        counts: dict[str, int] = {}
         for map_obj in self._maps.values():
             t = map_obj.context_type
             counts[t] = counts.get(t, 0) + 1

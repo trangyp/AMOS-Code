@@ -1,4 +1,6 @@
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
+
+from typing import Any
 
 """AMOS Tools Registry
 ====================
@@ -25,14 +27,14 @@ class Tool:
     name: str
     description: str
     func: Callable[..., Coroutine[Any, Any, Any]]
-    parameters: Dict[str, str]
+    parameters: dict[str, str]
 
 
 class AMOSToolRegistry:
     """Registry of tools that AMOS brain can use."""
 
     def __init__(self):
-        self.tools: Dict[str, Tool] = {}
+        self.tools: dict[str, Tool] = {}
         self._analyzer = AMOSCodeAnalyzer()
 
     def register(self, tool: Tool) -> None:
@@ -50,7 +52,7 @@ class AMOSToolRegistry:
         except Exception as e:
             return {"error": str(e)}
 
-    def list_tools(self) -> List[dict[str, str]]:
+    def list_tools(self) -> list[dict[str, str]]:
         """List all registered tools."""
         return [
             {
@@ -67,7 +69,7 @@ class AMOSToolRegistry:
 # ============================================================================
 
 
-async def analyze_code_file(filepath: str) -> Dict[str, Any]:
+async def analyze_code_file(filepath: str) -> dict[str, Any]:
     """Analyze a Python file for code quality issues."""
     from pathlib import Path
 
@@ -91,7 +93,7 @@ async def analyze_code_file(filepath: str) -> Dict[str, Any]:
     }
 
 
-async def analyze_code_directory(directory: str, max_files: int = 20) -> Dict[str, Any]:
+async def analyze_code_directory(directory: str, max_files: int = 20) -> dict[str, Any]:
     """Analyze all Python files in a directory."""
 
     analyzer = AMOSCodeAnalyzer()
@@ -116,7 +118,7 @@ async def analyze_code_directory(directory: str, max_files: int = 20) -> Dict[st
     }
 
 
-async def get_repo_info(owner: str, repo: str) -> Dict[str, Any]:
+async def get_repo_info(owner: str, repo: str) -> dict[str, Any]:
     """Get GitHub repository information."""
     from amos_github_tool import GitHubToolForBrain
 
@@ -131,9 +133,7 @@ async def get_repo_info(owner: str, repo: str) -> Dict[str, Any]:
 
 # ============================================================================
 # Global Registry Instance
-# ============================================================================
-
-_registry: Optional[AMOSToolRegistry] = None
+# ============================================================================_registry: Optional[AMOSToolRegistry] = None
 
 
 def get_registry() -> AMOSToolRegistry:
@@ -192,7 +192,7 @@ class BrainWithTools:
         self.brain = BrainTaskProcessor()
         self.registry = get_registry()
 
-    async def process_with_tools(self, task: str) -> Dict[str, Any]:
+    async def process_with_tools(self, task: str) -> dict[str, Any]:
         """Process task, using tools when needed."""
 
         # First, get brain analysis

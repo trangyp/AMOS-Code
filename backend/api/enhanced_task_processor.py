@@ -1,4 +1,6 @@
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
+
+from typing import Any, Optional
 
 """Enhanced Task Processor with AMOS Brain Integration.
 
@@ -10,23 +12,22 @@ import asyncio
 import sys
 import time
 from datetime import datetime, timezone
-
-UTC = timezone.utc
 from enum import Enum
 from pathlib import Path
 
 from fastapi import APIRouter, BackgroundTasks
 from pydantic import BaseModel, Field
 
+UTC = timezone.utc
+
 # Setup paths for brain imports
 AMOS_ROOT = Path(__file__).parent.parent.parent.resolve()
 for p in [AMOS_ROOT, AMOS_ROOT / "clawspring", AMOS_ROOT / "clawspring" / "amos_brain"]:
     if str(p) not in sys.path:
-        sys.path.insert(0, str(p))
 
 router = APIRouter(prefix="/api/v1/enhanced-tasks", tags=["Enhanced Tasks"])
 
-# Lazy imports for brain components
+#Lazy imports for brain components
 _brain_available: Optional[bool] = None
 _kernel_class: Any = None
 
@@ -76,11 +77,11 @@ class TaskRequest(BaseModel):
     """Request to process a task."""
 
     task_type: TaskType
-    payload: Dict[str, Any] = Field(default_factory=dict)
+    payload: dict[str, Any] = Field(default_factory=dict)
     priority: TaskPriority = TaskPriority.NORMAL
     use_brain: bool = Field(default=True, description="Use AMOS brain for processing")
     timeout_seconds: float = Field(default=30.0, ge=1.0, le=300.0)
-    context: Dict[str, Any] = Field(default_factory=dict)
+    context: dict[str, Any] = Field(default_factory=dict)
 
 
 class TaskResult(BaseModel):
@@ -89,8 +90,8 @@ class TaskResult(BaseModel):
     success: bool
     result: Any
     processing_time_ms: float
-    brain_enhanced: bool
-    cognitive_score: Optional[float] = None
+    brain_enhanced:bool
+    cognitive_score: Optional[float] =None
     error_message: Optional[str] = None
 
 
@@ -98,7 +99,7 @@ class TaskResponse(BaseModel):
     """Response from task processing."""
 
     task_id: str
-    status: str
+    status:str
     result: Optional[TaskResult] = None
     timestamp: str
 
@@ -111,7 +112,7 @@ class TaskResponse(BaseModel):
 class BaseTaskProcessor:
     """Base class for task processors."""
 
-    async def process(self, payload: Dict[str, Any], context: Dict[str, Any]) -> Dict[str, Any]:
+    async def process(self, payload: dict[str, Any], context: dict[str, Any]) -> dict[str, Any]:
         """Process the task payload."""
         raise NotImplementedError
 
@@ -119,7 +120,7 @@ class BaseTaskProcessor:
 class CodeAnalysisProcessor(BaseTaskProcessor):
     """Analyze code using cognitive patterns."""
 
-    async def process(self, payload: Dict[str, Any], context: Dict[str, Any]) -> Dict[str, Any]:
+    async def process(self, payload: dict[str, Any], context: dict[str, Any]) -> dict[str, Any]:
         code = payload.get("code", "")
         language = payload.get("language", "python")
 
@@ -146,14 +147,14 @@ class CodeAnalysisProcessor(BaseTaskProcessor):
 class EquationExecutionProcessor(BaseTaskProcessor):
     """Execute equations with error handling."""
 
-    async def process(self, payload: Dict[str, Any], context: Dict[str, Any]) -> Dict[str, Any]:
+    async def process(self, payload: dict[str, Any], context: dict[str, Any]) -> dict[str, Any]:
         equation_name = payload.get("equation", "")
         params = payload.get("parameters", {})
 
         # Try to find and execute equation
         try:
             # Look in unified registry
-            sys.path.insert(0, str(AMOS_ROOT))
+
             from amos_unified_equation_registry import UnifiedEquationRegistry
 
             registry = UnifiedEquationRegistry()
@@ -173,7 +174,7 @@ class EquationExecutionProcessor(BaseTaskProcessor):
 class CognitiveReasoningProcessor(BaseTaskProcessor):
     """Use AMOS brain for cognitive reasoning tasks."""
 
-    async def process(self, payload: Dict[str, Any], context: Dict[str, Any]) -> Dict[str, Any]:
+    async def process(self, payload: dict[str, Any], context: dict[str, Any]) -> dict[str, Any]:
         if not _check_brain():
             return {"error": "AMOS Brain not available", "brain_enhanced": False}
 
@@ -209,7 +210,7 @@ class CognitiveReasoningProcessor(BaseTaskProcessor):
 # Task Router
 # ============================================================================
 
-_PROCESSORS: Dict[TaskType, BaseTaskProcessor] = {
+_PROCESSORS: dict[TaskType, BaseTaskProcessor] = {
     TaskType.CODE_ANALYSIS: CodeAnalysisProcessor(),
     TaskType.EQUATION_EXECUTION: EquationExecutionProcessor(),
     TaskType.COGNITIVE_REASONING: CognitiveReasoningProcessor(),
@@ -291,7 +292,7 @@ async def process_task(request: TaskRequest) -> TaskResponse:
 @router.post("/process-async")
 async def process_task_async(
     request: TaskRequest, background_tasks: BackgroundTasks
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Submit task for async processing."""
     task_id = f"async-task-{datetime.now(UTC).strftime('%Y%m%d%H%M%S%f')}"
 
@@ -306,7 +307,7 @@ async def process_task_async(
 
 
 @router.get("/status/{task_id}")
-async def get_task_status(task_id: str) -> Dict[str, Any]:
+async def get_task_status(task_id: str) -> dict[str, Any]:
     """Get status of a task (placeholder for full implementation)."""
     return {
         "task_id": task_id,
@@ -316,7 +317,7 @@ async def get_task_status(task_id: str) -> Dict[str, Any]:
 
 
 @router.get("/health")
-async def task_processor_health() -> Dict[str, Any]:
+async def task_processor_health() -> dict[str, Any]:
     """Check task processor health."""
     return {
         "status": "healthy",
@@ -327,7 +328,7 @@ async def task_processor_health() -> Dict[str, Any]:
 
 
 @router.get("/types")
-async def list_task_types() -> List[dict[str, Any]]:
+async def list_task_types() -> list[dict[str, Any]]:
     """List available task types."""
     return [
         {

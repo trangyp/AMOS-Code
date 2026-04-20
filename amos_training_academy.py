@@ -22,6 +22,8 @@ Commands:
     progress        Show learning progress
 """
 
+from __future__ import annotations
+
 import argparse
 import json
 import subprocess
@@ -29,7 +31,7 @@ import sys
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 sys.path.insert(0, str(Path(__file__).parent / "clawspring"))
 sys.path.insert(0, str(Path(__file__).parent))
@@ -43,7 +45,7 @@ class TrainingModule:
     path: Path
     category: str
     description: str = ""
-    topics: List[str] = field(default_factory=list)
+    topics: list[str] = field(default_factory=list)
     completed: bool = False
     progress: float = 0.0
 
@@ -54,7 +56,7 @@ class LearningPath:
 
     name: str
     description: str
-    modules: List[str] = field(default_factory=list)
+    modules: list[str] = field(default_factory=list)
     estimated_hours: float = 0.0
     difficulty: str = "intermediate"
 
@@ -110,11 +112,11 @@ class TrainingAcademy:
     def __init__(self, brain_root: Optional[Path] = None):
         self.brain_root = brain_root or Path(__file__).parent / "_AMOS_BRAIN"
         self.training_folder = self.brain_root / "training"
-        self.modules: Dict[str, TrainingModule] = {}
+        self.modules: dict[str, TrainingModule] = {}
         self.progress_file = Path(__file__).parent / ".amos_training_progress.json"
-        self.user_progress: Dict[str, Any] = self._load_progress()
+        self.user_progress: dict[str, Any] = self._load_progress()
 
-    def _load_progress(self) -> Dict[str, Any]:
+    def _load_progress(self) -> dict[str, Any]:
         """Load user training progress."""
         if self.progress_file.exists():
             try:
@@ -129,7 +131,7 @@ class TrainingAcademy:
         with open(self.progress_file, "w") as f:
             json.dump(self.user_progress, f, indent=2)
 
-    def scan_training_materials(self) -> List[TrainingModule]:
+    def scan_training_materials(self) -> list[TrainingModule]:
         """Scan training folder for all PDF materials."""
         modules = []
 
@@ -220,7 +222,7 @@ class TrainingAcademy:
         print()
 
         # Group by category
-        by_category: Dict[str, list[TrainingModule]] = {}
+        by_category: dict[str, list[TrainingModule]] = {}
         for m in modules:
             by_category.setdefault(m.category, []).append(m)
 

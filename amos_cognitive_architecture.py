@@ -16,9 +16,11 @@ import asyncio
 import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
-from typing import Any
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
+
+from typing import Any, Optional
 
 # Use our working integration
 from amos_real_brain_integration import CognitiveRequest, get_amos_real_brain

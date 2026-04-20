@@ -9,7 +9,9 @@ Validates:
 - Engine Integration: Cross-engine coordination
 """
 
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from pathlib import Path
 
 import pytest

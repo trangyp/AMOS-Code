@@ -3,7 +3,7 @@
 
 import hashlib
 import time
-from typing import Any, Dict
+from typing import Any
 
 try:
     from equation_tracing import instrument_fastapi, setup_telemetry
@@ -52,7 +52,7 @@ async def rate_limit_middleware(request: Request, call_next):
 
 
 @app.get("/gateway/status")
-async def gateway_status() -> Dict[str, Any]:
+async def gateway_status() -> dict[str, Any]:
     """Gateway health status."""
     return {
         "status": "operational",

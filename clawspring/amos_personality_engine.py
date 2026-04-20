@@ -1,10 +1,11 @@
 """AMOS Personality Engine - Character modeling and behavioral analysis."""
 
+from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any
 
-from amos_runtime import get_runtime
+from clawspring.amos_runtime import get_runtime
 
 
 @dataclass
@@ -13,9 +14,9 @@ class PersonalityAnalysis:
 
     domain: str
     input_data: str
-    findings: List[dict]
+    findings: list[dict]
     confidence: float
-    limitations: List[str]
+    limitations: list[str]
     law_compliance: dict
     gap_acknowledgment: str
 
@@ -65,7 +66,7 @@ class TraitsKernel:
             ),
         )
 
-    def _get_primitives(self, category: str) -> List[str]:
+    def _get_primitives(self, category: str) -> list[str]:
         """Get trait primitives for category."""
         primitives = {
             "openness": ["experience_seeking", "cognitive_exploration", "aesthetic_sensitivity"],
@@ -122,7 +123,7 @@ class IdentityKernel:
             ),
         )
 
-    def _get_primitives(self, category: str) -> List[str]:
+    def _get_primitives(self, category: str) -> list[str]:
         """Get identity primitives for category."""
         primitives = {
             "values": ["importance", "priority", "guidance", "evaluation"],
@@ -177,7 +178,7 @@ class BehavioralPatternsKernel:
             ),
         )
 
-    def _get_primitives(self, category: str) -> List[str]:
+    def _get_primitives(self, category: str) -> list[str]:
         """Get behavioral primitives for category."""
         primitives = {
             "habits": ["automaticity", "context_cue", "routine"],
@@ -232,7 +233,7 @@ class CognitiveStyleKernel:
             ),
         )
 
-    def _get_primitives(self, category: str) -> List[str]:
+    def _get_primitives(self, category: str) -> list[str]:
         """Get cognitive primitives for category."""
         primitives = {
             "analytical": ["decomposition", "logic", "evidence"],
@@ -277,7 +278,7 @@ class AMOSPersonalityEngine:
 
     def __init__(self):
         self.runtime = get_runtime()
-        self.kernels: Dict[str, Any] = {}
+        self.kernels: dict[str, Any] = {}
         self._init_kernels()
 
     def _init_kernels(self):
@@ -288,8 +289,8 @@ class AMOSPersonalityEngine:
     def analyze(
         self,
         description: str,
-        domains: Optional[List[str]] = None,
-    ) -> Dict[str, PersonalityAnalysis]:
+        domains: list[str | None] = None,
+    ) -> dict[str, PersonalityAnalysis]:
         """Run personality analysis across specified domains."""
         domains = domains or list(self.DOMAINS.keys())
         results = {}
@@ -305,7 +306,7 @@ class AMOSPersonalityEngine:
         """Return AMOS core identity profile."""
         return self.AMOS_IDENTITY
 
-    def get_findings_summary(self, results: Dict[str, PersonalityAnalysis]) -> str:
+    def get_findings_summary(self, results: dict[str, PersonalityAnalysis]) -> str:
         """Generate human-readable findings summary."""
         lines = [
             "# AMOS Personality Analysis Summary",
@@ -401,7 +402,7 @@ class AMOSPersonalityEngine:
 
 
 # Singleton
-_personality_engine: Optional[AMOSPersonalityEngine] = None
+_personality_engine: AMOSPersonalityEngine | None = None
 
 
 def get_personality_engine() -> AMOSPersonalityEngine:
@@ -414,8 +415,8 @@ def get_personality_engine() -> AMOSPersonalityEngine:
 
 def analyze_personality(
     description: str,
-    domains: Optional[List[str]] = None,
-) -> Dict[str, PersonalityAnalysis]:
+    domains: list[str | None] = None,
+) -> dict[str, PersonalityAnalysis]:
     """Quick helper for personality analysis."""
     return get_personality_engine().analyze(description, domains)
 

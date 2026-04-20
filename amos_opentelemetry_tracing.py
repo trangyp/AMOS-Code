@@ -41,11 +41,13 @@ Version: 1.0.0
 Phase: 14 Enhancement
 """
 
+from __future__ import annotations
+
 import functools
 import os
 from collections.abc import Callable
 from contextlib import contextmanager
-from typing import Any, Dict, Optional, TypeVar
+from typing import Any, TypeVar
 
 # OpenTelemetry imports
 try:
@@ -92,8 +94,8 @@ class AMOSTracing:
     - Custom business logic spans
     """
 
-    _instance: Optional[AMOSTracing] = None
-    _tracer_provider: Optional[TracerProvider] = None
+    _instance: AMOSTracing | None = None
+    _tracer_provider: TracerProvider | None = None
     _tracer: trace.Tracer = None
     _initialized = False
 
@@ -248,7 +250,7 @@ class AMOSTracing:
     def start_span(
         self,
         name: str,
-        attributes: Dict[str, Any] = None,
+        attributes: dict[str, Any] = None,
         kind: trace.SpanKind = trace.SpanKind.INTERNAL,
     ):
         """
@@ -274,7 +276,7 @@ class AMOSTracing:
                     span.set_attribute(key, value)
             yield span
 
-    def trace_method(self, name: str = None, attributes: Dict[str, Any] = None) -> Callable:
+    def trace_method(self, name: str = None, attributes: dict[str, Any] = None) -> Callable:
         """
         Decorator for tracing method calls.
 
@@ -407,7 +409,6 @@ def instrument_fastapi(app: Any) -> bool:
 
 # Import asyncio check
 import asyncio
-from collections.abc import Callable
 from typing import TypeVar
 
 __all__ = [

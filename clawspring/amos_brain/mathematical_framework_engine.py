@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """AMOS Mathematical Framework Engine - Core engine for equations and invariants.
 
 Integrates 200+ mathematical equations and 50+ invariants from global UI/UX and AI frameworks.
@@ -87,9 +89,9 @@ class UISubEngine:
     """UI/UX design system mathematical engine."""
 
     def __init__(self):
-        self.equations: Dict[str, Equation] = {}
-        self.invariants: Dict[str, Invariant] = {}
-        self.frameworks: Dict[str, Framework] = {}
+        self.equations: dict[str, Equation] = {}
+        self.invariants: dict[str, Invariant] = {}
+        self.frameworks: dict[str, Framework] = {}
         self._initialize()
 
     def _initialize(self):
@@ -181,8 +183,9 @@ class UISubEngine:
             name="CSS Grid fr Distribution",
             domain=Domain.UI_UX,
             latex="track_{size} = \\frac{free_{space} \\times flex_{factor}}{\\sum flex_{factors}}",
-            python_impl=lambda free_space, flex_factor, total_flex: (free_space * flex_factor)
-            / total_flex,
+            python_impl=lambda free_space, flex_factor, total_flex: (
+                (free_space * flex_factor) / total_flex
+            ),
             description="Fractional unit distribution in CSS Grid",
             parameters={
                 "free_space": "Available space",
@@ -197,8 +200,9 @@ class UISubEngine:
             name="Flexbox Grow Distribution",
             domain=Domain.UI_UX,
             latex="child_{size} = base_{size} + \\frac{available \\times flex_{grow}}{\\sum flex_{grow}}",
-            python_impl=lambda base, available, flex_grow, total_flex: base
-            + (available * flex_grow) / total_flex,
+            python_impl=lambda base, available, flex_grow, total_flex: (
+                base + (available * flex_grow) / total_flex
+            ),
             description="Space distribution in flex containers",
             parameters={
                 "base": "Base size",
@@ -236,7 +240,7 @@ class UISubEngine:
             name="Bootstrap", category="CSS Framework", constants={"grid_columns": 12, "gutter": 24}
         )
 
-    def validate_spacing(self, value: int) -> Dict[str, Any]:
+    def validate_spacing(self, value: int) -> dict[str, Any]:
         """Validate if spacing follows 8-point grid."""
         return {
             "value": value,
@@ -245,7 +249,7 @@ class UISubEngine:
             "rem": value / 16,
         }
 
-    def calculate_type_scale(self, base: float, ratio: float, steps: int) -> List[float]:
+    def calculate_type_scale(self, base: float, ratio: float, steps: int) -> list[float]:
         """Calculate modular type scale."""
         return [
             self.equations["modular_type_scale"].evaluate(base=base, r=ratio, n=i)
@@ -261,9 +265,9 @@ class AISubEngine:
     """AI/ML mathematical engine."""
 
     def __init__(self):
-        self.equations: Dict[str, Equation] = {}
-        self.invariants: Dict[str, Invariant] = {}
-        self.frameworks: Dict[str, Framework] = {}
+        self.equations: dict[str, Equation] = {}
+        self.invariants: dict[str, Invariant] = {}
+        self.frameworks: dict[str, Framework] = {}
         self._initialize()
 
     def _initialize(self):
@@ -373,8 +377,9 @@ class AISubEngine:
             name="Q-Learning Update",
             domain=Domain.REINFORCEMENT_LEARNING,
             latex="Q(s,a) \\leftarrow Q(s,a) + \\alpha[r + \\gamma \\max_{a'} Q(s',a') - Q(s,a)]",
-            python_impl=lambda Q, alpha, r, gamma, max_Q_next: Q
-            + alpha * (r + gamma * max_Q_next - Q),
+            python_impl=lambda Q, alpha, r, gamma, max_Q_next: (
+                Q + alpha * (r + gamma * max_Q_next - Q)
+            ),
             description="Temporal difference learning for Q-values",
             parameters={
                 "Q": "Current Q-value",
@@ -435,7 +440,7 @@ class AISubEngine:
         """Calculate perplexity from cross-entropy."""
         return math.exp(cross_entropy)
 
-    def validate_probability_distribution(self, probs: List[float]) -> bool:
+    def validate_probability_distribution(self, probs: list[float]) -> bool:
         """Check if values form a valid probability distribution."""
         return self.invariants["softmax_probability"].check(outputs=probs)
 
@@ -444,9 +449,9 @@ class SecuritySubEngine:
     """Cryptographic and security mathematical engine."""
 
     def __init__(self):
-        self.equations: Dict[str, Equation] = {}
-        self.invariants: Dict[str, Invariant] = {}
-        self.frameworks: Dict[str, Framework] = {}
+        self.equations: dict[str, Equation] = {}
+        self.invariants: dict[str, Invariant] = {}
+        self.frameworks: dict[str, Framework] = {}
         self._initialize()
 
     def _initialize(self):
@@ -499,9 +504,9 @@ class DistributedSubEngine:
     """Distributed systems mathematical engine."""
 
     def __init__(self):
-        self.equations: Dict[str, Equation] = {}
-        self.invariants: Dict[str, Invariant] = {}
-        self.frameworks: Dict[str, Framework] = {}
+        self.equations: dict[str, Equation] = {}
+        self.invariants: dict[str, Invariant] = {}
+        self.frameworks: dict[str, Framework] = {}
         self._initialize()
 
     def _initialize(self):
@@ -558,9 +563,9 @@ class MathematicalFrameworkEngine:
         self.security_engine = SecuritySubEngine()
         self.distributed_engine = DistributedSubEngine()
 
-        self.all_equations: Dict[str, Equation] = {}
-        self.all_invariants: Dict[str, Invariant] = {}
-        self.all_frameworks: Dict[str, Framework] = {}
+        self.all_equations: dict[str, Equation] = {}
+        self.all_invariants: dict[str, Invariant] = {}
+        self.all_frameworks: dict[str, Framework] = {}
 
         self._aggregate_all()
 
@@ -577,11 +582,11 @@ class MathematicalFrameworkEngine:
             self.all_invariants.update(engine.invariants)
             self.all_frameworks.update(engine.frameworks)
 
-    def query_equation(self, name: str) -> Optional[Equation]:
+    def query_equation(self, name: str) -> Equation | None:
         """Query an equation by name."""
         return self.all_equations.get(name)
 
-    def query_by_domain(self, domain: str) -> List[Equation]:
+    def query_by_domain(self, domain: str) -> list[Equation]:
         """Query equations by domain."""
         result = []
         for eq in self.all_equations.values():
@@ -607,15 +612,15 @@ class MathematicalFrameworkEngine:
         return False
 
     # ... (rest of the code remains the same)
-    def get_framework(self, name: str) -> Optional[Framework]:
+    def get_framework(self, name: str) -> Framework | None:
         """Get a framework by name."""
         return self.all_frameworks.get(name)
 
-    def list_frameworks(self) -> List[str]:
+    def list_frameworks(self) -> list[str]:
         """List all available frameworks."""
         return list(self.all_frameworks.keys())
 
-    def solve_design_spacing(self, target_px: int) -> Dict[str, Any]:
+    def solve_design_spacing(self, target_px: int) -> dict[str, Any]:
         """Solve for design system spacing recommendations."""
         return {
             "target": target_px,
@@ -625,7 +630,7 @@ class MathematicalFrameworkEngine:
             "recommendations": self._spacing_recommendations(target_px),
         }
 
-    def _spacing_recommendations(self, target_px: int) -> List[str]:
+    def _spacing_recommendations(self, target_px: int) -> list[str]:
         """Generate spacing recommendations."""
         recs = []
         if target_px % 8 == 0:
@@ -642,7 +647,7 @@ class MathematicalFrameworkEngine:
         """Calculate transformer attention."""
         return self.ai_engine.equations["attention"].evaluate(Q=Q, K=K, V=V, d_k=d_k)
 
-    def analyze_architecture(self, task_description: str) -> Dict[str, Any]:
+    def analyze_architecture(self, task_description: str) -> dict[str, Any]:
         """Analyze task and recommend mathematical frameworks."""
         task_lower = task_description.lower()
         recommendations = {
@@ -688,7 +693,7 @@ class MathematicalFrameworkEngine:
 
         return recommendations
 
-    def get_stats(self) -> Dict[str, int]:
+    def get_stats(self) -> dict[str, int]:
         """Get engine statistics."""
         return {
             "total_equations": len(self.all_equations),

@@ -68,14 +68,18 @@ Author: Trang Phan
 Version: 1.0.0
 """
 
+from __future__ import annotations
+
 import asyncio
 import json
 import uuid
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, TypeVar
+
+UTC = UTC
+from typing import Any, TypeVar
 
 # Try to import Kafka
 try:
@@ -159,15 +163,15 @@ class AMOSEvent:
     """AMOS event structure."""
 
     event_type: EventType | str
-    data: Dict[str, Any]
+    data: dict[str, Any]
     event_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
     source: str = "amos"
     correlation_id: str = None
     causation_id: str = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert event to dictionary."""
         return {
             "event_id": self.event_id,
@@ -185,7 +189,7 @@ class AMOSEvent:
         return json.dumps(self.to_dict(), default=str)
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "AMOSEvent":
+    def from_dict(cls, data: dict[str, Any]) -> AMOSEvent:
         """Create event from dictionary."""
         return cls(
             event_id=data.get("event_id", str(uuid.uuid4())),
@@ -202,7 +206,7 @@ class AMOSEvent:
 
 
 # Event schemas (Avro)
-EVENT_SCHEMAS: Dict[str, dict[str, Any]] = {
+EVENT_SCHEMAS: dict[str, dict[str, Any]] = {
     "agent_spawned": {
         "type": "record",
         "name": "AgentSpawned",
@@ -255,7 +259,7 @@ class EventProducer:
         self.bootstrap_servers = bootstrap_servers
         self.client_id = client_id
         self.enable_idempotence = enable_idempotence
-        self._producer: Optional[AIOKafkaProducer] = None
+        self._producer: AIOKafkaProducer | None = None
         self._initialized = False
 
     async def initialize(self) -> bool:
@@ -292,7 +296,7 @@ class EventProducer:
             self._initialized = False
 
     async def send_event(
-        self, topic: str, event: AMOSEvent, key: str = None, headers: Dict[str, str] = None
+        self, topic: str, event: AMOSEvent, key: str = None, headers: dict[str, str] = None
     ) -> bool:
         """Send event to Kafka topic.
 
@@ -334,7 +338,7 @@ class EventProducer:
             print(f"[EventProducer] Failed to send: {e}")
             return False
 
-    async def send_batch(self, topic: str, events: List[AMOSEvent], key: str = None) -> int:
+    async def send_batch(self, topic: str, events: list[AMOSEvent], key: str = None) -> int:
         """Send batch of events.
 
         Args:
@@ -361,7 +365,7 @@ class EventConsumer:
 
     def __init__(
         self,
-        topics: List[str],
+        topics: list[str],
         group_id: str,
         bootstrap_servers: str = "localhost:9092",
         client_id: str = None,
@@ -387,7 +391,7 @@ class EventConsumer:
         self.auto_offset_reset = auto_offset_reset
         self.enable_auto_commit = enable_auto_commit
         self.max_poll_records = max_poll_records
-        self._consumer: Optional[AIOKafkaConsumer] = None
+        self._consumer: AIOKafkaConsumer | None = None
         self._initialized = False
         self._running = False
 
@@ -512,7 +516,7 @@ class EventProcessor:
             consumer: Event consumer
         """
         self.consumer = consumer
-        self.handlers: List[EventHandler] = []
+        self.handlers: list[EventHandler] = []
         self._running = False
 
     def add_handler(self, handler: EventHandler) -> None:
@@ -686,10 +690,10 @@ async def main():
     print("""
 from fastapi import FastAPI
 from amos_events import EventProducer, AMOSEvent, EventType
-from typing import Callable, TypeVar
+from typing import Callable, TypeVar, Union, Optional
 
 app = FastAPI()
-producer: Optional[EventProducer] = None
+producer: EventProducer | None = None
 
 @app.on_event("startup")
 async def startup():

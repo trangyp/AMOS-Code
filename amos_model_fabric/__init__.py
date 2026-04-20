@@ -10,8 +10,17 @@ Creator: Trang Phan
 Version: 1.0.0
 """
 
-from .capability_registry import CapabilityRegistry, ModelCapability, get_capability_registry
-from .gateway import LiteLLMRouter, ModelFabricGateway, RoutingStrategy, get_gateway
+from .capability_registry import (
+    CapabilityRegistry,
+    ModelCapability,
+    get_capability_registry,
+)
+from .gateway import (
+    LiteLLMRouter,
+    ModelFabricGateway,
+    RoutingStrategy,
+    get_gateway,
+)
 from .providers import (
     BaseProvider,
     LlamaCppProvider,
@@ -26,15 +35,18 @@ from .schemas import (
     FabricRequest,
     FabricResponse,
     FabricStreamChunk,
-    ModelCapability,
     ModelInfo,
     ProviderHealth,
     ProviderType,
 )
 
+# Alias for backward compatibility
+get_model_fabric = get_gateway
+
 __all__ = [
     "ModelFabricGateway",
     "get_gateway",
+    "get_model_fabric",
     "CapabilityRegistry",
     "get_capability_registry",
     "ModelCapability",

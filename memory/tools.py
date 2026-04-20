@@ -3,10 +3,9 @@
 Importing this module registers the three tools into the central registry.
 """
 
-
 from datetime import datetime
 
-from tool_registry import ToolDef, register_tool
+from clawspring.tool_registry import ToolDef, register_tool
 
 from .context import find_relevant_memories
 from .store import MemoryEntry, check_conflict, delete_memory, save_memory, touch_last_used

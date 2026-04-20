@@ -4,7 +4,7 @@
 import sys
 import time
 from concurrent.futures import ThreadPoolExecutor
-from typing import Any, Dict, List
+from typing import Any
 
 try:
     import requests
@@ -28,9 +28,9 @@ class EquationAPILoadTest:
 
     def __init__(self, base_url: str = "http://localhost:8000") -> None:
         self.base_url = base_url
-        self.results: List[dict[str, Any]] = []
+        self.results: list[dict[str, Any]] = []
 
-    def test_health_endpoint(self, iterations: int = 100) -> Dict[str, Any]:
+    def test_health_endpoint(self, iterations: int = 100) -> dict[str, Any]:
         """Test health check endpoint."""
         url = f"{self.base_url}/health/"
         times = []
@@ -56,7 +56,7 @@ class EquationAPILoadTest:
             "rps": iterations / sum(times),
         }
 
-    def test_verify_endpoint(self, iterations: int = 50) -> Dict[str, Any]:
+    def test_verify_endpoint(self, iterations: int = 50) -> dict[str, Any]:
         """Test verification endpoint."""
         url = f"{self.base_url}/api/equations/verify"
         code = "def test():\n    x = []\n    return x"
@@ -83,7 +83,7 @@ class EquationAPILoadTest:
             "rps": iterations / sum(times),
         }
 
-    def test_query_endpoint(self, iterations: int = 100) -> Dict[str, Any]:
+    def test_query_endpoint(self, iterations: int = 100) -> dict[str, Any]:
         """Test query endpoint."""
         url = f"{self.base_url}/api/equations/query"
         times = []
@@ -109,7 +109,7 @@ class EquationAPILoadTest:
             "rps": iterations / sum(times),
         }
 
-    def run_concurrent_test(self, concurrency: int = 10) -> Dict[str, Any]:
+    def run_concurrent_test(self, concurrency: int = 10) -> dict[str, Any]:
         """Run concurrent load test."""
         with ThreadPoolExecutor(max_workers=concurrency) as executor:
             futures = [executor.submit(self.test_health_endpoint, 20) for _ in range(concurrency)]
@@ -127,7 +127,7 @@ class EquationAPILoadTest:
             "error_rate": total_errors / total_requests if total_requests else 0,
         }
 
-    def run_all_tests(self) -> Dict[str, Any]:
+    def run_all_tests(self) -> dict[str, Any]:
         """Execute full test suite."""
         print("=" * 60)
         print("AMOS Equation API Load Test Suite")

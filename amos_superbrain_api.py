@@ -31,8 +31,8 @@ References:
 
 import json
 from contextlib import asynccontextmanager
-from datetime import datetime
-from typing import Any, Dict, List
+from datetime import UTC, datetime
+from typing import Any
 
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
@@ -50,6 +50,8 @@ from amos_brain.tools_extended import (
     git_operations,
     web_search,
 )
+
+UTC = UTC
 
 # ============================================================================
 # Pydantic Models
@@ -89,7 +91,7 @@ class ToolInfo(BaseModel):
 class ToolExecuteRequest(BaseModel):
     """Tool execution request model."""
 
-    parameters: Dict[str, Any] = Field(default_factory=dict)
+    parameters: dict[str, Any] = Field(default_factory=dict)
 
 
 class ToolExecuteResponse(BaseModel):
@@ -97,7 +99,7 @@ class ToolExecuteResponse(BaseModel):
 
     tool: str
     success: bool
-    result: Dict[str, Any]
+    result: dict[str, Any]
     execution_time_ms: int
 
 
@@ -106,7 +108,7 @@ class AgentInfo(BaseModel):
 
     name: str
     description: str
-    capabilities: List[str]
+    capabilities: list[str]
     endpoint: str
 
 
@@ -123,7 +125,7 @@ class TaskResponse(BaseModel):
     task_id: str
     state: str
     assigned_agent: str
-    messages: List[dict[str, Any]]
+    messages: list[dict[str, Any]]
     created_at: str
 
 
@@ -138,7 +140,7 @@ class MemorySearchRequest(BaseModel):
 class MemorySearchResponse(BaseModel):
     """Memory search response model."""
 
-    entries: List[dict[str, Any]]
+    entries: list[dict[str, Any]]
     total_count: int
 
 
@@ -148,9 +150,9 @@ class ConfigStatus(BaseModel):
     valid: bool
     environment: str
     providers_configured: int
-    providers: List[str]
-    issues: List[str]
-    recommendations: List[str]
+    providers: list[str]
+    issues: list[str]
+    recommendations: list[str]
 
 
 # ============================================================================

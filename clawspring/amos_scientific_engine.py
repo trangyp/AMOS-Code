@@ -1,9 +1,11 @@
 """AMOS Scientific/Research Engine - Domain-specific scientific analysis."""
 
-from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
 
-from amos_runtime import get_runtime
+from dataclasses import dataclass
+from typing import Any
+
+from clawspring.amos_runtime import get_runtime
 
 
 @dataclass
@@ -12,9 +14,9 @@ class ScientificAnalysis:
 
     domain: str
     input_data: str
-    findings: List[dict]
+    findings: list[dict]
     confidence: float
-    limitations: List[str]
+    limitations: list[str]
     law_compliance: dict
     gap_acknowledgment: str
 
@@ -106,7 +108,7 @@ class PhysicsCosmosEngine:
             ),
         )
 
-    def _get_principles(self, category: str) -> List[str]:
+    def _get_principles(self, category: str) -> list[str]:
         """Get relevant physical principles for category."""
         principles = {
             "mechanics": ["Newton's laws", "Conservation of momentum"],
@@ -216,7 +218,7 @@ class EngineeringSystemsEngine:
             ),
         )
 
-    def _get_principles(self, category: str) -> List[str]:
+    def _get_principles(self, category: str) -> list[str]:
         """Get engineering principles for category."""
         principles = {
             "structural": ["Load distribution", "Material selection"],
@@ -240,7 +242,7 @@ class AMOSScientificEngine:
 
     def __init__(self):
         self.runtime = get_runtime()
-        self.engines: Dict[str, Any] = {}
+        self.engines: dict[str, Any] = {}
         self._init_engines()
 
     def _init_engines(self):
@@ -251,8 +253,8 @@ class AMOSScientificEngine:
     def analyze(
         self,
         description: str,
-        domains: Optional[List[str]] = None,
-    ) -> Dict[str, ScientificAnalysis]:
+        domains: list[str | None] = None,
+    ) -> dict[str, ScientificAnalysis]:
         """Run scientific analysis across specified domains."""
         domains = domains or list(self.DOMAINS.keys())
         results = {}
@@ -264,7 +266,7 @@ class AMOSScientificEngine:
 
         return results
 
-    def get_findings_summary(self, results: Dict[str, ScientificAnalysis]) -> str:
+    def get_findings_summary(self, results: dict[str, ScientificAnalysis]) -> str:
         """Generate human-readable findings summary."""
         lines = [
             "# AMOS Scientific Analysis Summary",
@@ -333,7 +335,7 @@ class AMOSScientificEngine:
 
 
 # Singleton
-_scientific_engine: Optional[AMOSScientificEngine] = None
+_scientific_engine: AMOSScientificEngine | None = None
 
 
 def get_scientific_engine() -> AMOSScientificEngine:
@@ -346,9 +348,9 @@ def get_scientific_engine() -> AMOSScientificEngine:
 
 def analyze_scientific(
     description: str,
-    domains: Optional[List[str]] = None,
-) -> Dict[str, ScientificAnalysis]:
-    """Quick helper for scientific analysis."""
+    domains: list[str | None] = None,
+) -> dict[str, ScientificAnalysis]:
+    """Quick helper.*?"""
     return get_scientific_engine().analyze(description, domains)
 
 

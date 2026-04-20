@@ -9,16 +9,19 @@ Owner: Trang Phan
 Version: 2.0.0
 """
 
+from __future__ import annotations
+
 import ast
 import json
 import re
 import subprocess
 import uuid
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any, Optional
 from urllib.parse import parse_qs, urlparse
 
 # ============================================================================
@@ -197,7 +200,7 @@ class IntelligentCodeAnalyzer:
     def __init__(self, repo_base: Path):
         self.repo_base = repo_base
 
-    def analyze_file(self, repo_id: str, file_path: str) -> Dict[str, Any]:
+    def analyze_file(self, repo_id: str, file_path: str) -> dict[str, Any]:
         """Perform deep analysis of a Python file."""
         full_path = self.repo_base / repo_id / file_path
         if not full_path.exists():
@@ -222,7 +225,7 @@ class IntelligentCodeAnalyzer:
         except Exception as e:
             return {"file": file_path, "error": str(e)}
 
-    def _extract_imports(self, tree: ast.AST) -> List[dict[str, Any]]:
+    def _extract_imports(self, tree: ast.AST) -> list[dict[str, Any]]:
         """Extract all imports from AST."""
         imports = []
         for node in ast.walk(tree):
@@ -250,7 +253,7 @@ class IntelligentCodeAnalyzer:
                     )
         return imports
 
-    def _extract_functions(self, tree: ast.AST) -> List[dict[str, Any]]:
+    def _extract_functions(self, tree: ast.AST) -> list[dict[str, Any]]:
         """Extract function definitions with metrics."""
         functions = []
         for node in ast.walk(tree):
@@ -265,7 +268,7 @@ class IntelligentCodeAnalyzer:
                 functions.append(func_info)
         return functions
 
-    def _extract_classes(self, tree: ast.AST) -> List[dict[str, Any]]:
+    def _extract_classes(self, tree: ast.AST) -> list[dict[str, Any]]:
         """Extract class definitions."""
         classes = []
         for node in ast.walk(tree):
@@ -280,7 +283,7 @@ class IntelligentCodeAnalyzer:
                 classes.append(class_info)
         return classes
 
-    def _calculate_complexity(self, tree: ast.AST) -> Dict[str, int]:
+    def _calculate_complexity(self, tree: ast.AST) -> dict[str, int]:
         """Calculate cyclomatic complexity."""
         complexity = 1
         for node in ast.walk(tree):
@@ -292,7 +295,7 @@ class IntelligentCodeAnalyzer:
                 complexity += len(node.values) - 1
         return {"cyclomatic": complexity}
 
-    def _detect_code_smells(self, tree: ast.AST, content: str) -> List[dict[str, Any]]:
+    def _detect_code_smells(self, tree: ast.AST, content: str) -> list[dict[str, Any]]:
         """Detect potential code smells and anti-patterns."""
         issues = []
 
@@ -342,7 +345,7 @@ class IntelligentCodeAnalyzer:
 
         return issues
 
-    def _generate_suggestions(self, tree: ast.AST, content: str) -> List[dict[str, Any]]:
+    def _generate_suggestions(self, tree: ast.AST, content: str) -> list[dict[str, Any]]:
         """Generate AI-powered improvement suggestions."""
         suggestions = []
 
@@ -398,7 +401,7 @@ class GitService:
     def __init__(self, repo_base_path: Path):
         self.repo_base_path = repo_base_path
 
-    def _run_git(self, repo_id: str, *args: str) -> Tuple[int, str, str]:
+    def _run_git(self, repo_id: str, *args: str) -> tuple[int, str, str]:
         repo_path = self.repo_base_path / repo_id
         try:
             result = subprocess.run(
@@ -414,7 +417,7 @@ class GitService:
         except FileNotFoundError:
             return -1, "", "Git not found"
 
-    def get_file_tree(self, repo_id: str, path: str = "") -> List[FileNode]:
+    def get_file_tree(self, repo_id: str, path: str = "") -> list[FileNode]:
         repo_path = self.repo_base_path / repo_id / path
         if not repo_path.exists():
             return []
@@ -459,7 +462,7 @@ class GitService:
         full_path.parent.mkdir(parents=True, exist_ok=True)
         full_path.write_text(content, encoding="utf-8")
 
-    def get_commits(self, repo_id: str, max_count: int = 50) -> List[Commit]:
+    def get_commits(self, repo_id: str, max_count: int = 50) -> list[Commit]:
         code, stdout, _ = self._run_git(
             repo_id, "log", f"-{max_count}", "--format=%H%x00%an%x00%ae%x00%at%x00%s"
         )
@@ -488,7 +491,7 @@ class GitService:
         code, _, _ = self._run_git(repo_id, "checkout", "-b", name, base)
         return code == 0
 
-    def commit(self, repo_id: str, message: str, files: List[str] = None) -> bool:
+    def commit(self, repo_id: str, message: str, files: list[str] = None) -> bool:
         if files:
             for f in files:
                 self._run_git(repo_id, "add", f)
@@ -503,9 +506,9 @@ class AIRepoHealthAgent:
     def __init__(self, repo_base: Path):
         self.repo_base = repo_base
 
-    def analyze_repository(self, repo_id: str) -> List[HealthFinding]:
+    def analyze_repository(self, repo_id: str) -> list[HealthFinding]:
         repo_path = self.repo_base / repo_id
-        findings: List[HealthFinding] = []
+        findings: list[HealthFinding] = []
 
         findings.extend(self._check_imports(repo_path, repo_id))
         findings.extend(self._check_missing_files(repo_path, repo_id))
@@ -514,7 +517,7 @@ class AIRepoHealthAgent:
 
         return findings
 
-    def _check_imports(self, repo_path: Path, repo_id: str) -> List[HealthFinding]:
+    def _check_imports(self, repo_path: Path, repo_id: str) -> list[HealthFinding]:
         findings = []
 
         for py_file in repo_path.rglob("*.py"):
@@ -564,7 +567,7 @@ class AIRepoHealthAgent:
 
         return findings
 
-    def _check_missing_files(self, repo_path: Path, repo_id: str) -> List[HealthFinding]:
+    def _check_missing_files(self, repo_path: Path, repo_id: str) -> list[HealthFinding]:
         findings = []
 
         for filename in ["README.md", ".gitignore"]:
@@ -582,7 +585,7 @@ class AIRepoHealthAgent:
 
         return findings
 
-    def _check_path_assumptions(self, repo_path: Path, repo_id: str) -> List[HealthFinding]:
+    def _check_path_assumptions(self, repo_path: Path, repo_id: str) -> list[HealthFinding]:
         findings = []
 
         for py_file in repo_path.rglob("*.py"):
@@ -612,7 +615,7 @@ class AIRepoHealthAgent:
 
         return findings
 
-    def _check_security(self, repo_path: Path, repo_id: str) -> List[HealthFinding]:
+    def _check_security(self, repo_path: Path, repo_id: str) -> list[HealthFinding]:
         findings = []
         secret_patterns = ["password", "secret", "api_key", "token"]
 
@@ -653,9 +656,9 @@ class AIRepoHealthAgent:
 
 class InMemoryDB:
     def __init__(self):
-        self.workspaces: Dict[str, Workspace] = {}
-        self.repositories: Dict[str, Repository] = {}
-        self.terminal_sessions: Dict[str, dict] = {}
+        self.workspaces: dict[str, Workspace] = {}
+        self.repositories: dict[str, Repository] = {}
+        self.terminal_sessions: dict[str, dict] = {}
 
         # Create default workspace
         default_ws = Workspace(
@@ -669,7 +672,7 @@ class InMemoryDB:
     def get_workspace(self, id: str) -> Optional[Workspace]:
         return self.workspaces.get(id)
 
-    def list_workspaces(self) -> List[Workspace]:
+    def list_workspaces(self) -> list[Workspace]:
         return list(self.workspaces.values())
 
     def create_workspace(self, name: str, slug: str) -> Workspace:
@@ -688,7 +691,7 @@ class InMemoryDB:
 
         return ws
 
-    def list_repositories(self, workspace_id: str = None) -> List[Repository]:
+    def list_repositories(self, workspace_id: str = None) -> list[Repository]:
         repos = list(self.repositories.values())
         if workspace_id:
             repos = [r for r in repos if r.workspace_id == workspace_id]

@@ -9,10 +9,11 @@ import re
 import subprocess
 from collections.abc import Callable
 from dataclasses import dataclass
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 @dataclass
@@ -21,8 +22,8 @@ class ToolResult:
 
     success: bool
     output: str
-    error: Optional[str] = None
-    data: Optional[Dict[str, Any] ] = None
+    error: str = None
+    data: dict[str, Any] = None
     duration_ms: float = 0.0
 
 
@@ -30,18 +31,18 @@ class AgentToolRegistry:
     """Registry of executable tools for agents."""
 
     def __init__(self):
-        self._tools: Dict[str, Callable[..., ToolResult]] = {}
+        self._tools: dict[str, Callable[..., ToolResult]] = {}
         self._register_default_tools()
 
     def register(self, name: str, func: Callable[..., ToolResult]) -> None:
         """Register a tool."""
         self._tools[name] = func
 
-    def get(self, name: str) -> Callable[..., ToolResult] | None:
+    def get(self, name: str) -> Callable[..., ToolResult]:
         """Get a tool by name."""
         return self._tools.get(name)
 
-    def list_tools(self) -> List[dict[str, str]]:
+    def list_tools(self) -> list[dict[str, str]]:
         """List all available tools."""
         return [
             {"name": name, "description": func.__doc__ or "No description"}
@@ -114,9 +115,13 @@ class AgentToolRegistry:
         """Execute a shell command."""
         start = datetime.now(timezone.utc)
         try:
+            # SECURITY: Use shlex.split() and shell=False to prevent injection
+            import shlex
+
+            cmd_parts = shlex.split(command)
             result = subprocess.run(
-                command,
-                shell=True,
+                cmd_parts,
+                shell=False,
                 cwd=cwd,
                 capture_output=True,
                 text=True,
@@ -265,7 +270,7 @@ class AgentToolRegistry:
 
 
 # Global registry instance
-_tool_registry: Optional[AgentToolRegistry] = None
+_tool_registry: AgentToolRegistry = None
 
 
 def get_tool_registry() -> AgentToolRegistry:

@@ -87,19 +87,19 @@ jobs:
         run: |
           ruff check amos_fastapi_gateway.py amos_production_runtime.py \
             amos_self_healing_controller.py amos_bootstrap_orchestrator.py \
-            amos_brain_health_monitor.py || true
+            amos_brain_health_monitor.py
 
       - name: Run Black (formatting check)
         run: |
-          black --check amos_fastapi_gateway.py amos_production_runtime.py || true
+          black --check amos_fastapi_gateway.py amos_production_runtime.py
 
       - name: Run isort (import sorting check)
         run: |
-          isort --check-only amos_fastapi_gateway.py amos_production_runtime.py || true
+          isort --check-only amos_fastapi_gateway.py amos_production_runtime.py
 
       - name: Run MyPy (type checking)
         run: |
-          mypy amos_fastapi_gateway.py amos_production_runtime.py --ignore-missing-imports || true
+          mypy amos_fastapi_gateway.py amos_production_runtime.py --ignore-missing-imports
 
   # ============================================
   # Job 2: Unit Tests
@@ -126,7 +126,7 @@ jobs:
       - name: Run unit tests
         run: |
           pytest tests/unit/test_production_stack.py -v --cov=amos_production_runtime \
-            --cov=amos_fastapi_gateway --cov-report=xml || true
+            --cov=amos_fastapi_gateway --cov-report=xml
 
       - name: Upload coverage
         uses: codecov/codecov-action@v3
@@ -223,7 +223,7 @@ jobs:
       - name: Run integration test suite
         run: |
           pip install pytest pytest-asyncio httpx
-          pytest tests/integration/test_api_gateway.py -v || true
+          pytest tests/integration/test_api_gateway.py -v
 
       - name: Cleanup
         if: always()
@@ -248,25 +248,22 @@ jobs:
           image-ref: ${{ env.REGISTRY }}/${{ github.repository }}/${{ env.IMAGE_NAME }}:latest
           format: 'sarif'
           output: 'trivy-results.sarif'
-        continue-on-error: true
 
       - name: Upload Trivy scan results
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: 'trivy-results.sarif'
-        continue-on-error: true
 
       - name: Run Bandit (Python security linter)
         run: |
           pip install bandit
-          bandit -r amos_fastapi_gateway.py amos_production_runtime.py -f json -o bandit-report.json || true
+          bandit -r amos_fastapi_gateway.py amos_production_runtime.py -f json -o bandit-report.json
 
       - name: Upload Bandit report
         uses: actions/upload-artifact@v4
         with:
           name: bandit-security-report
           path: bandit-report.json
-        continue-on-error: true
 
   # ============================================
   # Job 6: Performance Tests
@@ -316,7 +313,7 @@ jobs:
             });
           }
           EOF
-          k6 run load-test.js || true
+          k6 run load-test.js
 
       - name: Cleanup
         if: always()

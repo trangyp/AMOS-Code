@@ -1,16 +1,16 @@
 """AMOS Multi-Agent Coordinator - Parallel cognition across 9 layers."""
 
+from __future__ import annotations
 
 import time
 import uuid
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any
 
-from amos_execution import full_execute
-
-from amos_runtime import get_runtime
+from clawspring.amos_execution import full_execute
+from clawspring.amos_runtime import get_runtime
 
 
 @dataclass
@@ -93,7 +93,7 @@ class AMOSMultiAgentCoordinator:
     def __init__(self, max_workers: int = 4):
         self.max_workers = max_workers
         self.runtime = get_runtime()
-        self.agent_registry: Dict[str, Callable] = {}
+        self.agent_registry: dict[str, Callable] = {}
         self._register_default_agents()
 
     def _register_default_agents(self):
@@ -109,7 +109,7 @@ class AMOSMultiAgentCoordinator:
     def create_quadrant_analysis(
         self,
         problem_description: str,
-    ) -> List[AgentTask]:
+    ) -> list[AgentTask]:
         """Create 4 parallel tasks for quadrant analysis."""
         base_id = str(uuid.uuid4())[:8]
 
@@ -147,7 +147,7 @@ class AMOSMultiAgentCoordinator:
     def create_dual_perspective_analysis(
         self,
         problem_description: str,
-    ) -> List[AgentTask]:
+    ) -> list[AgentTask]:
         """Create 2 parallel tasks for dual perspective (Rule of 2)."""
         base_id = str(uuid.uuid4())[:8]
 
@@ -168,8 +168,8 @@ class AMOSMultiAgentCoordinator:
 
     def execute_parallel(
         self,
-        tasks: List[AgentTask],
-    ) -> List[AgentResult]:
+        tasks: list[AgentTask],
+    ) -> list[AgentResult]:
         """Execute multiple agent tasks in parallel."""
         results = []
 
@@ -206,7 +206,7 @@ class AMOSMultiAgentCoordinator:
 
     def synthesize_results(
         self,
-        results: List[AgentResult],
+        results: list[AgentResult],
         synthesis_type: str = "quadrant",
     ) -> str:
         """Synthesize parallel agent results into unified output."""
@@ -274,7 +274,7 @@ class AMOSMultiAgentCoordinator:
 
 
 # Singleton
-coordinator: Optional[AMOSMultiAgentCoordinator] = None
+coordinator: AMOSMultiAgentCoordinator | None = None
 
 
 def get_multi_agent_coordinator() -> AMOSMultiAgentCoordinator:

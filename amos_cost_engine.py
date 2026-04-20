@@ -12,6 +12,8 @@ Implements 2025/2026 token economics and cost optimization patterns:
 Component #66 - FinOps & Cost Management Layer
 """
 
+from __future__ import annotations
+
 import asyncio
 import hashlib
 import json
@@ -19,7 +21,7 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any, Optional, Protocol
 
 
 class ModelTier(Enum):
@@ -113,7 +115,7 @@ class CacheEntry:
 class CostExporter(Protocol):
     """Protocol for cost data exporters."""
 
-    async def export(self, data: Dict[str, Any]) -> bool:
+    async def export(self, data: dict[str, Any]) -> bool:
         """Export cost data."""
         ...
 
@@ -121,7 +123,7 @@ class CostExporter(Protocol):
 class ConsoleCostExporter:
     """Export cost data to console."""
 
-    async def export(self, data: Dict[str, Any]) -> bool:
+    async def export(self, data: dict[str, Any]) -> bool:
         print(f"[CostExport] {json.dumps(data, indent=2)}")
         return True
 
@@ -139,12 +141,12 @@ class AMOSCostEngine:
     """
 
     def __init__(self):
-        self.usage_history: Dict[str, list[TokenUsage]] = {}
-        self.budgets: Dict[str, CostBudget] = {}
-        self.cache: Dict[str, CacheEntry] = {}
-        self.cache_hits: Dict[str, int] = {}
-        self.cache_misses: Dict[str, int] = {}
-        self.alerts: List[dict[str, Any]] = []
+        self.usage_history: dict[str, list[TokenUsage]] = {}
+        self.budgets: dict[str, CostBudget] = {}
+        self.cache: dict[str, CacheEntry] = {}
+        self.cache_hits: dict[str, int] = {}
+        self.cache_misses: dict[str, int] = {}
+        self.alerts: list[dict[str, Any]] = []
         self._running = False
         self._monitor_task: asyncio.Task = None
         self._max_history_per_component = 1000
@@ -179,7 +181,7 @@ class AMOSCostEngine:
         input_tokens: int,
         output_tokens: int,
         model_tier: ModelTier = ModelTier.BALANCED,
-        metadata: Dict[str, Any] = None,
+        metadata: dict[str, Any] = None,
     ) -> TokenUsage:
         """Record token usage for a component."""
         usage = TokenUsage(
@@ -234,7 +236,7 @@ class AMOSCostEngine:
             )
 
     def _trigger_alert(
-        self, component_id: str, level: CostAlertLevel, message: str, metadata: Dict[str, Any]
+        self, component_id: str, level: CostAlertLevel, message: str, metadata: dict[str, Any]
     ) -> None:
         """Trigger a cost alert."""
         alert = {
@@ -288,7 +290,7 @@ class AMOSCostEngine:
 
         self.cache_misses[key] = self.cache_misses.get(key, 0) + 1
 
-    def get_cache_stats(self) -> Dict[str, Any]:
+    def get_cache_stats(self) -> dict[str, Any]:
         """Get semantic cache statistics."""
         total_hits = sum(self.cache_hits.values())
         total_misses = sum(self.cache_misses.values())
@@ -345,7 +347,7 @@ class AMOSCostEngine:
 
         return sum(u.estimated_cost_usd for u in hourly_usages)
 
-    def get_component_cost_report(self, component_id: str) -> Dict[str, Any]:
+    def get_component_cost_report(self, component_id: str) -> dict[str, Any]:
         """Get detailed cost report for a component."""
         usages = self.usage_history.get(component_id, [])
 
@@ -387,7 +389,7 @@ class AMOSCostEngine:
             "daily_spend_usd": self.get_daily_spend(component_id),
         }
 
-    def get_ecosystem_cost_summary(self) -> Dict[str, Any]:
+    def get_ecosystem_cost_summary(self) -> dict[str, Any]:
         """Get cost summary for entire ecosystem."""
         all_usages = []
         for usages in self.usage_history.values():

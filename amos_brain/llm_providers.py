@@ -11,12 +11,11 @@ State-of-the-art patterns from Anthropic's "Building Effective Agents" 2025.
 
 from __future__ import annotations
 
-
 import json
 import os
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Optional
 
 
 @dataclass
@@ -27,16 +26,16 @@ class LLMResponse:
     content: str
     model: str
     provider: str
-    usage: dict[str, int] = None
-    tool_calls: list[dict] = None
-    error: str = None
+    usage: Optional[dict[str, int]] = None
+    tool_calls: Optional[list[dict]] = None
+    error: Optional[str] = None
     latency_ms: float = 0.0
 
 
 class BaseLLMProvider(ABC):
     """Base class for LLM providers."""
 
-    def __init__(self, model_id: str, api_key: str = None):
+    def __init__(self, model_id: str, api_key: Optional[str] = None):
         self.model_id = model_id
         self.api_key = api_key or os.environ.get(self._get_api_key_env())
         self._client = None
@@ -62,7 +61,9 @@ class BaseLLMProvider(ABC):
         """Query the LLM."""
         pass
 
-    def _build_messages(self, prompt: str, system_prompt: str = None) -> list[dict[str, str]]:
+    def _build_messages(
+        self, prompt: str, system_prompt: Optional[str] = None
+    ) -> list[dict[str, str]]:
         """Build message list for API call."""
         messages = []
         if system_prompt:

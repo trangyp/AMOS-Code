@@ -19,8 +19,10 @@ import asyncio
 import sys
 import time
 from dataclasses import dataclass, field
-from datetime import datetime
-from typing import Any, Dict, List
+from datetime import UTC, datetime
+
+UTC = UTC
+from typing import Any
 
 from amos_engine_integration import EngineOperation, EngineType, get_engine_integration
 from amos_field_dynamics import create_scalar_field
@@ -39,7 +41,7 @@ class ValidationResult:
     passed: bool
     duration_ms: float
     message: str
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -48,7 +50,7 @@ class ValidationReport:
 
     timestamp: str
     overall_status: str  # PASS, FAIL, WARNING
-    checks: List[ValidationResult]
+    checks: list[ValidationResult]
     critical_failures: int
     warnings: int
     total_duration_ms: float
@@ -62,7 +64,7 @@ class AMOSProductionValidator:
     """
 
     def __init__(self):
-        self.results: List[ValidationResult] = []
+        self.results: list[ValidationResult] = []
         self.start_time: float = 0.0
 
     async def run_full_validation(self) -> ValidationReport:

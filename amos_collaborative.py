@@ -7,10 +7,12 @@ Author: AMOS Collaboration Team
 Version: 19.0.0
 """
 
+from __future__ import annotations
+
 import uuid
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class Permission(Enum):
@@ -40,8 +42,8 @@ class Workspace:
     name: str
     description: str
     owner_id: str
-    members: Dict[str, Permission] = field(default_factory=dict)
-    equations: List[str] = field(default_factory=list)
+    members: dict[str, Permission] = field(default_factory=dict)
+    equations: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -50,16 +52,16 @@ class CollaborationSession:
 
     session_id: str
     workspace_id: str
-    active_users: Dict[str, User] = field(default_factory=dict)
+    active_users: dict[str, User] = field(default_factory=dict)
 
 
 class AMOSCollaborative:
     """Main collaborative platform for AMOS SuperBrain."""
 
     def __init__(self):
-        self.workspaces: Dict[str, Workspace] = {}
-        self.sessions: Dict[str, CollaborationSession] = {}
-        self.users: Dict[str, User] = {}
+        self.workspaces: dict[str, Workspace] = {}
+        self.sessions: dict[str, CollaborationSession] = {}
+        self.users: dict[str, User] = {}
 
     def create_user(self, name: str, email: str) -> User:
         """Create new user."""
@@ -102,7 +104,7 @@ class AMOSCollaborative:
         self.sessions[session.session_id] = session
         return session
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get collaborative platform stats."""
         return {
             "total_users": len(self.users),

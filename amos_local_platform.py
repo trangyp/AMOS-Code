@@ -16,7 +16,6 @@ Usage:
 """
 
 import argparse
-import asyncio
 import json
 import logging
 import subprocess
@@ -27,9 +26,9 @@ from pathlib import Path
 # Add amos_model_fabric to path
 sys.path.insert(0, str(Path(__file__).parent))
 
-from amos_model_fabric.litellm_setup import LiteLLMSetup
-from amos_model_fabric.continue_integration import ContinueConfigGenerator
 from amos_model_fabric.aider_integration import AiderIntegration
+from amos_model_fabric.continue_integration import ContinueConfigGenerator
+from amos_model_fabric.litellm_setup import LiteLLMSetup
 from amos_model_fabric.openhands_integration import OpenHandsIntegration
 
 logging.basicConfig(level=logging.INFO, format="%(message)s")
@@ -79,7 +78,7 @@ class AMOSLocalPlatform:
         missing = [s for s in scanners if not self._is_installed(s)]
         if missing:
             print(f"   ⚠ Missing scanners: {', '.join(missing)}")
-            print(f"   Run: ./scripts/install_security_scanners.sh")
+            print("   Run: ./scripts/install_security_scanners.sh")
         else:
             print("   ✓ All security scanners available")
 
@@ -162,10 +161,13 @@ class AMOSLocalPlatform:
 
     def _is_installed(self, cmd: str) -> bool:
         """Check if a command is installed."""
-        return subprocess.run(
-            ["which", cmd],
-            capture_output=True,
-        ).returncode == 0
+        return (
+            subprocess.run(
+                ["which", cmd],
+                capture_output=True,
+            ).returncode
+            == 0
+        )
 
 
 def main():
@@ -179,12 +181,10 @@ Examples:
   %(prog)s status         # Check all services
   %(prog)s stop           # Stop all services
   %(prog)s test           # Test chat completion
-        """
+        """,
     )
     parser.add_argument(
-        "command",
-        choices=["setup", "start", "stop", "status", "test"],
-        help="Command to run"
+        "command", choices=["setup", "start", "stop", "status", "test"], help="Command to run"
     )
 
     args = parser.parse_args()

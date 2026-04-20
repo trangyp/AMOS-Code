@@ -17,12 +17,14 @@ Usage:
     metrics = analyzer.calculate_coupling_metrics()
 """
 
+from __future__ import annotations
+
 import os
 import sys
 from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 # NOTE: tree_sitter imports are lazy-loaded in _ensure_parser() to avoid
 # ~70ms import time when the module is imported but not used
@@ -46,7 +48,7 @@ class ImportInfo:
 class DependencyGraph:
     """Dependency graph G = (V, E) for Python modules."""
 
-    vertices: Set[str] = field(default_factory=set)  # Python modules
+    vertices: set[str] = field(default_factory=set)  # Python modules
     edges: list[tuple[str, str]] = field(default_factory=list)  # (importer, imported)
 
     # Reverse lookup
@@ -111,9 +113,9 @@ class ImportAnalyzer:
         self.repo_path = Path(repo_path).resolve()
 
         # Lazy-loaded Tree-sitter resources (48ms initialization deferred)
-        self._parser: Optional[Parser] = None
-        self._import_query: Optional[Query] = None
-        self._py_language: Optional[Language] = None
+        self._parser: Parser | None = None
+        self._import_query: Query | None = None
+        self._py_language: Language | None = None
 
     def _ensure_parser(self) -> None:
         """Lazy initialize tree-sitter parser on first use."""
@@ -145,20 +147,20 @@ class ImportAnalyzer:
         )
 
     @property
-    def parser(self) -> "Parser":
+    def parser(self) -> Parser:
         """Lazy-loaded parser."""
         if self._parser is None:
             self._ensure_parser()
         return self._parser
 
     @property
-    def import_query(self) -> "Query":
+    def import_query(self) -> Query:
         """Lazy-loaded import query."""
         if self._import_query is None:
             self._ensure_parser()
         return self._import_query
 
-    def _find_python_files(self) -> List[Path]:
+    def _find_python_files(self) -> list[Path]:
         """Find all Python files in the repository."""
         py_files = []
         for root, dirs, files in os.walk(self.repo_path):
@@ -176,7 +178,7 @@ class ImportAnalyzer:
 
         return py_files
 
-    def _extract_imports(self, filepath: Path) -> List[ImportInfo]:
+    def _extract_imports(self, filepath: Path) -> list[ImportInfo]:
         """Extract imports from a Python file using Tree-sitter."""
         imports = []
 
@@ -249,7 +251,7 @@ class ImportAnalyzer:
 
         return graph
 
-    def find_cycles(self, graph: Optional[DependencyGraph] = None) -> list[list[str]]:
+    def find_cycles(self, graph: DependencyGraph | None = None) -> list[list[str]]:
         """Find circular dependencies in the graph."""
         if graph is None:
             graph = self.build_dependency_graph()
@@ -258,7 +260,7 @@ class ImportAnalyzer:
         visited = set()
         rec_stack = []
 
-        def dfs(node: str, path: List[str]) -> None:
+        def dfs(node: str, path: list[str]) -> None:
             if node in path:
                 # Found cycle
                 cycle_start = path.index(node)
@@ -293,7 +295,7 @@ class ImportAnalyzer:
         return unique_cycles
 
     def calculate_coupling_metrics(
-        self, graph: Optional[DependencyGraph] = None
+        self, graph: DependencyGraph | None = None
     ) -> dict[str, CouplingMetrics]:
         """Calculate coupling metrics for all modules."""
         if graph is None:

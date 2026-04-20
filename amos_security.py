@@ -108,14 +108,18 @@ Author: AMOS Security Team
 Version: 26.0.0
 """
 
+from __future__ import annotations
+
 import hashlib
 import hmac
 import secrets
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import UTC, datetime
+
+UTC = UTC, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Tuple
+from typing import Any, Optional
 
 import jwt
 
@@ -147,7 +151,7 @@ class Permission(Enum):
     USERS_READ = "users:read"
 
 
-ROLE_PERMISSIONS: Dict[UserRole, list[Permission]] = {
+ROLE_PERMISSIONS: dict[UserRole, list[Permission]] = {
     UserRole.SUPER_ADMIN: list(Permission),
     UserRole.ADMIN: [
         Permission.EQUATIONS_READ,
@@ -186,8 +190,8 @@ class User:
     user_id: str
     username: str
     email: str
-    roles: List[UserRole]
-    api_keys: List[str] = field(default_factory=list)
+    roles: list[UserRole]
+    api_keys: list[str] = field(default_factory=list)
     created_at: float = field(default_factory=lambda: time.time())
     last_login: float = None
     is_active: bool = True
@@ -202,7 +206,7 @@ class APIKey:
     key_hash: str
     user_id: str
     name: str
-    permissions: List[Permission]
+    permissions: list[Permission]
     created_at: float
     expires_at: float = None
     last_used: float = None
@@ -223,7 +227,7 @@ class AuditEvent:
     outcome: str  # success, failure, denied
     ip_address: str = None
     user_agent: str = None
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -256,29 +260,29 @@ class AMOSSecurity:
         self.refresh_token_expire_days = refresh_token_expire_days
 
         # User management
-        self.users: Dict[str, User] = {}
-        self.username_to_id: Dict[str, str] = {}
+        self.users: dict[str, User] = {}
+        self.username_to_id: dict[str, str] = {}
 
         # API Key management
-        self.api_keys: Dict[str, APIKey] = {}  # key_id -> APIKey
-        self.key_hash_to_id: Dict[str, str] = {}  # key_hash -> key_id
+        self.api_keys: dict[str, APIKey] = {}  # key_id -> APIKey
+        self.key_hash_to_id: dict[str, str] = {}  # key_hash -> key_id
 
         # Rate limiting
-        self.rate_limits: Dict[str, RateLimitEntry] = {}
+        self.rate_limits: dict[str, RateLimitEntry] = {}
         self.rate_limit_window_seconds: int = 60
 
         # Audit logging
-        self.audit_log: List[AuditEvent] = []
+        self.audit_log: list[AuditEvent] = []
         self.max_audit_entries: int = 10000
 
         # Statistics
         self.total_authentications: int = 0
         self.total_authorization_checks: int = 0
         self.total_rate_limit_violations: int = 0
-        self.security_incidents: List[dict[str, Any]] = []
+        self.security_incidents: list[dict[str, Any]] = []
 
     def create_user(
-        self, username: str, email: str, roles: List[UserRole] = None, user_id: str = None
+        self, username: str, email: str, roles: list[UserRole] = None, user_id: str = None
     ) -> User:
         """Create a new user with specified roles."""
         if username in self.username_to_id:
@@ -296,7 +300,7 @@ class AMOSSecurity:
 
         return user
 
-    def generate_jwt(self, user_id: str, roles: List[UserRole], token_type: str = "access") -> str:
+    def generate_jwt(self, user_id: str, roles: list[UserRole], token_type: str = "access") -> str:
         """Generate JWT token for user."""
         if token_type == "access":
             expires_delta = timedelta(minutes=self.access_token_expire_minutes)
@@ -320,7 +324,7 @@ class AMOSSecurity:
 
         return token
 
-    def verify_jwt(self, token: str) -> Dict[str, Any]:
+    def verify_jwt(self, token: str) -> dict[str, Any]:
         """Verify and decode JWT token."""
         try:
             payload = jwt.decode(token, self.secret_key, algorithms=[self.jwt_algorithm])
@@ -331,7 +335,7 @@ class AMOSSecurity:
             raise SecurityError(f"Invalid token: {e}")
 
     def check_permission(
-        self, roles: List[str] | list[UserRole], permission: Permission | str
+        self, roles: list[str] | list[UserRole], permission: Permission | str
     ) -> bool:
         """Check if any role has the required permission."""
         self.total_authorization_checks += 1
@@ -372,9 +376,9 @@ class AMOSSecurity:
         self,
         user_id: str,
         name: str,
-        permissions: List[Permission] = None,
+        permissions: list[Permission] = None,
         expires_days: int = None,
-    ) -> Tuple[str, APIKey]:
+    ) -> tuple[str, APIKey]:
         """Generate new API key for user."""
         # Generate secure random key
         api_key = f"amos_{secrets.token_urlsafe(32)}"
@@ -444,7 +448,7 @@ class AMOSSecurity:
 
     def check_rate_limit(
         self, key: str, max_requests: int = 100, window_seconds: int = None
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Check if request is within rate limit."""
         window = window_seconds or self.rate_limit_window_seconds
         now = time.time()
@@ -515,7 +519,7 @@ class AMOSSecurity:
         user_id: str = None,
         ip_address: str = None,
         user_agent: str = None,
-        details: Dict[str, Any] = None,
+        details: dict[str, Any] = None,
     ) -> None:
         """Log security audit event."""
         event = AuditEvent(
@@ -544,7 +548,7 @@ class AMOSSecurity:
         start_time: float = None,
         end_time: float = None,
         limit: int = 100,
-    ) -> List[AuditEvent]:
+    ) -> list[AuditEvent]:
         """Query audit log with filters."""
         events = self.audit_log
 
@@ -595,7 +599,7 @@ class AMOSSecurity:
         # Constant-time comparison to prevent timing attacks
         return hmac.compare_digest(signature, expected)
 
-    def _log_security_event(self, event_type: str, user_id: str, details: Dict[str, Any]) -> None:
+    def _log_security_event(self, event_type: str, user_id: str, details: dict[str, Any]) -> None:
         """Log internal security event."""
         incident = {
             "type": event_type,
@@ -605,7 +609,7 @@ class AMOSSecurity:
         }
         self.security_incidents.append(incident)
 
-    def get_security_report(self) -> Dict[str, Any]:
+    def get_security_report(self) -> dict[str, Any]:
         """Generate comprehensive security report."""
         return {
             "users": {

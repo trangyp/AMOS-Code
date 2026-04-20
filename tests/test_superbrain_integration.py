@@ -9,7 +9,9 @@ Version: 2.0.0
 """
 
 import asyncio
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from unittest.mock import Mock, patch
 
 import pytest
@@ -45,7 +47,7 @@ class MockSuperBrain:
                 "action": action,
                 "agent_id": agent_id,
                 "details": details,
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             }
         )
 
@@ -338,7 +340,7 @@ class TestAuditTrailRecording:
                 confidence=0.8,
                 reasoning="test",
                 alternatives=[],
-                route_time=datetime.now(timezone.utc).isoformat(),
+                route_time=datetime.now(UTC).isoformat(),
             )
 
             router._record_route(decision)

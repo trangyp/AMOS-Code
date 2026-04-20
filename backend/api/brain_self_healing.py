@@ -8,25 +8,18 @@ Uses AMOS brain for:
 - Health trend prediction
 """
 
+from __future__ import annotations
 
 import asyncio
-import sys
 from collections.abc import AsyncIterator
-from datetime import datetime, timezone
-
-UTC = timezone.utc
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from datetime import UTC, datetime
+from typing import Any, Optional
 
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
-# Setup paths
-AMOS_ROOT = Path(__file__).parent.parent.parent.resolve()
-for p in [AMOS_ROOT, AMOS_ROOT / "clawspring", AMOS_ROOT / "amos_brain"]:
-    if str(p) not in sys.path:
-        sys.path.insert(0, str(p))
+UTC = UTC
 
 # Import real brain
 try:
@@ -44,9 +37,9 @@ class HealingDiagnosisRequest(BaseModel):
     """Request for healing diagnosis."""
 
     symptom_description: str = Field(..., min_length=1)
-    affected_components: List[str] = Field(default_factory=list)
+    affected_components: list[str] = Field(default_factory=list)
     severity_level: str = Field(default="medium")
-    context_data: Dict[str, Any] = Field(default_factory=dict)
+    context_data: dict[str, Any] = Field(default_factory=dict)
 
 
 class DiagnosisResult(BaseModel):
@@ -54,10 +47,10 @@ class DiagnosisResult(BaseModel):
 
     diagnosis_id: str
     root_cause: str
-    affected_systems: List[str]
+    affected_systems: list[str]
     severity: str
     confidence: float = Field(ge=0.0, le=1.0)
-    recommended_actions: List[str]
+    recommended_actions: list[str]
     estimated_fix_time: float
     timestamp: datetime
 
@@ -76,10 +69,10 @@ class RemediationResult(BaseModel):
 
     remediation_id: str
     diagnosis_id: str
-    actions_taken: List[str]
+    actions_taken: list[str]
     success: bool
-    before_state: Dict[str, Any]
-    after_state: Dict[str, Any]
+    before_state: dict[str, Any]
+    after_state: dict[str, Any]
     duration_ms: float
     requires_follow_up: bool
     timestamp: datetime
@@ -89,7 +82,7 @@ class HealthTrendRequest(BaseModel):
     """Request for health trend analysis."""
 
     component: str = Field(..., min_length=1)
-    metric_history: List[dict[str, Any]] = Field(..., min_length=5)
+    metric_history: list[dict[str, Any]] = Field(..., min_length=5)
     prediction_window: str = Field(default="24h")
 
 
@@ -99,8 +92,8 @@ class HealthTrendResult(BaseModel):
     component: str
     trend_direction: str
     degradation_probability: float = Field(ge=0.0, le=1.0)
-    predicted_issues: List[str]
-    recommendations: List[str]
+    predicted_issues: list[str]
+    recommendations: list[str]
     timestamp: datetime
 
 
@@ -108,7 +101,7 @@ class AnomalyDetectionRequest(BaseModel):
     """Request for anomaly detection."""
 
     metric_name: str = Field(..., min_length=1)
-    data_points: List[float] = Field(..., min_length=10)
+    data_points: list[float] = Field(..., min_length=10)
     sensitivity: str = Field(default="medium")
 
 
@@ -119,7 +112,7 @@ class DetectedAnomaly(BaseModel):
     severity: str
     timestamp: datetime
     value: float
-    expected_range: Tuple[float, float]
+    expected_range: tuple[float, float]
     confidence: float = Field(ge=0.0, le=1.0)
 
 
@@ -127,7 +120,7 @@ class AnomalyDetectionResult(BaseModel):
     """Anomaly detection result."""
 
     metric_name: str
-    anomalies: List[DetectedAnomaly]
+    anomalies: list[DetectedAnomaly]
     baseline_established: bool
     total_analyzed: int
     timestamp: datetime
@@ -140,8 +133,8 @@ class BrainSelfHealingEngine:
         self._brain = None
         self._healing = None
         self._lock = asyncio.Lock()
-        self._diagnoses: Dict[str, DiagnosisResult] = {}
-        self._remediations: Dict[str, RemediationResult] = {}
+        self._diagnoses: dict[str, DiagnosisResult] = {}
+        self._remediations: dict[str, RemediationResult] = {}
 
     async def _get_brain(self) -> Any:
         """Get initialized brain."""
@@ -163,9 +156,9 @@ class BrainSelfHealingEngine:
     async def diagnose(
         self,
         symptom_description: str,
-        affected_components: List[str],
+        affected_components: list[str],
         severity_level: str,
-        context_data: Dict[str, Any],
+        context_data: dict[str, Any],
     ) -> DiagnosisResult:
         """Diagnose issue using brain analysis."""
         brain = await self._get_brain()
@@ -173,7 +166,7 @@ class BrainSelfHealingEngine:
         query = f"""Diagnose this system issue:
 
 Symptoms: {symptom_description}
-Affected: {', '.join(affected_components)}
+Affected: {", ".join(affected_components)}
 Severity: {severity_level}
 Context: {context_data}
 
@@ -251,7 +244,7 @@ Recommend specific remediation steps."""
         return remediation
 
     async def analyze_health_trend(
-        self, component: str, metric_history: List[dict[str, Any]], prediction_window: str
+        self, component: str, metric_history: list[dict[str, Any]], prediction_window: str
     ) -> HealthTrendResult:
         """Analyze health trends for prediction."""
         brain = await self._get_brain()
@@ -294,7 +287,7 @@ Predict degradation and recommend prevention."""
         )
 
     async def detect_anomalies(
-        self, metric_name: str, data_points: List[float], sensitivity: str
+        self, metric_name: str, data_points: list[float], sensitivity: str
     ) -> AnomalyDetectionResult:
         """Detect anomalies in metric data."""
         brain = await self._get_brain()
@@ -373,7 +366,7 @@ Identify outliers and patterns."""
             "timestamp": datetime.now(UTC).isoformat(),
         }
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get healing engine statistics."""
         return {
             "brain_available": _BRAIN_AVAILABLE,
@@ -470,14 +463,14 @@ async def stream_healing(
 
 
 @router.get("/stats")
-async def get_engine_stats() -> Dict[str, Any]:
+async def get_engine_stats() -> dict[str, Any]:
     """Get self-healing engine statistics."""
     engine = get_healing_engine()
     return engine.get_stats()
 
 
 @router.get("/health")
-async def health_check() -> Dict[str, Any]:
+async def health_check() -> dict[str, Any]:
     """Check self-healing engine health."""
     return {
         "status": "healthy" if _BRAIN_AVAILABLE else "degraded",

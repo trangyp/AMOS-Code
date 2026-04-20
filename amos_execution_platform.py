@@ -26,6 +26,8 @@ Version: 2.0.0
 Date: April 2026
 """
 
+from __future__ import annotations
+
 import asyncio
 import os
 from abc import ABC, abstractmethod
@@ -33,7 +35,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import aiohttp
 
@@ -62,7 +64,7 @@ class ExecutionResult:
     stderr: str
     exit_code: int
     execution_time_ms: float
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
     timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
     provider: str = "unknown"
     cost_usd: float = 0.0
@@ -87,8 +89,8 @@ class ResearchQuery:
     query: str
     num_results: int = 10
     include_citations: bool = True
-    recency_days: Optional[int] = None
-    domains: Optional[List[str] ] = None
+    recency_days: int | None = None
+    domains: list[str | None] | None = None
 
 
 # ============================================================================
@@ -121,7 +123,7 @@ class SandboxProvider(ABC):
         sandbox_id: str,
         code: str,
         language: str = "python",
-        context_files: Optional[Dict[str, str] ] = None,
+        context_files: dict[str, str | None] | None = None,
     ) -> ExecutionResult:
         """Execute code in sandbox."""
         pass
@@ -130,7 +132,7 @@ class SandboxProvider(ABC):
     async def install_packages(
         self,
         sandbox_id: str,
-        packages: List[str],
+        packages: list[str],
         language: str = "python",
     ) -> bool:
         """Install packages in sandbox."""
@@ -163,7 +165,7 @@ class BrowserProvider(ABC):
     async def launch_browser(
         self,
         headless: bool = True,
-        viewport: Optional[Dict[str, int] ] = None,
+        viewport: dict[str, int | None] | None = None,
     ) -> str:
         """Launch browser and return session ID."""
         pass
@@ -173,7 +175,7 @@ class BrowserProvider(ABC):
         self,
         session_id: str,
         action: BrowserAction,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Execute browser action."""
         pass
 
@@ -181,8 +183,8 @@ class BrowserProvider(ABC):
     async def execute_actions(
         self,
         session_id: str,
-        actions: List[BrowserAction],
-    ) -> List[dict[str, Any]]:
+        actions: list[BrowserAction],
+    ) -> list[dict[str, Any]]:
         """Execute multiple browser actions."""
         pass
 
@@ -214,7 +216,7 @@ class ResearchProvider(ABC):
     async def search(
         self,
         query: ResearchQuery,
-    ) -> List[dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Execute web search."""
         pass
 
@@ -223,7 +225,7 @@ class ResearchProvider(ABC):
         self,
         query: str,
         context: str = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Get LLM-generated answer with citations."""
         pass
 
@@ -249,7 +251,7 @@ class E2BProvider(SandboxProvider):
 
     def __init__(self, api_key: str = None):
         self.api_key = api_key or os.environ.get("E2B_API_KEY")
-        self._sandboxes: Dict[str, Any] = {}
+        self._sandboxes: dict[str, Any] = {}
 
         try:
             from e2b import Sandbox
@@ -283,8 +285,8 @@ class E2BProvider(SandboxProvider):
         sandbox_id: str,
         code: str,
         language: str = "python",
-        context_files: Optional[Dict[str, str] ] = None,
-        stream_callback: Optional[Callable[[str, str ]], None] | None = None,
+        context_files: dict[str, str | None] | None = None,
+        stream_callback: (Callable[[str, str]], None) | None = None,
     ) -> ExecutionResult:
         """Execute code with optional streaming callback.
 
@@ -362,7 +364,7 @@ class E2BProvider(SandboxProvider):
     async def install_packages(
         self,
         sandbox_id: str,
-        packages: List[str],
+        packages: list[str],
         language: str = "python",
     ) -> bool:
         sandbox = self._sandboxes.get(sandbox_id)
@@ -432,7 +434,7 @@ class DaytonaProvider(SandboxProvider):
     def __init__(self, api_key: str = None, server_url: str = None):
         self.api_key = api_key or os.environ.get("DAYTONA_API_KEY")
         self.server_url = server_url or os.environ.get("DAYTONA_SERVER_URL", "https://daytona.work")
-        self._sandboxes: Dict[str, Any] = {}
+        self._sandboxes: dict[str, Any] = {}
 
         try:
             from daytona_sdk import CreateSandboxParams, Daytona
@@ -467,8 +469,8 @@ class DaytonaProvider(SandboxProvider):
         sandbox_id: str,
         code: str,
         language: str = "python",
-        context_files: Optional[Dict[str, str] ] = None,
-        stream_callback: Optional[Callable[[str, str ]], None] | None = None,
+        context_files: dict[str, str | None] | None = None,
+        stream_callback: (Callable[[str, str]], None) | None = None,
     ) -> ExecutionResult:
         """Execute code with optional streaming callback.
 
@@ -525,7 +527,7 @@ class DaytonaProvider(SandboxProvider):
     async def install_packages(
         self,
         sandbox_id: str,
-        packages: List[str],
+        packages: list[str],
         language: str = "python",
     ) -> bool:
         sandbox = self._sandboxes.get(sandbox_id)
@@ -577,8 +579,8 @@ class DaytonaProvider(SandboxProvider):
     async def computer_use(
         self,
         sandbox_id: str,
-        actions: List[dict[str, Any]],
-    ) -> List[dict[str, Any]]:
+        actions: list[dict[str, Any]],
+    ) -> list[dict[str, Any]]:
         """
         Daytona's unique Computer Use feature.
 
@@ -609,7 +611,7 @@ class DockerProvider(SandboxProvider):
     cost_per_hour_usd = 0.0  # Free (uses local resources)
 
     def __init__(self):
-        self._containers: Dict[str, Any] = {}
+        self._containers: dict[str, Any] = {}
 
         try:
             import docker
@@ -655,8 +657,8 @@ class DockerProvider(SandboxProvider):
         sandbox_id: str,
         code: str,
         language: str = "python",
-        context_files: Optional[Dict[str, str] ] = None,
-        stream_callback: Optional[Callable[[str, str ]], None] | None = None,
+        context_files: dict[str, str | None] | None = None,
+        stream_callback: (Callable[[str, str]], None) | None = None,
     ) -> ExecutionResult:
         """Execute code with optional streaming callback.
 
@@ -730,7 +732,7 @@ class DockerProvider(SandboxProvider):
                 provider=self.name,
             )
 
-    def _create_tar_archive(self, files: Dict[str, str]) -> bytes:
+    def _create_tar_archive(self, files: dict[str, str]) -> bytes:
         """Create tar archive from files dict."""
         import io
         import tarfile
@@ -748,7 +750,7 @@ class DockerProvider(SandboxProvider):
     async def install_packages(
         self,
         sandbox_id: str,
-        packages: List[str],
+        packages: list[str],
         language: str = "python",
     ) -> bool:
         container = self._containers.get(sandbox_id)
@@ -826,7 +828,7 @@ class PlaywrightProvider(BrowserProvider):
     supports_computer_use = False  # Playwright doesn't have native Computer Use
 
     def __init__(self):
-        self._sessions: Dict[str, Any] = {}
+        self._sessions: dict[str, Any] = {}
 
         try:
             from playwright.async_api import async_playwright
@@ -839,7 +841,7 @@ class PlaywrightProvider(BrowserProvider):
     async def launch_browser(
         self,
         headless: bool = True,
-        viewport: Optional[Dict[str, int] ] = None,
+        viewport: dict[str, int | None] | None = None,
     ) -> str:
         if not self.available:
             raise RuntimeError(
@@ -870,7 +872,7 @@ class PlaywrightProvider(BrowserProvider):
         self,
         session_id: str,
         action: BrowserAction,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         session = self._sessions.get(session_id)
         if not session:
             return {"error": f"Session {session_id} not found"}
@@ -918,8 +920,8 @@ class PlaywrightProvider(BrowserProvider):
     async def execute_actions(
         self,
         session_id: str,
-        actions: List[BrowserAction],
-    ) -> List[dict[str, Any]]:
+        actions: list[BrowserAction],
+    ) -> list[dict[str, Any]]:
         results = []
         for action in actions:
             result = await self.execute_action(session_id, action)
@@ -995,7 +997,7 @@ class TavilyProvider(ResearchProvider):
     async def search(
         self,
         query: ResearchQuery,
-    ) -> List[dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         if not self.api_key:
             raise ValueError("Tavily API key required. Set TAVILY_API_KEY env var.")
 
@@ -1042,7 +1044,7 @@ class TavilyProvider(ResearchProvider):
         self,
         query: str,
         context: str = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Tavily doesn't generate LLM answers directly, but returns search results."""
         search_query = ResearchQuery(query=query, num_results=5, include_citations=True)
         results = await self.search(search_query)
@@ -1080,7 +1082,7 @@ class BraveProvider(ResearchProvider):
     async def search(
         self,
         query: ResearchQuery,
-    ) -> List[dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         if not self.api_key:
             raise ValueError("Brave API key required. Set BRAVE_API_KEY env var.")
 
@@ -1123,7 +1125,7 @@ class BraveProvider(ResearchProvider):
         self,
         query: str,
         context: str = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Brave LLM Context API for generating answers."""
         if not self.api_key:
             raise ValueError("Brave API key required.")
@@ -1184,9 +1186,9 @@ class AMOSExecutionPlatform:
 
     def __init__(self):
         # Initialize all providers
-        self.sandbox_providers: Dict[str, SandboxProvider] = {}
-        self.browser_providers: Dict[str, BrowserProvider] = {}
-        self.research_providers: Dict[str, ResearchProvider] = {}
+        self.sandbox_providers: dict[str, SandboxProvider] = {}
+        self.browser_providers: dict[str, BrowserProvider] = {}
+        self.research_providers: dict[str, ResearchProvider] = {}
 
         # Provider priorities (for failover)
         self.sandbox_priority = ["daytona", "e2b", "docker"]
@@ -1257,8 +1259,8 @@ class AMOSExecutionPlatform:
         self,
         code: str,
         language: str = "python",
-        context_files: Optional[Dict[str, str] ] = None,
-        preferred_provider: Optional[str] = None,
+        context_files: dict[str, str | None] | None = None,
+        preferred_provider: str | None = None,
     ) -> ExecutionResult:
         """
         Execute code in secure sandbox with automatic failover.
@@ -1317,9 +1319,9 @@ class AMOSExecutionPlatform:
     async def browse_web(
         self,
         url: str,
-        actions: Optional[List[BrowserAction] ] = None,
+        actions: list[BrowserAction | None] | None = None,
         capture_screenshot: bool = False,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Browse web page and execute actions.
 
@@ -1380,8 +1382,8 @@ class AMOSExecutionPlatform:
         query: str,
         num_results: int = 10,
         include_citations: bool = True,
-        preferred_provider: Optional[str] = None,
-    ) -> Dict[str, Any]:
+        preferred_provider: str | None = None,
+    ) -> dict[str, Any]:
         """
         Research topic using web search.
 
@@ -1427,7 +1429,7 @@ class AMOSExecutionPlatform:
         self,
         provider_type: str,
         preferred: str = None,
-    ) -> List[str]:
+    ) -> list[str]:
         """Get list of providers to try in priority order."""
         if provider_type == "sandbox":
             priority = self.sandbox_priority
@@ -1460,7 +1462,7 @@ class AMOSExecutionPlatform:
 
         return providers
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get platform status and metrics."""
         return {
             "sandbox_providers": list(self.sandbox_providers.keys()),

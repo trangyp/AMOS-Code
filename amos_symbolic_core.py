@@ -7,7 +7,7 @@ Usage:
     derivative = engine.symbolic_diff("kinetic_energy", "v")
 """
 
-from typing import Any, Dict, List
+from typing import Any
 
 try:
     import sympy as sp
@@ -49,7 +49,7 @@ class SymbolicEquationEngine:
     def is_available(self) -> bool:
         return SYMPY_AVAILABLE
 
-    def _build_registry(self) -> Dict[str, Any]:
+    def _build_registry(self) -> dict[str, Any]:
         """Build symbolic equation registry."""
         if not SYMPY_AVAILABLE:
             return {}
@@ -75,9 +75,11 @@ class SymbolicEquationEngine:
             "sigmoid": lambda: 1 / (1 + exp(-x)),
             "tanh": lambda: (exp(x) - exp(-x)) / (exp(x) + exp(-x)),
             "relu": lambda: Max(0, x),
-            "gelu": lambda: Rational(1, 2)
-            * x
-            * (1 + tanh(sqrt(2 / pi) * (x + Rational(44715, 1000000) * x**3))),
+            "gelu": lambda: (
+                Rational(1, 2)
+                * x
+                * (1 + tanh(sqrt(2 / pi) * (x + Rational(44715, 1000000) * x**3)))
+            ),
             "swish": lambda: x / (1 + exp(-Symbol("beta") * x)),
             "mse_loss": lambda: (Symbol("y_true") - Symbol("y_pred")) ** 2,
             "mae_loss": lambda: sp.Abs(Symbol("y_true") - Symbol("y_pred")),
@@ -145,7 +147,7 @@ class SymbolicEquationEngine:
         except Exception:
             return f"{equation_name}"
 
-    def get_gradient(self, equation_name: str, variables: List[str]) -> Dict[str, Any]:
+    def get_gradient(self, equation_name: str, variables: list[str]) -> dict[str, Any]:
         """Compute gradient (partial derivatives)."""
         if not SYMPY_AVAILABLE:
             return {}
@@ -154,11 +156,11 @@ class SymbolicEquationEngine:
             return {}
         return {var: diff(expr, Symbol(var)) for var in variables}
 
-    def list_symbolic_equations(self) -> List[str]:
+    def list_symbolic_equations(self) -> list[str]:
         """List all equations with symbolic representations."""
         return list(self._symbolic_registry.keys())
 
-    def pattern_analysis(self, equation_name: str) -> Dict[str, Any]:
+    def pattern_analysis(self, equation_name: str) -> dict[str, Any]:
         """Analyze symbolic patterns in an equation."""
         if not SYMPY_AVAILABLE:
             return {"error": "SymPy not available"}

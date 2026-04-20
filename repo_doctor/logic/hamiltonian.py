@@ -54,7 +54,7 @@ class RepositoryHamiltonian:
 
     def apply(self, state: RepoStateVector) -> float:
         """
-        Apply Hamiltonian to state vector: H|Ψ> = E
+        Apply Hamiltonian to state vector: Union[H, Ψ]> = E
 
         Args:
         ----

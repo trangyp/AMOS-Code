@@ -21,7 +21,7 @@ import json
 import re
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 
 class HumanState(Enum):
@@ -68,7 +68,7 @@ class MessageAnalysis:
     pattern: str = ""
     context: str = ""
     signal: str = ""  # Sig_t - structurally real
-    noise_components: Dict[str, float] = field(default_factory=dict)  # Noi_t decomposition
+    noise_components: dict[str, float] = field(default_factory=dict)  # Noi_t decomposition
     clarity_score: float = 0.0
 
 
@@ -81,7 +81,7 @@ class CoherenceResult:
     detected_state: HumanState = HumanState.STABLE
     estimated_capacity: float = 1.0
     signal_detected: str = ""
-    noise_reduced: List[str] = field(default_factory=list)
+    noise_reduced: list[str] = field(default_factory=list)
     clarity_increase: float = 0.0
     agency_preserved: bool = True
     safety_maintained: bool = True
@@ -109,7 +109,7 @@ class SignalDetectionEngine:
         "false_binary": ["either or", "only two", "must choose", "no other way"],
     }
 
-    def analyze(self, message: str, history: List[str] = None) -> MessageAnalysis:
+    def analyze(self, message: str, history: list[str] = None) -> MessageAnalysis:
         """Extract signal from noise in message."""
         analysis = MessageAnalysis(surface_text=message)
 
@@ -196,8 +196,8 @@ class StateRegulationEngine:
     """
 
     def classify(
-        self, analysis: MessageAnalysis, history: List[str] = None
-    ) -> Tuple[HumanState, float]:
+        self, analysis: MessageAnalysis, history: list[str] = None
+    ) -> tuple[HumanState, float]:
         """Classify state and estimate safe intervention intensity."""
         # Calculate overload indicators
         noise_sum = sum(analysis.noise_components.values())
@@ -223,7 +223,7 @@ class StateRegulationEngine:
 
         return state, capacity
 
-    def get_safe_parameters(self, state: HumanState, capacity: float) -> Dict[str, Any]:
+    def get_safe_parameters(self, state: HumanState, capacity: float) -> dict[str, Any]:
         """Get safe intervention parameters for state."""
         params = {
             HumanState.STABLE: {
@@ -279,7 +279,7 @@ class InterventionSelectionEngine:
         analysis: MessageAnalysis,
         state: HumanState,
         capacity: float,
-        history: List[str] = None,
+        history: list[str] = None,
     ) -> InterventionMode:
         """Select optimal intervention for current state."""
         # High-risk or shutdown states - only grounding
@@ -406,7 +406,7 @@ class VerificationEngine:
 
     def verify(
         self, response: str, analysis: MessageAnalysis, state: HumanState
-    ) -> Tuple[bool, dict[str, float]]:
+    ) -> tuple[bool, dict[str, float]]:
         """Verify response safety and quality."""
         risks = {
             "overload": self._score_overload_risk(response, state),
@@ -472,7 +472,7 @@ class AMOSCoherenceEngine:
         self.intervention_engine = InterventionSelectionEngine()
         self.coherence_engine = CoherenceInductionEngine()
         self.verification_engine = VerificationEngine()
-        self.history: List[dict] = []
+        self.history: list[dict] = []
 
     def process(self, message: str) -> CoherenceResult:
         """Process message through full coherence pipeline."""
@@ -525,7 +525,7 @@ class AMOSCoherenceEngine:
 
         return result
 
-    def get_runtime_stats(self) -> Dict[str, Any]:
+    def get_runtime_stats(self) -> dict[str, Any]:
         """Get engine runtime statistics."""
         if not self.history:
             return {"interactions": 0}

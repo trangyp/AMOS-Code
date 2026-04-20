@@ -78,10 +78,12 @@ Author: AMOS Distributed Intelligence Team
 Version: 23.0.0
 """
 
+from __future__ import annotations
+
 import random
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class NodeStatus(Enum):
@@ -127,8 +129,8 @@ class FederatedNode:
 
     config: NodeConfig
     status: NodeStatus = NodeStatus.ONLINE
-    current_model: Dict[str, Any] = field(default_factory=dict)
-    local_updates: List[dict[str, Any]] = field(default_factory=list)
+    current_model: dict[str, Any] = field(default_factory=dict)
+    local_updates: list[dict[str, Any]] = field(default_factory=list)
     last_round_participated: int = 0
     reputation_score: float = 1.0  # For Byzantine fault detection
 
@@ -151,9 +153,9 @@ class SecureAggregationState:
     """State for secure multi-party aggregation."""
 
     round_id: int
-    participating_nodes: List[str] = field(default_factory=list)
-    encrypted_updates: Dict[str, bytes] = field(default_factory=dict)
-    aggregated_result: Dict[str, Any] = field(default_factory=dict)
+    participating_nodes: list[str] = field(default_factory=list)
+    encrypted_updates: dict[str, bytes] = field(default_factory=dict)
+    aggregated_result: dict[str, Any] = field(default_factory=dict)
 
 
 class AMOSFederated:
@@ -165,21 +167,21 @@ class AMOSFederated:
 
     def __init__(self, global_learning_rate: float = 0.1):
         self.global_lr = global_learning_rate
-        self.nodes: Dict[str, FederatedNode] = {}
-        self.global_model: Dict[str, Any] = {}
+        self.nodes: dict[str, FederatedNode] = {}
+        self.global_model: dict[str, Any] = {}
         self.current_round: int = 0
 
         # Privacy accounting
-        self.privacy_budgets: Dict[str, PrivacyBudget] = {}
+        self.privacy_budgets: dict[str, PrivacyBudget] = {}
 
         # Secure aggregation
         self.secure_agg_state: Optional[SecureAggregationState] = None
 
         # Statistics
         self.total_rounds_completed: int = 0
-        self.aggregation_history: List[dict[str, Any]] = []
+        self.aggregation_history: list[dict[str, Any]] = []
 
-    def register_node(self, node_id: str, config: NodeConfig) -> Dict[str, Any]:
+    def register_node(self, node_id: str, config: NodeConfig) -> dict[str, Any]:
         """Register a new node for federated learning."""
         config.node_id = node_id
         self.nodes[node_id] = FederatedNode(config=config)
@@ -203,7 +205,7 @@ class AMOSFederated:
         privacy_budget: float = None,
         fraction_nodes: float = 1.0,
         enable_secure_agg: bool = True,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Run federated training with differential privacy and secure aggregation.
 
@@ -295,7 +297,7 @@ class AMOSFederated:
 
     def _local_train_with_privacy(
         self, node: FederatedNode, epochs: int, privacy_budget: float
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Simulate local training with differential privacy.
 
@@ -320,8 +322,8 @@ class AMOSFederated:
         return weights
 
     def _detect_byzantine_nodes(
-        self, node_ids: List[str], local_weights: List[dict[str, Any]]
-    ) -> List[dict[str, Any]]:
+        self, node_ids: list[str], local_weights: list[dict[str, Any]]
+    ) -> list[dict[str, Any]]:
         """
         Detect and filter out Byzantine (malicious) nodes.
 
@@ -348,7 +350,7 @@ class AMOSFederated:
 
         return honest_updates
 
-    def _secure_aggregate(self, local_weights: List[dict[str, Any]]) -> Dict[str, Any]:
+    def _secure_aggregate(self, local_weights: list[dict[str, Any]]) -> dict[str, Any]:
         """
         Secure multi-party aggregation.
 
@@ -378,7 +380,7 @@ class AMOSFederated:
 
         return aggregated
 
-    def _federated_average(self, local_weights: List[dict[str, Any]]) -> Dict[str, Any]:
+    def _federated_average(self, local_weights: list[dict[str, Any]]) -> dict[str, Any]:
         """Standard Federated Averaging (FedAvg) algorithm."""
         if not local_weights:
             return {}
@@ -394,8 +396,8 @@ class AMOSFederated:
         return aggregated
 
     def deploy_to_edge(
-        self, model: Dict[str, Any], edge_nodes: List[str], quantize: bool = True
-    ) -> Dict[str, Any]:
+        self, model: dict[str, Any], edge_nodes: list[str], quantize: bool = True
+    ) -> dict[str, Any]:
         """
         Deploy model to edge nodes with quantization.
 
@@ -424,7 +426,7 @@ class AMOSFederated:
 
         return deployment_results
 
-    def _quantize_model(self, model: Dict[str, Any], capacity: float) -> Dict[str, Any]:
+    def _quantize_model(self, model: dict[str, Any], capacity: float) -> dict[str, Any]:
         """
         Quantize model for edge deployment.
 
@@ -450,7 +452,7 @@ class AMOSFederated:
 
         return quantized
 
-    def get_federated_stats(self) -> Dict[str, Any]:
+    def get_federated_stats(self) -> dict[str, Any]:
         """Get comprehensive federated learning statistics."""
         online_nodes = sum(1 for n in self.nodes.values() if n.status == NodeStatus.ONLINE)
 
@@ -514,9 +516,7 @@ def main():
                     is_byzantine=is_byzantine,
                 ),
             )
-            print(
-                f"   {node_id}: data={data_size}, capacity={capacity}, " f"privacy={privacy.name}"
-            )
+            print(f"   {node_id}: data={data_size}, capacity={capacity}, privacy={privacy.name}")
 
         print(f"\n   Total nodes registered: {len(fl.nodes)}")
 
@@ -554,7 +554,7 @@ def main():
         print(f"   Total rounds: {stats['total_rounds']}")
         print("   Privacy budgets used:")
         for node_id, pb in list(stats["privacy_budgets"].items())[:3]:
-            print(f"      {node_id}: ε={pb['epsilon']:.1f}, " f"used={pb['used']:.2f}")
+            print(f"      {node_id}: ε={pb['epsilon']:.1f}, used={pb['used']:.2f}")
 
         print("\n" + "=" * 70)
         print("Phase 23 Federated Learning: OPERATIONAL")

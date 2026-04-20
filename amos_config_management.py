@@ -23,6 +23,8 @@ Owner: Trang
 Version: 4.0.0
 """
 
+from __future__ import annotations
+
 import base64
 import json
 import os
@@ -34,7 +36,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Optional
 
 from cryptography.fernet import Fernet
 
@@ -75,12 +77,12 @@ class ConfigEntry:
     created_by: str
     updated_by: str
     description: str
-    tags: List[str] = field(default_factory=list)
+    tags: list[str] = field(default_factory=list)
     is_encrypted: bool = False
     is_hot_reload: bool = True
-    previous_versions: List[dict[str, Any]] = field(default_factory=list)
+    previous_versions: list[dict[str, Any]] = field(default_factory=list)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "key": self.key,
@@ -125,14 +127,14 @@ class ConfigSchema:
         key_pattern: str,
         value_type: ConfigValueType,
         validator: Callable[[Any, bool]] = None,
-        constraints: Dict[str, Any] = None,
+        constraints: dict[str, Any] = None,
     ):
         self.key_pattern = key_pattern
         self.value_type = value_type
         self.validator = validator
         self.constraints = constraints or {}
 
-    def validate(self, value: Any) -> Tuple[bool, str]:
+    def validate(self, value: Any) -> tuple[bool, str]:
         """Validate a value against schema."""
         # Type validation
         if self.value_type == ConfigValueType.INTEGER:
@@ -187,19 +189,19 @@ class AMOSConfigManager:
         self.storage_path.mkdir(parents=True, exist_ok=True)
 
         # Configuration storage
-        self._config: Dict[str, ConfigEntry] = {}
-        self._scopes: Dict[ConfigScope, set[str]] = defaultdict(set)
-        self._environments: Set[str] = set()
-        self._services: Set[str] = set()
+        self._config: dict[str, ConfigEntry] = {}
+        self._scopes: dict[ConfigScope, set[str]] = defaultdict(set)
+        self._environments: set[str] = set()
+        self._services: set[str] = set()
 
         # Schema registry
-        self._schemas: Dict[str, ConfigSchema] = {}
+        self._schemas: dict[str, ConfigSchema] = {}
 
         # Change listeners (hot reload)
-        self._listeners: Dict[str, list[Callable[[ConfigChangeEvent], None]]] = defaultdict(list)
+        self._listeners: dict[str, list[Callable[[ConfigChangeEvent], None]]] = defaultdict(list)
 
         # Audit log
-        self._audit_log: List[ConfigChangeEvent] = []
+        self._audit_log: list[ConfigChangeEvent] = []
         self._max_audit_entries = 10000
 
         # Statistics
@@ -246,7 +248,7 @@ class AMOSConfigManager:
         environment: str = "default",
         service: str = None,
         description: str = "",
-        tags: List[str] = None,
+        tags: list[str] = None,
         is_secret: bool = False,
         user: str = "system",
         reason: str = "",
@@ -399,7 +401,7 @@ class AMOSConfigManager:
 
     def get_all(
         self, prefix: str = None, environment: str = None, service: str = None
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Get all configuration values with optional filtering."""
         with self._lock:
             result = {}
@@ -479,14 +481,14 @@ class AMOSConfigManager:
         """Register a schema for configuration validation."""
         self._schemas[key_pattern] = schema
 
-    def get_history(self, key: str) -> List[dict[str, Any]]:
+    def get_history(self, key: str) -> list[dict[str, Any]]:
         """Get version history for a key."""
         with self._lock:
             if key not in self._config:
                 return []
             return self._config[key].previous_versions
 
-    def get_audit_log(self, key: str = None, since: float = None) -> List[ConfigChangeEvent]:
+    def get_audit_log(self, key: str = None, since: float = None) -> list[ConfigChangeEvent]:
         """Get audit log entries."""
         events = self._audit_log
         if key:
@@ -495,7 +497,7 @@ class AMOSConfigManager:
             events = [e for e in events if e.timestamp >= since]
         return events
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get configuration manager statistics."""
         return {
             "total_keys": len(self._config),
@@ -507,7 +509,7 @@ class AMOSConfigManager:
             "scopes": {s.value: len(keys) for s, keys in self._scopes.items()},
         }
 
-    def export_config(self, environment: str = "default") -> Dict[str, Any]:
+    def export_config(self, environment: str = "default") -> dict[str, Any]:
         """Export configuration for an environment."""
         return {
             "environment": environment,
@@ -526,7 +528,7 @@ class AMOSConfigManager:
             },
         }
 
-    def import_config(self, data: Dict[str, Any], user: str = "system") -> int:
+    def import_config(self, data: dict[str, Any], user: str = "system") -> int:
         """Import configuration from export."""
         count = 0
         for key, config_data in data.get("config", {}).items():

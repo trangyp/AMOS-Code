@@ -4,12 +4,10 @@ import json
 import subprocess
 import uuid
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
-
-UTC = timezone.utc
+from typing import Any, Optional
 
 
 class ExecutionStatus(Enum):
@@ -33,9 +31,9 @@ class ExecutionResult:
     start_time: str = ""
     end_time: str = ""
     duration_ms: int = 0
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "status": self.status.value,
@@ -47,7 +45,7 @@ class ExecutionContext:
     """Context for execution."""
 
     working_dir: Path = field(default_factory=Path.cwd)
-    env_vars: Dict[str, str] = field(default_factory=dict)
+    env_vars: dict[str, str] = field(default_factory=dict)
     timeout_seconds: int = 60
     allow_shell: bool = False
     capture_output: bool = True
@@ -67,7 +65,7 @@ class MuscleExecutor:
     HISTORY_DIR = Path(__file__).parent / "execution_history"
 
     def __init__(self):
-        self._history: List[ExecutionResult] = []
+        self._history: list[ExecutionResult] = []
         self.HISTORY_DIR.mkdir(parents=True, exist_ok=True)
 
     def execute(
@@ -89,9 +87,13 @@ class MuscleExecutor:
             return result
 
         try:
+            # SECURITY: Use shlex.split() and shell=False to prevent injection
+            import shlex
+
+            cmd_parts = shlex.split(command)
             proc = subprocess.run(
-                command,
-                shell=True,
+                cmd_parts,
+                shell=False,
                 cwd=ctx.working_dir,
                 env={**dict(subprocess.os.environ), **ctx.env_vars},
                 capture_output=ctx.capture_output,
@@ -142,7 +144,7 @@ class MuscleExecutor:
         filepath = self.HISTORY_DIR / f"{result.id}.json"
         filepath.write_text(json.dumps(result.to_dict(), indent=2))
 
-    def get_history(self, n: int = 10) -> List[ExecutionResult]:
+    def get_history(self, n: int = 10) -> list[ExecutionResult]:
         """Get recent execution history."""
         return self._history[-n:]
 
@@ -159,7 +161,7 @@ class MuscleExecutor:
             return ExecutionResult(**data)
         return None
 
-    def status(self) -> Dict[str, Any]:
+    def status(self) -> dict[str, Any]:
         """Get executor status."""
         counts = dict.fromkeys(ExecutionStatus, 0)
         for r in self._history:

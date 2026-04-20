@@ -14,7 +14,6 @@ Owner: Trang Phan
 
 import asyncio
 import sys
-from typing import List
 
 try:
     from .api_integration import (
@@ -45,7 +44,7 @@ class BrainCLI:
             "help": self.cmd_help,
         }
 
-    async def run(self, args: List[str]) -> int:
+    async def run(self, args: list[str]) -> int:
         """Run CLI with arguments."""
         if not args or args[0] in ("help", "-h", "--help"):
             return await self.cmd_help()
@@ -58,7 +57,7 @@ class BrainCLI:
 
         return await self.commands[cmd](args[1:])
 
-    async def cmd_process(self, args: List[str]) -> int:
+    async def cmd_process(self, args: list[str]) -> int:
         """Process task synchronously."""
         if not args:
             print("Usage: process <task description>")
@@ -77,7 +76,7 @@ class BrainCLI:
         print(f"  Engines: {', '.join(result['engines_used'][:3])}")
         return 0
 
-    async def cmd_submit(self, args: List[str]) -> int:
+    async def cmd_submit(self, args: list[str]) -> int:
         """Submit task to queue."""
         if not args:
             print("Usage: submit <task description>")
@@ -91,7 +90,7 @@ class BrainCLI:
         print(f"\nCheck status with: python brain_cli.py status {result['task_id']}")
         return 0
 
-    async def cmd_status(self, args: List[str]) -> int:
+    async def cmd_status(self, args: list[str]) -> int:
         """Check task status."""
         if not args:
             print("Usage: status <task_id>")
@@ -118,7 +117,7 @@ class BrainCLI:
 
         return 0
 
-    async def cmd_queue(self, args: List[str]) -> int:
+    async def cmd_queue(self, args: list[str]) -> int:
         """Show queue status."""
         try:
             from .task_queue import get_task_queue
@@ -156,7 +155,7 @@ class BrainCLI:
 
         return 0
 
-    async def cmd_health(self, args: List[str]) -> int:
+    async def cmd_health(self, args: list[str]) -> int:
         """Check brain health."""
         api = await get_brain_api()
         health = await api.health_check()
@@ -174,7 +173,7 @@ class BrainCLI:
 
         return 0
 
-    async def cmd_help(self, args: List[str] = None) -> int:
+    async def cmd_help(self, args: list[str] = None) -> int:
         """Show help."""
         print("AMOS Brain CLI")
         print("=" * 60)

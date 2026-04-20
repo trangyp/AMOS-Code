@@ -6,19 +6,18 @@ from pathlib import Path
 
 from .store import list_plugins
 from .types import PluginEntry, PluginScope
-from typing import List, Optional
 
 
-def load_all_plugins(scope: Optional[PluginScope] = None) -> List[PluginEntry]:
+def load_all_plugins(scope: PluginScope | None = None) -> list[PluginEntry]:
     """Return enabled plugins (optionally filtered by scope)."""
     return [p for p in list_plugins(scope) if p.enabled]
 
 
-def load_plugin_tools(scope: Optional[PluginScope] = None) -> List[dict]:
+def load_plugin_tools(scope: PluginScope | None = None) -> list[dict]:
     """Import tool modules from all enabled plugins and collect their TOOL_SCHEMAS.
     Returns combined list of tool schema dicts.
     """
-    schemas: List[dict] = []
+    schemas: list[dict] = []
     for entry in load_all_plugins(scope):
         if not entry.manifest or not entry.manifest.tools:
             continue
@@ -29,7 +28,7 @@ def load_plugin_tools(scope: Optional[PluginScope] = None) -> List[dict]:
     return schemas
 
 
-def register_plugin_tools(scope: Optional[PluginScope] = None) -> int:
+def register_plugin_tools(scope: PluginScope | None = None) -> int:
     """Import tool modules from enabled plugins and register them into tool_registry.
     Returns number of tools registered.
     """
@@ -51,9 +50,9 @@ def register_plugin_tools(scope: Optional[PluginScope] = None) -> int:
     return count
 
 
-def load_plugin_skills(scope: Optional[PluginScope] = None) -> List[Path]:
+def load_plugin_skills(scope: PluginScope | None = None) -> list[Path]:
     """Return paths to skill markdown files from enabled plugins."""
-    paths: List[Path] = []
+    paths: list[Path] = []
     for entry in load_all_plugins(scope):
         if not entry.manifest or not entry.manifest.skills:
             continue
@@ -64,7 +63,7 @@ def load_plugin_skills(scope: Optional[PluginScope] = None) -> List[Path]:
     return paths
 
 
-def load_plugin_mcp_configs(scope: Optional[PluginScope] = None) -> dict:
+def load_plugin_mcp_configs(scope: PluginScope | None = None) -> dict:
     """Return mcp server configs contributed by enabled plugins."""
     configs: dict = {}
     for entry in load_all_plugins(scope):
@@ -79,11 +78,6 @@ def load_plugin_mcp_configs(scope: Optional[PluginScope] = None) -> dict:
 
 def _import_plugin_module(entry: PluginEntry, module_name: str):
     """Dynamically import a module from a plugin directory."""
-    # Ensure plugin dir is on sys.path
-    plugin_dir_str = str(entry.install_dir)
-    if plugin_dir_str not in sys.path:
-        sys.path.insert(0, plugin_dir_str)
-
     # Build a unique module name to avoid collisions
     unique_name = f"_plugin_{entry.name}_{module_name}"
     if unique_name in sys.modules:

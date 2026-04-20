@@ -28,13 +28,17 @@ Architecture:
     - Compatible with AMOS audit system
 """
 
+from __future__ import annotations
+
 import hashlib
 import json
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from enum import Enum, auto
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 try:
     from z3 import (
@@ -132,11 +136,11 @@ class ProofCertificate:
     timestamp: str
     proof_hash: str
     verification_time_ms: float
-    counterexample: Dict[str, Any] = None
-    assumptions: List[str] = field(default_factory=list)
+    counterexample: dict[str, Any] = None
+    assumptions: list[str] = field(default_factory=list)
     proof_object: str = None  # Serialized Z3 proof
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert certificate to dictionary."""
         return {
             "equation_name": self.equation_name,
@@ -168,7 +172,7 @@ class SymbolicVariable:
     name: str
     var_type: str  # 'real', 'int', 'bool'
     z3_var: Any = None
-    constraints: List[Any] = field(default_factory=list)
+    constraints: list[Any] = field(default_factory=list)
 
 
 class EquationFormalVerifier:
@@ -190,8 +194,8 @@ class EquationFormalVerifier:
             timeout_ms: Z3 solver timeout in milliseconds
         """
         self.timeout_ms = timeout_ms
-        self.proof_history: List[ProofCertificate] = []
-        self._symbolic_vars: Dict[str, SymbolicVariable] = {}
+        self.proof_history: list[ProofCertificate] = []
+        self._symbolic_vars: dict[str, SymbolicVariable] = {}
 
         if Z3_AVAILABLE:
             self.solver = Solver()
@@ -347,8 +351,8 @@ class EquationFormalVerifier:
     def verify_conservation_law(
         self,
         equation_name: str,
-        before_vars: List[Any],
-        after_vars: List[Any],
+        before_vars: list[Any],
+        after_vars: list[Any],
         conservation_fn: Callable,
     ) -> ProofCertificate:
         """
@@ -407,7 +411,7 @@ class EquationFormalVerifier:
         return cert
 
     def verify_entropy_bounds(
-        self, equation_name: str, probabilities: List[Any]
+        self, equation_name: str, probabilities: list[Any]
     ) -> ProofCertificate:
         """
         Verify entropy bounds: 0 <= H(X) <= log2(n).
@@ -468,7 +472,7 @@ class EquationFormalVerifier:
         invariant_name: str,
         status: ProofStatus,
         time_ms: float,
-        counterexample: Optional[Dict] = None,
+        counterexample: dict | None = None,
     ) -> ProofCertificate:
         """Create a proof certificate."""
         timestamp = datetime.now(UTC).isoformat()
@@ -501,7 +505,7 @@ class EquationFormalVerifier:
         """Create error certificate when verification fails."""
         return self._create_certificate(equation_name, invariant_name, ProofStatus.ERROR, 0.0)
 
-    def _extract_counterexample(self, model) -> Dict[str, Any]:
+    def _extract_counterexample(self, model) -> dict[str, Any]:
         """Extract counterexample values from Z3 model."""
         if model is None:
             return {}
@@ -515,7 +519,7 @@ class EquationFormalVerifier:
                 pass
         return counterexample
 
-    def get_proof_summary(self) -> Dict[str, Any]:
+    def get_proof_summary(self) -> dict[str, Any]:
         """Get summary of all proofs."""
         total = len(self.proof_history)
         proven = sum(1 for p in self.proof_history if p.status == ProofStatus.PROVEN)

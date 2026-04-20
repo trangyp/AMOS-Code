@@ -8,13 +8,16 @@ Owner: Trang
 Version: 1.0.0
 """
 
-import sys
+import importlib.util
 import unittest
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
-from organism import AmosOrganism
+# Load organism module using importlib
+_org_path = Path(__file__).parent.parent / "organism.py"
+_spec = importlib.util.spec_from_file_location("_organism", _org_path)
+_org_mod = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_org_mod)
+AmosOrganism = _org_mod.AmosOrganism
 
 
 class TestOrganismInitialization(unittest.TestCase):

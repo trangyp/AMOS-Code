@@ -1,12 +1,15 @@
 """AMOS Numerical Methods Engine - Scientific computing and analysis."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class NumericalDomain(Enum):
     """Numerical methods domain classifications."""
+
     LINEAR_ALGEBRA = "linear_algebra"
     OPTIMIZATION = "optimization"
     DIFFERENTIAL_EQUATIONS = "differential_equations"
@@ -27,8 +30,8 @@ class LinearAlgebraKernel:
     """Kernel for linear algebra operations."""
 
     def __init__(self):
-        self.matrices: List[dict] = []
-        self.solvers: List[dict] = []
+        self.matrices: list[dict] = []
+        self.solvers: list[dict] = []
 
     def add_matrix(
         self,
@@ -57,7 +60,9 @@ class LinearAlgebraKernel:
         self.solvers.append(solver)
         return solver
 
-    def calculate_condition_number_simple(self, max_eigenvalue: float, min_eigenvalue: float) -> dict:
+    def calculate_condition_number_simple(
+        self, max_eigenvalue: float, min_eigenvalue: float
+    ) -> dict:
         """Calculate condition number."""
         if min_eigenvalue == 0:
             return {"error": "Zero eigenvalue - matrix is singular"}
@@ -80,7 +85,7 @@ class LinearAlgebraKernel:
             "method": "LU_factorization",
         }
 
-    def get_principles(self) -> List[str]:
+    def get_principles(self) -> list[str]:
         return [
             "Direct solvers (LU, Cholesky, QR)",
             "Iterative methods (CG, GMRES)",
@@ -93,8 +98,8 @@ class OptimizationKernel:
     """Kernel for optimization methods."""
 
     def __init__(self):
-        self.problems: List[dict] = []
-        self.methods: List[dict] = []
+        self.problems: list[dict] = []
+        self.methods: list[dict] = []
 
     def add_problem(
         self,
@@ -123,9 +128,7 @@ class OptimizationKernel:
         self.methods.append(method)
         return method
 
-    def gradient_descent_step(
-        self, x: float, gradient: float, learning_rate: float
-    ) -> dict:
+    def gradient_descent_step(self, x: float, gradient: float, learning_rate: float) -> dict:
         """Perform gradient descent step."""
         x_new = x - learning_rate * gradient
         return {
@@ -150,7 +153,7 @@ class OptimizationKernel:
             "step": step,
         }
 
-    def get_principles(self) -> List[str]:
+    def get_principles(self) -> list[str]:
         return [
             "Gradient descent and variants",
             "Newton and quasi-Newton methods",
@@ -163,8 +166,8 @@ class DifferentialEquationsKernel:
     """Kernel for ODE/PDE solvers."""
 
     def __init__(self):
-        self.equations: List[dict] = []
-        self.solvers: List[dict] = []
+        self.equations: list[dict] = []
+        self.solvers: list[dict] = []
 
     def add_equation(
         self,
@@ -193,9 +196,7 @@ class DifferentialEquationsKernel:
         self.solvers.append(solver)
         return solver
 
-    def runge_kutta4_step(
-        self, y: float, t: float, dt: float, f: float
-    ) -> dict:
+    def runge_kutta4_step(self, y: float, t: float, dt: float, f: float) -> dict:
         """Perform RK4 step (simplified)."""
         # Simplified RK4 with single k value
         k1 = f
@@ -223,7 +224,7 @@ class DifferentialEquationsKernel:
             "stable": stable,
         }
 
-    def get_principles(self) -> List[str]:
+    def get_principles(self) -> list[str]:
         return [
             "ODE solvers (Euler, Runge-Kutta)",
             "PDE discretization (FD, FV, FE)",
@@ -236,8 +237,8 @@ class ApproximationKernel:
     """Kernel for interpolation and integration."""
 
     def __init__(self):
-        self.interpolants: List[dict] = []
-        self.quadrature_rules: List[dict] = []
+        self.interpolants: list[dict] = []
+        self.quadrature_rules: list[dict] = []
 
     def add_interpolant(self, name: str, method: str, points: int) -> dict:
         """Add interpolant."""
@@ -259,7 +260,7 @@ class ApproximationKernel:
         """Apply trapezoidal rule."""
         h = (b - a) / n
         integral = h * (0.5 * f_a + 0.5 * f_b)  # Simplified 2-point version
-        error_estimate = -(b - a)**3 / (12 * n**2)  # Leading error term
+        error_estimate = -((b - a) ** 3) / (12 * n**2)  # Leading error term
         return {
             "a": a,
             "b": b,
@@ -291,7 +292,7 @@ class ApproximationKernel:
             "method": "central_difference",
         }
 
-    def get_principles(self) -> List[str]:
+    def get_principles(self) -> list[str]:
         return [
             "Polynomial interpolation",
             "Spline approximation",
@@ -312,14 +313,15 @@ class NumericalMethodsEngine:
         self.de_kernel = DifferentialEquationsKernel()
         self.approximation_kernel = ApproximationKernel()
 
-    def analyze(
-        self, description: str, domains: Optional[List[str]] = None
-    ) -> Dict[str, Any]:
+    def analyze(self, description: str, domains: list[str | None] = None) -> dict[str, Any]:
         """Run numerical analysis across specified domains."""
         domains = domains or [
-            "linear_algebra", "optimization", "differential_equations", "approximation"
+            "linear_algebra",
+            "optimization",
+            "differential_equations",
+            "approximation",
         ]
-        results: Dict[str, Any] = {}
+        results: dict[str, Any] = {}
         if "linear_algebra" in domains:
             results["linear_algebra"] = self._analyze_linear_algebra(description)
         if "optimization" in domains:
@@ -385,27 +387,27 @@ class NumericalMethodsEngine:
                     if key not in ("principles", "query"):
                         lines.append(f"- **{key}**: {value}")
                 if "principles" in data:
-                    lines.append(
-                        f"- **Principles**: {', '.join(data['principles'][:2])}..."
-                    )
-        lines.extend([
-            "",
-            "## Gaps and Limitations",
-            "- Direct floating-point execution not included",
-            "- High-level method design and reasoning only",
-            "- High-risk domains require human verification",
-            "- Raw performance optimizations not addressed",
-            "",
-            "## Safety Disclaimer",
-            "Provides design and reasoning support only. Does not replace "
-            "domain-certified numerical analysts or safety-critical verification "
-            "pipelines. All numerical schemes require validation.",
-        ])
+                    lines.append(f"- **Principles**: {', '.join(data['principles'][:2])}...")
+        lines.extend(
+            [
+                "",
+                "## Gaps and Limitations",
+                "- Direct floating-point execution not included",
+                "- High-level method design and reasoning only",
+                "- High-risk domains require human verification",
+                "- Raw performance optimizations not addressed",
+                "",
+                "## Safety Disclaimer",
+                "Provides design and reasoning support only. Does not replace "
+                "domain-certified numerical analysts or safety-critical verification "
+                "pipelines. All numerical schemes require validation.",
+            ]
+        )
         return "\n".join(lines)
 
 
 # Singleton instance
-_numerical_methods_engine: Optional[NumericalMethodsEngine] = None
+_numerical_methods_engine: NumericalMethodsEngine | None = None
 
 
 def get_numerical_methods_engine() -> NumericalMethodsEngine:

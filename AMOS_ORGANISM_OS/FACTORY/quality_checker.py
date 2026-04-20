@@ -1,12 +1,14 @@
 """FACTORY quality_checker stub — Re-exports from 13_FACTORY"""
 
-import sys
+import importlib.util
 from pathlib import Path
 
-factory_path = Path(__file__).parent.parent / "13_FACTORY"
-if str(factory_path) not in sys.path:
-    sys.path.insert(0, str(factory_path))
-
-from quality_checker import QualityChecker, QualityReport
+# Load from 13_FACTORY using importlib
+_factory_path = Path(__file__).parent.parent / "13_FACTORY" / "quality_checker.py"
+_spec = importlib.util.spec_from_file_location("_qual_check", _factory_path)
+_mod = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_mod)
+QualityChecker = _mod.QualityChecker
+QualityReport = _mod.QualityReport
 
 __all__ = ["QualityChecker", "QualityReport"]

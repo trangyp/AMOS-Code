@@ -4,13 +4,13 @@ Users API - Service Layer Integration Example
 Demonstrates FastAPI dependency injection with the AMOS Service Layer.
 """
 
+from __future__ import annotations
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, EmailStr
 
 from amos_services import UnitOfWork, get_unit_of_work
 from backend.services.user_service import UserService
-from typing import Optional
 
 router = APIRouter(prefix="/api/v1/users", tags=["Users"])
 

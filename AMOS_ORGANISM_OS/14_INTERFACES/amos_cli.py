@@ -15,11 +15,12 @@ import argparse
 import json
 import sys
 from pathlib import Path
-from typing import List
 
-# Add paths for standalone brain
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-sys.path.insert(0, str(Path(__file__).parent.parent))
+# Import AMOS_ORGANISM_OS to set up paths
+try:
+    import AMOS_ORGANISM_OS
+except ImportError:
+    pass
 
 
 def get_organism_root() -> Path:
@@ -101,8 +102,7 @@ def cmd_agents(args) -> int:
 
     elif args.action == "create":
         # Create standard agents
-        sys.path.insert(0, str(factory_dir))
-        from agent_factory import AgentFactory
+        from AMOS_ORGANISM_OS.FACTORY.agent_factory import AgentFactory
 
         factory = AgentFactory(root)
         agents = factory.create_standard_agents()
@@ -114,10 +114,8 @@ def cmd_agents(args) -> int:
 def cmd_workers(args) -> int:
     """Execute worker tasks."""
     root = get_organism_root()
-    muscle_dir = root / "06_MUSCLE"
 
-    sys.path.insert(0, str(muscle_dir))
-    from amos_worker_engine import get_worker_engine
+    from MUSCLE.amos_worker_engine import get_worker_engine
 
     engine = get_worker_engine(root)
 
@@ -261,10 +259,8 @@ def cmd_bridge(args) -> int:
 def cmd_blood(args) -> int:
     """Interact with BLOOD financial engine."""
     root = get_organism_root()
-    blood_dir = root / "04_BLOOD"
 
-    sys.path.insert(0, str(blood_dir))
-    from financial_engine import FinancialEngine
+    from BLOOD.financial_engine import FinancialEngine
 
     engine = FinancialEngine(root)
 
@@ -294,11 +290,8 @@ def cmd_blood(args) -> int:
 
 def cmd_knowledge(args) -> int:
     """Manage knowledge packs (15_KNOWLEDGE_CORE)."""
-    root = get_organism_root()
-    knowledge_dir = root / "15_KNOWLEDGE_CORE"
 
-    sys.path.insert(0, str(knowledge_dir))
-    from knowledge_pack_loader import KnowledgePackLoader
+    from AMOS_ORGANISM_OS.KNOWLEDGE_CORE.knowledge_pack_loader import KnowledgePackLoader
 
     loader = KnowledgePackLoader()
 
@@ -423,12 +416,9 @@ def cmd_api(args) -> int:
 def cmd_cognitive(args) -> int:
     """Manage cognitive engines (01_BRAIN)."""
     root = get_organism_root()
-    brain_dir = root / "01_BRAIN"
+    from BRAIN.cognitive_engine_activator import CognitiveEngineActivator
 
-    sys.path.insert(0, str(brain_dir))
-    from cognitive_engine_activator import CognitiveEngineActivator
-
-    activator = CognitiveEngineActivator()
+    activator = CognitiveEngineActivator(root)
 
     if args.action == "status":
         status = activator.get_status()
@@ -471,10 +461,8 @@ def cmd_cognitive(args) -> int:
 def cmd_alert(args) -> int:
     """Manage alerts and notifications."""
     root = get_organism_root()
-    immune_dir = root / "03_IMMUNE"
 
-    sys.path.insert(0, str(immune_dir))
-    from alert_manager import AlertManager
+    from IMMUNE.alert_manager import AlertManager
 
     manager = AlertManager(root)
 
@@ -536,11 +524,8 @@ def cmd_alert(args) -> int:
 
 def cmd_pipeline(args) -> int:
     """Manage data pipelines."""
-    root = get_organism_root()
-    metabolism_dir = root / "07_METABOLISM"
 
-    sys.path.insert(0, str(metabolism_dir))
-    from pipeline_engine import PipelineEngine, PipelineStage
+    from METABOLISM.pipeline_engine import PipelineEngine, PipelineStage
 
     engine = PipelineEngine()
 
@@ -609,11 +594,8 @@ def cmd_pipeline(args) -> int:
 
 def cmd_workflow(args) -> int:
     """Manage workflows."""
-    root = get_organism_root()
-    muscle_dir = root / "06_MUSCLE"
 
-    sys.path.insert(0, str(muscle_dir))
-    from workflow_engine import WorkflowEngine
+    from MUSCLE.workflow_engine import WorkflowEngine
 
     engine = WorkflowEngine()
 
@@ -679,10 +661,8 @@ def cmd_workflow(args) -> int:
 def cmd_predict(args) -> int:
     """Show predictive analytics forecast."""
     root = get_organism_root()
-    quantum_dir = root / "12_QUANTUM_LAYER"
 
-    sys.path.insert(0, str(quantum_dir))
-    from predictive_engine import PredictiveEngine
+    from QUANTUM_LAYER.predictive_engine import PredictiveEngine
 
     engine = PredictiveEngine(root)
 
@@ -692,8 +672,7 @@ def cmd_predict(args) -> int:
         print("Queue Forecast")
         print("=" * 40)
         try:
-            sys.path.insert(0, str(root / "07_METABOLISM"))
-            from task_queue import TaskQueue
+            from METABOLISM.task_queue import TaskQueue
 
             queue = TaskQueue(root)
             status = queue.get_status()
@@ -716,10 +695,8 @@ def cmd_predict(args) -> int:
 def cmd_execute(args) -> int:
     """Execute pending tasks via Task Executor."""
     root = get_organism_root()
-    muscle_dir = root / "06_MUSCLE"
 
-    sys.path.insert(0, str(muscle_dir))
-    from task_executor import AgentTaskRouter
+    from MUSCLE.task_executor import AgentTaskRouter
 
     router = AgentTaskRouter(root)
 
@@ -744,12 +721,10 @@ def cmd_execute(args) -> int:
 
 
 def cmd_task(args) -> int:
-    """Interact with Task Queue."""
+    """Manage task queue."""
     root = get_organism_root()
-    metabolism_dir = root / "07_METABOLISM"
 
-    sys.path.insert(0, str(metabolism_dir))
-    from task_queue import TaskPriority, TaskQueue
+    from METABOLISM.task_queue import TaskPriority, TaskQueue
 
     queue = TaskQueue(root)
 
@@ -788,10 +763,8 @@ def cmd_task(args) -> int:
 def cmd_factory(args) -> int:
     """Interact with Agent Factory."""
     root = get_organism_root()
-    factory_dir = root / "13_FACTORY"
 
-    sys.path.insert(0, str(factory_dir))
-    from agent_factory import AgentFactory
+    from FACTORY.agent_factory import AgentFactory
 
     factory = AgentFactory(root)
 
@@ -809,10 +782,8 @@ def cmd_factory(args) -> int:
 def cmd_life(args) -> int:
     """Interact with LIFE engine."""
     root = get_organism_root()
-    life_dir = root / "10_LIFE_ENGINE"
 
-    sys.path.insert(0, str(life_dir))
-    from life_engine import LifeEngine
+    from LIFE_ENGINE.life_engine import LifeEngine
 
     engine = LifeEngine(root)
 
@@ -840,11 +811,8 @@ def cmd_life(args) -> int:
 
 def cmd_immune(args) -> int:
     """Interact with IMMUNE security system."""
-    root = get_organism_root()
-    immune_dir = root / "03_IMMUNE"
 
-    sys.path.insert(0, str(immune_dir))
-    from immune_system import ActionType, ImmuneSystem
+    from IMMUNE.immune_system import ActionType, ImmuneSystem
 
     immune = ImmuneSystem()
 
@@ -872,10 +840,8 @@ def cmd_immune(args) -> int:
 def cmd_legal(args) -> int:
     """Interact with LEGAL engine."""
     root = get_organism_root()
-    legal_dir = root / "11_LEGAL_BRAIN"
 
-    sys.path.insert(0, str(legal_dir))
-    from legal_engine import LegalEngine
+    from LEGAL_BRAIN.legal_engine import LegalEngine
 
     engine = LegalEngine(root)
 
@@ -901,10 +867,8 @@ def cmd_legal(args) -> int:
 def cmd_social(args) -> int:
     """Interact with SOCIAL engine."""
     root = get_organism_root()
-    social_dir = root / "09_SOCIAL_ENGINE"
 
-    sys.path.insert(0, str(social_dir))
-    from social_engine import SocialEngine
+    from SOCIAL_ENGINE.social_engine import SocialEngine
 
     engine = SocialEngine(root)
 
@@ -931,13 +895,10 @@ def cmd_social(args) -> int:
 
 def cmd_orchestrator(args) -> int:
     """Orchestrator management (00_ROOT)."""
-    organism_root = get_organism_root()
-
     if args.action == "cycle":
         # Trigger orchestrator cycle
-        sys.path.insert(0, str(organism_root))
         try:
-            from AMOS_MASTER_ORCHESTRATOR import AmosMasterOrchestrator
+            from AMOS_ORGANISM_OS.AMOS_MASTER_ORCHESTRATOR import AmosMasterOrchestrator
 
             orch = AmosMasterOrchestrator()
             if not orch.initialize():
@@ -954,9 +915,8 @@ def cmd_orchestrator(args) -> int:
 
     elif args.action == "status":
         # Check orchestrator status
-        sys.path.insert(0, str(organism_root))
         try:
-            from AMOS_MASTER_ORCHESTRATOR import AmosMasterOrchestrator
+            from AMOS_ORGANISM_OS.AMOS_MASTER_ORCHESTRATOR import AmosMasterOrchestrator
 
             orch = AmosMasterOrchestrator()
             status = orch.get_status()
@@ -978,7 +938,7 @@ def cmd_orchestrator(args) -> int:
     return 0
 
 
-def main(argv: List[str] = None) -> int:
+def main(argv: list[str] = None) -> int:
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(prog="amos", description="AMOS 7-System Organism CLI")
 

@@ -13,9 +13,11 @@ Uses templates + AST validation to ensure generated code is syntactically correc
 import ast
 import logging
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from pathlib import Path
-from typing import Any, List, Tuple
+from typing import Any
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -35,7 +37,7 @@ class CodeValidator:
     """Validates generated code for syntax correctness."""
 
     @staticmethod
-    def validate(source: str) -> Tuple[bool, str]:
+    def validate(source: str) -> tuple[bool, str]:
         """Check if source is valid Python."""
         try:
             ast.parse(source)
@@ -133,9 +135,9 @@ class {class_name}{bases}:
     def generate(
         cls,
         class_name: str,
-        attributes: List[tuple[str, str, Any]],
-        methods: List[str] = None,
-        bases: List[str] = None,
+        attributes: list[tuple[str, str, Any]],
+        methods: list[str] = None,
+        bases: list[str] = None,
         docstring: str = "",
     ) -> GeneratedCode:
         """Generate class code."""
@@ -292,7 +294,7 @@ class Test{class_name}:
 
     @classmethod
     def generate(
-        cls, target: str, module: str, params: List[tuple[str, Any]], class_name: str = ""
+        cls, target: str, module: str, params: list[tuple[str, Any]], class_name: str = ""
     ) -> GeneratedCode:
         """Generate test cases."""
         test_name = target.lower().replace("test_", "")
@@ -372,7 +374,7 @@ def demo():
     print("\n🔧 Generating function...")
     func = FunctionGenerator.generate(
         name="process_data",
-        params="data: List[dict], threshold: float = 0.5",
+        params="data: list[dict], threshold: float = 0.5",
         docstring="Process data with threshold filtering",
         template="with_logging",
     )

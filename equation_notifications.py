@@ -37,10 +37,12 @@ Environment Variables:
     REDIS_PUBSUB_ENABLED: Enable Redis pub/sub (default: false)
 """
 
+from __future__ import annotations
+
 import json
 import os
 import time
-from typing import Any, Dict, Optional, Set
+from typing import Any, Optional
 
 try:
     from fastapi import WebSocket, WebSocketDisconnect
@@ -64,11 +66,11 @@ class ConnectionManager:
 
     def __init__(self) -> None:
         # Map of user_id -> set of WebSocket connections
-        self._user_connections: Dict[str, set[Any]] = {}
+        self._user_connections: dict[str, set[Any]] = {}
         # Map of websocket -> user_id for reverse lookup
-        self._connection_users: Dict[Any, str] = {}
+        self._connection_users: dict[Any, str] = {}
         # All active connections
-        self._all_connections: Set[Any] = set()
+        self._all_connections: set[Any] = set()
 
         self._max_connections = int(os.getenv("WS_MAX_CONNECTIONS", "1000"))
         self._heartbeat_interval = int(os.getenv("WS_HEARTBEAT_INTERVAL", "30"))
@@ -118,7 +120,7 @@ class ConnectionManager:
         self._connection_users.pop(websocket, None)
         self._all_connections.discard(websocket)
 
-    async def notify_user(self, user_id: str, message: Dict[str, Any]) -> int:
+    async def notify_user(self, user_id: str, message: dict[str, Any]) -> int:
         """Send notification to all connections for a user.
 
         Args:
@@ -141,7 +143,7 @@ class ConnectionManager:
 
         return sent
 
-    async def broadcast(self, message: Dict[str, Any]) -> int:
+    async def broadcast(self, message: dict[str, Any]) -> int:
         """Broadcast message to all connected clients.
 
         Args:
@@ -160,7 +162,7 @@ class ConnectionManager:
 
         return sent
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get connection manager statistics."""
         return {
             "total_connections": len(self._all_connections),
@@ -182,7 +184,7 @@ def get_manager() -> ConnectionManager:
     return _manager
 
 
-async def notify_user(user_id: str, message: Dict[str, Any]) -> int:
+async def notify_user(user_id: str, message: dict[str, Any]) -> int:
     """Send notification to specific user.
 
     Args:
@@ -210,7 +212,7 @@ async def notify_user(user_id: str, message: Dict[str, Any]) -> int:
     return await manager.notify_user(user_id, message)
 
 
-async def broadcast(message: Dict[str, Any]) -> int:
+async def broadcast(message: dict[str, Any]) -> int:
     """Broadcast to all connected clients.
 
     Args:
@@ -240,7 +242,7 @@ async def broadcast(message: Dict[str, Any]) -> int:
 async def notify_task_completed(
     user_id: str,
     task_id: str,
-    result: Dict[str, Any],
+    result: dict[str, Any],
 ) -> int:
     """Notify user that a task completed.
 
@@ -306,7 +308,7 @@ async def notify_task_progress(
     Returns:
         Number of connections notified
     """
-    payload: Dict[str, Any] = {
+    payload: dict[str, Any] = {
         "type": "task.progress",
         "task_id": task_id,
         "progress": progress,
@@ -318,7 +320,7 @@ async def notify_task_progress(
     return await notify_user(user_id, payload)
 
 
-def get_connection_stats() -> Dict[str, Any]:
+def get_connection_stats() -> dict[str, Any]:
     """Get WebSocket connection statistics."""
     if _manager is None:
         return {"status": "not_initialized"}

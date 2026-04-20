@@ -10,15 +10,9 @@ Integrates the Coherence Engine with Organism OS health monitoring:
 Usage: python amos_coherent_organism.py [--cycle] [--health]
 """
 
-import sys
-from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).parent))
-sys.path.insert(0, str(Path(__file__).parent / "AMOS_ORGANISM_OS"))
-
 from dataclasses import dataclass
-from datetime import datetime
-from typing import Any, Dict, List
+from datetime import UTC, datetime
+from typing import Any
 
 
 @dataclass
@@ -27,8 +21,8 @@ class CoherenceResult:
 
     subsystem: str
     is_coherent: bool
-    violations: List[str]
-    suggestions: List[str]
+    violations: list[str]
+    suggestions: list[str]
     confidence: float
 
 
@@ -36,7 +30,7 @@ class CoherentOrganismMonitor:
     """Organism OS monitor with coherence validation."""
 
     def __init__(self):
-        self.coherence_results: Dict[str, CoherenceResult] = {}
+        self.coherence_results: dict[str, CoherenceResult] = {}
 
     def check_subsystem_coherence(self, subsystem: str, state: dict) -> CoherenceResult:
         """Check coherence of a single subsystem."""
@@ -77,7 +71,7 @@ class CoherentOrganismMonitor:
                 confidence=0.0,
             )
 
-    def run_coherent_health_check(self) -> Dict[str, Any]:
+    def run_coherent_health_check(self) -> dict[str, Any]:
         """Run health check with coherence validation."""
         from AMOS_ORGANISM_OS import SUBSYSTEMS
 
@@ -91,7 +85,7 @@ class CoherentOrganismMonitor:
             # Simulate subsystem state
             state = {
                 "status": "active",
-                "last_updated": datetime.now(timezone.utc).isoformat(),
+                "last_updated": datetime.now(UTC).isoformat(),
                 "subsystem": info["name"],
             }
 
@@ -129,7 +123,7 @@ class CoherentOrganismMonitor:
             "overall_coherent": coherence_summary["incoherent"] == 0,
         }
 
-    def run_coherent_cycle(self) -> Dict[str, Any]:
+    def run_coherent_cycle(self) -> dict[str, Any]:
         """Execute Organism cycle with coherence validation."""
         from AMOS_ORGANISM_OS import PrimaryLoop
 

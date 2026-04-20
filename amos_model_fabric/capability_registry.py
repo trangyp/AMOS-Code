@@ -5,14 +5,13 @@ Tracks model capabilities for intelligent routing.
 
 from __future__ import annotations
 
-
-
-
 import json
 import logging
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from .schemas import CapabilitySet, ModelCapability, ModelInfo, ProviderType
 
@@ -21,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 # Known model capability database
 # Maps model name patterns to their capabilities
-KNOWN_MODEL_CAPABILITIES: Dict[str, CapabilitySet] = {
+KNOWN_MODEL_CAPABILITIES: dict[str, CapabilitySet] = {
     # Qwen Coder models
     "qwen2.5-coder": CapabilitySet(
         capabilities={
@@ -171,9 +170,9 @@ class CapabilityRegistry:
     """Registry for tracking model capabilities."""
 
     def __init__(self, config_path: Optional[Path] = None):
-        self._models: Dict[str, ModelInfo] = {}
-        self._by_capability: Dict[ModelCapability, list[str]] = {c: [] for c in ModelCapability}
-        self._by_provider: Dict[ProviderType, list[str]] = {p: [] for p in ProviderType}
+        self._models: dict[str, ModelInfo] = {}
+        self._by_capability: dict[ModelCapability, list[str]] = {c: [] for c in ModelCapability}
+        self._by_provider: dict[ProviderType, list[str]] = {p: [] for p in ProviderType}
         self._config_path = config_path or Path.home() / ".amos" / "model_capabilities.json"
         self._load_config()
 
@@ -199,7 +198,7 @@ class CapabilityRegistry:
         except Exception as e:
             logger.warning(f"Failed to save model config: {e}")
 
-    def _serialize_model_info(self, model: ModelInfo) -> Dict[str, Any]:
+    def _serialize_model_info(self, model: ModelInfo) -> dict[str, Any]:
         """Convert ModelInfo to dict."""
         return {
             "id": model.id,
@@ -218,7 +217,7 @@ class CapabilityRegistry:
             "endpoint_url": model.endpoint_url,
         }
 
-    def _deserialize_model_info(self, data: Dict[str, Any]) -> ModelInfo:
+    def _deserialize_model_info(self, data: dict[str, Any]) -> ModelInfo:
         """Convert dict to ModelInfo."""
         caps = data.get("capabilities", {})
         return ModelInfo(
@@ -283,7 +282,7 @@ class CapabilityRegistry:
         provider: Optional[ProviderType] = None,
         capability: Optional[ModelCapability] = None,
         available_only: bool = True,
-    ) -> List[ModelInfo]:
+    ) -> list[ModelInfo]:
         """List models matching criteria."""
         if capability:
             model_ids = self._by_capability.get(capability, [])
@@ -301,9 +300,9 @@ class CapabilityRegistry:
 
     def find_models_with_capabilities(
         self,
-        required: List[ModelCapability],
+        required: list[ModelCapability],
         preferred_provider: Optional[ProviderType] = None,
-    ) -> List[ModelInfo]:
+    ) -> list[ModelInfo]:
         """Find models that have all required capabilities."""
         if not required:
             return self.list_models()

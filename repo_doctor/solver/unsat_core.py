@@ -53,7 +53,7 @@ class UnsatCoreExtractor:
 
     def _interpret_assertion(
         self, assertion: str, repo_state: Dict[str, Any]
-    ) -> Optional[Contradiction]:
+    ) -> Contradiction | None:
         """
         Interpret a single Z3 assertion as a contradiction.
         """

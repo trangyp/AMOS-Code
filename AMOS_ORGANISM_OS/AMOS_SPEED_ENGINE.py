@@ -12,10 +12,11 @@ Version: 1.0.0
 import json
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 @dataclass
@@ -24,15 +25,15 @@ class BenchmarkResult:
     duration_ms: float
     memory_bytes: int
     status: str
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
 class SpeedProfile:
     timestamp: str
     overall_score: float
-    benchmarks: List[BenchmarkResult]
-    recommendations: List[str]
+    benchmarks: list[BenchmarkResult]
+    recommendations: list[str]
 
 
 class AmosSpeedEngine:
@@ -44,9 +45,9 @@ class AmosSpeedEngine:
         self.root = organism_root
         self.logs_dir = organism_root / "logs"
         self.memory_dir = organism_root / "memory"
-        self.benchmarks: List[BenchmarkResult] = []
+        self.benchmarks: list[BenchmarkResult] = []
 
-    def benchmark_cycle(self, cycle_func, context: Optional[Dict] = None) -> BenchmarkResult:
+    def benchmark_cycle(self, cycle_func, context: Optional[dict] = None) -> BenchmarkResult:
         """Benchmark a single orchestrator cycle."""
         start = time.perf_counter()
 
@@ -87,7 +88,7 @@ class AmosSpeedEngine:
                 total_size += stat.st_size
                 with open(f, encoding="utf-8") as fp:
                     json.load(fp)
-            except (OSError, IOError):
+            except OSError:
                 # File doesn't exist or can't be read
                 pass
 
@@ -117,7 +118,7 @@ class AmosSpeedEngine:
         avg_duration = sum(b.duration_ms for b in self.benchmarks) / len(self.benchmarks)
         score = max(0, 100 - avg_duration / 10)
 
-        recommendations: List[str] = []
+        recommendations: list[str] = []
 
         # Analyze benchmarks for recommendations
         slow_benchmarks = [b for b in self.benchmarks if b.duration_ms > 1000]
@@ -166,7 +167,7 @@ class AmosSpeedEngine:
 
         return output_path
 
-    def optimize_recommendations(self) -> List[str]:
+    def optimize_recommendations(self) -> list[str]:
         """Generate optimization recommendations."""
         recommendations = [
             "Enable working memory caching for frequent queries",

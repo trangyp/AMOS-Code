@@ -108,6 +108,8 @@ Author: AMOS Event Streaming Team
 Version: 28.0.0
 """
 
+from __future__ import annotations
+
 import heapq
 import random
 import secrets
@@ -116,7 +118,7 @@ from collections import defaultdict, deque
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Optional
 
 
 class Priority(Enum):
@@ -154,14 +156,14 @@ class Event:
 
     event_id: str
     event_type: str
-    payload: Dict[str, Any]
+    payload: dict[str, Any]
     timestamp: float
     priority: Priority = Priority.NORMAL
     source: str = None
     correlation_id: str = None
     status: EventStatus = EventStatus.PENDING
     retry_count: int = 0
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -170,7 +172,7 @@ class SourcedEvent:
 
     aggregate_id: str
     event_type: str
-    payload: Dict[str, Any]
+    payload: dict[str, Any]
     version: int
     timestamp: float
     event_id: str = field(default_factory=lambda: f"evt_{secrets.token_hex(8)}")
@@ -183,7 +185,7 @@ class StreamWindow:
     window_id: str
     window_type: WindowType
     size_seconds: float
-    events: List[Event] = field(default_factory=list)
+    events: list[Event] = field(default_factory=list)
     start_time: float = field(default_factory=lambda: time.time())
     end_time: float = None
 
@@ -195,8 +197,8 @@ class AsyncTask:
     task_id: str
     priority: Priority
     function: Callable[..., Any]
-    args: Tuple[Any, ...]
-    kwargs: Dict[str, Any]
+    args: tuple[Any, ...]
+    kwargs: dict[str, Any]
     created_at: float
     scheduled_at: float = None
     executed_at: float = None
@@ -218,21 +220,21 @@ class AMOSEventStreaming:
         self.retry_delay_seconds = retry_delay_seconds
 
         # Event bus
-        self.subscribers: Dict[str, list[Callable[[Event], Any]]] = defaultdict(list)
+        self.subscribers: dict[str, list[Callable[[Event], Any]]] = defaultdict(list)
         self.event_history: deque[Event] = deque(maxlen=max_history)
-        self.pending_events: List[tuple[int, float, Event]] = []  # (priority, timestamp, event)
+        self.pending_events: list[tuple[int, float, Event]] = []  # (priority, timestamp, event)
 
         # Event sourcing
-        self.event_store: Dict[str, list[SourcedEvent]] = defaultdict(list)
+        self.event_store: dict[str, list[SourcedEvent]] = defaultdict(list)
 
         # Stream processing
-        self.windows: Dict[str, StreamWindow] = {}
-        self.window_results: Dict[str, Any] = {}
+        self.windows: dict[str, StreamWindow] = {}
+        self.window_results: dict[str, Any] = {}
 
         # Async processing
-        self.task_queue: List[tuple[int, float, AsyncTask]] = []  # (priority, timestamp, task)
-        self.dead_letter_queue: List[Event] = []
-        self.completed_tasks: Dict[str, AsyncTask] = {}
+        self.task_queue: list[tuple[int, float, AsyncTask]] = []  # (priority, timestamp, task)
+        self.dead_letter_queue: list[Event] = []
+        self.completed_tasks: dict[str, AsyncTask] = {}
 
         # Statistics
         self.total_events_published: int = 0
@@ -257,7 +259,7 @@ class AMOSEventStreaming:
     def publish(
         self,
         event_type: str,
-        payload: Dict[str, Any],
+        payload: dict[str, Any],
         priority: Priority = Priority.NORMAL,
         source: str = None,
         correlation_id: str = None,
@@ -323,12 +325,12 @@ class AMOSEventStreaming:
         """Retry failed event."""
         heapq.heappush(self.pending_events, (event.priority.value, time.time(), event))
 
-    def get_pending_events(self, limit: int = 100) -> List[Event]:
+    def get_pending_events(self, limit: int = 100) -> list[Event]:
         """Get pending events sorted by priority."""
         sorted_events = sorted(self.pending_events, key=lambda x: (x[0], x[1]))
         return [event for _, _, event in sorted_events[:limit]]
 
-    def get_dead_letter_events(self) -> List[Event]:
+    def get_dead_letter_events(self) -> list[Event]:
         """Get events that failed all retries."""
         return list(self.dead_letter_queue)
 
@@ -357,7 +359,7 @@ class AMOSEventStreaming:
     # ==================== Event Sourcing ====================
 
     def append_event(
-        self, aggregate_id: str, event_type: str, payload: Dict[str, Any]
+        self, aggregate_id: str, event_type: str, payload: dict[str, Any]
     ) -> SourcedEvent:
         """Append event to aggregate's event stream."""
         version = len(self.event_store[aggregate_id]) + 1
@@ -373,14 +375,14 @@ class AMOSEventStreaming:
         self.event_store[aggregate_id].append(sourced_event)
         return sourced_event
 
-    def get_event_stream(self, aggregate_id: str, from_version: int = 1) -> List[SourcedEvent]:
+    def get_event_stream(self, aggregate_id: str, from_version: int = 1) -> list[SourcedEvent]:
         """Get event stream for aggregate."""
         events = self.event_store.get(aggregate_id, [])
         return [e for e in events if e.version >= from_version]
 
     def replay_events(
         self, aggregate_id: str, from_version: int = 1, to_version: int = None
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Replay events to rebuild aggregate state.
 
@@ -400,7 +402,7 @@ class AMOSEventStreaming:
 
         return state
 
-    def _apply_event(self, state: Dict[str, Any], event: SourcedEvent) -> Dict[str, Any]:
+    def _apply_event(self, state: dict[str, Any], event: SourcedEvent) -> dict[str, Any]:
         """Apply event to state (event sourcing projection)."""
         new_state = state.copy()
 
@@ -459,7 +461,7 @@ class AMOSEventStreaming:
         window.events.append(event)
         return True
 
-    def _process_window(self, window: StreamWindow) -> Dict[str, Any]:
+    def _process_window(self, window: StreamWindow) -> dict[str, Any]:
         """Process window events and compute aggregations."""
         window.end_time = time.time()
 
@@ -492,7 +494,7 @@ class AMOSEventStreaming:
         self.window_results[window.window_id] = results
         return results
 
-    def get_window_results(self, window_id: str) -> Dict[str, Any]:
+    def get_window_results(self, window_id: str) -> dict[str, Any]:
         """Get processed window results."""
         return self.window_results.get(window_id)
 
@@ -501,8 +503,8 @@ class AMOSEventStreaming:
     def submit_task(
         self,
         function: Callable[..., Any],
-        args: Tuple[Any, ...] = (),
-        kwargs: Dict[str, Any] = None,
+        args: tuple[Any, ...] = (),
+        kwargs: dict[str, Any] = None,
         priority: Priority = Priority.NORMAL,
         delay_seconds: float = 0.0,
     ) -> str:
@@ -524,7 +526,7 @@ class AMOSEventStreaming:
         self.total_tasks_submitted += 1
         return task_id
 
-    def process_tasks(self, max_tasks: int = 10) -> List[AsyncTask]:
+    def process_tasks(self, max_tasks: int = 10) -> list[AsyncTask]:
         """Process pending tasks from queue."""
         processed = []
         now = time.time()
@@ -552,7 +554,7 @@ class AMOSEventStreaming:
 
         return processed
 
-    def get_task_status(self, task_id: str) -> Dict[str, Any]:
+    def get_task_status(self, task_id: str) -> dict[str, Any]:
         """Get task execution status."""
         if task_id in self.completed_tasks:
             task = self.completed_tasks[task_id]
@@ -578,7 +580,7 @@ class AMOSEventStreaming:
 
     # ==================== Statistics & Health ====================
 
-    def get_streaming_stats(self) -> Dict[str, Any]:
+    def get_streaming_stats(self) -> dict[str, Any]:
         """Get comprehensive streaming statistics."""
         return {
             "event_bus": {

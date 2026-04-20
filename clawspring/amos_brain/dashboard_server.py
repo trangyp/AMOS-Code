@@ -1,13 +1,9 @@
 """AMOS Dashboard Server - HTTP server for cognitive dashboard."""
 
 import json
-import sys
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 from urllib.parse import urlparse
-
-# Add parent for imports
-sys.path.insert(0, str(Path(__file__).parent.parent))
 
 try:
     from amos_brain.cognitive_audit import get_audit_trail

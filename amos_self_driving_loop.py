@@ -22,7 +22,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 # Add project to path
 sys.path.insert(0, str(Path(__file__).parent))
@@ -59,7 +59,7 @@ class EvolutionResult:
     """Result of self-driving evolution."""
 
     goal: str
-    rounds: List[EvolutionRound]
+    rounds: list[EvolutionRound]
     total_tools: int
     total_lines: int
     start_time: str
@@ -82,7 +82,7 @@ class AMOSSelfDrivingLoop:
     def __init__(self):
         self.brain = None
         self.current_round: int = 0
-        self.rounds: List[EvolutionRound] = []
+        self.rounds: list[EvolutionRound] = []
         self.goal: str = None
         self.max_rounds: int = 10
 
@@ -184,7 +184,7 @@ class AMOSSelfDrivingLoop:
         self._final_report(result)
         return result
 
-    def _self_analyze(self) -> Dict[str, Any]:
+    def _self_analyze(self) -> dict[str, Any]:
         """Self-analyze current capabilities."""
         print(f"\n🧠 Self-Analysis (Round {self.current_round})")
         print("─" * 70)
@@ -213,7 +213,7 @@ class AMOSSelfDrivingLoop:
 
         return capabilities
 
-    def _identify_gaps(self, current_state: Dict[str, Any]) -> List[str]:
+    def _identify_gaps(self, current_state: dict[str, Any]) -> list[str]:
         """Identify capability gaps."""
         print("\n🔍 Gap Identification")
         print("─" * 70)
@@ -256,7 +256,7 @@ class AMOSSelfDrivingLoop:
 
         return gaps
 
-    def _decide_next_step(self, gaps: List[str]) -> str:
+    def _decide_next_step(self, gaps: list[str]) -> str:
         """Decide next step based on gaps."""
         print("\n🎯 Decision Making (Rule of 2/4 Applied)")
         print("─" * 70)
@@ -295,7 +295,7 @@ class AMOSSelfDrivingLoop:
 
         return decision
 
-    def _build_tool(self, decision: str) -> Dict[str, Any]:
+    def _build_tool(self, decision: str) -> dict[str, Any]:
         """Build the decided tool."""
         print("\n🏗️  Autonomous Building")
         print("─" * 70)
@@ -354,7 +354,7 @@ class AMOSSelfDrivingLoop:
         print(f"  Lines: {round_record.lines_of_code}")
         print(f"  Status: {round_record.status.upper()}")
 
-    def _check_goal_achieved(self, current_state: Dict[str, Any]) -> bool:
+    def _check_goal_achieved(self, current_state: dict[str, Any]) -> bool:
         """Check if high-level goal is achieved."""
         # Goal achieved if we have all 7 capabilities
         return (
@@ -367,7 +367,7 @@ class AMOSSelfDrivingLoop:
             and current_state.get("has_self_driving")
         )
 
-    def _scan_existing_tools(self) -> List[str]:
+    def _scan_existing_tools(self) -> list[str]:
         """Scan for existing tools."""
         tools = []
         root = Path(__file__).parent

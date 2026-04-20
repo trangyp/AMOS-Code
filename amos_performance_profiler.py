@@ -32,19 +32,21 @@ Version: 1.0.0
 Phase: 14 Enhancement
 """
 
+from __future__ import annotations
 
-import asyncio
 import functools
 import time
 import tracemalloc
 from collections import defaultdict
+from collections.abc import Awaitable, Callable
 from contextlib import asynccontextmanager, contextmanager
 from dataclasses import dataclass, field
-from typing import Any, Awaitable, Callable, Dict, List, Optional, TypeVar
+from typing import Any, Optional, TypeVar
 
 # Prometheus integration
 try:
     from amos_metrics_exporter import get_metrics_exporter
+
     METRICS_AVAILABLE = True
 except ImportError:
     METRICS_AVAILABLE = False
@@ -52,6 +54,7 @@ except ImportError:
 # Cache manager integration
 try:
     from backend.cache.cache_manager import get_cache_manager
+
     CACHE_AVAILABLE = True
 except ImportError:
     CACHE_AVAILABLE = False
@@ -63,6 +66,7 @@ T = TypeVar("T")
 @dataclass
 class ProfileResult:
     """Performance profiling result."""
+
     name: str
     duration_ms: float
     calls: int = 1
@@ -70,7 +74,7 @@ class ProfileResult:
     cache_misses: int = 0
     memory_delta_bytes: int = 0
     timestamp: float = field(default_factory=time.time)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class PerformanceProfiler:
@@ -97,8 +101,8 @@ class PerformanceProfiler:
             return
 
         self._initialized = True
-        self._profiles: Dict[str, list[ProfileResult]] = defaultdict(list)
-        self._active_profiles: Dict[str, float] = {}
+        self._profiles: dict[str, list[ProfileResult]] = defaultdict(list)
+        self._active_profiles: dict[str, float] = {}
         self._tracemalloc_enabled = False
         self._metrics = get_metrics_exporter() if METRICS_AVAILABLE else None
 
@@ -108,7 +112,7 @@ class PerformanceProfiler:
             tracemalloc.start()
             self._tracemalloc_enabled = True
 
-    def start_profile(self, name: str, metadata: Dict[str, Any]  = None) -> None:
+    def start_profile(self, name: str, metadata: dict[str, Any] = None) -> None:
         """Start profiling a named operation."""
         self._active_profiles[name] = time.perf_counter()
 
@@ -116,11 +120,7 @@ class PerformanceProfiler:
             tracemalloc.reset_peak()
 
     def end_profile(
-        self,
-        name: str,
-        cache_hits: int = 0,
-        cache_misses: int = 0,
-        metadata: Dict[str, Any]  = None
+        self, name: str, cache_hits: int = 0, cache_misses: int = 0, metadata: dict[str, Any] = None
     ) -> ProfileResult:
         """End profiling and return results."""
         if name not in self._active_profiles:
@@ -141,7 +141,7 @@ class PerformanceProfiler:
             cache_hits=cache_hits,
             cache_misses=cache_misses,
             memory_delta_bytes=memory_delta,
-            metadata=metadata or {}
+            metadata=metadata or {},
         )
 
         self._profiles[name].append(result)
@@ -152,7 +152,7 @@ class PerformanceProfiler:
 
         return result
 
-    def get_stats(self, name: str  = None) -> Dict[str, Any]:
+    def get_stats(self, name: str = None) -> dict[str, Any]:
         """Get profiling statistics."""
         if name:
             results = self._profiles.get(name, [])
@@ -174,7 +174,7 @@ class PerformanceProfiler:
 
         return {name: self.get_stats(name) for name in self._profiles.keys()}
 
-    def get_bottlenecks(self, threshold_ms: float = 100.0) -> List[dict[str, Any]]:
+    def get_bottlenecks(self, threshold_ms: float = 100.0) -> list[dict[str, Any]]:
         """Identify performance bottlenecks above threshold."""
         bottlenecks = []
         for name in self._profiles:
@@ -195,7 +195,7 @@ def get_profiler() -> PerformanceProfiler:
     return PerformanceProfiler()
 
 
-def profile(name: str  = None, track_cache: bool = True):
+def profile(name: str = None, track_cache: bool = True):
     """
     Decorator for profiling async functions.
 
@@ -208,17 +208,21 @@ def profile(name: str  = None, track_cache: bool = True):
         async def execute_equation(name: str, inputs: dict) -> dict:
             return await runtime.execute(name, inputs)
     """
+
     def decorator(func: Callable[..., Awaitable[T]]) -> Callable[..., Awaitable[T]]:
         profile_name = name or func.__name__
         profiler = get_profiler()
 
         @functools.wraps(func)
         async def wrapper(*args, **kwargs) -> T:
-            profiler.start_profile(profile_name, {
-                "function": func.__name__,
-                "args_count": len(args),
-                "kwargs_keys": list(kwargs.keys())
-            })
+            profiler.start_profile(
+                profile_name,
+                {
+                    "function": func.__name__,
+                    "args_count": len(args),
+                    "kwargs_keys": list(kwargs.keys()),
+                },
+            )
 
             cache_hits = 0
             cache_misses = 0
@@ -232,11 +236,7 @@ def profile(name: str  = None, track_cache: bool = True):
 
                 result = await func(*args, **kwargs)
 
-                profiler.end_profile(
-                    profile_name,
-                    cache_hits=cache_hits,
-                    cache_misses=cache_misses
-                )
+                profiler.end_profile(profile_name, cache_hits=cache_hits, cache_misses=cache_misses)
 
                 return result
             except Exception as e:
@@ -244,11 +244,12 @@ def profile(name: str  = None, track_cache: bool = True):
                     profile_name,
                     cache_hits=cache_hits,
                     cache_misses=cache_misses,
-                    metadata={"error": str(e)}
+                    metadata={"error": str(e)},
                 )
                 raise
 
         return wrapper
+
     return decorator
 
 
@@ -272,11 +273,7 @@ async def profile_block(name: str, track_memory: bool = False):
         yield
     finally:
         duration_ms = (time.perf_counter() - start_time) * 1000
-        result = ProfileResult(
-            name=name,
-            duration_ms=duration_ms,
-            metadata={"type": "block"}
-        )
+        result = ProfileResult(name=name, duration_ms=duration_ms, metadata={"type": "block"})
         profiler._profiles[name].append(result)
 
 
@@ -296,11 +293,7 @@ def profile_sync_block(name: str):
         yield
     finally:
         duration_ms = (time.perf_counter() - start_time) * 1000
-        result = ProfileResult(
-            name=name,
-            duration_ms=duration_ms,
-            metadata={"type": "sync_block"}
-        )
+        result = ProfileResult(name=name, duration_ms=duration_ms, metadata={"type": "sync_block"})
         profiler._profiles[name].append(result)
 
 
@@ -318,7 +311,7 @@ class ProfileReport:
         report = [
             "# AMOS Performance Profile Report",
             f"\nGenerated: {time.strftime('%Y-%m-%d %H:%M:%S')}",
-            f"\n## Summary",
+            "\n## Summary",
             f"- Total operations profiled: {len(stats)}",
             f"- Bottlenecks identified: {len(bottlenecks)}",
             "\n## Top Performance Bottlenecks",
@@ -326,20 +319,19 @@ class ProfileReport:
 
         for i, b in enumerate(bottlenecks[:10], 1):
             report.append(
-                f"{i}. **{b['name']}**: {b['avg_duration_ms']:.2f}ms avg "
-                f"({b['calls']} calls)"
+                f"{i}. **{b['name']}**: {b['avg_duration_ms']:.2f}ms avg ({b['calls']} calls)"
             )
 
-        report.extend([
-            "\n## All Operations",
-            "| Operation | Calls | Avg (ms) | Min (ms) | Max (ms) |",
-            "|-----------|-------|----------|----------|----------|"
-        ])
+        report.extend(
+            [
+                "\n## All Operations",
+                "| Operation | Calls | Avg (ms) | Min (ms) | Max (ms) |",
+                "|-----------|-------|----------|----------|----------|",
+            ]
+        )
 
         for name, stat in sorted(
-            stats.items(),
-            key=lambda x: x[1].get("avg_duration_ms", 0),
-            reverse=True
+            stats.items(), key=lambda x: x[1].get("avg_duration_ms", 0), reverse=True
         ):
             report.append(
                 f"| {stat['name']} | {stat['calls']} | "

@@ -18,10 +18,12 @@ Architecture: 04_LAW layer enforcement for agent tasks
 import ast
 import sys
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class AuditStatus(Enum):
@@ -116,9 +118,9 @@ class InvariantResult:
     invariant_id: str
     family: str
     status: AuditStatus = field(default=AuditStatus.UNVERIFIED)
-    evidence: List[str] = field(default_factory=list)
-    violations: List[str] = field(default_factory=list)
-    failure_class: Optional[FailureClass] = None
+    evidence: list[str] = field(default_factory=list)
+    violations: list[str] = field(default_factory=list)
+    failure_class: FailureClass = None
     confidence: float = 0.0  # 0.0 to 1.0
 
 
@@ -131,22 +133,22 @@ class AgentTaskAudit:
     timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
     # Family results
-    artifact_results: List[InvariantResult] = field(default_factory=list)
-    execution_results: List[InvariantResult] = field(default_factory=list)
-    verification_results: List[InvariantResult] = field(default_factory=list)
-    reporting_results: List[InvariantResult] = field(default_factory=list)
-    delegation_results: List[InvariantResult] = field(default_factory=list)
-    persistence_results: List[InvariantResult] = field(default_factory=list)
+    artifact_results: list[InvariantResult] = field(default_factory=list)
+    execution_results: list[InvariantResult] = field(default_factory=list)
+    verification_results: list[InvariantResult] = field(default_factory=list)
+    reporting_results: list[InvariantResult] = field(default_factory=list)
+    delegation_results: list[InvariantResult] = field(default_factory=list)
+    persistence_results: list[InvariantResult] = field(default_factory=list)
 
     # Completion state
     completion_state: str = "INVALID"  # VALID | BOUNDED | INVALID
 
     # Evidence
-    files_changed: List[str] = field(default_factory=list)
-    commands_run: List[str] = field(default_factory=list)
-    verified_claims: List[str] = field(default_factory=list)
-    unverified_claims: List[str] = field(default_factory=list)
-    remaining_risks: List[str] = field(default_factory=list)
+    files_changed: list[str] = field(default_factory=list)
+    commands_run: list[str] = field(default_factory=list)
+    verified_claims: list[str] = field(default_factory=list)
+    unverified_claims: list[str] = field(default_factory=list)
+    remaining_risks: list[str] = field(default_factory=list)
 
 
 class AgentInvariantAuditor:
@@ -178,9 +180,9 @@ class AgentInvariantAuditor:
         "O4",  # Reporting
     }
 
-    def __init__(self, workspace_root: Optional[Path] = None):
+    def __init__(self, workspace_root: Path = None):
         self.workspace_root = workspace_root or Path.cwd()
-        self.audit_history: List[AgentTaskAudit] = []
+        self.audit_history: list[AgentTaskAudit] = []
 
     # =========================================================================
     # Family A — Artifact Invariants
@@ -211,7 +213,7 @@ class AgentInvariantAuditor:
 
         return result
 
-    def check_A2_resolution(self, code: str, file_path: Optional[Path] = None) -> InvariantResult:
+    def check_A2_resolution(self, code: str, file_path: Path = None) -> InvariantResult:
         """
         A2. Resolution invariant: Resolve(C, R, E, T) = 1
         Question: Do imports, files, commands, modules, paths exist?
@@ -357,7 +359,7 @@ class AgentInvariantAuditor:
     # =========================================================================
 
     def check_X1_action_provenance(
-        self, claimed_actions: List[str], observed_steps: List[str]
+        self, claimed_actions: list[str], observed_steps: list[str]
     ) -> InvariantResult:
         """
         X1. Action provenance invariant
@@ -386,7 +388,7 @@ class AgentInvariantAuditor:
         return result
 
     def check_X2_edit_provenance(
-        self, claimed_edits: Dict[str, str], actual_diffs: Dict[str, str]
+        self, claimed_edits: dict[str, str], actual_diffs: dict[str, str]
     ) -> InvariantResult:
         """
         X2. Edit provenance invariant
@@ -412,7 +414,7 @@ class AgentInvariantAuditor:
         return result
 
     def check_X3_run_provenance(
-        self, claimed_runs: List[str], execution_log: List[dict]
+        self, claimed_runs: list[str], execution_log: list[dict]
     ) -> InvariantResult:
         """
         X3. Run provenance invariant
@@ -473,7 +475,7 @@ class AgentInvariantAuditor:
     # Family V — Verification Invariants
     # =========================================================================
 
-    def check_V1_verification_existence(self, verification_steps: List[dict]) -> InvariantResult:
+    def check_V1_verification_existence(self, verification_steps: list[dict]) -> InvariantResult:
         """
         V1. Verification existence invariant
         ReportSuccess -> Exists(verification step)
@@ -525,7 +527,7 @@ class AgentInvariantAuditor:
         return result
 
     def check_V3_verification_sufficiency(
-        self, critical_claims: List[str], verified_claims: List[str]
+        self, critical_claims: list[str], verified_claims: list[str]
     ) -> InvariantResult:
         """
         V3. Verification sufficiency invariant
@@ -579,9 +581,9 @@ class AgentInvariantAuditor:
     def check_O1_report_equivalence(
         self,
         report: str,
-        observed_artifacts: List[str],
-        observed_runs: List[str],
-        verifier_outputs: List[str],
+        observed_artifacts: list[str],
+        observed_runs: list[str],
+        verifier_outputs: list[str],
     ) -> InvariantResult:
         """
         O1. Report equivalence invariant
@@ -609,7 +611,7 @@ class AgentInvariantAuditor:
         return result
 
     def check_O2_capability_honesty(
-        self, advertised: List[str], implemented: List[str]
+        self, advertised: list[str], implemented: list[str]
     ) -> InvariantResult:
         """
         O2. Capability honesty invariant
@@ -711,7 +713,7 @@ class AgentInvariantAuditor:
         return result
 
     def check_D2_delegation_provenance(
-        self, child_claim: str, child_evidence: List[str]
+        self, child_claim: str, child_evidence: list[str]
     ) -> InvariantResult:
         """
         D2. Delegation provenance invariant
@@ -786,7 +788,7 @@ class AgentInvariantAuditor:
         return result
 
     def check_P2_session_identity(
-        self, listed_sessions: List[str], replayable: List[str]
+        self, listed_sessions: list[str], replayable: list[str]
     ) -> InvariantResult:
         """
         P2. Session identity invariant
@@ -969,7 +971,7 @@ class AgentInvariantAuditor:
         except ImportError:
             return False
 
-    def generate_report(self, audit: AgentTaskAudit) -> Dict[str, Any]:
+    def generate_report(self, audit: AgentTaskAudit) -> dict[str, Any]:
         """Generate structured audit report."""
         all_results = (
             audit.artifact_results
@@ -1017,7 +1019,7 @@ class AgentInvariantAuditor:
             "remaining_risks": audit.remaining_risks,
         }
 
-    def _result_to_dict(self, result: InvariantResult) -> Dict[str, Any]:
+    def _result_to_dict(self, result: InvariantResult) -> dict[str, Any]:
         """Convert invariant result to dictionary."""
         return {
             "invariant_id": result.invariant_id,
@@ -1029,7 +1031,7 @@ class AgentInvariantAuditor:
             "failure_class": result.failure_class.value if result.failure_class else None,
         }
 
-    def get_failure_signatures(self, audit: AgentTaskAudit) -> List[dict[str, Any]]:
+    def get_failure_signatures(self, audit: AgentTaskAudit) -> list[dict[str, Any]]:
         """Identify anti-pattern signatures from audit results."""
         all_results = (
             audit.artifact_results

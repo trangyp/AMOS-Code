@@ -14,14 +14,18 @@ Provides:
 - Prometheus-compatible export
 """
 
+from __future__ import annotations
+
 import json
 import threading
 import time
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, Optional
+from typing import Any, Optional
+
+UTC = UTC
 
 
 class MetricType(Enum):
@@ -36,7 +40,7 @@ class Metric:
     type: MetricType
     value: float
     timestamp: datetime
-    labels: Dict[str, str] = field(default_factory=dict)
+    labels: dict[str, str] = field(default_factory=dict)
     unit: str = ""
 
 
@@ -57,9 +61,9 @@ class AMOSMetricsCollector:
     def __init__(self, retention_hours: int = 24):
         self.retention_hours = retention_hours
         self.requests: deque = deque(maxlen=10000)
-        self.counters: Dict[str, float] = defaultdict(float)
-        self.gauges: Dict[str, float] = {}
-        self.histograms: Dict[str, list[float]] = defaultdict(list)
+        self.counters: dict[str, float] = defaultdict(float)
+        self.gauges: dict[str, float] = {}
+        self.histograms: dict[str, list[float]] = defaultdict(list)
         self._lock = threading.Lock()
         self._start_time = time.time()
 
@@ -107,7 +111,7 @@ class AMOSMetricsCollector:
         with self._lock:
             self.counters[name] += value
 
-    def get_summary(self, minutes: int = 5) -> Dict[str, Any]:
+    def get_summary(self, minutes: int = 5) -> dict[str, Any]:
         """Get metrics summary for recent period."""
         cutoff = datetime.now(UTC) - timedelta(minutes=minutes)
 

@@ -31,7 +31,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
 from functools import wraps
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Optional
 
 
 class RateLimitAlgorithm(Enum):
@@ -68,7 +68,7 @@ class RateLimitConfig:
 
 
 # Standard tier configurations
-TIER_CONFIGS: Dict[RateLimitTier, RateLimitConfig] = {
+TIER_CONFIGS: dict[RateLimitTier, RateLimitConfig] = {
     RateLimitTier.FREE: RateLimitConfig(
         requests_per_window=100,
         window_seconds=60,
@@ -115,7 +115,7 @@ class TokenBucket:
         self.last_refill = time.time()
         self._lock = threading.Lock()
 
-    def consume(self, tokens: int = 1) -> Tuple[bool, int, float]:
+    def consume(self, tokens: int = 1) -> tuple[bool, int, float]:
         """
         Try to consume tokens.
 
@@ -139,7 +139,7 @@ class TokenBucket:
             retry_after = tokens_needed / self.refill_rate
             return False, 0, retry_after
 
-    def get_state(self) -> Dict[str, Any]:
+    def get_state(self) -> dict[str, Any]:
         """Get current bucket state."""
         with self._lock:
             return {
@@ -164,7 +164,7 @@ class SlidingWindow:
         self.requests: deque = deque()
         self._lock = threading.Lock()
 
-    def allow_request(self) -> Tuple[bool, int, float]:
+    def allow_request(self) -> tuple[bool, int, float]:
         """
         Check if request is allowed.
 
@@ -189,7 +189,7 @@ class SlidingWindow:
             retry_after = oldest_request + self.window_seconds - now
             return False, 0, max(0.0, retry_after)
 
-    def get_state(self) -> Dict[str, Any]:
+    def get_state(self) -> dict[str, Any]:
         """Get current window state."""
         with self._lock:
             now = time.time()
@@ -218,7 +218,7 @@ class FixedWindow:
         self.request_count = 0
         self._lock = threading.Lock()
 
-    def allow_request(self) -> Tuple[bool, int, float]:
+    def allow_request(self) -> tuple[bool, int, float]:
         """Check if request is allowed."""
         with self._lock:
             now = time.time()
@@ -256,7 +256,7 @@ class LeakyBucket:
         self.last_leak = time.time()
         self._lock = threading.Lock()
 
-    def allow_request(self) -> Tuple[bool, int, float]:
+    def allow_request(self) -> tuple[bool, int, float]:
         """Check if request is allowed."""
         with self._lock:
             now = time.time()
@@ -299,22 +299,22 @@ class RateLimiter:
 
     def __init__(self):
         # Token buckets by key
-        self._token_buckets: Dict[str, TokenBucket] = {}
+        self._token_buckets: dict[str, TokenBucket] = {}
         # Sliding windows by key
-        self._sliding_windows: Dict[str, SlidingWindow] = {}
+        self._sliding_windows: dict[str, SlidingWindow] = {}
         # Fixed windows by key
-        self._fixed_windows: Dict[str, FixedWindow] = {}
+        self._fixed_windows: dict[str, FixedWindow] = {}
         # Leaky buckets by key
-        self._leaky_buckets: Dict[str, LeakyBucket] = {}
+        self._leaky_buckets: dict[str, LeakyBucket] = {}
 
         # Key tier assignments
-        self._key_tiers: Dict[str, RateLimitTier] = {}
+        self._key_tiers: dict[str, RateLimitTier] = {}
 
         # Custom configs (override tier defaults)
-        self._custom_configs: Dict[str, RateLimitConfig] = {}
+        self._custom_configs: dict[str, RateLimitConfig] = {}
 
         # Statistics
-        self._stats: Dict[str, dict[str, Any]] = defaultdict(
+        self._stats: dict[str, dict[str, Any]] = defaultdict(
             lambda: {
                 "allowed": 0,
                 "denied": 0,
@@ -475,7 +475,7 @@ class RateLimiter:
             tier=tier,
         )
 
-    def get_stats(self, key: str = None) -> Dict[str, Any]:
+    def get_stats(self, key: str = None) -> dict[str, Any]:
         """Get rate limiting statistics."""
         with self._lock:
             if key:
@@ -581,7 +581,7 @@ def demo_rate_limiting():
     for i in range(12):
         allowed, remaining, retry = bucket.consume()
         burst_results.append(allowed)
-        print(f"      Request {i+1}: {'✓' if allowed else '✗'} (remaining: {remaining})")
+        print(f"      Request {i + 1}: {'✓' if allowed else '✗'} (remaining: {remaining})")
 
     print("   ✓ First 10 allowed (burst), last 2 rejected")
 
@@ -600,7 +600,7 @@ def demo_rate_limiting():
     for i in range(7):
         allowed, remaining, retry = window.allow_request()
         print(
-            f"      Request {i+1}: {'✓' if allowed else '✗'} "
+            f"      Request {i + 1}: {'✓' if allowed else '✗'} "
             f"(remaining: {remaining}, retry_after: {retry:.1f}s)"
         )
 
@@ -666,12 +666,10 @@ def demo_rate_limiting():
         results.append(result.allowed)
         if i < 5 or i >= 12:
             status = "✓" if result.allowed else "✗"
-            print(f"      Request {i+1}: {status} " f"(remaining: {result.remaining})")
+            print(f"      Request {i + 1}: {status} (remaining: {result.remaining})")
 
     allowed = sum(results)
-    print(
-        f"   ✓ Expensive endpoint: {allowed}/15 allowed " f"(10/min limit, separate from user tier)"
-    )
+    print(f"   ✓ Expensive endpoint: {allowed}/15 allowed (10/min limit, separate from user tier)")
 
     # 6. Statistics
     print("\n[6] Rate Limiting Statistics")

@@ -9,7 +9,6 @@ from .query_engine import QueryEngineConfig, QueryEnginePort, TurnResult
 from .setup import SetupReport, WorkspaceSetup, run_setup
 from .system_init import build_system_init_message
 from .tools import PORTED_TOOLS
-from typing import List, Set, Tuple
 
 
 @dataclass(frozen=True)
@@ -28,11 +27,11 @@ class RuntimeSession:
     setup_report: SetupReport
     system_init_message: str
     history: HistoryLog
-    routed_matches: List[RoutedMatch]
+    routed_matches: list[RoutedMatch]
     turn_result: TurnResult
-    command_execution_messages: Tuple[str, ...]
-    tool_execution_messages: Tuple[str, ...]
-    stream_events: Tuple[dict[str, object], ...]
+    command_execution_messages: tuple[str, ...]
+    tool_execution_messages: tuple[str, ...]
+    stream_events: tuple[dict[str, object], ...]
     persisted_session_path: str
 
     def as_markdown(self) -> str:
@@ -88,7 +87,7 @@ class RuntimeSession:
 
 
 class PortRuntime:
-    def route_prompt(self, prompt: str, limit: int = 5) -> List[RoutedMatch]:
+    def route_prompt(self, prompt: str, limit: int = 5) -> list[RoutedMatch]:
         tokens = {
             token.lower() for token in prompt.replace("/", " ").replace("-", " ").split() if token
         }
@@ -97,7 +96,7 @@ class PortRuntime:
             "tool": self._collect_matches(tokens, PORTED_TOOLS, "tool"),
         }
 
-        selected: List[RoutedMatch] = []
+        selected: list[RoutedMatch] = []
         for kind in ("command", "tool"):
             if by_kind[kind]:
                 selected.append(by_kind[kind].pop(0))
@@ -172,13 +171,13 @@ class PortRuntime:
 
     def run_turn_loop(
         self, prompt: str, limit: int = 5, max_turns: int = 3, structured_output: bool = False
-    ) -> List[TurnResult]:
+    ) -> list[TurnResult]:
         engine = QueryEnginePort.from_workspace()
         engine.config = QueryEngineConfig(max_turns=max_turns, structured_output=structured_output)
         matches = self.route_prompt(prompt, limit=limit)
         command_names = tuple(match.name for match in matches if match.kind == "command")
         tool_names = tuple(match.name for match in matches if match.kind == "tool")
-        results: List[TurnResult] = []
+        results: list[TurnResult] = []
         for turn in range(max_turns):
             turn_prompt = prompt if turn == 0 else f"{prompt} [turn {turn + 1}]"
             result = engine.submit_message(turn_prompt, command_names, tool_names, ())
@@ -187,8 +186,8 @@ class PortRuntime:
                 break
         return results
 
-    def _infer_permission_denials(self, matches: List[RoutedMatch]) -> List[PermissionDenial]:
-        denials: List[PermissionDenial] = []
+    def _infer_permission_denials(self, matches: list[RoutedMatch]) -> list[PermissionDenial]:
+        denials: list[PermissionDenial] = []
         for match in matches:
             if match.kind == "tool" and "bash" in match.name.lower():
                 denials.append(
@@ -200,9 +199,9 @@ class PortRuntime:
         return denials
 
     def _collect_matches(
-        self, tokens: Set[str], modules: Tuple[PortingModule, ...], kind: str
-    ) -> List[RoutedMatch]:
-        matches: List[RoutedMatch] = []
+        self, tokens: set[str], modules: tuple[PortingModule, ...], kind: str
+    ) -> list[RoutedMatch]:
+        matches: list[RoutedMatch] = []
         for module in modules:
             score = self._score(tokens, module)
             if score > 0:
@@ -215,7 +214,7 @@ class PortRuntime:
         return matches
 
     @staticmethod
-    def _score(tokens: Set[str], module: PortingModule) -> int:
+    def _score(tokens: set[str], module: PortingModule) -> int:
         haystacks = [module.name.lower(), module.source_hint.lower(), module.responsibility.lower()]
         score = 0
         for token in tokens:

@@ -1,12 +1,15 @@
 """AMOS Universe Core Engine - Universal physics and cosmology foundation."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class PhysicalDomain(Enum):
     """Fundamental physical domains."""
+
     GRAVITATION = "gravitation"
     ELECTROMAGNETISM = "electromagnetism"
     WEAK_FORCE = "weak_force"
@@ -30,7 +33,7 @@ class UniversalConstant:
 class FundamentalConstantsKernel:
     """Kernel for fundamental physical constants."""
 
-    CONSTANTS: Dict[str, UniversalConstant] = {
+    CONSTANTS: dict[str, UniversalConstant] = {
         "G": UniversalConstant(
             "Newtonian constant of gravitation",
             "G",
@@ -97,15 +100,15 @@ class FundamentalConstantsKernel:
         ),
     }
 
-    def get_constant(self, symbol: str) -> Optional[UniversalConstant]:
+    def get_constant(self, symbol: str) -> UniversalConstant | None:
         """Get constant by symbol."""
         return self.CONSTANTS.get(symbol)
 
-    def get_by_domain(self, domain: str) -> List[UniversalConstant]:
+    def get_by_domain(self, domain: str) -> list[UniversalConstant]:
         """Get constants by physical domain."""
         return [c for c in self.CONSTANTS.values() if c.domain == domain]
 
-    def calculate_plank_scale(self) -> Dict[str, float]:
+    def calculate_plank_scale(self) -> dict[str, float]:
         """Calculate Planck scale quantities."""
         G = self.CONSTANTS["G"].value
         c = self.CONSTANTS["c"].value
@@ -153,10 +156,10 @@ class CosmologicalModelKernel:
         # Simplified matter-dominated approximation
         H0 = self.parameters["H0"]
         Omega_m = self.parameters["Omega_m"]
-        age_gyr = 2 / (3 * H0 * Omega_m**0.5 * (1 + z)**1.5)
+        age_gyr = 2 / (3 * H0 * Omega_m**0.5 * (1 + z) ** 1.5)
         return age_gyr  # in Gyr
 
-    def get_composition(self) -> Dict[str, float]:
+    def get_composition(self) -> dict[str, float]:
         """Get universe composition percentages."""
         return {
             "dark_energy": self.parameters["Omega_lambda"] * 100,
@@ -247,12 +250,10 @@ class UniverseCoreEngine:
         self.spacetime = SpacetimeGeometryKernel()
         self.quantum_gravity = QuantumGravityKernel()
 
-    def analyze(
-        self, query: str, context: Dict[str, Any]  = None
-    ) -> Dict[str, Any]:
+    def analyze(self, query: str, context: dict[str, Any] = None) -> dict[str, Any]:
         """Run universe core analysis."""
         context = context or {}
-        results: Dict[str, Any] = {
+        results: dict[str, Any] = {
             "query": query[:100],
             "fundamental_constants": {},
             "cosmological_parameters": {},
@@ -264,12 +265,14 @@ class UniverseCoreEngine:
         constants_found = []
         for symbol, const in self.constants.CONSTANTS.items():
             if symbol.lower() in query_lower or const.name.lower() in query_lower:
-                constants_found.append({
-                    "symbol": symbol,
-                    "name": const.name,
-                    "value": const.value,
-                    "units": const.units,
-                })
+                constants_found.append(
+                    {
+                        "symbol": symbol,
+                        "name": const.name,
+                        "value": const.value,
+                        "units": const.units,
+                    }
+                )
         results["fundamental_constants"] = {
             "found": constants_found,
             "total_available": len(self.constants.CONSTANTS),
@@ -321,73 +324,85 @@ class UniverseCoreEngine:
             lines.append("Key constants available:")
             for symbol, const in list(self.constants.CONSTANTS.items())[:5]:
                 lines.append(f"- **{symbol}**: {const.name}")
-        lines.extend([
-            "",
-            "## Planck Scale (Quantum Gravity Regime)",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Planck Scale (Quantum Gravity Regime)",
+            ]
+        )
         planck = results.get("planck_scale", {})
-        lines.extend([
-            f"- **Planck Length**: {planck.get('length', 0):.2e} m",
-            f"- **Planck Time**: {planck.get('time', 0):.2e} s",
-            f"- **Planck Mass**: {planck.get('mass', 0):.2e} kg",
-            f"- **Planck Temperature**: {planck.get('temperature', 0):.2e} K",
-        ])
+        lines.extend(
+            [
+                f"- **Planck Length**: {planck.get('length', 0):.2e} m",
+                f"- **Planck Time**: {planck.get('time', 0):.2e} s",
+                f"- **Planck Mass**: {planck.get('mass', 0):.2e} kg",
+                f"- **Planck Temperature**: {planck.get('temperature', 0):.2e} K",
+            ]
+        )
         cosmo = results.get("cosmological_parameters", {})
-        lines.extend([
-            "",
-            "## Cosmological Model (Lambda-CDM)",
-            f"- **Hubble Constant (H0)**: {cosmo.get('H0', 0)} km/s/Mpc",
-            f"- **Critical Density**: {cosmo.get('critical_density_kg_m3', 0):.2e} kg/m³",
-            f"- **Universe Age**: {cosmo.get('age_Gyr', 0):.1f} Gyr",
-            "",
-            "### Universe Composition",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Cosmological Model (Lambda-CDM)",
+                f"- **Hubble Constant (H0)**: {cosmo.get('H0', 0)} km/s/Mpc",
+                f"- **Critical Density**: {cosmo.get('critical_density_kg_m3', 0):.2e} kg/m³",
+                f"- **Universe Age**: {cosmo.get('age_Gyr', 0):.1f} Gyr",
+                "",
+                "### Universe Composition",
+            ]
+        )
         comp = cosmo.get("composition", {})
         for component, percentage in comp.items():
             lines.append(f"- **{component.replace('_', ' ').title()}**: {percentage:.1f}%")
         spacetime = results.get("spacetime_analysis", {})
-        lines.extend([
-            "",
-            "## Spacetime Geometry",
-            f"- **Geometry Type**: {spacetime.get('geometry_type', 'unknown')}",
-            f"- **Curvature Parameter**: {spacetime.get('curvature_parameter', 0)}",
-            f"- **Particle Horizon**: {spacetime.get('particle_horizon_Mpc', 0):.0f} Mpc",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Spacetime Geometry",
+                f"- **Geometry Type**: {spacetime.get('geometry_type', 'unknown')}",
+                f"- **Curvature Parameter**: {spacetime.get('curvature_parameter', 0)}",
+                f"- **Particle Horizon**: {spacetime.get('particle_horizon_Mpc', 0):.0f} Mpc",
+            ]
+        )
         qg = results.get("quantum_gravity", {})
-        lines.extend([
-            "",
-            "## Quantum Gravity Approaches",
-            f"- **Unification Scale**: {qg.get('unification_scale_GeV', 0):.0e} GeV",
-            "- **Candidate Theories**:",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Quantum Gravity Approaches",
+                f"- **Unification Scale**: {qg.get('unification_scale_GeV', 0):.0e} GeV",
+                "- **Candidate Theories**:",
+            ]
+        )
         for approach in qg.get("approaches", [])[:3]:
             lines.append(f"  - {approach}")
-        lines.extend([
-            "",
-            "## Key Universal Principles",
-            "1. **Principle of Relativity**: Physical laws same in all inertial frames",
-            "2. **Uncertainty Principle**: ℏ/2 limit on conjugate variable precision",
-            "3. **Cosmological Principle**: Universe homogeneous and isotropic at large scales",
-            "4. **Second Law**: Entropy increases in isolated systems",
-            "5. **Equivalence Principle**: Gravitational and inertial mass equivalent",
-            "",
-            "## Safety Constraints",
-            "- Does not predict beyond established physics",
-            "- Quantum gravity theories are speculative - marked accordingly",
-            "- Cosmological parameters subject to observational updates",
-            "- Not a substitute for specialized astrophysics calculations",
-            "",
-            "## Limitations",
-            "- Dark energy nature remains unexplained",
-            "- Quantum gravity unification unsolved",
-            "- Initial conditions of universe unknown",
-            "- Multiverse hypotheses excluded from calculations",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Key Universal Principles",
+                "1. **Principle of Relativity**: Physical laws same in all inertial frames",
+                "2. **Uncertainty Principle**: ℏ/2 limit on conjugate variable precision",
+                "3. **Cosmological Principle**: Universe homogeneous and isotropic at large scales",
+                "4. **Second Law**: Entropy increases in isolated systems",
+                "5. **Equivalence Principle**: Gravitational and inertial mass equivalent",
+                "",
+                "## Safety Constraints",
+                "- Does not predict beyond established physics",
+                "- Quantum gravity theories are speculative - marked accordingly",
+                "- Cosmological parameters subject to observational updates",
+                "- Not a substitute for specialized astrophysics calculations",
+                "",
+                "## Limitations",
+                "- Dark energy nature remains unexplained",
+                "- Quantum gravity unification unsolved",
+                "- Initial conditions of universe unknown",
+                "- Multiverse hypotheses excluded from calculations",
+            ]
+        )
         return "\n".join(lines)
 
 
 # Singleton instance
-_universe_core: Optional[UniverseCoreEngine] = None
+_universe_core: UniverseCoreEngine | None = None
 
 
 def get_universe_core_engine() -> UniverseCoreEngine:

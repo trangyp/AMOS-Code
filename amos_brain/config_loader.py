@@ -7,7 +7,7 @@ the 'hidden_interfaces' architectural invariant failure.
 import os
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 
 class Config:
@@ -44,7 +44,7 @@ class Config:
     METRICS_ENABLED: bool = os.getenv("METRICS_ENABLED", "true").lower() == "true"
 
     @classmethod
-    def to_dict(cls) -> Dict[str, Any]:
+    def to_dict(cls) -> dict[str, Any]:
         """Export config as dictionary for debugging."""
         return {
             k: str(v) if isinstance(v, Path) else v

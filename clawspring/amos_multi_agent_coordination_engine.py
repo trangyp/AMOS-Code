@@ -1,13 +1,16 @@
 """AMOS Multi-Agent Coordination Engine - Swarm intelligence and collective AI."""
 
+from __future__ import annotations
+
 import random
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class AgentRole(Enum):
     """Types of agent roles in multi-agent systems."""
+
     COORDINATOR = "coordinator"
     WORKER = "worker"
     SPECIALIST = "specialist"
@@ -17,6 +20,7 @@ class AgentRole(Enum):
 
 class CoordinationStrategy(Enum):
     """Coordination strategies for multi-agent systems."""
+
     HIERARCHICAL = "hierarchical"
     MARKET_BASED = "market_based"
     CONSENSUS = "consensus"
@@ -30,10 +34,10 @@ class Agent:
 
     id: str
     role: str
-    capabilities: List[str]
+    capabilities: list[str]
     load: float = 0.0
     status: str = "idle"
-    performance_history: List[float] = field(default_factory=list)
+    performance_history: list[float] = field(default_factory=list)
 
 
 @dataclass
@@ -41,19 +45,19 @@ class Task:
     """Represents a task to be coordinated."""
 
     id: str
-    requirements: List[str]
+    requirements: list[str]
     priority: int
     estimated_effort: float
-    dependencies: List[str] = field(default_factory=list)
-    assigned_agent: str  = None
+    dependencies: list[str] = field(default_factory=list)
+    assigned_agent: str = None
 
 
 class AgentRegistry:
     """Registry for managing agents in the system."""
 
     def __init__(self):
-        self.agents: Dict[str, Agent] = {}
-        self.capability_index: Dict[str, set[str]] = {}
+        self.agents: dict[str, Agent] = {}
+        self.capability_index: dict[str, set[str]] = {}
 
     def register_agent(self, agent: Agent) -> None:
         """Register a new agent."""
@@ -63,12 +67,12 @@ class AgentRegistry:
                 self.capability_index[capability] = set()
             self.capability_index[capability].add(agent.id)
 
-    def find_agents_by_capability(self, capability: str) -> List[Agent]:
+    def find_agents_by_capability(self, capability: str) -> list[Agent]:
         """Find agents with specific capability."""
         agent_ids = self.capability_index.get(capability, set())
         return [self.agents[aid] for aid in agent_ids if aid in self.agents]
 
-    def get_system_load(self) -> Dict[str, float]:
+    def get_system_load(self) -> dict[str, float]:
         """Get current load distribution."""
         return {aid: agent.load for aid, agent in self.agents.items()}
 
@@ -78,9 +82,9 @@ class TaskAllocationEngine:
 
     def __init__(self, registry: AgentRegistry):
         self.registry = registry
-        self.allocations: Dict[str, str] = {}  # task_id -> agent_id
+        self.allocations: dict[str, str] = {}  # task_id -> agent_id
 
-    def allocate_contract_net(self, task: Task) -> str :
+    def allocate_contract_net(self, task: Task) -> str:
         """Contract Net Protocol allocation."""
         candidates = []
         for req in task.requirements:
@@ -99,7 +103,7 @@ class TaskAllocationEngine:
         agent.status = "busy"
         return best_agent_id
 
-    def allocate_market_based(self, task: Task) -> str :
+    def allocate_market_based(self, task: Task) -> str:
         """Market-based allocation with bidding."""
         bids = []
         for req in task.requirements:
@@ -135,23 +139,23 @@ class ConsensusEngine:
     def __init__(self, registry: AgentRegistry):
         self.registry = registry
 
-    def weighted_consensus(self, proposals: Dict[str, Any], weights: Dict[str, float]) -> Any:
+    def weighted_consensus(self, proposals: dict[str, Any], weights: dict[str, float]) -> Any:
         """Weighted voting consensus mechanism."""
         if not proposals:
             return None
-        vote_counts: Dict[Any, float] = {}
+        vote_counts: dict[Any, float] = {}
         for agent_id, proposal in proposals.items():
             weight = weights.get(agent_id, 1.0)
             vote_counts[proposal] = vote_counts.get(proposal, 0) + weight
         return max(vote_counts, key=vote_counts.get)
 
-    def byzantine_fault_tolerance(self, proposals: Dict[str, Any], f: int) -> Optional[Any]:
+    def byzantine_fault_tolerance(self, proposals: dict[str, Any], f: int) -> Any | None:
         """BFT consensus for fault-tolerant agreement."""
         n = len(proposals)
         if n <= 3 * f:
             return None  # Cannot guarantee consensus
         # Count occurrences
-        counts: Dict[Any, int] = {}
+        counts: dict[Any, int] = {}
         for proposal in proposals.values():
             counts[proposal] = counts.get(proposal, 0) + 1
         # Need n-f agreements
@@ -166,9 +170,9 @@ class SwarmIntelligenceEngine:
     """Engine for emergent swarm behaviors."""
 
     def __init__(self):
-        self.swarm_state: Dict[str, Any] = {}
+        self.swarm_state: dict[str, Any] = {}
 
-    def simulate_particle_swarm(self, agents: List[Agent], iterations: int = 100) -> Dict[str, Any]:
+    def simulate_particle_swarm(self, agents: list[Agent], iterations: int = 100) -> dict[str, Any]:
         """Particle Swarm Optimization-inspired coordination."""
         # Simplified PSO for task distribution
         positions = {a.id: random.random() for a in agents}
@@ -192,18 +196,22 @@ class SwarmIntelligenceEngine:
             "convergence": global_best,
         }
 
-    def ant_colony_optimization(self, tasks: List[Task], agents: List[Agent]) -> List[tuple[str, str]]:
+    def ant_colony_optimization(
+        self, tasks: list[Task], agents: list[Agent]
+    ) -> list[tuple[str, str]]:
         """ACO-inspired task allocation."""
         allocations = []
-        pheromones: Dict[tuple[str, str], float] = {}
+        pheromones: dict[tuple[str, str], float] = {}
         for task in tasks:
             for agent in agents:
                 key = (task.id, agent.id)
                 pheromones[key] = pheromones.get(key, 1.0)
         # Simple allocation based on pheromone levels
         for task in tasks:
-            candidates = [(agent_id, pheromones.get((task.id, agent_id), 0))
-                         for agent_id in [a.id for a in agents]]
+            candidates = [
+                (agent_id, pheromones.get((task.id, agent_id), 0))
+                for agent_id in [a.id for a in agents]
+            ]
             candidates.sort(key=lambda x: x[1], reverse=True)
             if candidates:
                 chosen = candidates[0][0]
@@ -225,9 +233,7 @@ class MultiAgentCoordinationEngine:
         self.consensus = ConsensusEngine(self.registry)
         self.swarm = SwarmIntelligenceEngine()
 
-    def analyze(
-        self, scenario: str, context: Dict[str, Any]  = None
-    ) -> Dict[str, Any]:
+    def analyze(self, scenario: str, context: dict[str, Any] = None) -> dict[str, Any]:
         """Run multi-agent coordination analysis."""
         context = context or {}
         # Parse scenario for coordination needs
@@ -300,7 +306,7 @@ class MultiAgentCoordinationEngine:
         for agent in demo_agents:
             self.registry.register_agent(agent)
 
-    def _create_demo_tasks(self, scenario: str) -> List[Task]:
+    def _create_demo_tasks(self, scenario: str) -> list[Task]:
         """Create demonstration tasks."""
         return [
             Task("task_1", ["coding"], 1, 20.0),
@@ -357,57 +363,61 @@ class MultiAgentCoordinationEngine:
                 pso = swarm["pso"]
                 lines.append(f"- **PSO Convergence**: {pso.get('convergence', 'N/A')}")
                 lines.append("  - Iterations: 50")
-                lines.append(f"  - Final positions tracked for {len(pso.get('final_positions', {}))} agents")
+                lines.append(
+                    f"  - Final positions tracked for {len(pso.get('final_positions', {}))} agents"
+                )
             if "aco" in swarm:
                 aco = swarm["aco"]
                 lines.append(f"- **ACO Allocations**: {len(aco)} task-agent pairs")
-        lines.extend([
-            "",
-            "## Core Capabilities",
-            "- **Agent Registry**: Capability-based agent discovery and management",
-            "- **Contract Net Protocol**: Iterative bidding for optimal task allocation",
-            "- **Market-Based Allocation**: Price-based resource distribution",
-            "- **Weighted Consensus**: Preference aggregation with stakeholder weights",
-            "- **Byzantine Fault Tolerance**: Agreement despite malicious agents",
-            "- **Particle Swarm Optimization**: Emergent collective optimization",
-            "- **Ant Colony Optimization**: Pheromone-based path/task discovery",
-            "",
-            "## Coordination Patterns",
-            "1. **Centralized**: Single coordinator assigns all tasks",
-            "2. **Decentralized**: Agents negotiate directly with each other",
-            "3. **Hybrid**: Local autonomy with global constraints",
-            "4. **Emergent**: Complex behaviors from simple local rules",
-            "",
-            "## Safety and Constraints",
-            "- **Load Balancing**: Prevents agent overload (>80% capacity)",
-            "- **Fault Tolerance**: Byzantine consensus handles up to f faulty agents",
-            "- **Fairness**: Ensures equitable task distribution over time",
-            "- **Transparency**: All allocations and decisions are auditable",
-            "",
-            "## Limitations",
-            "- Simplified swarm simulations (not full PSO/ACO implementations)",
-            "- Static agent capabilities (no learning)",
-            "- No real-time communication simulation",
-            "- Network topology not modeled",
-            "",
-            "## Usage Patterns",
-            "- Mention 'contract net' for task allocation problems",
-            "- Mention 'market' or 'bid' for auction-based allocation",
-            "- Mention 'consensus' or 'vote' for agreement scenarios",
-            "- Mention 'swarm' or 'emergent' for collective intelligence",
-            "",
-            "## Research Basis",
-            "- Contract Net Protocol (Smith, 1980)",
-            "- Weighted Voting Systems",
-            "- Byzantine Fault Tolerance (Lamport et al., 1982)",
-            "- Particle Swarm Optimization (Kennedy & Eberhart, 1995)",
-            "- Ant Colony Optimization (Dorigo, 1992)",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Core Capabilities",
+                "- **Agent Registry**: Capability-based agent discovery and management",
+                "- **Contract Net Protocol**: Iterative bidding for optimal task allocation",
+                "- **Market-Based Allocation**: Price-based resource distribution",
+                "- **Weighted Consensus**: Preference aggregation with stakeholder weights",
+                "- **Byzantine Fault Tolerance**: Agreement despite malicious agents",
+                "- **Particle Swarm Optimization**: Emergent collective optimization",
+                "- **Ant Colony Optimization**: Pheromone-based path/task discovery",
+                "",
+                "## Coordination Patterns",
+                "1. **Centralized**: Single coordinator assigns all tasks",
+                "2. **Decentralized**: Agents negotiate directly with each other",
+                "3. **Hybrid**: Local autonomy with global constraints",
+                "4. **Emergent**: Complex behaviors from simple local rules",
+                "",
+                "## Safety and Constraints",
+                "- **Load Balancing**: Prevents agent overload (>80% capacity)",
+                "- **Fault Tolerance**: Byzantine consensus handles up to f faulty agents",
+                "- **Fairness**: Ensures equitable task distribution over time",
+                "- **Transparency**: All allocations and decisions are auditable",
+                "",
+                "## Limitations",
+                "- Simplified swarm simulations (not full PSO/ACO implementations)",
+                "- Static agent capabilities (no learning)",
+                "- No real-time communication simulation",
+                "- Network topology not modeled",
+                "",
+                "## Usage Patterns",
+                "- Mention 'contract net' for task allocation problems",
+                "- Mention 'market' or 'bid' for auction-based allocation",
+                "- Mention 'consensus' or 'vote' for agreement scenarios",
+                "- Mention 'swarm' or 'emergent' for collective intelligence",
+                "",
+                "## Research Basis",
+                "- Contract Net Protocol (Smith, 1980)",
+                "- Weighted Voting Systems",
+                "- Byzantine Fault Tolerance (Lamport et al., 1982)",
+                "- Particle Swarm Optimization (Kennedy & Eberhart, 1995)",
+                "- Ant Colony Optimization (Dorigo, 1992)",
+            ]
+        )
         return "\n".join(lines)
 
 
 # Singleton instance
-_multi_agent_engine: Optional[MultiAgentCoordinationEngine] = None
+_multi_agent_engine: MultiAgentCoordinationEngine | None = None
 
 
 def get_multi_agent_engine() -> MultiAgentCoordinationEngine:

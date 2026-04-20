@@ -7,10 +7,12 @@ optimal work-rest rhythms for peak performance.
 import json
 import uuid
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timedelta
+from datetime import UTC, datetime
+
+UTC = UTC, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class CyclePhase(Enum):
@@ -45,7 +47,7 @@ class FocusSession:
     task_type: str = ""
     notes: str = ""
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "focus_state": self.focus_state.value,
@@ -61,7 +63,7 @@ class CycleRecommendation:
     activity: str
     rationale: str
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "phase": self.phase.value,
@@ -75,14 +77,14 @@ class CognitiveCycleManager:
     provides recommendations for optimal work patterns.
     """
 
-    def __init__(self, data_dir: Optional[Path] = None):
+    def __init__(self, data_dir: Path = None):
         if data_dir is None:
             data_dir = Path(__file__).parent / "data"
         self.data_dir = data_dir
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
-        self.sessions: List[FocusSession] = []
-        self.current_session: Optional[FocusSession] = None
+        self.sessions: list[FocusSession] = []
+        self.current_session: FocusSession = None
         self.default_focus_duration = 25  # minutes
         self.default_break_duration = 5  # minutes
         self.long_break_duration = 15  # minutes
@@ -137,7 +139,7 @@ class CognitiveCycleManager:
         self.save()
         return session
 
-    def end_focus_session(self, productivity: float = 0.5) -> Optional[FocusSession]:
+    def end_focus_session(self, productivity: float = 0.5) -> FocusSession:
         """End the current focus session."""
         if not self.current_session:
             return None
@@ -164,7 +166,7 @@ class CognitiveCycleManager:
                 self.current_session.notes += f"[Interruption: {note}] "
             self.save()
 
-    def get_today_stats(self) -> Dict[str, Any]:
+    def get_today_stats(self) -> dict[str, Any]:
         """Get today's focus session statistics."""
         today = datetime.now(UTC).strftime("%Y-%m-%d")
 
@@ -246,7 +248,7 @@ class CognitiveCycleManager:
             return self.long_break_duration
         return self.default_break_duration
 
-    def get_focus_patterns(self, days: int = 7) -> Dict[str, Any]:
+    def get_focus_patterns(self, days: int = 7) -> dict[str, Any]:
         """Analyze focus patterns over time."""
         cutoff = (datetime.now(UTC) - timedelta(days=days)).isoformat()
         recent = [s for s in self.sessions if s.end_time and s.start_time > cutoff]
@@ -273,7 +275,7 @@ class CognitiveCycleManager:
             "average_productivity": sum(s.productivity_score for s in recent) / len(recent),
         }
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get current cognitive cycle status."""
         return {
             "current_session_active": self.current_session is not None,
@@ -285,10 +287,10 @@ class CognitiveCycleManager:
 
 
 # Global instance
-_MANAGER: Optional[CognitiveCycleManager] = None
+_MANAGER: CognitiveCycleManager = None
 
 
-def get_cognitive_cycle_manager(data_dir: Optional[Path] = None) -> CognitiveCycleManager:
+def get_cognitive_cycle_manager(data_dir: Path = None) -> CognitiveCycleManager:
     """Get or create global cognitive cycle manager."""
     global _MANAGER
     if _MANAGER is None:

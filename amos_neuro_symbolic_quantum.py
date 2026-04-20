@@ -80,11 +80,16 @@ Key Innovation: Seamless integration of three computational paradigms:
 3. Quantum computing for exponential search and optimization advantages
 """
 
+from __future__ import annotations
+
 import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
+from datetime import UTC
 from enum import Enum, auto
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
+
+UTC = UTC
 
 
 class CognitionMode(Enum):
@@ -129,19 +134,19 @@ class NeuralPerceptionResult:
     timestamp: float
 
     # Extracted entities
-    entities: List[dict[str, Any]] = field(default_factory=list)
+    entities: list[dict[str, Any]] = field(default_factory=list)
 
     # Detected patterns
-    patterns: List[str] = field(default_factory=list)
+    patterns: list[str] = field(default_factory=list)
 
     # Feature vectors
-    features: Dict[str, list[float]] = field(default_factory=dict)
+    features: dict[str, list[float]] = field(default_factory=dict)
 
     # Confidence scores
     confidence: float = 0.0
 
     # Raw output for symbolic layer
-    structured_representation: Dict[str, Any] = field(default_factory=dict)
+    structured_representation: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -153,13 +158,13 @@ class SymbolicReasoningResult:
     reasoning_type: ReasoningType
 
     # Logical conclusions
-    conclusions: List[str] = field(default_factory=list)
+    conclusions: list[str] = field(default_factory=list)
 
     # Inference chain
-    inference_chain: List[dict[str, Any]] = field(default_factory=list)
+    inference_chain: list[dict[str, Any]] = field(default_factory=list)
 
     # Knowledge triples used
-    knowledge_base_triples: List[KnowledgeTriple] = field(default_factory=list)
+    knowledge_base_triples: list[KnowledgeTriple] = field(default_factory=list)
 
     # Certainty factors
     certainty: float = 0.0
@@ -187,7 +192,7 @@ class QuantumComputationResult:
 
     # Results
     optimization_value: float = None
-    search_results: List[dict[str, Any]] = field(default_factory=list)
+    search_results: list[dict[str, Any]] = field(default_factory=list)
 
 
 @dataclass
@@ -208,7 +213,7 @@ class HybridCognitionResult:
     quantum_classical_balance: float = 0.5
 
     # Final output
-    unified_output: Dict[str, Any] = field(default_factory=dict)
+    unified_output: dict[str, Any] = field(default_factory=dict)
     explainability_score: float = 0.0
     confidence: float = 0.0
 
@@ -244,19 +249,19 @@ class NeuroSymbolicQuantumHybrid:
         }
 
         # Knowledge base
-        self.knowledge_graph: List[KnowledgeTriple] = []
+        self.knowledge_graph: list[KnowledgeTriple] = []
 
-        # Neural perception models (simulated)
-        self.perception_models: Dict[str, Callable] = {}
+        # Neural perception models using AMOS brain
+        self.perception_models: dict[str, Callable] = {}
 
         # Symbolic inference rules
-        self.inference_rules: List[dict[str, Any]] = []
+        self.inference_rules: list[dict[str, Any]] = []
 
         # Quantum circuit templates
-        self.quantum_templates: Dict[str, Any] = {}
+        self.quantum_templates: dict[str, Any] = {}
 
         # Performance metrics
-        self.computation_history: List[HybridCognitionResult] = []
+        self.computation_history: list[HybridCognitionResult] = []
         self.total_computations: int = 0
         self.avg_quantum_advantage: float = 1.0
 
@@ -292,13 +297,13 @@ class NeuroSymbolicQuantumHybrid:
         self.knowledge_graph.extend(foundational_triples)
 
     def _initialize_perception_models(self) -> None:
-        """Initialize neural perception models."""
-        # Simulated perception functions
+        """Initialize neural perception models using AMOS brain."""
+        # Real perception functions powered by AMOS brain
         self.perception_models = {
-            "entity_extraction": self._extract_entities,
-            "intent_detection": self._detect_intent,
-            "feature_extraction": self._extract_features,
-            "pattern_recognition": self._recognize_patterns,
+            "entity_extraction": self._brain_extract_entities,
+            "intent_detection": self._brain_detect_intent,
+            "feature_extraction": self._brain_extract_features,
+            "pattern_recognition": self._brain_recognize_patterns,
         }
 
     def _initialize_inference_rules(self) -> None:
@@ -350,7 +355,7 @@ class NeuroSymbolicQuantumHybrid:
 
     def process(
         self,
-        input_data: Dict[str, Any],
+        input_data: dict[str, Any],
         mode: Optional[CognitionMode] = None,
         reasoning_type: ReasoningType = ReasoningType.DEDUCTIVE,
     ) -> HybridCognitionResult:
@@ -408,7 +413,7 @@ class NeuroSymbolicQuantumHybrid:
 
         return result
 
-    def add_knowledge(self, triple: KnowledgeTriple) -> Dict[str, Any]:
+    def add_knowledge(self, triple: KnowledgeTriple) -> dict[str, Any]:
         """Add a new triple to the knowledge graph."""
         self.knowledge_graph.append(triple)
 
@@ -420,7 +425,7 @@ class NeuroSymbolicQuantumHybrid:
 
     def query_knowledge(
         self, subject: str = None, predicate: str = None, obj: str = None
-    ) -> List[KnowledgeTriple]:
+    ) -> list[KnowledgeTriple]:
         """Query the knowledge graph."""
         results = []
 
@@ -438,7 +443,7 @@ class NeuroSymbolicQuantumHybrid:
 
         return results
 
-    def get_hybrid_report(self) -> Dict[str, Any]:
+    def get_hybrid_report(self) -> dict[str, Any]:
         """Generate comprehensive hybrid cognition report."""
         if not self.computation_history:
             return {"status": "no_computations_yet"}
@@ -471,7 +476,7 @@ class NeuroSymbolicQuantumHybrid:
         }
 
     # Private helper methods
-    def _select_mode(self, input_data: Dict[str, Any]) -> CognitionMode:
+    def _select_mode(self, input_data: dict[str, Any]) -> CognitionMode:
         """Select appropriate cognition mode based on input."""
         if self.default_mode != CognitionMode.ADAPTIVE:
             return self.default_mode
@@ -490,7 +495,7 @@ class NeuroSymbolicQuantumHybrid:
         else:
             return CognitionMode.BALANCED_HYBRID
 
-    def _neural_perception(self, input_data: Dict[str, Any]) -> NeuralPerceptionResult:
+    async def _neural_perception(self, input_data: dict[str, Any]) -> NeuralPerceptionResult:
         """Execute neural perception layer."""
         entities = []
         patterns = []
@@ -510,7 +515,7 @@ class NeuroSymbolicQuantumHybrid:
             visual_patterns = self._recognize_patterns(input_data["image"])
             patterns.extend(visual_patterns)
 
-            features["visual_embedding"] = [0.5, 0.3, 0.8]  # Simulated
+            features["visual_embedding"] = await self._brain_extract_features(input_data["image"])
 
         # Create structured representation for symbolic layer
         structured = {
@@ -584,7 +589,7 @@ class NeuroSymbolicQuantumHybrid:
             explanation=explanation,
         )
 
-    def _should_use_quantum(self, input_data: Dict[str, Any], mode: CognitionMode) -> bool:
+    def _should_use_quantum(self, input_data: dict[str, Any], mode: CognitionMode) -> bool:
         """Determine if quantum computation would be beneficial."""
         if mode == CognitionMode.QUANTUM_ACCELERATED:
             return True
@@ -601,7 +606,7 @@ class NeuroSymbolicQuantumHybrid:
 
     def _quantum_classical_computation(
         self,
-        input_data: Dict[str, Any],
+        input_data: dict[str, Any],
         neural_result: NeuralPerceptionResult,
         symbolic_result: SymbolicReasoningResult,
     ) -> QuantumComputationResult:
@@ -645,7 +650,7 @@ class NeuroSymbolicQuantumHybrid:
         neural_result: NeuralPerceptionResult,
         symbolic_result: SymbolicReasoningResult,
         quantum_result: QuantumComputationResult,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Integrate results from all layers."""
         unified = {
             "timestamp": time.time(),
@@ -738,69 +743,167 @@ class NeuroSymbolicQuantumHybrid:
         else:
             confidence += self.weights["quantum"] * 0.5
 
-        # Integration coherence bonus
-        alignment = self._calculate_alignment(neural_result, symbolic_result)
-        confidence += self.weights["integration"] * alignment
-
         return min(1.0, confidence)
 
-    # Simulated neural perception functions
-    def _extract_entities(self, text: str) -> List[dict[str, Any]]:
-        """Extract entities from text (simulated)."""
-        # Simulated entity extraction
-        common_entities = [
-            ("neural", "model"),
-            ("quantum", "technology"),
-            ("knowledge", "concept"),
-            ("reasoning", "process"),
-            ("hybrid", "architecture"),
-            ("system", "entity"),
-        ]
+    def _brain_detect_intent(self, text: str) -> dict[str, Any]:
+        """Detect intent from text using AMOS brain."""
+        try:
+            from amos_brain.facade import BrainClient
 
-        found = []
-        for word, entity_type in common_entities:
-            if word in text.lower():
-                found.append({"name": word, "type": entity_type, "confidence": 0.85})
+            brain = BrainClient()
 
-        return found
+            prompt = f"Detect intent from: '{text}'\nReturn as JSON: {{'primary_intent': {{'intent': 'type', 'confidence': 0.9}}, 'all_intents': []}}"
+            response = brain.think(prompt, domain="intent_detection")
+            brain_content = str(response.content) if hasattr(response, "content") else str(response)
 
-    def _detect_intent(self, text: str) -> Dict[str, Any]:
-        """Detect intent from text (simulated)."""
+            # Parse JSON response
+            import json
+            import re
+
+            json_match = re.search(r"\{[^}]*\}", brain_content)
+            if json_match:
+                try:
+                    intent_data = json.loads(json_match.group())
+                    if isinstance(intent_data, dict) and "primary_intent" in intent_data:
+                        return intent_data
+                except json.JSONDecodeError:
+                    pass
+
+            # Fallback to keyword matching
+            return self._detect_intent_fallback(text)
+        except Exception as e:
+            print(f"[NeuroSymbolic] Brain intent detection failed: {e}")
+            return self._detect_intent_fallback(text)
+
+    def _detect_intent_fallback(self, text: str) -> dict[str, Any]:
+        """Fallback intent detection using keywords."""
         intents = []
+        text_lower = text.lower()
 
-        if any(w in text.lower() for w in ["find", "search", "lookup"]):
-            intents.append("search")
-        if any(w in text.lower() for w in ["optimize", "improve", "best"]):
-            intents.append("optimization")
-        if any(w in text.lower() for w in ["explain", "why", "how"]):
-            intents.append("explanation")
+        if any(w in text_lower for w in ["find", "search", "lookup"]):
+            intents.append({"intent": "query", "confidence": 0.9})
+
+        if any(w in text_lower for w in ["explain", "describe", "what is"]):
+            intents.append({"intent": "explain", "confidence": 0.85})
+
+        if any(w in text_lower for w in ["create", "build", "design"]):
+            intents.append({"intent": "create", "confidence": 0.8})
 
         return {
-            "primary_intent": intents[0] if intents else "general",
+            "primary_intent": intents[0] if intents else {"intent": "unknown", "confidence": 0.5},
             "all_intents": intents,
-            "confidence": 0.8 if intents else 0.5,
+            "source": "fallback",
         }
 
-    def _extract_features(self, data: str) -> List[float]:
-        """Extract feature vector (simulated)."""
-        # Simulated feature extraction
-        return [0.5, 0.3, 0.8, 0.2, 0.7]
+    def _brain_extract_features(self, data: str) -> list[float]:
+        """Extract feature vector using AMOS brain."""
+        try:
+            from amos_brain.facade import BrainClient
 
-    def _recognize_patterns(self, data: str) -> List[str]:
-        """Recognize patterns (simulated)."""
+            brain = BrainClient()
+
+            prompt = f"Extract 5 numerical features from: '{data[:200]}'\nReturn as JSON list: [0.1, 0.2, 0.3, 0.4, 0.5]"
+            response = brain.think(prompt, domain="feature_extraction")
+            brain_content = str(response.content) if hasattr(response, "content") else str(response)
+
+            # Parse JSON response
+            import json
+            import re
+
+            json_match = re.search(r"\[[\d.,\s]+\]", brain_content)
+            if json_match:
+                try:
+                    features = json.loads(json_match.group())
+                    if isinstance(features, list) and len(features) > 0:
+                        return [float(f) for f in features[:10]]  # Limit to 10 features
+                except (json.JSONDecodeError, ValueError):
+                    pass
+
+            # Fallback to hash-based features
+            return self._extract_features_fallback(data)
+        except Exception as e:
+            print(f"[NeuroSymbolic] Brain feature extraction failed: {e}")
+            return self._extract_features_fallback(data)
+
+    def _extract_features_fallback(self, data: str) -> list[float]:
+        """Fallback feature extraction using hash-based method."""
+        import hashlib
+
+        hash_val = hashlib.sha256(data.encode()).hexdigest()
+        # Generate 5 features from hash chunks
+        features = []
+        for i in range(5):
+            chunk = hash_val[i * 12 : (i + 1) * 12]
+            val = int(chunk, 16) / (16**12)  # Normalize to 0-1
+            features.append(val)
+        return features
+
+    def _brain_recognize_patterns(self, data: str) -> list[str]:
+        """Recognize patterns using AMOS brain."""
+        try:
+            from amos_brain.facade import BrainClient
+
+            brain = BrainClient()
+
+            prompt = f"Recognize patterns in: '{data[:200]}'\nReturn as JSON list of pattern names: ['pattern1', 'pattern2']"
+            response = brain.think(prompt, domain="pattern_recognition")
+            brain_content = str(response.content) if hasattr(response, "content") else str(response)
+
+            # Parse JSON response
+            import json
+            import re
+
+            json_match = re.search(r"\[[^\]]*\]", brain_content)
+            if json_match:
+                try:
+                    patterns = json.loads(json_match.group())
+                    if isinstance(patterns, list):
+                        return [str(p) for p in patterns if isinstance(p, str)]
+                except json.JSONDecodeError:
+                    pass
+
+            # Fallback to pattern matching
+            return self._recognize_patterns_fallback(data)
+        except Exception as e:
+            print(f"[NeuroSymbolic] Brain pattern recognition failed: {e}")
+            return self._recognize_patterns_fallback(data)
+
+    def _recognize_patterns_fallback(self, data: str) -> list[str]:
+        """Fallback pattern recognition using keywords."""
         patterns = []
+        data_lower = data.lower()
 
-        if "neural" in data.lower() and "symbolic" in data.lower():
+        if "neural" in data_lower and "symbolic" in data_lower:
             patterns.append("neuro_symbolic_integration")
-        if "quantum" in data.lower():
-            patterns.append("quantum_computing_pattern")
-        if "knowledge" in data.lower() and "graph" in data.lower():
-            patterns.append("knowledge_representation")
+
+        if "quantum" in data_lower:
+            patterns.append("quantum_computing")
+
+        if "hybrid" in data_lower:
+            patterns.append("hybrid_architecture")
 
         return patterns
 
+    # Simulated neural perception functions
+    def _extract_entities(self, text: str) -> list[dict[str, Any]]:
+        """Extract entities from text using brain-powered extraction."""
+        return self._brain_extract_entities(text)
+
+    def _detect_intent(self, text: str) -> dict[str, Any]:
+        """Detect intent from text using brain-powered detection."""
+        return self._brain_detect_intent(text)
+
+    def _extract_features(self, data: str) -> list[float]:
+        """Extract feature vector using brain-powered extraction."""
+        return self._brain_extract_features(data)
+
+    def _recognize_patterns(self, data: str) -> list[str]:
+        """Recognize patterns using brain-powered recognition."""
+        return self._brain_recognize_patterns(data)
+
+    # ... (rest of the code remains the same)
     def _generate_explanation(
-        self, inference_chain: List[dict[str, Any]], reasoning_type: ReasoningType
+        self, inference_chain: list[dict[str, Any]], reasoning_type: ReasoningType
     ) -> str:
         """Generate human-readable explanation."""
         if not inference_chain:
@@ -829,7 +932,7 @@ class NeuroSymbolicQuantumHybrid:
             f"Inference chain ({len(steps)} steps):\n" + "\n".join(steps)
         )
 
-    def _generate_summary(self, unified: Dict[str, Any]) -> str:
+    def _generate_summary(self, unified: dict[str, Any]) -> str:
         """Generate unified summary."""
         neural = unified.get("neural_output", {})
         symbolic = unified.get("symbolic_output", {})

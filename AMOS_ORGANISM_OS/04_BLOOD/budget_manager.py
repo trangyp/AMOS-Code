@@ -7,11 +7,12 @@ budget variance analysis.
 import json
 import uuid
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class BudgetCategory(Enum):
@@ -38,7 +39,7 @@ class Budget:
     spent: float = 0.0
     currency: str = "USD"
     start_date: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
-    end_date: Optional[str] = None
+    end_date: str = None
     alerts_enabled: bool = True
     alert_threshold: float = 0.8  # Alert at 80% usage
     archived: bool = False
@@ -72,7 +73,7 @@ class Budget:
         """Adjust budget allocation."""
         self.allocated = new_amount
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "category": self.category.value,
@@ -94,11 +95,11 @@ class Expense:
     description: str = ""
     vendor: str = ""
     timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
-    tags: List[str] = field(default_factory=list)
+    tags: list[str] = field(default_factory=list)
     approved: bool = False
     approved_by: str = ""
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "category": self.category.value,
@@ -112,14 +113,14 @@ class BudgetManager:
     Integrates with the resource engine for unified resource management.
     """
 
-    def __init__(self, data_dir: Optional[Path] = None):
+    def __init__(self, data_dir: Path = None):
         if data_dir is None:
             data_dir = Path(__file__).parent / "data"
         self.data_dir = data_dir
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
-        self.budgets: Dict[str, Budget] = {}
-        self.expenses: List[Expense] = []
+        self.budgets: dict[str, Budget] = {}
+        self.expenses: list[Expense] = []
 
         self._load_data()
 
@@ -243,10 +244,10 @@ class BudgetManager:
         amount: float,
         category: BudgetCategory,
         description: str,
-        budget_id: Optional[str] = None,
+        budget_id: str = None,
         vendor: str = "",
-        tags: Optional[list] = None,
-    ) -> Optional[Expense]:
+        tags: list = None,
+    ) -> Expense:
         """Record an expense against a budget."""
         # Find matching budget if not specified
         if budget_id is None:
@@ -279,7 +280,7 @@ class BudgetManager:
 
         return expense
 
-    def get_budget_status(self, budget_id: str) -> Optional[Dict[str, Any] ]:
+    def get_budget_status(self, budget_id: str) -> dict[str, Any]:
         """Get detailed status for a budget."""
         budget = self.budgets.get(budget_id)
         if not budget:
@@ -294,7 +295,7 @@ class BudgetManager:
             "expense_count": len(related_expenses),
         }
 
-    def get_overview(self) -> Dict[str, Any]:
+    def get_overview(self) -> dict[str, Any]:
         """Get overview of all budgets."""
         total_allocated = sum(b.allocated for b in self.budgets.values())
         total_spent = sum(b.spent for b in self.budgets.values())
@@ -325,7 +326,7 @@ class BudgetManager:
             "alerts": alerts,
         }
 
-    def get_category_report(self, category: BudgetCategory) -> Dict[str, Any]:
+    def get_category_report(self, category: BudgetCategory) -> dict[str, Any]:
         """Get report for a specific category."""
         category_budgets = [b for b in self.budgets.values() if b.category == category]
         category_expenses = [e for e in self.expenses if e.category == category]
@@ -345,10 +346,10 @@ class BudgetManager:
 
 
 # Global instance
-_MANAGER: Optional[BudgetManager] = None
+_MANAGER: BudgetManager = None
 
 
-def get_budget_manager(data_dir: Optional[Path] = None) -> BudgetManager:
+def get_budget_manager(data_dir: Path = None) -> BudgetManager:
     """Get or create global budget manager."""
     global _MANAGER
     if _MANAGER is None:

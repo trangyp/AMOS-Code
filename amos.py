@@ -11,13 +11,7 @@ Usage:
     python amos.py --agent amos       # Use AMOS agent (default)
 """
 
-import os
 import sys
-
-# Ensure clawspring is in path
-clawspring_path = os.path.join(os.path.dirname(__file__), "clawspring")
-if clawspring_path not in sys.path:
-    sys.path.insert(0, clawspring_path)
 
 # Import AMOS brain integration
 try:
@@ -31,7 +25,7 @@ except ImportError as e:
 
 # Import AMOS Canon integration
 try:
-    from amos_canon_integration import initialize_canon, get_canon_loader
+    from amos_canon_integration import get_canon_loader, initialize_canon
 
     CANON_AVAILABLE = True
 except ImportError as e:
@@ -49,7 +43,6 @@ except ImportError:
     CLAWSPRING_AVAILABLE = False
     # Fallback: try importing directly
     try:
-
         from clawspring import main as clawspring_main
         from multi_agent.subagent import get_agent_definition
 

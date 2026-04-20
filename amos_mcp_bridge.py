@@ -22,20 +22,19 @@ Author: Trang Phan
 Version: 1.0.0
 """
 
-
 import json
 import subprocess
 import sys
 import time
 from dataclasses import dataclass, field
-from datetime import datetime
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Optional
 
 
 class TransportType(Enum):
     """MCP transport protocols."""
+
     STDIO = auto()
     SSE = auto()
 
@@ -43,10 +42,11 @@ class TransportType(Enum):
 @dataclass
 class MCPServer:
     """MCP Server configuration."""
+
     name: str
     command: str
-    args: List[str] = field(default_factory=list)
-    env: Dict[str, str] = field(default_factory=dict)
+    args: list[str] = field(default_factory=list)
+    env: dict[str, str] = field(default_factory=dict)
     transport: TransportType = TransportType.STDIO
     description: str = ""
     auto_start: bool = False
@@ -55,21 +55,23 @@ class MCPServer:
 @dataclass
 class MCPTool:
     """Discovered MCP tool."""
+
     name: str
     description: str
     server: str
-    parameters: Dict[str, Any]
-    permissions: List[str] = field(default_factory=list)
+    parameters: dict[str, Any]
+    permissions: list[str] = field(default_factory=list)
 
 
 @dataclass
 class ToolResult:
     """Tool execution result."""
+
     tool: str
     success: bool
     output: Any
     law_compliant: bool
-    violations: List[str]
+    violations: list[str]
     duration_ms: float
 
 
@@ -77,9 +79,9 @@ class MCPServerManager:
     """Manages MCP server lifecycle."""
 
     def __init__(self):
-        self.servers: Dict[str, MCPServer] = {}
-        self.processes: Dict[str, subprocess.Popen] = {}
-        self.tools: Dict[str, MCPTool] = {}
+        self.servers: dict[str, MCPServer] = {}
+        self.processes: dict[str, subprocess.Popen] = {}
+        self.tools: dict[str, MCPTool] = {}
 
     def register(self, server: MCPServer) -> bool:
         """Register an MCP server."""
@@ -148,7 +150,7 @@ class MCPServerManager:
         except Exception as e:
             print(f"[MCP] Discovery failed for {server_name}: {e}")
 
-    def list_servers(self) -> List[dict]:
+    def list_servers(self) -> list[dict]:
         """List all servers with status."""
         return [
             {
@@ -163,7 +165,7 @@ class MCPServerManager:
         """Get tool by name."""
         return self.tools.get(name)
 
-    def get_all_tools(self) -> List[MCPTool]:
+    def get_all_tools(self) -> list[MCPTool]:
         """Get all discovered tools."""
         return list(self.tools.values())
 
@@ -173,9 +175,9 @@ class SecureToolExecutor:
 
     def __init__(self, manager: MCPServerManager):
         self.manager = manager
-        self.history: List[ToolResult] = []
+        self.history: list[ToolResult] = []
 
-    def validate(self, tool: str, params: dict) -> Tuple[bool, list[str]]:
+    def validate(self, tool: str, params: dict) -> tuple[bool, list[str]]:
         """Validate against L1-L6."""
         from amos_brain import GlobalLaws
 
@@ -212,9 +214,12 @@ class SecureToolExecutor:
         is_valid, violations = self.validate(tool, params)
         if not is_valid:
             result = ToolResult(
-                tool=tool, success=False, output=None,
-                law_compliant=False, violations=violations,
-                duration_ms=(time.time() - start) * 1000
+                tool=tool,
+                success=False,
+                output=None,
+                law_compliant=False,
+                violations=violations,
+                duration_ms=(time.time() - start) * 1000,
             )
             self.history.append(result)
             return result
@@ -230,9 +235,10 @@ class SecureToolExecutor:
                 raise RuntimeError(f"Server {tool_obj.server} not running")
 
             request = {
-                "jsonrpc": "2.0", "id": 2,
+                "jsonrpc": "2.0",
+                "id": 2,
                 "method": "tools/call",
-                "params": {"name": tool, "arguments": params}
+                "params": {"name": tool, "arguments": params},
             }
             server.stdin.write(json.dumps(request) + "\n")
             server.stdin.flush()
@@ -241,15 +247,21 @@ class SecureToolExecutor:
             output = response.get("result", {}).get("content", "")
 
             result = ToolResult(
-                tool=tool, success=True, output=output,
-                law_compliant=True, violations=[],
-                duration_ms=(time.time() - start) * 1000
+                tool=tool,
+                success=True,
+                output=output,
+                law_compliant=True,
+                violations=[],
+                duration_ms=(time.time() - start) * 1000,
             )
         except Exception as e:
             result = ToolResult(
-                tool=tool, success=False, output=str(e),
-                law_compliant=True, violations=[],
-                duration_ms=(time.time() - start) * 1000
+                tool=tool,
+                success=False,
+                output=str(e),
+                law_compliant=True,
+                violations=[],
+                duration_ms=(time.time() - start) * 1000,
             )
 
         self.history.append(result)
@@ -315,14 +327,14 @@ def main():
     bridge.setup_default_servers()
 
     status = bridge.get_status()
-    print(f"\n[Status]")
+    print("\n[Status]")
     print(f"  Ready: {status['ready']}")
     print(f"  Servers: {len(status['servers'])}")
     print(f"  Tools: {status['tools_available']}")
 
-    print(f"\n[Servers]")
-    for server in status['servers']:
-        status_icon = "●" if server['running'] else "○"
+    print("\n[Servers]")
+    for server in status["servers"]:
+        status_icon = "●" if server["running"] else "○"
         print(f"  {status_icon} {server['name']}: {server['tools']} tools")
 
     print("\n" + "=" * 70)

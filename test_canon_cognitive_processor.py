@@ -8,8 +8,8 @@ Version: 3.0.0
 """
 
 from amos_brain.canon_cognitive_processor import (
-    get_canon_cognitive_processor,
     canon_process,
+    get_canon_cognitive_processor,
 )
 
 

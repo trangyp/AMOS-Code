@@ -25,12 +25,11 @@ Creator: Trang Phan
 Version: 3.0.0
 """
 
+from __future__ import annotations
 
 from contextlib import asynccontextmanager
-from datetime import datetime, timezone
-
-UTC = timezone.utc
-from typing import Any, Dict, List, Optional
+from datetime import UTC, datetime
+from typing import Any, Optional
 
 from agent_knowledge import knowledge_manager, recall
 from agent_messaging import message_bus
@@ -49,6 +48,8 @@ from amos_brain_orchestrator import (
     shutdown_amos,
 )
 from fastapi import APIRouter, BackgroundTasks, HTTPException
+
+UTC = UTC
 
 # Create main router
 ai_router = APIRouter(prefix="/ai", tags=["AI Systems"])
@@ -126,7 +127,7 @@ async def ai_systems_status():
 
 @ai_router.post("/agents/create", response_model=dict[str, Any])
 async def api_create_agent(
-    agent_type: str, capabilities: List[str] = None, config: Dict[str, Any] = None
+    agent_type: str, capabilities: list[str] = None, config: dict[str, Any] = None
 ):
     """Create a new AI agent."""
     agent = await create_agent(agent_type, capabilities, config)
@@ -152,7 +153,7 @@ async def api_get_agent_status(agent_id: str):
 async def api_execute_task(
     agent_id: str,
     task_type: str,
-    input_data: Dict[str, Any],
+    input_data: dict[str, Any],
     priority: int = 2,
     background_tasks: BackgroundTasks = None,
 ):
@@ -195,7 +196,7 @@ async def api_list_agents():
 
 @ai_router.post("/knowledge/recall", response_model=dict[str, Any])
 async def api_knowledge_recall(
-    query: str, agent_id: str = None, top_k: int = 5, memory_type: str = None
+    query: str, agent_id: str | None = None, top_k: int = 5, memory_type: str | None = None
 ):
     """Recall knowledge from vector store."""
     result = await recall(query, top_k, agent_id, memory_type)
@@ -220,8 +221,8 @@ async def api_knowledge_ingest(
     content: str,
     source: str,
     memory_type: str = "semantic",
-    agent_id: str = None,
-    metadata: Dict[str, Any] = None,
+    agent_id: str | None = None,
+    metadata: dict[str, Any] | None = None,
 ):
     """Ingest knowledge into vector store."""
     result = await knowledge_manager.ingest_document(
@@ -294,7 +295,7 @@ async def api_list_reasoning_chains():
 async def api_send_message(
     sender_id: str,
     recipient_id: str,
-    content: Dict[str, Any],
+    content: dict[str, Any],
     message_type: str = "direct",
     priority: int = 1,
 ):
@@ -309,14 +310,16 @@ async def api_send_message(
 
 
 @ai_router.post("/messaging/broadcast", response_model=dict[str, Any])
-async def api_broadcast_message(sender_id: str, content: Dict[str, Any], exclude: List[str] = None):
+async def api_broadcast_message(sender_id: str, content: dict[str, Any], exclude: list[str] = None):
     """Broadcast a message to all agents."""
     await message_bus.broadcast(sender_id, content, exclude)
     return {"success": True, "sender": sender_id, "broadcast": True}
 
 
 @ai_router.get("/messaging/history", response_model=list[dict[str, Any]])
-async def api_message_history(agent_id: str = None, since: str = None, limit: int = 50):
+async def api_message_history(
+    agent_id: str | None = None, since: str | None = None, limit: int = 50
+):
     """Get message history."""
     return message_bus.get_message_history(agent_id, since, limit)
 
@@ -434,7 +437,7 @@ async def api_cost_alerts(level: Optional[str] = None, acknowledged: Optional[bo
 
 
 @ai_router.post("/plugins/load", response_model=dict[str, Any])
-async def api_load_plugin(plugin_path: str, config: Optional[Dict[str, Any] ] = None):
+async def api_load_plugin(plugin_path: str, config: dict[str, Optional[Any]] = None):
     """Load a plugin."""
     plugin = await load_plugin(plugin_path, config)
     if not plugin:
@@ -493,7 +496,7 @@ async def api_plugin_stats():
 
 
 @ai_router.post("/system/broadcast", response_model=dict[str, Any])
-async def api_system_broadcast(message_type: str, content: Dict[str, Any]):
+async def api_system_broadcast(message_type: str, content: dict[str, Any]):
     """Broadcast system message to all agents."""
     success = await amos_brain.broadcast_system_message(message_type, content)
     return {"success": success, "message_type": message_type}

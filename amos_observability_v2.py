@@ -7,14 +7,17 @@ Provides:
 - Operational dashboards data feed
 """
 
+from __future__ import annotations
+
 import asyncio
 import time
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class MetricType(Enum):
@@ -33,7 +36,7 @@ class EngineMetric:
     name: str
     value: float
     metric_type: MetricType
-    labels: Dict[str, str] = field(default_factory=dict)
+    labels: dict[str, str] = field(default_factory=dict)
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
 
@@ -57,9 +60,9 @@ class AMOSObservabilityV2:
     """
 
     def __init__(self) -> None:
-        self._metrics: Dict[str, list[EngineMetric]] = {}
-        self._health_status: Dict[str, HealthStatus] = {}
-        self._collectors: List[Callable[[], Awaitable[list[EngineMetric]]]] = []
+        self._metrics: dict[str, list[EngineMetric]] = {}
+        self._health_status: dict[str, HealthStatus] = {}
+        self._collectors: list[Callable[[], Awaitable[list[EngineMetric]]]] = []
         self._running = False
         self._collection_task: asyncio.Task = None
 
@@ -167,7 +170,7 @@ class AMOSObservabilityV2:
 
         return "\n".join(lines)
 
-    def get_health_summary(self) -> Dict[str, Any]:
+    def get_health_summary(self) -> dict[str, Any]:
         """Get summary of all health checks."""
         healthy = sum(1 for s in self._health_status.values() if s.status == "healthy")
         total = len(self._health_status)

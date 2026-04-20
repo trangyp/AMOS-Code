@@ -1,4 +1,6 @@
-from typing import Any, Dict, Optional
+from __future__ import annotations
+
+from typing import Any, Optional
 
 """AMOS Dual-Process Brain - Fast & Slow Thinking Integration
 
@@ -19,6 +21,7 @@ from dataclasses import dataclass, field
 from amos_brain.facade import BrainClient, BrainResponse
 from amos_fast_thinking import FastThinkingEngine, FastThinkingResult
 
+
 @dataclass
 class DualProcessResult:
     """Result from dual-process thinking."""
@@ -29,7 +32,8 @@ class DualProcessResult:
     latency_ms: float
     fast_result: Optional[FastThinkingResult] = None
     slow_result: Optional[BrainResponse] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
+
 
 class DualProcessBrain:
     """
@@ -81,7 +85,7 @@ class DualProcessBrain:
     async def think(
         self,
         query: str,
-        context: Dict[str, Any]  = None,
+        context: dict[str, Any] = None,
         prefer_fast: bool = False,
         latency_budget_ms: float = 2000.0,
     ) -> DualProcessResult:
@@ -141,7 +145,7 @@ class DualProcessBrain:
     async def _parallel_think(
         self,
         query: str,
-        context: Dict[str, Any],
+        context: dict[str, Any],
         fast_result: FastThinkingResult,
         start_time: float,
     ) -> DualProcessResult:
@@ -190,7 +194,7 @@ class DualProcessBrain:
         )
 
     async def _slow_only_think(
-        self, query: str, context: Dict[str, Any], start_time: float
+        self, query: str, context: dict[str, Any], start_time: float
     ) -> DualProcessResult:
         """Run only slow thinking without parallel indexing."""
         slow_result = await self._run_slow_thinking(query, context)
@@ -206,7 +210,7 @@ class DualProcessBrain:
             metadata={"parallel": False},
         )
 
-    async def _run_slow_thinking(self, query: str, context: Dict[str, Any]) -> BrainResponse:
+    async def _run_slow_thinking(self, query: str, context: dict[str, Any]) -> BrainResponse:
         """Execute slow thinking via BrainClient."""
         # Run in thread pool to make it async
         loop = asyncio.get_event_loop()
@@ -218,7 +222,7 @@ class DualProcessBrain:
             True,  # require_law_compliance
         )
 
-    async def _index_query(self, query: str, context: Dict[str, Any]) -> None:
+    async def _index_query(self, query: str, context: dict[str, Any]) -> None:
         """
         Index query for future fast retrieval.
 
@@ -227,6 +231,7 @@ class DualProcessBrain:
         try:
             # Add to vector search index if available
             from amos_vector_search import ContentType, get_vector_service
+
             vector_service = get_vector_service()
             if vector_service:
                 # Store query pattern for similar future queries
@@ -248,7 +253,7 @@ class DualProcessBrain:
         """
         return f"{fast_response}\n\n---\n\nDetailed Analysis:\n{slow_response}"
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get dual-process statistics."""
         total = self.stats["total_queries"]
         if total == 0:
@@ -261,8 +266,10 @@ class DualProcessBrain:
             "parallel_rate": self.stats["parallel_executions"] / total,
         }
 
+
 # Global instance
 _dual_brain: Optional[DualProcessBrain] = None
+
 
 def get_dual_process_brain() -> DualProcessBrain:
     """Get or create global dual-process brain."""
@@ -271,9 +278,10 @@ def get_dual_process_brain() -> DualProcessBrain:
         _dual_brain = DualProcessBrain()
     return _dual_brain
 
+
 # Convenience function
 async def dual_think(
-    query: str, context: Dict[str, Any]  = None, prefer_fast: bool = False
+    query: str, context: dict[str, Any] = None, prefer_fast: bool = False
 ) -> DualProcessResult:
     """Quick access to dual-process thinking."""
     brain = get_dual_process_brain()

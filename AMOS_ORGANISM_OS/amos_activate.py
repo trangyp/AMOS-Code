@@ -15,9 +15,10 @@ Version: 1.0.0
 import argparse
 import sys
 import time
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from pathlib import Path
-from typing import List, Optional
 
 
 def print_banner():
@@ -66,8 +67,8 @@ class AmosActivator:
         if organism_root is None:
             organism_root = Path(__file__).parent
         self.organism_root = organism_root
-        self.activated: List[str] = []
-        self.failed: List[str] = []
+        self.activated: list[str] = []
+        self.failed: list[str] = []
         self.start_time: datetime = None
 
     def activate(self, mode: str = "full", monitor: bool = False) -> bool:

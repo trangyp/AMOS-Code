@@ -19,7 +19,6 @@ Usage:
 import subprocess
 import sys
 from pathlib import Path
-from typing import List
 
 COMMANDS = {
     "demo": {
@@ -67,7 +66,7 @@ def print_help():
     print("=" * 70)
 
 
-def run_script(script_name: str, args: List[str]) -> int:
+def run_script(script_name: str, args: list[str]) -> int:
     """Run a demo script with arguments."""
     root = Path(__file__).parent
     script_path = root / script_name
@@ -99,7 +98,7 @@ def brain_think(query: str):
         print(f"    {i}. {rec}")
 
 
-def brain_decide(question: str, options: List[str]):
+def brain_decide(question: str, options: list[str]):
     """Direct brain decide command."""
     sys.path.insert(0, str(Path(__file__).parent))
     from amos_brain import get_amos_integration

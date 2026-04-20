@@ -28,12 +28,16 @@ Environment Variables:
     STRICT_VALIDATION: Enable strict validation mode (default: true)
 """
 
+from __future__ import annotations
+
 import os
 import re
 import sys
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from decimal import Decimal
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 # Pydantic imports with graceful fallback
 try:
@@ -153,12 +157,12 @@ class ErrorResponse(BaseResponse):
         max_length=1000,
     )
 
-    error_details: Dict[str, Any] = Field(
+    error_details: dict[str, Any] = Field(
         default=None,
         description="Additional error context",
     )
 
-    field_errors: List[dict[str, Any]] = Field(
+    field_errors: list[dict[str, Any]] = Field(
         default=None,
         description="Validation errors per field",
     )
@@ -216,7 +220,7 @@ class EquationRequestV1(BaseRequest):
         examples=["sigmoid", "softmax", "cross_entropy"],
     )
 
-    inputs: Dict[str, Any] = Field(
+    inputs: dict[str, Any] = Field(
         default_factory=dict,
         description="Equation input parameters",
         max_length=_MAX_INPUT_KEYS,
@@ -247,13 +251,13 @@ class EquationRequestV1(BaseRequest):
         v = v.strip().lower()
         if not _EQUATION_NAME_PATTERN.match(v):
             raise ValueError(
-                "Equation name must start with letter, " "contain only alphanumeric and underscore"
+                "Equation name must start with letter, contain only alphanumeric and underscore"
             )
         return v
 
     @field_validator("inputs")
     @classmethod
-    def validate_inputs(cls, v: Dict[str, Any]) -> Dict[str, Any]:
+    def validate_inputs(cls, v: dict[str, Any]) -> dict[str, Any]:
         """Validate input dictionary constraints."""
         if len(v) > _MAX_INPUT_KEYS:
             raise ValueError(f"Too many input keys: {len(v)} > {_MAX_INPUT_KEYS}")
@@ -289,7 +293,7 @@ class EquationMetadataV1(BaseModel):
     pattern: str = Field(default=None, description="Mathematical pattern")
     formula: str = Field(default=None, description="Formula representation")
     description: str = Field(default=None, description="Human description")
-    parameters: List[str] = Field(
+    parameters: list[str] = Field(
         default_factory=list,
         description="Required parameter names",
     )
@@ -305,7 +309,7 @@ class EquationResultV1(BaseModel):
 
     execution_time_ms: float = Field(..., description="Execution time in milliseconds", ge=0)
 
-    metadata: Dict[str, Any] = Field(
+    metadata: dict[str, Any] = Field(
         default=None,
         description="Execution metadata",
     )
@@ -320,7 +324,7 @@ class EquationResponseV1(BaseResponse):
         description="Execution result",
     )
 
-    invariant_violations: List[str] = Field(
+    invariant_violations: list[str] = Field(
         default=None,
         description="List of invariant violations if any",
     )
@@ -339,7 +343,7 @@ class EquationResponseV1(BaseResponse):
 class BatchEquationRequestV1(BaseRequest):
     """Batch equation execution request."""
 
-    equations: List[EquationRequestV1] = Field(
+    equations: list[EquationRequestV1] = Field(
         ...,
         description="List of equation execution requests",
         min_length=1,
@@ -360,7 +364,7 @@ class BatchEquationRequestV1(BaseRequest):
 
     @field_validator("equations")
     @classmethod
-    def validate_equations(cls, v: List[EquationRequestV1]) -> List[EquationRequestV1]:
+    def validate_equations(cls, v: list[EquationRequestV1]) -> list[EquationRequestV1]:
         """Validate batch constraints."""
         if not v:
             raise ValueError("At least one equation required")
@@ -376,7 +380,7 @@ class BatchEquationRequestV1(BaseRequest):
 class BatchEquationResponseV1(BaseResponse):
     """Batch equation execution response."""
 
-    results: List[EquationResponseV1] = Field(
+    results: list[EquationResponseV1] = Field(
         ...,
         description="List of execution results",
     )
@@ -395,14 +399,14 @@ class VerificationRequestV1(BaseRequest):
 
     equation_name: str = Field(..., description="Equation to verify")
 
-    test_cases: List[dict[str, Any]] = Field(
+    test_cases: list[dict[str, Any]] = Field(
         ...,
         description="Test case inputs",
         min_length=1,
         max_length=1000,
     )
 
-    expected_results: List[Any] = Field(
+    expected_results: list[Any] = Field(
         default=None,
         description="Expected results for comparison",
     )
@@ -436,7 +440,7 @@ class VerificationResponseV1(BaseResponse):
     total_tests: int = Field(..., description="Total test cases")
     passed_tests: int = Field(..., description="Number of passed tests")
     failed_tests: int = Field(..., description="Number of failed tests")
-    results: List[VerificationResultV1] = Field(..., description="Detailed results")
+    results: list[VerificationResultV1] = Field(..., description="Detailed results")
     verification_time_ms: float = Field(..., ge=0)
 
 
@@ -451,8 +455,8 @@ class GraphQLEquationInput(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     equation_id: str = Field(..., alias="equationId")
-    input_data: Dict[str, Any] = Field(..., alias="inputData")
-    options: Dict[str, Any] = None
+    input_data: dict[str, Any] = Field(..., alias="inputData")
+    options: dict[str, Any] = None
 
 
 class GraphQLEquationResult(BaseModel):
@@ -641,7 +645,7 @@ def create_error_response(
 # ============================================================================
 
 
-def to_json_schema(model_class: type[BaseModel]) -> Dict[str, Any]:
+def to_json_schema(model_class: type[BaseModel]) -> dict[str, Any]:
     """Generate JSON schema for a model class.
 
     Args:
@@ -656,7 +660,7 @@ def to_json_schema(model_class: type[BaseModel]) -> Dict[str, Any]:
     return model_class.model_json_schema()
 
 
-def get_all_models() -> Dict[str, type[BaseModel]]:
+def get_all_models() -> dict[str, type[BaseModel]]:
     """Get all available model classes.
 
     Returns:

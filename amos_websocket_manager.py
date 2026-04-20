@@ -8,13 +8,16 @@ Author: AMOS System
 Version: 1.0.0
 """
 
+from __future__ import annotations
+
 import asyncio
 import uuid
 from collections import defaultdict
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
-from typing import Any, Dict, Optional, Set
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
+from typing import Any
 
 from fastapi import WebSocket
 from starlette.websockets import WebSocketState
@@ -33,12 +36,12 @@ class WSConnection:
     id: str
     websocket: WebSocket
     user_id: str = None
-    rooms: Set[str] = field(default_factory=set)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    rooms: set[str] = field(default_factory=set)
+    metadata: dict[str, Any] = field(default_factory=dict)
     connected_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     last_activity: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
-    async def send(self, message: Dict[str, Any]) -> None:
+    async def send(self, message: dict[str, Any]) -> None:
         """Send message to this connection."""
         if self.websocket.client_state == WebSocketState.CONNECTED:
             await self.websocket.send_json(message)
@@ -84,9 +87,9 @@ class WebSocketManager:
     """
 
     def __init__(self):
-        self._connections: Dict[str, WSConnection] = {}
-        self._rooms: Dict[str, set[str]] = defaultdict(set)
-        self._user_connections: Dict[str, set[str]] = defaultdict(set)
+        self._connections: dict[str, WSConnection] = {}
+        self._rooms: dict[str, set[str]] = defaultdict(set)
+        self._user_connections: dict[str, set[str]] = defaultdict(set)
         self._event_bus = get_event_bus()
         self._lock = asyncio.Lock()
         self._running = False
@@ -101,7 +104,7 @@ class WebSocketManager:
         websocket: WebSocket,
         room: str = None,
         user_id: str = None,
-        metadata: Dict[str, Any] = None,
+        metadata: dict[str, Any] = None,
     ) -> str:
         """
         Accept and register a new WebSocket connection.
@@ -172,7 +175,9 @@ class WebSocketManager:
             {
                 "connection_id": conn_id,
                 "user_id": connection.user_id,
-                "duration_seconds": (datetime.now(timezone.utc) - connection.connected_at).total_seconds(),
+                "duration_seconds": (
+                    datetime.now(timezone.utc) - connection.connected_at
+                ).total_seconds(),
             },
         )
 
@@ -219,7 +224,7 @@ class WebSocketManager:
     # Messaging
     # ========================================================================
 
-    async def send_to_connection(self, connection_id: str, message: Dict[str, Any]) -> bool:
+    async def send_to_connection(self, connection_id: str, message: dict[str, Any]) -> bool:
         """Send message to a specific connection."""
         if connection_id not in self._connections:
             return False
@@ -235,7 +240,7 @@ class WebSocketManager:
         except Exception:
             return False
 
-    async def send_to_user(self, user_id: str, message: Dict[str, Any]) -> int:
+    async def send_to_user(self, user_id: str, message: dict[str, Any]) -> int:
         """Send message to all connections of a user. Returns count sent."""
         sent = 0
 
@@ -248,7 +253,7 @@ class WebSocketManager:
 
         return sent
 
-    async def broadcast(self, room: str, message: Dict[str, Any], exclude: str = None) -> int:
+    async def broadcast(self, room: str, message: dict[str, Any], exclude: str = None) -> int:
         """
         Broadcast message to all connections in a room.
 
@@ -281,7 +286,7 @@ class WebSocketManager:
 
         return sent
 
-    async def broadcast_all(self, message: Dict[str, Any]) -> int:
+    async def broadcast_all(self, message: dict[str, Any]) -> int:
         """Broadcast message to all connected clients."""
         sent = 0
         dead_connections = []
@@ -387,7 +392,7 @@ class WebSocketManager:
     # Statistics
     # ========================================================================
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get WebSocket manager statistics."""
         return {
             "total_connections": len(self._connections),
@@ -399,9 +404,7 @@ class WebSocketManager:
 
 # ============================================================================
 # Global Manager Instance
-# ============================================================================
-
-_manager: Optional[WebSocketManager] = None
+# ============================================================================_manager: Optional[WebSocketManager] = None
 
 
 def get_websocket_manager() -> WebSocketManager:

@@ -270,13 +270,118 @@ def cmd_muscle(args: argparse.Namespace) -> int:
         print(f"Executing {args.type} command...")
         result = executor.execute(args.command, task_type)
 
-        print(f"\n{'='*50}")
+        print(f"\n{'=' * 50}")
         print(f"Result: {'✓ Success' if result.success else '✗ Failed'}")
         print(f"Duration: {result.duration_ms}ms")
         if result.output:
             print(f"\nOutput:\n{result.output}")
         if result.error:
             print(f"\nError: {result.error}")
+
+    return 0
+
+
+def cmd_compile(args: argparse.Namespace) -> int:
+    """Natural language to code compiler using brain."""
+    from amos_brain import get_autonomous_compiler
+    from amos_compiler import compile_instruction, ground_intent, parse_intent
+    from amos_compiler.repo_graph import build_repo_graph
+
+    instruction = " ".join(args.instruction)
+    if not instruction:
+        print("Error: No instruction provided")
+        return 1
+
+    print(f"AMOS Compiler: '{instruction[:60]}...'")
+    print("=" * 60)
+
+    # Compile instruction through brain
+    result = compile_instruction(instruction, repo_root=".", dry_run=not args.apply)
+
+    # Show grounded interpretation
+    grounded = result.get("grounded_intent", {})
+    print("\n📍 Grounded Interpretation")
+    print(f"   Action: {result.get('intent_ir', {}).get('action', 'unknown')}")
+    print(f"   Confidence: {grounded.get('confidence', 0):.0%}")
+
+    # Show edit scope
+    scope = grounded.get("edit_scope", {})
+    files = scope.get("files", [])
+    symbols = scope.get("symbols", [])
+    tests = scope.get("tests", [])
+
+    if files:
+        print(f"\n📁 Files to Modify: {len(files)}")
+        for f in files[:5]:
+            print(f"   • {f}")
+        if len(files) > 5:
+            print(f"   ... and {len(files) - 5} more")
+
+    if symbols:
+        print(f"\n🔣 Symbols: {len(symbols)}")
+
+    if tests:
+        print(f"\n🧪 Related Tests: {len(tests)}")
+
+    # Show if we can apply
+    can_apply = result.get("can_apply", False)
+    if args.apply:
+        print("\n🚀 Executing autonomous code generation...")
+
+        # Get the autonomous compiler engine
+        compiler = get_autonomous_compiler()
+
+        # Build repo graph for deep analysis
+        repo_graph = build_repo_graph(".")
+
+        # Re-parse and ground the intent
+        intent = parse_intent(instruction)
+        grounded_intent = ground_intent(intent, repo_graph)
+
+        # Create and execute plan
+        plan = compiler.create_plan(grounded_intent)
+        executed_plan = compiler.execute_plan(plan, dry_run=False)
+
+        if executed_plan.status == "completed":
+            print("\n✓ Code generation completed successfully")
+            print(f"  Steps executed: {len(executed_plan.steps)}")
+            # Show generated files
+            edit_steps = [s for s in executed_plan.steps if s.action == "edit"]
+            if edit_steps:
+                print("\n📁 Modified files:")
+                for step in edit_steps:
+                    if step.target_file:
+                        print(f"   • {step.target_file}")
+        else:
+            print(f"\n✗ Plan failed at step {plan.current_step_index}")
+            failed_step = executed_plan.get_current_step()
+            if failed_step and failed_step.error_message:
+                print(f"   Error: {failed_step.error_message}")
+            if args.rollback:
+                print("  Rolling back changes...")
+                compiler.rollback(executed_plan)
+                print("  ✓ Rollback complete")
+            return 1
+
+    elif can_apply:
+        print("\n💡 Run with --apply to execute changes")
+        if args.plan:
+            print("\n📋 Detailed execution plan:")
+            compiler = get_autonomous_compiler()
+            repo_graph = build_repo_graph(".")
+            intent = parse_intent(instruction)
+            grounded_intent = ground_intent(intent, repo_graph)
+            plan = compiler.create_plan(grounded_intent)
+            for step in plan.steps:
+                print(f"  {step.order + 1}. [{step.action}] {step.description}")
+
+    else:
+        print("\n⚠ Cannot apply: confidence too low or ambiguities detected")
+        ambiguities = result.get("intent_ir", {}).get("ambiguities", [])
+        if ambiguities:
+            print("   Ambiguities:")
+            for a in ambiguities:
+                print(f"     • {a}")
 
     return 0
 
@@ -332,6 +437,20 @@ def main() -> int:
         "--type", choices=["python", "shell"], default="python", help="Execution type"
     )
 
+    # Compiler command - natural language to code
+    compile_p = subparsers.add_parser(
+        "compile", help="Compile natural language instruction to code changes", aliases=["c"]
+    )
+    compile_p.add_argument(
+        "instruction",
+        nargs="+",
+        help='Natural language instruction (e.g., "make localhost API key optional")',
+    )
+    compile_p.add_argument("--apply", action="store_true", help="Apply changes after verification")
+    compile_p.add_argument("--plan", action="store_true", help="Show detailed execution plan")
+    compile_p.add_argument("--rollback", action="store_true", help="Enable rollback on failure")
+    compile_p.add_argument("--scope", help="Limit scope to specific path")
+
     args = parser.parse_args()
 
     if not args.command:
@@ -350,6 +469,8 @@ def main() -> int:
         "orchestrator": cmd_orchestrator,
         "ecosystem": cmd_ecosystem,
         "muscle": cmd_muscle,
+        "compile": cmd_compile,
+        "c": cmd_compile,
     }
 
     handler = commands.get(args.command)

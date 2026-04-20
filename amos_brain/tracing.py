@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import os
 from contextlib import contextmanager
-from typing import Any, Dict, List, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Optional
 
 if TYPE_CHECKING:
     from collections.abc import Generator
@@ -29,9 +29,9 @@ class TracingConfig:
 
     def __init__(
         self,
-        enabled: bool  = None,
+        enabled: bool = None,
         service_name: str = "amos-brain",
-        endpoint: str  = None,
+        endpoint: str = None,
         sample_rate: float = 1.0,
     ):
         self.enabled = (
@@ -50,20 +50,20 @@ class TracingSpan:
     Compatible with OpenTelemetry span interface for future migration.
     """
 
-    def __init__(self, name: str, tracer: "Any", parent: "Optional[TracingSpan]" = None):
+    def __init__(self, name: str, tracer: Any, parent: Optional[TracingSpan] = None):
         self.name = name
         self.tracer = tracer
         self.parent = parent
-        self.attributes: Dict[str, Any] = {}
-        self.events: List[dict[str, Any]] = []
-        self._start_time: float  = None
-        self._end_time: float  = None
+        self.attributes: dict[str, Any] = {}
+        self.events: list[dict[str, Any]] = []
+        self._start_time: Optional[float] = None
+        self._end_time: Optional[float] = None
 
     def set_attribute(self, key: str, value: Any) -> None:
         """Set a span attribute."""
         self.attributes[key] = value
 
-    def add_event(self, name: str, attributes: Dict[str, Any]  = None) -> None:
+    def add_event(self, name: str, attributes: Optional[dict[str, Any]] = None) -> None:
         """Add an event to the span."""
         import time
 
@@ -95,7 +95,7 @@ class TracingSpan:
         self._start_time = time.time()
         return self
 
-    def __exit__(self, exc_type: type , exc_val: BaseException , exc_tb: Any) -> None:
+    def __exit__(self, exc_type: type, exc_val: BaseException, exc_tb: Any) -> None:
         """Context manager exit."""
         import time
 
@@ -114,9 +114,9 @@ class Tracer:
     def __init__(self, config: Optional[TracingConfig] = None):
         self.config = config or TracingConfig()
         self._current_span: Optional[TracingSpan] = None
-        self._spans: List[TracingSpan] = []
+        self._spans: list[TracingSpan] = []
 
-    def start_span(self, name: str, attributes: Dict[str, Any]  = None) -> TracingSpan:
+    def start_span(self, name: str, attributes: Optional[dict[str, Any]] = None) -> TracingSpan:
         """Start a new span.
 
         Args:
@@ -139,7 +139,7 @@ class Tracer:
 
     @contextmanager
     def span(
-        self, name: str, attributes: Dict[str, Any]  = None
+        self, name: str, attributes: Optional[dict[str, Any]] = None
     ) -> Generator[TracingSpan, None, None]:
         """Context manager for span creation.
 
@@ -164,7 +164,7 @@ class Tracer:
         """Get the current active span."""
         return self._current_span
 
-    def get_spans(self) -> List[TracingSpan]:
+    def get_spans(self) -> list[TracingSpan]:
         """Get all recorded spans (for testing/debugging)."""
         return self._spans.copy()
 
@@ -194,9 +194,9 @@ def get_tracer(config: Optional[TracingConfig] = None) -> Tracer:
 
 
 def configure_tracing(
-    enabled: bool  = None,
+    enabled: bool = None,
     service_name: str = "amos-brain",
-    endpoint: str  = None,
+    endpoint: str = None,
     sample_rate: float = 1.0,
 ) -> Tracer:
     """Configure and return the global tracer.
@@ -227,6 +227,7 @@ def get_otel_tracer() -> Any:
         from opentelemetry import trace
         from opentelemetry.sdk.trace import TracerProvider
         from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
+
         provider = TracerProvider()
         processor = BatchSpanProcessor(ConsoleSpanExporter())
         provider.add_span_processor(processor)

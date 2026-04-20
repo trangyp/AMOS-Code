@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 """
 AMOS Trainable Cognitive Substrate (TCS)
@@ -43,9 +43,9 @@ import math
 import uuid
 from collections import deque
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
 
+UTC = UTC
 import numpy as np
 
 # ============================================================================
@@ -84,7 +84,7 @@ class LatentState:
         self.last_update = datetime.now(timezone.utc)
         self.update_count += 1
 
-    def encode_context(self, observation: Dict[str, Any]) -> np.ndarray:
+    def encode_context(self, observation: dict[str, Any]) -> np.ndarray:
         """Encode observation into latent space (simplified)."""
         # Hash-based encoding for now - would be neural encoder in production
         obs_str = json.dumps(observation, sort_keys=True, default=str)
@@ -159,7 +159,7 @@ class LearnedParameters:
         # Value function
         self.value_weights = rng.randn(1, state_dim) * 0.01
 
-    def compute_gradients(self, losses: Dict[str, float]) -> Dict[str, np.ndarray]:
+    def compute_gradients(self, losses: dict[str, float]) -> dict[str, np.ndarray]:
         """
         Compute parameter gradients from multi-objective losses.
 
@@ -193,7 +193,7 @@ class LearnedParameters:
 
         return gradients
 
-    def apply_gradients(self, gradients: Dict[str, np.ndarray], lr: float = 0.001) -> None:
+    def apply_gradients(self, gradients: dict[str, np.ndarray], lr: float = 0.001) -> None:
         """Apply gradient updates to parameters."""
         for name, grad in gradients.items():
             if hasattr(self, name):
@@ -223,7 +223,7 @@ class LearnedWorldModel:
         self.prediction_history: deque[tuple[dict, dict, float]] = deque(maxlen=1000)
         self.accuracy_ema = 0.5  # Exponential moving average of accuracy
 
-    def predict(self, state: LatentState, action: Optional[str] = None) -> Dict[str, Any]:
+    def predict(self, state: LatentState, action: str = None) -> dict[str, Any]:
         """Predict next observation given current state and action."""
         # Simplified: linear transformation of state
         state_action = np.concatenate(
@@ -269,7 +269,7 @@ class LearnedWorldModel:
 
         return error
 
-    def _encode_action(self, action: Optional[str]) -> np.ndarray:
+    def _encode_action(self, action: str) -> np.ndarray:
         """Encode action string to vector."""
         if action is None:
             return np.zeros(self.params.action_dim)
@@ -300,7 +300,7 @@ class Proposal:
     confidence: float  # Neural confidence (often overconfident)
     source: str  # Which expert/module generated it
     latent_support: np.ndarray  # State vector supporting this proposal
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -312,8 +312,8 @@ class VerifiedResult:
     neural_confidence: float
     verified: bool
     verification_method: str
-    symbolic_checks_passed: List[str]
-    symbolic_checks_failed: List[str]
+    symbolic_checks_passed: list[str]
+    symbolic_checks_failed: list[str]
     final_confidence: float  # Calibrated confidence
     committed: bool  # Whether this was actually committed
 
@@ -339,9 +339,7 @@ class NeuralSymbolicRuntime:
         }
         self.calibration_history: deque[tuple[float, bool]] = deque(maxlen=1000)
 
-    def propose(
-        self, state: LatentState, task: str, experts: Optional[list[str]] = None
-    ) -> List[Proposal]:
+    def propose(self, state: LatentState, task: str, experts: list[str] = None) -> list[Proposal]:
         """
         Generate proposals using learned policy.
 
@@ -394,7 +392,7 @@ class NeuralSymbolicRuntime:
         return proposals
 
     def verify(
-        self, proposal: Proposal, constraints: Optional[list[str]] = None, method: str = "logical"
+        self, proposal: Proposal, constraints: list[str] = None, method: str = "logical"
     ) -> VerifiedResult:
         """
         Symbolic verification of neural proposal.
@@ -514,12 +512,12 @@ class MemoryEntry:
     """Single memory with learned embedding."""
 
     id: str
-    content: Dict[str, Any]
+    content: dict[str, Any]
     embedding: np.ndarray  # Learned vector representation
     entry_type: str  # 'episodic', 'semantic', 'procedural', 'error', 'strategic'
     timestamp: datetime
     access_count: int = 0
-    last_accessed: Optional[datetime] = None
+    last_accessed: datetime = None
     importance_score: float = 0.5  # Learned importance
 
 
@@ -534,19 +532,19 @@ class AdaptiveMemory:
     def __init__(self, params: LearnedParameters, max_size: int = 10000):
         self.params = params
         self.max_size = max_size
-        self.storage: Dict[str, MemoryEntry] = {}
-        self.episodic: List[str] = []  # Experience traces
-        self.semantic: Dict[str, str] = {}  # Facts (keyword -> entry_id)
-        self.procedural: Dict[str, str] = {}  # Skills
+        self.storage: dict[str, MemoryEntry] = {}
+        self.episodic: list[str] = []  # Experience traces
+        self.semantic: dict[str, str] = {}  # Facts (keyword -> entry_id)
+        self.procedural: dict[str, str] = {}  # Skills
         self.errors: deque[str] = deque(maxlen=1000)  # Recent errors
-        self.strategic: Dict[str, str] = {}  # High-level strategies
+        self.strategic: dict[str, str] = {}  # High-level strategies
 
         # Retrieval statistics for learning
         self.retrieval_attempts = 0
         self.retrieval_successes = 0
         self.retrieval_latency_ms: deque[float] = deque(maxlen=100)
 
-    def encode(self, content: Dict[str, Any], entry_type: str) -> np.ndarray:
+    def encode(self, content: dict[str, Any], entry_type: str) -> np.ndarray:
         """Encode content to learned embedding."""
         content_str = json.dumps(content, sort_keys=True, default=str)
         # Use learned transform (simplified)
@@ -558,9 +556,7 @@ class AdaptiveMemory:
         learned_embedding = self.params.memory_content_transform @ base_embedding
         return np.tanh(learned_embedding)  # Bounded
 
-    def store(
-        self, content: Dict[str, Any], entry_type: str, importance: Optional[float] = None
-    ) -> str:
+    def store(self, content: dict[str, Any], entry_type: str, importance: float = None) -> str:
         """Store new memory with learned embedding."""
         entry_id = str(uuid.uuid4())
         embedding = self.encode(content, entry_type)
@@ -598,8 +594,8 @@ class AdaptiveMemory:
         return entry_id
 
     def retrieve(
-        self, query: Dict[str, Any], context: Optional[LatentState] = None, k: int = 5
-    ) -> List[MemoryEntry]:
+        self, query: dict[str, Any], context: LatentState = None, k: int = 5
+    ) -> list[MemoryEntry]:
         """
         Learned retrieval - find memories most relevant to query.
 
@@ -698,7 +694,7 @@ class LossFunctions:
               λ₅L_calibration + λ₆L_human_safety + λ₇L_latency
     """
 
-    def __init__(self, weights: Dict[str, float] = None):
+    def __init__(self, weights: dict[str, float] = None):
         self.weights = weights or {
             "world": 1.0,
             "plan": 1.0,
@@ -754,7 +750,7 @@ class LossFunctions:
         time_penalty = response_time_ms / 1000.0  # Normalize to seconds
         return time_penalty + deep_path_overuse
 
-    def compute_total_loss(self, losses: Dict[str, float]) -> float:
+    def compute_total_loss(self, losses: dict[str, float]) -> float:
         """Compute weighted total loss."""
         total = 0.0
         for name, value in losses.items():
@@ -777,8 +773,8 @@ class BenchmarkResult:
     success: bool
     accuracy: float
     latency_ms: float
-    errors: List[str]
-    metadata: Dict[str, Any]
+    errors: list[str]
+    metadata: dict[str, Any]
 
 
 class BenchmarkHarness:
@@ -805,13 +801,13 @@ class BenchmarkHarness:
 
     def __init__(self):
         self.results: deque[BenchmarkResult] = deque(maxlen=10000)
-        self.performance_history: Dict[str, deque[float]] = {
+        self.performance_history: dict[str, deque[float]] = {
             family: deque(maxlen=100) for family in self.TASK_FAMILIES
         }
 
     def run_benchmark(
         self, substrate: TrainableCognitiveSubstrate, task_family: str, n_tasks: int = 10
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """
         Run benchmark suite on substrate.
         Returns performance metrics.
@@ -871,7 +867,7 @@ class BenchmarkHarness:
             metadata={"task": task},
         )
 
-    def _generate_task(self, task_family: str, task_id: str) -> Dict[str, Any]:
+    def _generate_task(self, task_family: str, task_id: str) -> dict[str, Any]:
         """Generate a test task."""
         tasks = {
             "reading_accuracy": {"type": "read", "content": f"data_{task_id}"},
@@ -947,7 +943,7 @@ class TrainingOrchestrator:
         substrate: TrainableCognitiveSubstrate,
         benchmark: BenchmarkHarness,
         n_benchmark_tasks: int = 10,
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """
         Single training step:
         1. Run benchmarks to measure current performance
@@ -1031,7 +1027,7 @@ class TrainingOrchestrator:
         benchmark: BenchmarkHarness,
         n_steps: int = 100,
         eval_every: int = 10,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Full training loop."""
         results = {
             "initial_score": benchmark.get_intelligence_score(),
@@ -1094,7 +1090,7 @@ class TrainableCognitiveSubstrate:
             "error_graph": {},
         }
 
-    def observe(self, observation: Dict[str, Any]) -> None:
+    def observe(self, observation: dict[str, Any]) -> None:
         """
         Observe -> Update latent state
         z_{t+1} = f_θ(z_t, o_t)
@@ -1115,7 +1111,7 @@ class TrainableCognitiveSubstrate:
             {"observation": observation, "state_snapshot": self.state.vector.tolist()}, "episodic"
         )
 
-    def think(self, task: str, constraints: Optional[list[str]] = None) -> VerifiedResult:
+    def think(self, task: str, constraints: list[str] = None) -> VerifiedResult:
         """
         Full cognitive cycle:
         1. Retrieve relevant memories
@@ -1161,7 +1157,7 @@ class TrainableCognitiveSubstrate:
 
         return best_result
 
-    def execute_task(self, task: Dict[str, Any]) -> Dict[str, Any]:
+    def execute_task(self, task: dict[str, Any]) -> dict[str, Any]:
         """
         Execute a task through the full substrate pipeline.
         """
@@ -1192,7 +1188,7 @@ class TrainableCognitiveSubstrate:
             "verified": result.committed if result else False,
         }
 
-    def _learn_from_failure(self, task: dict, result: Optional[VerifiedResult]) -> None:
+    def _learn_from_failure(self, task: dict, result: VerifiedResult) -> None:
         """Update parameters from failure (online adaptation)."""
         # Attribute failure
         if result and not result.committed:
@@ -1214,7 +1210,7 @@ class TrainableCognitiveSubstrate:
             importance=0.9,  # High importance for errors
         )
 
-    def train(self, n_steps: int = 100) -> Dict[str, Any]:
+    def train(self, n_steps: int = 100) -> dict[str, Any]:
         """Train the substrate on benchmark suite."""
         print(f"Starting training: {n_steps} steps")
         print(f"Initial intelligence score: {self.benchmark.get_intelligence_score():.4f}")
@@ -1230,7 +1226,7 @@ class TrainableCognitiveSubstrate:
         """Current measured intelligence."""
         return self.benchmark.get_intelligence_score()
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get substrate statistics."""
         return {
             "execution_count": self.execution_count,

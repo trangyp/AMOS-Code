@@ -1,8 +1,8 @@
 """AMOS System Status - Complete ecosystem health check."""
 
-import sys
+from __future__ import annotations
+
 from pathlib import Path
-from typing import Tuple
 
 # Module paths
 MODULES = [
@@ -28,24 +28,15 @@ def check_module_exists(module_dir: Path, name: str) -> bool:
     return (module_dir / name).exists()
 
 
-def check_imports_work() -> Tuple[bool, list[str]]:
+def check_imports_work() -> tuple[bool, list[str]]:
     """Test if core imports work."""
     errors = []
     try:
-        sys.path.insert(0, str(Path(__file__).parent.parent))
-        try:
-            from amos_cognitive_router import get_router
+        from clawspring.amos_brain.cognitive_audit import get_audit_trail
 
-            get_router()  # Verify import works
-        except Exception as e:
-            errors.append(f"Router: {e}")
-
-        try:
-            from amos_brain.cognitive_audit import get_audit_trail
-
-            get_audit_trail()  # Verify import works
-        except Exception as e:
-            errors.append(f"Audit: {e}")
+        get_audit_trail()  # Verify import works
+    except Exception as e:
+        errors.append(f"Audit: {e}")
 
         return len(errors) == 0, errors
     except Exception as e:
@@ -65,8 +56,7 @@ def get_system_status() -> Dict:
     # Get audit stats if available
     audit_stats = {}
     try:
-        sys.path.insert(0, str(module_dir.parent))
-        from amos_brain.cognitive_audit import get_audit_trail
+        from clawspring.amos_brain.cognitive_audit import get_audit_trail
 
         audit = get_audit_trail()
         audit_stats = audit.get_statistics()

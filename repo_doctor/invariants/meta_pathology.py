@@ -1,4 +1,5 @@
-"""Phase 6: Meta-System Pathology Invariants.
+"""
+Phase 6: Meta-System Pathology Invariants.
 
 The upper envelope of architectural defect class validations covering:
 - Reference-frame, timescale, phase-transition failures
@@ -28,7 +29,7 @@ class ReferenceFrameInvariant(Invariant):
     dimension = MetaPathologyDimension.REFERENCE_FRAME_INTEGRITY
     severity = "critical"
 
-    def check(self, context: Dict[str, Any]) -> InvariantResult:
+    def check(self, context: dict[str, Any]) -> InvariantResult:
         frames = context.get("reference_frames", [])
         claims = context.get("critical_claims", [])
         translations = context.get("frame_translations", [])
@@ -70,7 +71,7 @@ class FrameTranslationInvariant(Invariant):
     dimension = MetaPathologyDimension.FRAME_TRANSLATION_VALIDITY
     severity = "critical"
 
-    def check(self, context: Dict[str, Any]) -> InvariantResult:
+    def check(self, context: dict[str, Any]) -> InvariantResult:
         translations = context.get("frame_translations", [])
 
         unbounded = sum(1 for t in translations if not t.get("bounds_declared"))
@@ -105,7 +106,7 @@ class TimescaleInvariant(Invariant):
     dimension = MetaPathologyDimension.TIMESCALE_ALIGNMENT
     severity = "high"
 
-    def check(self, context: Dict[str, Any]) -> InvariantResult:
+    def check(self, context: dict[str, Any]) -> InvariantResult:
         surfaces = context.get("interacting_surfaces", [])
         workflows = context.get("protected_workflows", [])
 
@@ -142,7 +143,7 @@ class TemporalDebtInvariant(Invariant):
     dimension = MetaPathologyDimension.TEMPORAL_DEBT_VISIBILITY
     severity = "high"
 
-    def check(self, context: Dict[str, Any]) -> InvariantResult:
+    def check(self, context: dict[str, Any]) -> InvariantResult:
         artifacts = context.get("temporary_artifacts", [])
 
         rollover = sum(
@@ -180,7 +181,7 @@ class PhaseTransitionInvariant(Invariant):
     dimension = MetaPathologyDimension.PHASE_TRANSITION_SAFETY
     severity = "high"
 
-    def check(self, context: Dict[str, Any]) -> InvariantResult:
+    def check(self, context: dict[str, Any]) -> InvariantResult:
         thresholds = context.get("architectural_thresholds", [])
 
         unmodeled = sum(1 for t in thresholds if not t.get("explicitly_modeled"))
@@ -212,7 +213,7 @@ class MetastabilityInvariant(Invariant):
     dimension = MetaPathologyDimension.METASTABILITY_RESISTANCE
     severity = "critical"
 
-    def check(self, context: Dict[str, Any]) -> InvariantResult:
+    def check(self, context: dict[str, Any]) -> InvariantResult:
         regions = context.get("architectural_regions", [])
 
         metastable_unbounded = sum(
@@ -248,7 +249,7 @@ class AdapterSemanticInvariant(Invariant):
     dimension = MetaPathologyDimension.ADAPTER_SEMANTIC_INTEGRITY
     severity = "critical"
 
-    def check(self, context: Dict[str, Any]) -> InvariantResult:
+    def check(self, context: dict[str, Any]) -> InvariantResult:
         adapters = context.get("adapters", [])
 
         undeclared = sum(1 for a in adapters if not a.get("semantics_declared"))
@@ -282,7 +283,7 @@ class AuthorityLaunderingInvariant(Invariant):
     dimension = MetaPathologyDimension.AUTHORITY_LAUNDERING_RESISTANCE
     severity = "critical"
 
-    def check(self, context: Dict[str, Any]) -> InvariantResult:
+    def check(self, context: dict[str, Any]) -> InvariantResult:
         wrappers = context.get("wrappers", [])
         adapters = context.get("adapters", [])
 
@@ -324,7 +325,7 @@ class SemanticForkInvariant(Invariant):
     dimension = MetaPathologyDimension.SEMANTIC_FORK_RESISTANCE
     severity = "high"
 
-    def check(self, context: Dict[str, Any]) -> InvariantResult:
+    def check(self, context: dict[str, Any]) -> InvariantResult:
         terms = context.get("critical_terms", [])
 
         forked = sum(
@@ -360,7 +361,7 @@ class CompatibilityTheaterInvariant(Invariant):
     dimension = MetaPathologyDimension.COMPATIBILITY_TRUTHFULNESS
     severity = "high"
 
-    def check(self, context: Dict[str, Any]) -> InvariantResult:
+    def check(self, context: dict[str, Any]) -> InvariantResult:
         claims = context.get("compatibility_claims", [])
 
         theater = sum(
@@ -397,7 +398,7 @@ class EntropyExportInvariant(Invariant):
     dimension = MetaPathologyDimension.ENTROPY_EXPORT_RESISTANCE
     severity = "high"
 
-    def check(self, context: Dict[str, Any]) -> InvariantResult:
+    def check(self, context: dict[str, Any]) -> InvariantResult:
         surfaces = context.get("surfaces", [])
 
         exports = sum(
@@ -433,7 +434,7 @@ class DebtVisibilityInvariant(Invariant):
     dimension = MetaPathologyDimension.DEBT_VISIBILITY
     severity = "high"
 
-    def check(self, context: Dict[str, Any]) -> InvariantResult:
+    def check(self, context: dict[str, Any]) -> InvariantResult:
         workarounds = context.get("architectural_workarounds", [])
 
         hidden = sum(
@@ -471,7 +472,7 @@ class CommonsGovernanceInvariant(Invariant):
     dimension = MetaPathologyDimension.SHARED_RESOURCE_GOVERNANCE
     severity = "high"
 
-    def check(self, context: Dict[str, Any]) -> InvariantResult:
+    def check(self, context: dict[str, Any]) -> InvariantResult:
         resources = context.get("shared_resources", [])
 
         ungoverned = sum(
@@ -508,7 +509,7 @@ class InstitutionalCaptureInvariant(Invariant):
     dimension = MetaPathologyDimension.INSTITUTIONAL_CAPTURE_RESISTANCE
     severity = "critical"
 
-    def check(self, context: Dict[str, Any]) -> InvariantResult:
+    def check(self, context: dict[str, Any]) -> InvariantResult:
         authorities = context.get("authority_surfaces", [])
 
         captured = sum(
@@ -547,7 +548,7 @@ class ConstitutionalDriftInvariant(Invariant):
     dimension = MetaPathologyDimension.CONSTITUTIONAL_DRIFT_RESISTANCE
     severity = "high"
 
-    def check(self, context: Dict[str, Any]) -> InvariantResult:
+    def check(self, context: dict[str, Any]) -> InvariantResult:
         changes = context.get("architectural_law_changes", [])
 
         drifted = sum(
@@ -582,7 +583,7 @@ class ProofTransportInvariant(Invariant):
     dimension = MetaPathologyDimension.PROOF_TRANSPORT_INTEGRITY
     severity = "high"
 
-    def check(self, context: Dict[str, Any]) -> InvariantResult:
+    def check(self, context: dict[str, Any]) -> InvariantResult:
         transports = context.get("proof_transports", [])
 
         invalid = sum(
@@ -620,7 +621,7 @@ class CrossModelCoherenceInvariant(Invariant):
     dimension = MetaPathologyDimension.CROSS_MODEL_COHERENCE
     severity = "critical"
 
-    def check(self, context: Dict[str, Any]) -> InvariantResult:
+    def check(self, context: dict[str, Any]) -> InvariantResult:
         models = context.get("architectural_models", [])
         contradictions = context.get("model_contradictions", [])
 
@@ -656,7 +657,7 @@ class TopologicalHoleInvariant(Invariant):
     dimension = MetaPathologyDimension.TOPOLOGICAL_AUTHORITY_CLOSURE
     severity = "high"
 
-    def check(self, context: Dict[str, Any]) -> InvariantResult:
+    def check(self, context: dict[str, Any]) -> InvariantResult:
         defect_classes = context.get("defect_classes", [])
 
         holes = sum(
@@ -692,7 +693,7 @@ class WorldModelAlignmentInvariant(Invariant):
     dimension = MetaPathologyDimension.WORLD_MODEL_ALIGNMENT
     severity = "critical"
 
-    def check(self, context: Dict[str, Any]) -> InvariantResult:
+    def check(self, context: dict[str, Any]) -> InvariantResult:
         assumptions = context.get("world_assumptions", [])
         lag_bound = context.get("max_acceptable_lag", float("inf"))
 
@@ -728,7 +729,7 @@ class TripleDriftInvariant(Invariant):
     dimension = MetaPathologyDimension.TRIPLE_DRIFT_STABILITY
     severity = "high"
 
-    def check(self, context: Dict[str, Any]) -> InvariantResult:
+    def check(self, context: dict[str, Any]) -> InvariantResult:
         workflows = context.get("protected_workflows", [])
 
         unstable = sum(

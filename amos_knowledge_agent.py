@@ -28,7 +28,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 sys.path.insert(0, str(Path(__file__).parent / "clawspring"))
 sys.path.insert(0, str(Path(__file__).parent))
@@ -49,9 +49,9 @@ class KnowledgeTask:
     id: str
     description: str
     status: TaskStatus
-    knowledge_sources: List[str] = field(default_factory=list)
-    plan_steps: List[dict] = field(default_factory=list)
-    execution_log: List[dict] = field(default_factory=list)
+    knowledge_sources: list[str] = field(default_factory=list)
+    plan_steps: list[dict] = field(default_factory=list)
+    execution_log: list[dict] = field(default_factory=list)
     created_at: str = ""
     completed_at: str = None
 
@@ -67,8 +67,8 @@ class KnowledgeAgent:
         self.reasoning = None
         self.activation = None
         self._init_components()
-        self.active_tasks: Dict[str, KnowledgeTask] = {}
-        self.task_history: List[KnowledgeTask] = []
+        self.active_tasks: dict[str, KnowledgeTask] = {}
+        self.task_history: list[KnowledgeTask] = []
 
     def _init_components(self):
         """Initialize knowledge components."""
@@ -88,7 +88,7 @@ class KnowledgeAgent:
             print(f"Warning: Could not initialize activation: {e}")
             self.activation = None
 
-    def understand_goal(self, goal: str) -> Dict[str, Any]:
+    def understand_goal(self, goal: str) -> dict[str, Any]:
         """Understand goal with knowledge context."""
         print("=" * 70)
         print("KNOWLEDGE AGENT: GOAL UNDERSTANDING")
@@ -166,7 +166,7 @@ class KnowledgeAgent:
         base_steps = {"low": 3, "medium": 5, "high": 8}
         return base_steps.get(complexity, 5)
 
-    def create_plan(self, goal_analysis: dict) -> List[dict]:
+    def create_plan(self, goal_analysis: dict) -> list[dict]:
         """Create knowledge-informed execution plan."""
         print("\n" + "=" * 70)
         print("KNOWLEDGE AGENT: PLAN CREATION")

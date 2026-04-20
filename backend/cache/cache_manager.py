@@ -14,17 +14,21 @@ Owner: Trang Phan
 Version: 2.0.0
 """
 
+from __future__ import annotations
+
 import hashlib
 import json
 import threading
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Optional
 
 # Redis for L2 cache
 try:
     import redis
+
     REDIS_AVAILABLE = True
 except ImportError:
     REDIS_AVAILABLE = False
@@ -32,6 +36,7 @@ except ImportError:
 # SuperBrain integration
 try:
     from amos_brain import get_super_brain
+
     SUPERBRAIN_AVAILABLE = True
 except ImportError:
     SUPERBRAIN_AVAILABLE = False
@@ -39,6 +44,7 @@ except ImportError:
 # Import existing modules
 try:
     from backend.data_pipeline.streaming import publish_event
+
     STREAMING_AVAILABLE = True
 except ImportError:
     STREAMING_AVAILABLE = False
@@ -46,6 +52,7 @@ except ImportError:
 
 class CacheStrategy(Enum):
     """Caching strategies."""
+
     CACHE_ASIDE = "cache_aside"
     WRITE_THROUGH = "write_through"
     WRITE_BEHIND = "write_behind"
@@ -53,6 +60,7 @@ class CacheStrategy(Enum):
 
 class CacheLevel(Enum):
     """Cache hierarchy levels."""
+
     L1_MEMORY = "l1_memory"  # In-process memory
     L2_REDIS = "l2_redis"  # Shared Redis
     L3_DATABASE = "l3_database"  # Source of truth
@@ -61,11 +69,12 @@ class CacheLevel(Enum):
 @dataclass
 class CacheEntry:
     """Cache entry metadata."""
+
     key: str
     value: Any
     created_at: float = field(default_factory=time.time)
-    expires_at: float  = None
-    tags: List[str] = field(default_factory=list)
+    expires_at: float = None
+    tags: list[str] = field(default_factory=list)
     hit_count: int = 0
     size_bytes: int = 0
 
@@ -73,6 +82,7 @@ class CacheEntry:
 @dataclass
 class CacheStats:
     """Cache performance statistics."""
+
     l1_hits: int = 0
     l1_misses: int = 0
     l2_hits: int = 0
@@ -104,15 +114,15 @@ class CacheManager:
         CacheLevel.L1_MEMORY: 100 * 1024 * 1024,  # 100MB
     }
 
-    def __init__(self, redis_url: str  = None):
+    def __init__(self, redis_url: str = None):
         self.redis_url = redis_url or "redis://localhost:6379/5"
-        self._l1_cache: Dict[str, CacheEntry] = {}
+        self._l1_cache: dict[str, CacheEntry] = {}
         self._l1_lock = threading.RLock()
-        self._redis: redis.Redis  = None
+        self._redis: redis.Redis = None
         self._brain = None
         self._stats = CacheStats()
-        self._invalidation_callbacks: Dict[str, list[Callable]] = {}
-        self._write_behind_queue: List[tuple[str, Any]] = []
+        self._invalidation_callbacks: dict[str, list[Callable]] = {}
+        self._write_behind_queue: list[tuple[str, Any]] = []
 
         # Initialize connections
         if REDIS_AVAILABLE:
@@ -132,12 +142,7 @@ class CacheManager:
         """Generate Redis key with namespace."""
         return f"cache:l2:{key}"
 
-    def _get_cache_key(
-        self,
-        namespace: str,
-        identifier: str,
-        tenant_id: str  = None
-    ) -> str:
+    def _get_cache_key(self, namespace: str, identifier: str, tenant_id: str = None) -> str:
         """Generate consistent cache key."""
         components = [namespace]
         if tenant_id:
@@ -170,20 +175,17 @@ class CacheManager:
         self._stats.last_updated = time.time()
 
     def get(
-        self,
-        key: str,
-        data_type: str = "general",
-        fetch_func: Callable[..., Any ] = None
+        self, key: str, data_type: str = "general", fetch_func: Callable[..., Any] = None
     ) -> Optional[Any]:
         """Get value from cache with multi-level lookup."""
         # CANONICAL: Check governance for cache access
         if SUPERBRAIN_AVAILABLE and self._brain:
             try:
-                if hasattr(self._brain, 'action_gate'):
+                if hasattr(self._brain, "action_gate"):
                     action_result = self._brain.action_gate.validate_action(
                         agent_id="cache_manager",
                         action="cache_read",
-                        details={"key": key, "data_type": data_type}
+                        details={"key": key, "data_type": data_type},
                     )
                     if not action_result.authorized:
                         return None
@@ -232,7 +234,7 @@ class CacheManager:
 
         return None
 
-    def _set_l1(self, key: str, value: Any, data_type: str, ttl: int  = None):
+    def _set_l1(self, key: str, value: Any, data_type: str, ttl: int = None):
         """Set value in L1 (memory) cache."""
         ttl = ttl or self._get_ttl(data_type)
 
@@ -254,7 +256,7 @@ class CacheManager:
                 value=value,
                 expires_at=time.time() + ttl,
                 size_bytes=size,
-                tags=[data_type]
+                tags=[data_type],
             )
             self._l1_cache[key] = entry
             self._stats.total_keys = len(self._l1_cache)
@@ -265,8 +267,7 @@ class CacheManager:
         with self._l1_lock:
             # Sort by hit count (LFU) and expiration
             entries = sorted(
-                self._l1_cache.items(),
-                key=lambda x: (x[1].hit_count, x[1].expires_at or 0)
+                self._l1_cache.items(), key=lambda x: (x[1].hit_count, x[1].expires_at or 0)
             )
 
             freed_space = 0
@@ -282,9 +283,9 @@ class CacheManager:
         key: str,
         value: Any,
         data_type: str = "general",
-        ttl: int  = None,
-        tags: List[str ] = None,
-        strategy: CacheStrategy = CacheStrategy.CACHE_ASIDE
+        ttl: int = None,
+        tags: list[str] = None,
+        strategy: CacheStrategy = CacheStrategy.CACHE_ASIDE,
     ) -> bool:
         """Set value in cache with strategy."""
         ttl = ttl or self._get_ttl(data_type)
@@ -292,15 +293,11 @@ class CacheManager:
         # CANONICAL: Validate via SuperBrain
         if SUPERBRAIN_AVAILABLE and self._brain:
             try:
-                if hasattr(self._brain, 'action_gate'):
+                if hasattr(self._brain, "action_gate"):
                     action_result = self._brain.action_gate.validate_action(
                         agent_id="cache_manager",
                         action="cache_write",
-                        details={
-                            "key": key,
-                            "data_type": data_type,
-                            "strategy": strategy.value
-                        }
+                        details={"key": key, "data_type": data_type, "strategy": strategy.value},
                     )
                     if not action_result.authorized:
                         return False
@@ -327,19 +324,14 @@ class CacheManager:
                     "key": key,
                     "data_type": data_type,
                     "ttl": ttl,
-                    "strategy": strategy.value
+                    "strategy": strategy.value,
                 },
-                requires_governance=False
+                requires_governance=False,
             )
 
         return True
 
-    def invalidate(
-        self,
-        key: str  = None,
-        pattern: str  = None,
-        tags: List[str ] = None
-    ) -> int:
+    def invalidate(self, key: str = None, pattern: str = None, tags: list[str] = None) -> int:
         """Invalidate cache entries."""
         invalidated_count = 0
 
@@ -372,8 +364,7 @@ class CacheManager:
         if tags:
             with self._l1_lock:
                 keys_to_remove = [
-                    k for k, e in self._l1_cache.items()
-                    if any(t in e.tags for t in tags)
+                    k for k, e in self._l1_cache.items() if any(t in e.tags for t in tags)
                 ]
                 for k in keys_to_remove:
                     del self._l1_cache[k]
@@ -398,9 +389,9 @@ class CacheManager:
                     "key": key,
                     "pattern": pattern,
                     "tags": tags,
-                    "invalidated_count": invalidated_count
+                    "invalidated_count": invalidated_count,
                 },
-                requires_governance=False
+                requires_governance=False,
             )
 
         return invalidated_count
@@ -412,11 +403,7 @@ class CacheManager:
         self._invalidation_callbacks[key].append(callback)
 
     def get_tenant_cached(
-        self,
-        tenant_id: str,
-        namespace: str,
-        identifier: str,
-        data_type: str = "general"
+        self, tenant_id: str, namespace: str, identifier: str, data_type: str = "general"
     ) -> Optional[Any]:
         """Get tenant-scoped cached data."""
         key = self._get_cache_key(namespace, identifier, tenant_id)
@@ -429,7 +416,7 @@ class CacheManager:
         identifier: str,
         value: Any,
         data_type: str = "general",
-        ttl: Optional[int] = None
+        ttl: Optional[int] = None,
     ) -> bool:
         """Set tenant-scoped cached data."""
         key = self._get_cache_key(namespace, identifier, tenant_id)
@@ -443,9 +430,7 @@ class CacheManager:
         """Get cache statistics."""
         with self._l1_lock:
             self._stats.total_keys = len(self._l1_cache)
-            self._stats.memory_used_bytes = sum(
-                e.size_bytes for e in self._l1_cache.values()
-            )
+            self._stats.memory_used_bytes = sum(e.size_bytes for e in self._l1_cache.values())
 
         # Add Redis stats if available
         if self._redis:
@@ -482,16 +467,12 @@ class CacheManager:
                 event_type="cache_clear_all",
                 source_system="cache_manager",
                 payload={},
-                requires_governance=True
+                requires_governance=True,
             )
 
         return True
 
-    def warmup_cache(
-        self,
-        entries: List[tuple[str, Any, str]],
-        data_type: str = "general"
-    ) -> int:
+    def warmup_cache(self, entries: list[tuple[str, Any, str]], data_type: str = "general") -> int:
         """Pre-populate cache with entries."""
         warmed_count = 0
         for key, value, entry_type in entries:
@@ -506,38 +487,24 @@ cache_manager = CacheManager()
 
 # Convenience functions
 def cache_get(
-    key: str,
-    data_type: str = "general",
-    fetch_func: Callable[..., Any]  = None
+    key: str, data_type: str = "general", fetch_func: Callable[..., Any] = None
 ) -> Optional[Any]:
     """Get from cache with optional fetch."""
     return cache_manager.get(key, data_type, fetch_func)
 
 
-def cache_set(
-    key: str,
-    value: Any,
-    data_type: str = "general",
-    ttl: int  = None
-) -> bool:
+def cache_set(key: str, value: Any, data_type: str = "general", ttl: int = None) -> bool:
     """Set in cache."""
     return cache_manager.set(key, value, data_type, ttl)
 
 
-def cache_invalidate(
-    key: str  = None,
-    pattern: str  = None,
-    tags: List[str ] = None
-) -> int:
+def cache_invalidate(key: str = None, pattern: str = None, tags: list[str] = None) -> int:
     """Invalidate cache entries."""
     return cache_manager.invalidate(key, pattern, tags)
 
 
 def get_tenant_cache(
-    tenant_id: str,
-    namespace: str,
-    identifier: str,
-    data_type: str = "general"
+    tenant_id: str, namespace: str, identifier: str, data_type: str = "general"
 ) -> Optional[Any]:
     """Get tenant-scoped cache."""
     return cache_manager.get_tenant_cached(tenant_id, namespace, identifier, data_type)
@@ -549,12 +516,10 @@ def set_tenant_cache(
     identifier: str,
     value: Any,
     data_type: str = "general",
-    ttl: int  = None
+    ttl: int = None,
 ) -> bool:
     """Set tenant-scoped cache."""
-    return cache_manager.set_tenant_cached(
-        tenant_id, namespace, identifier, value, data_type, ttl
-    )
+    return cache_manager.set_tenant_cached(tenant_id, namespace, identifier, value, data_type, ttl)
 
 
 def invalidate_tenant_cache(tenant_id: str) -> int:

@@ -13,9 +13,8 @@ Closes the cognitive loop: Predict → Decide → Act.
 
 from __future__ import annotations
 
-
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 # Import governance engine
 try:

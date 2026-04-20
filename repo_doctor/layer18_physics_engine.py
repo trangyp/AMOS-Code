@@ -1,8 +1,9 @@
+from __future__ import annotations
+
 """Layer 18: Distributed Systems Physics Engine."""
 
 import uuid
 from dataclasses import dataclass, field
-from typing import List
 
 
 @dataclass
@@ -11,7 +12,7 @@ class InvariantResult:
     name: str
     satisfied: bool
     severity: str
-    evidence: List[str] = field(default_factory=list)
+    evidence: list[str] = field(default_factory=list)
 
 
 class DistributedPhysicsEngine:
@@ -22,9 +23,9 @@ class DistributedPhysicsEngine:
     def __init__(self):
         self.engine_id = f"PHYSICS-{uuid.uuid4().hex[:8]}"
 
-    def validate_truth_arbitration(self, domains: List[dict]) -> InvariantResult:
+    def validate_truth_arbitration(self, domains: list[dict]) -> InvariantResult:
         failures = [
-            f"Domain {d.get('name','?')}: No mechanism"
+            f"Domain {d.get('name', '?')}: No mechanism"
             for d in domains
             if not d.get("arbitration_mechanism")
         ]
@@ -36,10 +37,10 @@ class DistributedPhysicsEngine:
             failures or ["OK"],
         )
 
-    def validate_irreversibility(self, transitions: List[dict]) -> InvariantResult:
+    def validate_irreversibility(self, transitions: list[dict]) -> InvariantResult:
         valid = ["reversible", "compensable", "irreversible"]
         failures = [
-            f"Trans {t.get('name','?')}: Not classified"
+            f"Trans {t.get('name', '?')}: Not classified"
             for t in transitions
             if t.get("irreversibility_class") not in valid
         ]
@@ -51,9 +52,9 @@ class DistributedPhysicsEngine:
             failures or ["OK"],
         )
 
-    def validate_compensation(self, transitions: List[dict]) -> InvariantResult:
+    def validate_compensation(self, transitions: list[dict]) -> InvariantResult:
         failures = [
-            f"Trans {t.get('name','?')}: No compensation"
+            f"Trans {t.get('name', '?')}: No compensation"
             for t in transitions
             if t.get("irreversibility_class") == "irreversible" and not t.get("compensation_action")
         ]
@@ -65,9 +66,9 @@ class DistributedPhysicsEngine:
             failures or ["OK"],
         )
 
-    def validate_quiescence(self, subsystems: List[dict]) -> InvariantResult:
+    def validate_quiescence(self, subsystems: list[dict]) -> InvariantResult:
         failures = [
-            f"Subsys {s.get('name','?')}: No quiescent state"
+            f"Subsys {s.get('name', '?')}: No quiescent state"
             for s in subsystems
             if not s.get("quiescent_state_defined")
         ]
@@ -79,9 +80,9 @@ class DistributedPhysicsEngine:
             failures or ["OK"],
         )
 
-    def validate_policy_precedence(self, layers: List[dict]) -> InvariantResult:
+    def validate_policy_precedence(self, layers: list[dict]) -> InvariantResult:
         failures = [
-            f"Layer {l.get('name','?')}: No precedence"
+            f"Layer {l.get('name', '?')}: No precedence"
             for l in layers
             if l.get("precedence_rank") is None
         ]
@@ -93,9 +94,9 @@ class DistributedPhysicsEngine:
             failures or ["OK"],
         )
 
-    def validate_adaptive_bounds(self, loops: List[dict]) -> InvariantResult:
+    def validate_adaptive_bounds(self, loops: list[dict]) -> InvariantResult:
         failures = [
-            f"Loop {l.get('name','?')}: No drift bound"
+            f"Loop {l.get('name', '?')}: No drift bound"
             for l in loops
             if l.get("drift_bound") is None
         ]
@@ -107,11 +108,11 @@ class DistributedPhysicsEngine:
             failures or ["OK"],
         )
 
-    def validate_entropy(self, measurements: List[dict]) -> InvariantResult:
+    def validate_entropy(self, measurements: list[dict]) -> InvariantResult:
         failures = []
         for m in measurements:
             if m.get("entropy_score", 0) > 0.8:
-                failures.append(f"{m.get('name','?')}: High entropy")
+                failures.append(f"{m.get('name', '?')}: High entropy")
         return InvariantResult(
             "I_entropy",
             "Entropy Bounded",
@@ -144,8 +145,9 @@ class DistributedPhysicsEngine:
             "health": (len(results) - failed) / len(results) if results else 1.0,
         }
 
-    def compute_state_vector_amplitudes(self, results: List[InvariantResult]) -> dict[str, float]:
-        """Map invariant results to state vector amplitudes (Ω∞∞∞∞∞).
+    def compute_state_vector_amplitudes(self, results: list[InvariantResult]) -> dict[str, float]:
+        """
+        Map invariant results to state vector amplitudes (Ω∞∞∞∞∞).
 
         Amplitudes:
         - αTruth: 1.0 if truth arbitration satisfied, else decay based on severity
@@ -180,7 +182,7 @@ class DistributedPhysicsEngine:
                 amplitudes["ARCHITECTURAL_ENTROPY"] = 1.0 - entropy_score
         return amplitudes
 
-    def generate_repair_actions(self, results: List[InvariantResult]) -> List[dict]:
+    def generate_repair_actions(self, results: list[InvariantResult]) -> list[dict]:
         """Generate repair actions for failed physics invariants (MEDIC 2024 pattern)."""
         repairs = []
         for result in results:
@@ -260,7 +262,8 @@ class DistributedPhysicsEngine:
         return repair_map.get(result.invariant_id)
 
     def compute_entanglement_matrix(self, context: dict) -> dict[tuple, float]:
-        """Compute entanglement between distributed domains (Ω∞ coupling model).
+        """
+        Compute entanglement between distributed domains (Ω∞ coupling model).
 
         Entanglement strength indicates how much one domain's failure
         affects another. High entanglement means repairs must be coordinated.
@@ -281,7 +284,7 @@ class DistributedPhysicsEngine:
 
     def get_critical_domains(
         self, entanglements: dict[tuple, float], threshold: float = 0.7
-    ) -> List[str]:
+    ) -> list[str]:
         """Identify highly entangled domains that are critical to system stability."""
         domain_scores = {}
         for (d1, d2), strength in entanglements.items():

@@ -47,7 +47,7 @@ async def test_canon_bridge():
 
     # Test context retrieval
     ctx = bridge.get_context_for_domain("brain")
-    print(f"✅ Context retrieved for domain 'brain':")
+    print("✅ Context retrieved for domain 'brain':")
     print(f"   Terms: {len(ctx.glossary_terms)}")
     print(f"   Agents: {len(ctx.applicable_agents)}")
     print(f"   Engines: {len(ctx.relevant_engines)}")
@@ -97,7 +97,7 @@ async def test_canon_agent():
         "analysis",
     )
 
-    print(f"✅ Task plan created:")
+    print("✅ Task plan created:")
     print(f"   Task ID: {plan.task_id}")
     print(f"   Domain: {plan.domain}")
     print(f"   Steps: {len(plan.steps)}")
@@ -107,7 +107,7 @@ async def test_canon_agent():
 
     # Test task execution
     result = await agent.execute_task(plan)
-    print(f"✅ Task executed:")
+    print("✅ Task executed:")
     print(f"   Success: {result['success']}")
     print(f"   Steps executed: {result['steps_executed']}")
 

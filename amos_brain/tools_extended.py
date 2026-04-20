@@ -10,9 +10,14 @@ This module provides 5 additional tools following MCP protocol standards:
 Reference: https://modelcontextprotocol.io/docs/learn/architecture
 """
 
+from __future__ import annotations
+
 import re
 import subprocess
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
+
 UTC = timezone.utc
 from pathlib import Path
 from typing import Any

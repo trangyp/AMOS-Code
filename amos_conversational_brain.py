@@ -42,23 +42,23 @@ Author: AMOS Conversational Team
 Version: 15.0.0
 """
 
-
-import json
 import re
 from dataclasses import dataclass, field
+from datetime import UTC, datetime, timezone
 from enum import Enum, auto
-from typing import Any, Dict, List
-from datetime import datetime, timezone
-UTC = timezone.utc
+from typing import Any
 
+UTC = UTC
 try:
     from amos_superbrain_equation_bridge import AMOSSuperBrainBridge
+
     SUPERBRAIN_AVAILABLE = True
 except ImportError:
     SUPERBRAIN_AVAILABLE = False
 
 try:
     from amos_neural_symbolic import NeuralSymbolicEngine
+
     NEURAL_AVAILABLE = True
 except ImportError:
     NEURAL_AVAILABLE = False
@@ -66,55 +66,60 @@ except ImportError:
 
 class IntentType(Enum):
     """Types of user intents for mathematical queries."""
-    EXECUTE_EQUATION = auto()      # Run specific equation
-    PROVE_THEOREM = auto()         # Request proof
-    EXPLAIN_CONCEPT = auto()       # Explain equation/concept
-    DISCOVER_PATTERN = auto()      # Find cross-domain patterns
-    COMPARE_EQUATIONS = auto()     # Compare multiple equations
-    OPTIMIZE_PARAM = auto()        # Parameter optimization
-    GENERATE_EQUATION = auto()     # Create new equation
-    LIST_EQUATIONS = auto()        # Show available equations
-    UNKNOWN = auto()               # Unclear intent
+
+    EXECUTE_EQUATION = auto()  # Run specific equation
+    PROVE_THEOREM = auto()  # Request proof
+    EXPLAIN_CONCEPT = auto()  # Explain equation/concept
+    DISCOVER_PATTERN = auto()  # Find cross-domain patterns
+    COMPARE_EQUATIONS = auto()  # Compare multiple equations
+    OPTIMIZE_PARAM = auto()  # Parameter optimization
+    GENERATE_EQUATION = auto()  # Create new equation
+    LIST_EQUATIONS = auto()  # Show available equations
+    UNKNOWN = auto()  # Unclear intent
 
 
 @dataclass
 class ConversationMessage:
     """Single message in conversation."""
+
     role: str  # "user" or "assistant"
     content: str
     timestamp: str
-    tools_used: List[str] = field(default_factory=list)
-    equations_referenced: List[str] = field(default_factory=list)
+    tools_used: list[str] = field(default_factory=list)
+    equations_referenced: list[str] = field(default_factory=list)
 
 
 @dataclass
 class ParsedIntent:
     """Parsed intent from natural language."""
+
     intent_type: IntentType
     equation_name: str
-    parameters: Dict[str, Any]
+    parameters: dict[str, Any]
     confidence: float
     raw_query: str
-    context_references: List[str]
+    context_references: list[str]
 
 
 @dataclass
 class ToolCall:
     """Tool call specification."""
+
     tool_name: str
-    parameters: Dict[str, Any]
+    parameters: dict[str, Any]
     call_id: str
 
 
 @dataclass
 class ConversationalResponse:
     """Response to conversational query."""
+
     natural_language: str
-    technical_result: Dict[str, Any]
-    equations_used: List[str]
-    tools_called: List[str]
+    technical_result: dict[str, Any]
+    equations_used: list[str]
+    tools_called: list[str]
     confidence: float
-    follow_up_suggestions: List[str]
+    follow_up_suggestions: list[str]
 
 
 class IntentParser:
@@ -122,38 +127,38 @@ class IntentParser:
 
     # Intent patterns
     EXECUTE_PATTERNS = [
-        r'calculate\s+(\w+)',
-        r'compute\s+(\w+)',
-        r'what is\s+(\w+)\s+of',
-        r'find\s+(\w+)',
-        r'evaluate\s+(\w+)',
-        r'run\s+(\w+)',
-        r'sigmoid|relu|softmax|entropy|gradient',
+        r"calculate\s+(\w+)",
+        r"compute\s+(\w+)",
+        r"what is\s+(\w+)\s+of",
+        r"find\s+(\w+)",
+        r"evaluate\s+(\w+)",
+        r"run\s+(\w+)",
+        r"sigmoid|relu|softmax|entropy|gradient",
     ]
 
     PROVE_PATTERNS = [
-        r'prove\s+(.*)',
-        r'show\s+(that\s+)?(.*)',
-        r'demonstrate\s+(.*)',
-        r'verify\s+(.*)',
+        r"prove\s+(.*)",
+        r"show\s+(that\s+)?(.*)",
+        r"demonstrate\s+(.*)",
+        r"verify\s+(.*)",
     ]
 
     EXPLAIN_PATTERNS = [
-        r'explain\s+(\w+)',
-        r'what is\s+(\w+)\??',
-        r'how does\s+(\w+)\s+work',
-        r'describe\s+(\w+)',
+        r"explain\s+(\w+)",
+        r"what is\s+(\w+)\??",
+        r"how does\s+(\w+)\s+work",
+        r"describe\s+(\w+)",
     ]
 
     LIST_PATTERNS = [
-        r'list\s+(\w+)\s+equations',
-        r'show\s+(\w+)\s+equations',
-        r'what equations',
-        r'available\s+equations',
+        r"list\s+(\w+)\s+equations",
+        r"show\s+(\w+)\s+equations",
+        r"what equations",
+        r"available\s+equations",
     ]
 
     def __init__(self):
-        self.context_memory: List[str] = []
+        self.context_memory: list[str] = []
 
     def parse(self, query: str) -> ParsedIntent:
         """
@@ -179,7 +184,7 @@ class IntentParser:
                     parameters=params,
                     confidence=0.85,
                     raw_query=query,
-                    context_references=self._find_context_refs(query)
+                    context_references=self._find_context_refs(query),
                 )
 
         # Check for proof intent
@@ -192,7 +197,7 @@ class IntentParser:
                     parameters={"theorem": query},
                     confidence=0.80,
                     raw_query=query,
-                    context_references=[]
+                    context_references=[],
                 )
 
         # Check for explanation intent
@@ -206,7 +211,7 @@ class IntentParser:
                     parameters={},
                     confidence=0.75,
                     raw_query=query,
-                    context_references=[]
+                    context_references=[],
                 )
 
         # Check for list intent
@@ -218,7 +223,7 @@ class IntentParser:
                     parameters={"domain": self._extract_domain(query)},
                     confidence=0.90,
                     raw_query=query,
-                    context_references=[]
+                    context_references=[],
                 )
 
         # Unknown intent
@@ -228,15 +233,25 @@ class IntentParser:
             parameters={"query": query},
             confidence=0.30,
             raw_query=query,
-            context_references=[]
+            context_references=[],
         )
 
-    def _extract_equation_name(self, query: str) -> str :
+    def _extract_equation_name(self, query: str) -> str:
         """Extract equation name from query."""
         known_equations = [
-            'sigmoid', 'relu', 'softmax', 'tanh', 'entropy',
-            'cross_entropy', 'attention', 'gradient', 'hessian',
-            'littles_law', 'noethers_theorem', 'vqe', 'qaoa'
+            "sigmoid",
+            "relu",
+            "softmax",
+            "tanh",
+            "entropy",
+            "cross_entropy",
+            "attention",
+            "gradient",
+            "hessian",
+            "littles_law",
+            "noethers_theorem",
+            "vqe",
+            "qaoa",
         ]
 
         query_lower = query.lower()
@@ -246,21 +261,21 @@ class IntentParser:
 
         return None
 
-    def _extract_parameters(self, query: str) -> Dict[str, Any]:
+    def _extract_parameters(self, query: str) -> dict[str, Any]:
         """Extract parameters from query."""
         params = {}
 
         # Extract numbers
-        numbers = re.findall(r'-?\d+\.?\d*', query)
+        numbers = re.findall(r"-?\d+\.?\d*", query)
         if numbers:
-            params['values'] = [float(n) for n in numbers]
+            params["values"] = [float(n) for n in numbers]
 
         # Extract arrays/lists
-        array_match = re.search(r'\[([^\]]+)\]', query)
+        array_match = re.search(r"\[([^\]]+)\]", query)
         if array_match:
             try:
-                values = [float(x.strip()) for x in array_match.group(1).split(',')]
-                params['array'] = values
+                values = [float(x.strip()) for x in array_match.group(1).split(",")]
+                params["array"] = values
             except ValueError:
                 pass
 
@@ -269,10 +284,10 @@ class IntentParser:
     def _extract_domain(self, query: str) -> str:
         """Extract domain from query."""
         domains = {
-            'ml': ['machine learning', 'ml', 'neural', 'deep learning'],
-            'physics': ['physics', 'quantum', 'mechanics'],
-            'math': ['math', 'mathematics', 'statistics'],
-            'systems': ['systems', 'distributed', 'queueing'],
+            "ml": ["machine learning", "ml", "neural", "deep learning"],
+            "physics": ["physics", "quantum", "mechanics"],
+            "math": ["math", "mathematics", "statistics"],
+            "systems": ["systems", "distributed", "queueing"],
         }
 
         query_lower = query.lower()
@@ -280,12 +295,12 @@ class IntentParser:
             if any(kw in query_lower for kw in keywords):
                 return domain
 
-        return 'all'
+        return "all"
 
-    def _find_context_refs(self, query: str) -> List[str]:
+    def _find_context_refs(self, query: str) -> list[str]:
         """Find references to previous context."""
         refs = []
-        context_words = ['it', 'that', 'this', 'the previous', 'same']
+        context_words = ["it", "that", "this", "the previous", "same"]
 
         query_lower = query.lower()
         for word in context_words:
@@ -309,7 +324,7 @@ class ToolRouter:
         else:
             self.neural = None
 
-    def route(self, intent: ParsedIntent) -> List[ToolCall]:
+    def route(self, intent: ParsedIntent) -> list[ToolCall]:
         """
         Route parsed intent to tool calls.
 
@@ -323,41 +338,46 @@ class ToolRouter:
 
         if intent.intent_type == IntentType.EXECUTE_EQUATION:
             if intent.equation_name:
-                calls.append(ToolCall(
-                    tool_name="superbrain_compute",
-                    parameters={
-                        "equation": intent.equation_name,
-                        "inputs": intent.parameters
-                    },
-                    call_id=f"exec_{id(intent)}"
-                ))
+                calls.append(
+                    ToolCall(
+                        tool_name="superbrain_compute",
+                        parameters={"equation": intent.equation_name, "inputs": intent.parameters},
+                        call_id=f"exec_{id(intent)}",
+                    )
+                )
 
         elif intent.intent_type == IntentType.PROVE_THEOREM:
             if self.neural:
-                calls.append(ToolCall(
-                    tool_name="neural_prove",
-                    parameters={"theorem": intent.parameters.get("theorem", "")},
-                    call_id=f"prove_{id(intent)}"
-                ))
+                calls.append(
+                    ToolCall(
+                        tool_name="neural_prove",
+                        parameters={"theorem": intent.parameters.get("theorem", "")},
+                        call_id=f"prove_{id(intent)}",
+                    )
+                )
 
         elif intent.intent_type == IntentType.LIST_EQUATIONS:
-            calls.append(ToolCall(
-                tool_name="superbrain_list",
-                parameters={"domain": intent.parameters.get("domain", "all")},
-                call_id=f"list_{id(intent)}"
-            ))
+            calls.append(
+                ToolCall(
+                    tool_name="superbrain_list",
+                    parameters={"domain": intent.parameters.get("domain", "all")},
+                    call_id=f"list_{id(intent)}",
+                )
+            )
 
         elif intent.intent_type == IntentType.EXPLAIN_CONCEPT:
             if intent.equation_name:
-                calls.append(ToolCall(
-                    tool_name="superbrain_explain",
-                    parameters={"equation": intent.equation_name},
-                    call_id=f"explain_{id(intent)}"
-                ))
+                calls.append(
+                    ToolCall(
+                        tool_name="superbrain_explain",
+                        parameters={"equation": intent.equation_name},
+                        call_id=f"explain_{id(intent)}",
+                    )
+                )
 
         return calls
 
-    def execute(self, tool_call: ToolCall) -> Dict[str, Any]:
+    def execute(self, tool_call: ToolCall) -> dict[str, Any]:
         """Execute a tool call."""
         if tool_call.tool_name == "superbrain_compute":
             return self._execute_superbrain(tool_call.parameters)
@@ -370,7 +390,7 @@ class ToolRouter:
 
         return {"error": "Unknown tool"}
 
-    def _execute_superbrain(self, params: Dict[str, Any]) -> Dict[str, Any]:
+    def _execute_superbrain(self, params: dict[str, Any]) -> dict[str, Any]:
         """Execute SuperBrain computation."""
         if not self.superbrain:
             return {"error": "SuperBrain not available"}
@@ -382,14 +402,14 @@ class ToolRouter:
             result = self.superbrain.compute(equation, inputs)
             return {
                 "equation": equation,
-                "result": result.outputs if hasattr(result, 'outputs') else str(result),
-                "invariants_valid": getattr(result, 'invariants_valid', True),
-                "success": True
+                "result": result.outputs if hasattr(result, "outputs") else str(result),
+                "invariants_valid": getattr(result, "invariants_valid", True),
+                "success": True,
             }
         except Exception as e:
             return {"error": str(e), "success": False}
 
-    def _execute_neural_prove(self, params: Dict[str, Any]) -> Dict[str, Any]:
+    def _execute_neural_prove(self, params: dict[str, Any]) -> dict[str, Any]:
         """Execute neural theorem proving."""
         if not self.neural:
             return {"error": "Neural engine not available"}
@@ -402,12 +422,12 @@ class ToolRouter:
                 "theorem": theorem,
                 "status": proof.formal_status.name,
                 "confidence": proof.neural_confidence,
-                "success": proof.formal_status.name == "PROVEN"
+                "success": proof.formal_status.name == "PROVEN",
             }
         except Exception as e:
             return {"error": str(e), "success": False}
 
-    def _execute_list(self, params: Dict[str, Any]) -> Dict[str, Any]:
+    def _execute_list(self, params: dict[str, Any]) -> dict[str, Any]:
         """List available equations."""
         if not self.superbrain:
             return {"equations": [], "error": "SuperBrain not available"}
@@ -418,18 +438,20 @@ class ToolRouter:
             equations = []
             for name, meta in self.superbrain.registry.metadata.items():
                 if domain == "all" or meta.domain.value.lower() == domain:
-                    equations.append({
-                        "name": name,
-                        "domain": meta.domain.value,
-                        "pattern": meta.pattern.value,
-                        "formula": meta.formula[:50]
-                    })
+                    equations.append(
+                        {
+                            "name": name,
+                            "domain": meta.domain.value,
+                            "pattern": meta.pattern.value,
+                            "formula": meta.formula[:50],
+                        }
+                    )
 
             return {"equations": equations, "count": len(equations)}
         except Exception as e:
             return {"error": str(e)}
 
-    def _execute_explain(self, params: Dict[str, Any]) -> Dict[str, Any]:
+    def _execute_explain(self, params: dict[str, Any]) -> dict[str, Any]:
         """Explain an equation."""
         if not self.superbrain:
             return {"error": "SuperBrain not available"}
@@ -445,7 +467,7 @@ class ToolRouter:
                     "formula": meta.formula,
                     "domain": meta.domain.value,
                     "pattern": meta.pattern.value,
-                    "invariants": meta.invariants
+                    "invariants": meta.invariants,
                 }
             else:
                 return {"error": f"Equation {equation} not found"}
@@ -459,7 +481,7 @@ class ResponseGenerator:
     def __init__(self):
         self.templates = self._load_templates()
 
-    def _load_templates(self) -> Dict[str, str]:
+    def _load_templates(self) -> dict[str, str]:
         """Load response templates."""
         return {
             "execute_success": """
@@ -470,7 +492,6 @@ Technical details:
 - Invariants validated: {invariants}
 - Execution successful
             """.strip(),
-
             "prove_success": """
 I've attempted to prove: *{theorem}*
 
@@ -478,7 +499,6 @@ I've attempted to prove: *{theorem}*
 
 The neural-symbolic engine has verified this statement through formal reasoning.
             """.strip(),
-
             "explain": """
 **{name}** is an equation from the domain of {domain}.
 
@@ -489,7 +509,6 @@ The neural-symbolic engine has verified this statement through formal reasoning.
 **Key properties**:
 {invariants}
             """.strip(),
-
             "list": """
 I found **{count} equations** in the {domain} domain:
 
@@ -497,7 +516,6 @@ I found **{count} equations** in the {domain} domain:
 
 You can ask me to explain any of these or calculate specific values.
             """.strip(),
-
             "unknown": """
 I'm not sure I understood your request. I can help you with:
 
@@ -507,13 +525,11 @@ I'm not sure I understood your request. I can help you with:
 - **List equations**: "Show me ML equations"
 
 What would you like to explore?
-            """.strip()
+            """.strip(),
         }
 
     def generate(
-        self,
-        intent: ParsedIntent,
-        tool_results: List[dict[str, Any]]
+        self, intent: ParsedIntent, tool_results: list[dict[str, Any]]
     ) -> ConversationalResponse:
         """Generate conversational response."""
 
@@ -539,14 +555,12 @@ What would you like to explore?
                 follow_up_suggestions=[
                     "What equations are available?",
                     "Explain the sigmoid function",
-                    "Calculate softmax for [1, 2, 3]"
-                ]
+                    "Calculate softmax for [1, 2, 3]",
+                ],
             )
 
     def _generate_execute_response(
-        self,
-        intent: ParsedIntent,
-        results: List[dict[str, Any]]
+        self, intent: ParsedIntent, results: list[dict[str, Any]]
     ) -> ConversationalResponse:
         """Generate response for execution."""
         if not results:
@@ -556,7 +570,7 @@ What would you like to explore?
                 equations_used=[],
                 tools_called=["superbrain_compute"],
                 confidence=0.3,
-                follow_up_suggestions=["List available equations"]
+                follow_up_suggestions=["List available equations"],
             )
 
         result = results[0]
@@ -566,7 +580,7 @@ What would you like to explore?
                 equation=intent.equation_name,
                 result=result.get("result", "N/A"),
                 inputs=intent.parameters,
-                invariants=result.get("invariants_valid", True)
+                invariants=result.get("invariants_valid", True),
             )
 
             return ConversationalResponse(
@@ -578,8 +592,8 @@ What would you like to explore?
                 follow_up_suggestions=[
                     f"What is {intent.equation_name}?",
                     f"Compare {intent.equation_name} with similar equations",
-                    "Show me the formula"
-                ]
+                    "Show me the formula",
+                ],
             )
         else:
             return ConversationalResponse(
@@ -588,13 +602,11 @@ What would you like to explore?
                 equations_used=[],
                 tools_called=["superbrain_compute"],
                 confidence=0.3,
-                follow_up_suggestions=["Try a different equation"]
+                follow_up_suggestions=["Try a different equation"],
             )
 
     def _generate_prove_response(
-        self,
-        intent: ParsedIntent,
-        results: List[dict[str, Any]]
+        self, intent: ParsedIntent, results: list[dict[str, Any]]
     ) -> ConversationalResponse:
         """Generate response for theorem proving."""
         if not results:
@@ -604,7 +616,7 @@ What would you like to explore?
                 equations_used=[],
                 tools_called=["neural_prove"],
                 confidence=0.3,
-                follow_up_suggestions=["Try a simpler statement"]
+                follow_up_suggestions=["Try a simpler statement"],
             )
 
         result = results[0]
@@ -612,7 +624,7 @@ What would you like to explore?
         natural = self.templates["prove_success"].format(
             theorem=result.get("theorem", ""),
             status=result.get("status", "UNKNOWN"),
-            confidence=result.get("confidence", 0.0)
+            confidence=result.get("confidence", 0.0),
         )
 
         return ConversationalResponse(
@@ -624,14 +636,12 @@ What would you like to explore?
             follow_up_suggestions=[
                 "Show me the proof steps",
                 "What does this imply?",
-                "Are there counterexamples?"
-            ]
+                "Are there counterexamples?",
+            ],
         )
 
     def _generate_explain_response(
-        self,
-        intent: ParsedIntent,
-        results: List[dict[str, Any]]
+        self, intent: ParsedIntent, results: list[dict[str, Any]]
     ) -> ConversationalResponse:
         """Generate explanation response."""
         if not results or "error" in results[0]:
@@ -641,7 +651,7 @@ What would you like to explore?
                 equations_used=[],
                 tools_called=["superbrain_explain"],
                 confidence=0.3,
-                follow_up_suggestions=["List available equations"]
+                follow_up_suggestions=["List available equations"],
             )
 
         result = results[0]
@@ -653,7 +663,7 @@ What would you like to explore?
             domain=result.get("domain", ""),
             formula=result.get("formula", ""),
             description=result.get("description", ""),
-            invariants=invariants_str
+            invariants=invariants_str,
         )
 
         return ConversationalResponse(
@@ -665,14 +675,12 @@ What would you like to explore?
             follow_up_suggestions=[
                 f"Calculate {result.get('name', '')}",
                 f"What domain is {result.get('name', '')} used in?",
-                "Show me similar equations"
-            ]
+                "Show me similar equations",
+            ],
         )
 
     def _generate_list_response(
-        self,
-        intent: ParsedIntent,
-        results: List[dict[str, Any]]
+        self, intent: ParsedIntent, results: list[dict[str, Any]]
     ) -> ConversationalResponse:
         """Generate list response."""
         if not results:
@@ -682,7 +690,7 @@ What would you like to explore?
                 equations_used=[],
                 tools_called=["superbrain_list"],
                 confidence=0.3,
-                follow_up_suggestions=[]
+                follow_up_suggestions=[],
             )
 
         result = results[0]
@@ -699,7 +707,7 @@ What would you like to explore?
         natural = self.templates["list"].format(
             count=result.get("count", 0),
             domain=intent.parameters.get("domain", "all"),
-            equation_list=eq_list
+            equation_list=eq_list,
         )
 
         return ConversationalResponse(
@@ -711,8 +719,8 @@ What would you like to explore?
             follow_up_suggestions=[
                 "Explain sigmoid",
                 "Calculate softmax",
-                "What equations work with physics?"
-            ]
+                "What equations work with physics?",
+            ],
         )
 
 
@@ -728,7 +736,7 @@ class ConversationalBrain:
         self.intent_parser = IntentParser()
         self.tool_router = ToolRouter()
         self.response_generator = ResponseGenerator()
-        self.conversation_history: List[ConversationMessage] = []
+        self.conversation_history: list[ConversationMessage] = []
         self.session_id = self._generate_session_id()
 
     def chat(self, message: str) -> str:
@@ -757,25 +765,29 @@ class ConversationalBrain:
         response = self.response_generator.generate(intent, tool_results)
 
         # Store in history
-        self.conversation_history.append(ConversationMessage(
-            role="user",
-            content=message,
-            timestamp=datetime.now(timezone.utc).isoformat(),
-            tools_used=[],
-            equations_referenced=[]
-        ))
+        self.conversation_history.append(
+            ConversationMessage(
+                role="user",
+                content=message,
+                timestamp=datetime.now(timezone.utc).isoformat(),
+                tools_used=[],
+                equations_referenced=[],
+            )
+        )
 
-        self.conversation_history.append(ConversationMessage(
-            role="assistant",
-            content=response.natural_language,
-            timestamp=datetime.now(timezone.utc).isoformat(),
-            tools_used=response.tools_called,
-            equations_referenced=response.equations_used
-        ))
+        self.conversation_history.append(
+            ConversationMessage(
+                role="assistant",
+                content=response.natural_language,
+                timestamp=datetime.now(timezone.utc).isoformat(),
+                tools_used=response.tools_called,
+                equations_referenced=response.equations_used,
+            )
+        )
 
         return response.natural_language
 
-    def get_history(self) -> List[dict[str, Any]]:
+    def get_history(self) -> list[dict[str, Any]]:
         """Get conversation history."""
         return [
             {
@@ -783,7 +795,7 @@ class ConversationalBrain:
                 "content": msg.content,
                 "timestamp": msg.timestamp,
                 "tools": msg.tools_used,
-                "equations": msg.equations_referenced
+                "equations": msg.equations_referenced,
             }
             for msg in self.conversation_history
         ]
@@ -792,7 +804,7 @@ class ConversationalBrain:
         """Clear conversation history."""
         self.conversation_history = []
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get conversation statistics."""
         user_msgs = [m for m in self.conversation_history if m.role == "user"]
         assistant_msgs = [m for m in self.conversation_history if m.role == "assistant"]
@@ -809,12 +821,13 @@ class ConversationalBrain:
             "assistant_messages": len(assistant_msgs),
             "unique_equations_used": len(set(all_equations)),
             "unique_tools_used": len(set(all_tools)),
-            "session_id": self.session_id
+            "session_id": self.session_id,
         }
 
     def _generate_session_id(self) -> str:
         """Generate unique session ID."""
         import random
+
         return f"conv_{random.randint(10000, 99999)}"
 
 
@@ -826,19 +839,10 @@ def main():
         description="AMOS Conversational Brain - Natural Language Interface"
     )
     parser.add_argument(
-        "--interactive", "-i",
-        action="store_true",
-        help="Run interactive chat session"
+        "--interactive", "-i", action="store_true", help="Run interactive chat session"
     )
-    parser.add_argument(
-        "--query", "-q",
-        help="Single query mode"
-    )
-    parser.add_argument(
-        "--demo",
-        action="store_true",
-        help="Run demonstration"
-    )
+    parser.add_argument("--query", "-q", help="Single query mode")
+    parser.add_argument("--demo", action="store_true", help="Run demonstration")
 
     args = parser.parse_args()
 

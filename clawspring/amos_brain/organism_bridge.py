@@ -1,13 +1,12 @@
 """AMOS Organism Bridge - Connect Organism OS to Cognitive System."""
 
-import sys
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
 
-# Add organism OS to path - use relative path from this file
-ORGANISM_PATH = Path(__file__).parent.parent.parent / "AMOS_ORGANISM_OS"
-if str(ORGANISM_PATH) not in sys.path:
-    sys.path.insert(0, str(ORGANISM_PATH))
+# Define ORGANISM_PATH for reference
+ORGANISM_PATH = Path(
+    "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/AMOS_ORGANISM_OS"
+)
 
 
 class OrganismBridge:
@@ -70,7 +69,7 @@ class OrganismBridge:
         self._load_task_executor()
         return self._bridge_status
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get bridge connection status."""
         return {
             "organism_path": str(ORGANISM_PATH),
@@ -79,7 +78,7 @@ class OrganismBridge:
             "total_available": 3,
         }
 
-    def enhance_cognitive_analysis(self, task: str) -> Dict[str, Any]:
+    def enhance_cognitive_analysis(self, task: str) -> dict[str, Any]:
         """Use organism components to enhance cognitive task analysis."""
         enhancement = {"task": task, "organism_enhancements": {}}
 
@@ -118,7 +117,7 @@ class OrganismBridge:
 
 
 # Singleton instance
-_organism_bridge: Optional[OrganismBridge] = None
+_organism_bridge: OrganismBridge | None = None
 
 
 def get_organism_bridge() -> OrganismBridge:

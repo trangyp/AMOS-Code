@@ -5,15 +5,18 @@ Executes full deployment with verification.
 """
 
 import json
+import shlex
 import subprocess
 import sys
 import time
-from datetime import datetime
+from datetime import UTC, datetime
 
 
 def run_cmd(cmd, check=True):
-    """Run shell command."""
-    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+    """Run shell command securely with shell=False."""
+    # SECURITY: Use shlex.split() to safely parse command
+    cmd_parts = shlex.split(cmd)
+    result = subprocess.run(cmd_parts, shell=False, capture_output=True, text=True)
     if check and result.returncode != 0:
         print(f"❌ Error: {result.stderr}")
         return None

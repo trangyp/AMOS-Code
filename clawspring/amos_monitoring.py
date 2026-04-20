@@ -1,12 +1,10 @@
 """AMOS Performance Monitoring & Telemetry - System observability layer."""
 
-
 import time
 from dataclasses import dataclass, field
 from datetime import datetime
 
-from amos_runtime import get_runtime
-from typing import Dict, List, Optional
+from clawspring.amos_runtime import get_runtime
 
 
 @dataclass
@@ -16,7 +14,7 @@ class TelemetryEvent:
     event_type: str
     timestamp: float
     component: str
-    duration_ms: float  = None
+    duration_ms: float = None
     status: str = "success"
     metadata: dict = field(default_factory=dict)
 
@@ -40,16 +38,16 @@ class TelemetryCollector:
     MAX_EVENTS = 1000
 
     def __init__(self):
-        self.events: List[TelemetryEvent] = []
-        self.metrics: Dict[str, PerformanceMetrics] = {}
+        self.events: list[TelemetryEvent] = []
+        self.metrics: dict[str, PerformanceMetrics] = {}
 
     def record_event(
         self,
         event_type: str,
         component: str,
-        duration_ms: float  = None,
+        duration_ms: float = None,
         status: str = "success",
-        metadata: dict  = None,
+        metadata: dict = None,
     ) -> TelemetryEvent:
         """Record a telemetry event."""
         event = TelemetryEvent(
@@ -90,7 +88,7 @@ class TelemetryCollector:
         else:
             metric.error_count += 1
 
-    def get_component_metrics(self, component: str  = None) -> dict:
+    def get_component_metrics(self, component: str = None) -> dict:
         """Get metrics for component(s)."""
         if component:
             metric = self.metrics.get(component)
@@ -116,7 +114,7 @@ class TelemetryCollector:
             for name, m in self.metrics.items()
         }
 
-    def get_recent_events(self, count: int = 10) -> List[dict]:
+    def get_recent_events(self, count: int = 10) -> list[dict]:
         """Get recent telemetry events."""
         recent = self.events[-count:]
         return [
@@ -136,7 +134,7 @@ class SystemHealthMonitor:
 
     def __init__(self):
         self.start_time = time.time()
-        self.health_checks: Dict[str, bool] = {}
+        self.health_checks: dict[str, bool] = {}
 
     def check_health(self) -> dict:
         """Run system health checks."""
@@ -208,7 +206,7 @@ class AMOSMonitoring:
         tool_name: str,
         duration_ms: float,
         success: bool = True,
-        metadata: dict  = None,
+        metadata: dict = None,
     ) -> TelemetryEvent:
         """Record tool execution event."""
         return self.telemetry.record_event(
@@ -322,7 +320,7 @@ class AMOSMonitoring:
 
 
 # Singleton
-_monitoring: Optional[AMOSMonitoring] = None
+_monitoring: AMOSMonitoring | None = None
 
 
 def get_monitoring() -> AMOSMonitoring:

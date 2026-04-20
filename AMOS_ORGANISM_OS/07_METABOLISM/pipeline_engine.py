@@ -4,14 +4,16 @@ Defines and executes multi-stage pipelines for data transformation,
 processing, and routing through the organism.
 """
 
+from __future__ import annotations
+
 import json
 import uuid
 from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class StageStatus(Enum):
@@ -31,17 +33,17 @@ class PipelineStage:
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     name: str = ""
     stage_type: str = ""  # transform, filter, route, validate
-    config: Dict[str, Any] = field(default_factory=dict)
+    config: dict[str, Any] = field(default_factory=dict)
     status: StageStatus = StageStatus.PENDING
     input_data: Any = None
     output_data: Any = None
     error: str = ""
     start_time: str = None
     end_time: str = None
-    depends_on: List[str] = field(default_factory=list)
-    next_stages: List[str] = field(default_factory=list)
+    depends_on: list[str] = field(default_factory=list)
+    next_stages: list[str] = field(default_factory=list)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "status": self.status.value,
@@ -55,10 +57,10 @@ class Pipeline:
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     name: str = ""
     description: str = ""
-    stages: List[PipelineStage] = field(default_factory=list)
+    stages: list[PipelineStage] = field(default_factory=list)
     created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     status: str = "draft"  # draft, running, completed, failed
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     def add_stage(self, stage: PipelineStage) -> PipelineStage:
         """Add a stage to the pipeline."""
@@ -72,7 +74,7 @@ class Pipeline:
                 return stage
         return None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "stages": [s.to_dict() for s in self.stages],
@@ -92,8 +94,8 @@ class PipelineEngine:
         self.data_dir = data_dir
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
-        self.pipelines: Dict[str, Pipeline] = {}
-        self.stage_handlers: Dict[str, Callable] = {}
+        self.pipelines: dict[str, Pipeline] = {}
+        self.stage_handlers: dict[str, Callable] = {}
 
         self._load_pipelines()
         self._register_default_handlers()
@@ -161,7 +163,7 @@ class PipelineEngine:
         pipeline_id: str,
         initial_data: Any = None,
         context: dict = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Execute a pipeline with data."""
         pipeline = self.pipelines.get(pipeline_id)
         if not pipeline:
@@ -288,7 +290,7 @@ class PipelineEngine:
             ],
         }
 
-    def list_pipelines(self) -> List[dict]:
+    def list_pipelines(self) -> list[dict]:
         """List all pipelines."""
         return [
             {

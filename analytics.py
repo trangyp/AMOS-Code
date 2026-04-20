@@ -6,7 +6,6 @@ Provides usage analytics, trend analysis, and reporting.
 from datetime import datetime
 
 from database import db
-from typing import List
 
 
 class Analytics:
@@ -44,7 +43,7 @@ class Analytics:
             else 0,
         }
 
-    def get_popular_queries(self, limit: int = 10) -> List[dict]:
+    def get_popular_queries(self, limit: int = 10) -> list[dict]:
         """Get most popular query types."""
         # Get recent query history
         queries = self.db.get_query_history(limit=1000)

@@ -2,19 +2,31 @@
 
 Integrates the AMOS auth system with FastAPI endpoints.
 Provides JWT token validation, RBAC authorization, and OAuth2 flows.
+Uses real database-backed authentication via AMOSDatabase.
 
 Creator: Trang Phan
-Version: 3.0.0
+Version: 4.0.0
 """
+
+from __future__ import annotations
 
 import os
 from datetime import datetime, timedelta
-from typing import Any, Dict, List
+from typing import Any
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
+
+# Import real database
+try:
+    from amos_db_sqlalchemy import SQLALCHEMY_AVAILABLE, AMOSDatabase, User
+
+    DATABASE_AVAILABLE = True
+except ImportError:
+    DATABASE_AVAILABLE = False
+    SQLALCHEMY_AVAILABLE = False
 
 # JWT Configuration
 SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your-secret-key-change-in-production")
@@ -35,32 +47,35 @@ oauth2_scheme = OAuth2PasswordBearer(
     },
 )
 
+# Global database instance
+_db_instance: AMOSDatabase = None
 
-# Mock user database (replace with database in production)
-USERS_DB = {
-    "admin": {
-        "username": "admin",
-        "email": "admin@amos.local",
-        "hashed_password": pwd_context.hash("admin123"),  # Change in production!
-        "roles": ["admin"],
-        "permissions": ["read", "write", "admin"],
-        "disabled": False,
-    },
-    "user": {
-        "username": "user",
-        "email": "user@amos.local",
-        "hashed_password": pwd_context.hash("user123"),  # Change in production!
-        "roles": ["user"],
-        "permissions": ["read"],
-        "disabled": False,
-    },
-}
+
+def get_database() -> AMOSDatabase:
+    """Get or create database instance."""
+    global _db_instance
+    if _db_instance is None and DATABASE_AVAILABLE:
+        _db_instance = AMOSDatabase()
+    return _db_instance
+
+
+async def init_auth_database() -> bool:
+    """Initialize the authentication database."""
+    db = get_database()
+    if db:
+        try:
+            await db.initialize()
+            return True
+        except Exception as e:
+            print(f"[Auth] Database initialization failed: {e}")
+            return False
+    return False
 
 
 class TokenData:
     """Token data model."""
 
-    def __init__(self, username: str = None, scopes: List[str] = None):
+    def __init__(self, username: str = None, scopes: list[str] = None):
         self.username = username
         self.scopes = scopes or []
 
@@ -75,14 +90,33 @@ def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
 
 
-def get_user(username: str) -> Dict[str, Any]:
+async def get_user(username: str) -> dict[str, Any]:
     """Get user from database."""
-    return USERS_DB.get(username)
+    db = get_database()
+    if db and DATABASE_AVAILABLE:
+        try:
+            user = await db.get_user_by_username(username)
+            if user:
+                return {
+                    "username": user.username,
+                    "email": user.email,
+                    "hashed_password": user.hashed_password or "",
+                    "roles": ["admin"] if user.is_superuser else [user.role],
+                    "permissions": ["read", "write", "admin"]
+                    if user.is_superuser
+                    else ["read", "write"]
+                    if user.role != "readonly"
+                    else ["read"],
+                    "disabled": not user.is_active,
+                }
+        except Exception as e:
+            print(f"[Auth] Database error getting user: {e}")
+    return None
 
 
-def authenticate_user(username: str, password: str) -> Dict[str, Any]:
+async def authenticate_user(username: str, password: str) -> dict[str, Any]:
     """Authenticate a user."""
-    user = get_user(username)
+    user = await get_user(username)
     if not user:
         return None
     if not verify_password(password, user["hashed_password"]):
@@ -90,14 +124,15 @@ def authenticate_user(username: str, password: str) -> Dict[str, Any]:
     return user
 
 
-def create_access_token(data: Dict[str, Any], expires_delta: timedelta = None) -> str:
+def create_access_token(data: dict[str, Any], expires_delta: timedelta = None) -> str:
     """Create a JWT access token."""
     to_encode = data.copy()
+    utc = UTC
 
     if expires_delta:
-        expire = datetime.now(UTC) + expires_delta
+        expire = datetime.now(utc) + expires_delta
     else:
-        expire = datetime.now(UTC) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        expire = datetime.now(utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
 
     to_encode.update({"exp": expire, "type": "access"})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
@@ -106,13 +141,14 @@ def create_access_token(data: Dict[str, Any], expires_delta: timedelta = None) -
 
 def create_refresh_token(username: str) -> str:
     """Create a JWT refresh token."""
-    expire = datetime.now(UTC) + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
+    utc = UTC
+    expire = datetime.now(utc) + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
     to_encode = {"sub": username, "exp": expire, "type": "refresh"}
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
 
-async def get_current_user(token: str = Depends(oauth2_scheme)) -> Dict[str, Any]:
+async def get_current_user(token: str = Depends(oauth2_scheme)) -> dict[str, Any]:
     """Get current user from JWT token."""
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -133,7 +169,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> Dict[str, Any
     except JWTError:
         raise credentials_exception
 
-    user = get_user(token_data.username)
+    user = await get_user(token_data.username)
     if user is None:
         raise credentials_exception
 
@@ -144,8 +180,8 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> Dict[str, Any
 
 
 async def get_current_active_user(
-    current_user: Dict[str, Any] = Depends(get_current_user),
-) -> Dict[str, Any]:
+    current_user: dict[str, Any] = Depends(get_current_user),
+) -> dict[str, Any]:
     """Get current active user."""
     if current_user.get("disabled", False):
         raise HTTPException(status_code=400, detail="Inactive user")
@@ -156,8 +192,8 @@ def require_scope(scope: str):
     """Decorator to require a specific scope/permission."""
 
     async def check_scope(
-        current_user: Dict[str, Any] = Depends(get_current_active_user),
-    ) -> Dict[str, Any]:
+        current_user: dict[str, Any] = Depends(get_current_active_user),
+    ) -> dict[str, Any]:
         user_permissions = current_user.get("permissions", [])
         if scope not in user_permissions:
             raise HTTPException(
@@ -183,38 +219,56 @@ ROLES = {
 }
 
 
-def check_permission(user: Dict[str, Any], permission: str) -> bool:
+def check_permission(user: dict[str, Any], permission: str) -> bool:
     """Check if user has a specific permission."""
     user_permissions = user.get("permissions", [])
     return permission in user_permissions
 
 
 async def require_admin(
-    current_user: Dict[str, Any] = Depends(get_current_active_user),
-) -> Dict[str, Any]:
+    current_user: dict[str, Any] = Depends(get_current_active_user),
+) -> dict[str, Any]:
     """Require admin role."""
     if "admin" not in current_user.get("roles", []):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required")
     return current_user
 
 
-# API Key authentication for service-to-service
-API_KEYS = {
-    "amos-internal": {
-        "key": os.getenv("INTERNAL_API_KEY", "internal-secret-key"),
-        "name": "AMOS Internal Service",
-        "permissions": ["read", "write", "internal"],
-    }
-}
+# API Key authentication for service-to-service - uses database API keys
+async def verify_api_key(api_key: str) -> dict[str, Any]:
+    """Verify an API key against database."""
+    db = get_database()
+    if db and DATABASE_AVAILABLE:
+        try:
+            # Hash the provided key and look it up
+            import hashlib
 
+            from amos_db_sqlalchemy import APIKey
 
-def verify_api_key(api_key: str) -> Dict[str, Any]:
-    """Verify an API key."""
-    for service_id, service_data in API_KEYS.items():
-        if service_data["key"] == api_key:
-            return {
-                "service_id": service_id,
-                "name": service_data["name"],
-                "permissions": service_data["permissions"],
-            }
+            hashed = hashlib.sha256(api_key.encode()).hexdigest()
+
+            async with db.session() as session:
+                from sqlalchemy import select
+
+                result = await session.execute(
+                    select(APIKey).where(APIKey.hashed_key == hashed, APIKey.is_active == True)
+                )
+                key_record = result.scalar_one_or_none()
+                if key_record:
+                    return {
+                        "service_id": key_record.key_id,
+                        "name": key_record.name,
+                        "permissions": key_record.permissions or ["read", "write"],
+                    }
+        except Exception as e:
+            print(f"[Auth] API key verification error: {e}")
+
+    # Fallback to environment-based key for bootstrapping
+    internal_key = os.getenv("INTERNAL_API_KEY")
+    if internal_key and api_key == internal_key:
+        return {
+            "service_id": "amos-internal",
+            "name": "AMOS Internal Service",
+            "permissions": ["read", "write", "internal"],
+        }
     return None

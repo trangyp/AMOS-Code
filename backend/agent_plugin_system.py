@@ -20,17 +20,21 @@ Creator: Trang Phan
 Version: 3.0.0
 """
 
+from __future__ import annotations
+
+import asyncio
+import importlib.util
+import json
 import os
 import sys
-import json
-import importlib.util
-from typing import Any, Callable, Dict, List, Optional
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
-from enum import Enum
+from datetime import UTC, datetime, timezone
+from typing import Any, Optional
+
+UTC = UTC
 from abc import ABC, abstractmethod
-import asyncio
+from enum import Enum
 
 # Plugin configuration
 PLUGIN_DIR = os.getenv("AMOS_PLUGIN_DIR", "./plugins")
@@ -40,16 +44,18 @@ MAX_PLUGINS = int(os.getenv("MAX_PLUGINS", "50"))
 
 class PluginType(Enum):
     """Types of plugins."""
-    TOOL = "tool"                    # Adds new tools
-    INTERCEPTOR = "interceptor"      # Intercepts tool calls
-    POLICY = "policy"                # Provides governance policies
-    INTEGRATION = "integration"      # Third-party integrations
-    MONITORING = "monitoring"        # Monitoring extensions
-    CUSTOM = "custom"                # Custom extensions
+
+    TOOL = "tool"  # Adds new tools
+    INTERCEPTOR = "interceptor"  # Intercepts tool calls
+    POLICY = "policy"  # Provides governance policies
+    INTEGRATION = "integration"  # Third-party integrations
+    MONITORING = "monitoring"  # Monitoring extensions
+    CUSTOM = "custom"  # Custom extensions
 
 
 class PluginStatus(Enum):
     """Plugin lifecycle status."""
+
     REGISTERED = "registered"
     LOADING = "loading"
     ACTIVE = "active"
@@ -61,35 +67,37 @@ class PluginStatus(Enum):
 @dataclass
 class PluginManifest:
     """Plugin metadata and configuration."""
+
     name: str
     version: str
     description: str
     author: str
     plugin_type: str
     entry_point: str
-    dependencies: List[str] = field(default_factory=list)
-    config_schema: Dict[str, Any] = field(default_factory=dict)
-    permissions: List[str] = field(default_factory=list)
-    hooks: List[str] = field(default_factory=list)
+    dependencies: list[str] = field(default_factory=list)
+    config_schema: dict[str, Any] = field(default_factory=dict)
+    permissions: list[str] = field(default_factory=list)
+    hooks: list[str] = field(default_factory=list)
 
 
 @dataclass
 class PluginInstance:
     """Represents a loaded plugin instance."""
+
     plugin_id: str
     manifest: PluginManifest
     instance: Any
     status: str = "registered"
-    config: Dict[str, Any] = field(default_factory=dict)
-    loaded_at: Optional[str] = None
-    error_message: Optional[str] = None
+    config: dict[str, Any] = field(default_factory=dict)
+    loaded_at: str = None
+    error_message: str = None
 
 
 class BasePlugin(ABC):
     """Base class for all plugins."""
 
     @abstractmethod
-    async def initialize(self, config: Dict[str, Any]) -> bool:
+    async def initialize(self, config: dict[str, Any]) -> bool:
         """Initialize the plugin with configuration."""
         pass
 
@@ -106,7 +114,7 @@ class BasePlugin(ABC):
             description="Base plugin class",
             author="AMOS",
             plugin_type=PluginType.CUSTOM.value,
-            entry_point="base_plugin"
+            entry_point="base_plugin",
         )
 
 
@@ -114,12 +122,12 @@ class ToolPlugin(BasePlugin):
     """Plugin that provides new tools for agents."""
 
     @abstractmethod
-    async def get_tools(self) -> Dict[str, Callable]:
+    async def get_tools(self) -> dict[str, Callable]:
         """Return dictionary of tool name -> function."""
         pass
 
     @abstractmethod
-    async def execute_tool(self, tool_name: str, params: Dict[str, Any]) -> Any:
+    async def execute_tool(self, tool_name: str, params: dict[str, Any]) -> Any:
         """Execute a tool by name."""
         pass
 
@@ -128,21 +136,12 @@ class InterceptorPlugin(BasePlugin):
     """Plugin that intercepts tool calls."""
 
     @abstractmethod
-    async def before_tool_call(
-        self,
-        tool_name: str,
-        params: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    async def before_tool_call(self, tool_name: str, params: dict[str, Any]) -> dict[str, Any]:
         """Intercept before tool execution. Return modified params."""
         return params
 
     @abstractmethod
-    async def after_tool_call(
-        self,
-        tool_name: str,
-        result: Any,
-        error: Optional[str] = None
-    ) -> Any:
+    async def after_tool_call(self, tool_name: str, result: Any, error: str = None) -> Any:
         """Intercept after tool execution. Return modified result."""
         return result
 
@@ -151,16 +150,12 @@ class PolicyPlugin(BasePlugin):
     """Plugin that provides governance policies."""
 
     @abstractmethod
-    async def get_policies(self) -> List[dict[str, Any]]:
+    async def get_policies(self) -> list[dict[str, Any]]:
         """Return list of policy definitions."""
         pass
 
     @abstractmethod
-    async def evaluate(
-        self,
-        action: str,
-        context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    async def evaluate(self, action: str, context: dict[str, Any]) -> dict[str, Any]:
         """Evaluate an action against policies."""
         pass
 
@@ -169,14 +164,14 @@ class PluginRegistry:
     """Registry for managing plugins."""
 
     def __init__(self):
-        self.plugins: Dict[str, PluginInstance] = {}
-        self.tools: Dict[str, Callable] = {}
-        self.interceptors: List[InterceptorPlugin] = []
-        self.policies: List[PolicyPlugin] = []
-        self.hooks: Dict[str, list[Callable]] = {}
+        self.plugins: dict[str, PluginInstance] = {}
+        self.tools: dict[str, Callable] = {}
+        self.interceptors: list[InterceptorPlugin] = []
+        self.policies: list[PolicyPlugin] = []
+        self.hooks: dict[str, list[Callable]] = {}
         self._lock = asyncio.Lock()
 
-    async def discover_plugins(self) -> List[str]:
+    async def discover_plugins(self) -> list[str]:
         """Discover available plugins in plugin directory."""
         discovered = []
 
@@ -199,10 +194,8 @@ class PluginRegistry:
         return discovered
 
     async def load_plugin(
-        self,
-        plugin_path: str,
-        config: Optional[dict[str, Any]] = None
-    ) -> Optional[PluginInstance]:
+        self, plugin_path: str, config: dict[str, Optional[Any]] = None
+    ) -> PluginInstance:
         """Load a plugin from path."""
         async with self._lock:
             if len(self.plugins) >= MAX_PLUGINS:
@@ -224,11 +217,12 @@ class PluginRegistry:
                         description="Auto-discovered plugin",
                         author="Unknown",
                         plugin_type=PluginType.CUSTOM.value,
-                        entry_point="plugin"
+                        entry_point="plugin",
                     )
 
                 # Generate plugin ID
                 import hashlib
+
                 plugin_id = hashlib.md5(plugin_path.encode()).hexdigest()[:8]
 
                 if plugin_id in self.plugins:
@@ -237,8 +231,7 @@ class PluginRegistry:
 
                 # Load module
                 spec = importlib.util.spec_from_file_location(
-                    manifest.name,
-                    os.path.join(plugin_path, manifest.entry_point + ".py")
+                    manifest.name, os.path.join(plugin_path, manifest.entry_point + ".py")
                 )
                 if not spec or not spec.loader:
                     raise ImportError(f"Cannot load plugin from {plugin_path}")
@@ -251,9 +244,11 @@ class PluginRegistry:
                 plugin_class = None
                 for attr_name in dir(module):
                     attr = getattr(module, attr_name)
-                    if (isinstance(attr, type) and
-                        issubclass(attr, BasePlugin) and
-                        attr != BasePlugin):
+                    if (
+                        isinstance(attr, type)
+                        and issubclass(attr, BasePlugin)
+                        and attr != BasePlugin
+                    ):
                         plugin_class = attr
                         break
 
@@ -269,7 +264,7 @@ class PluginRegistry:
                     manifest=manifest,
                     instance=instance,
                     status=PluginStatus.LOADING.value,
-                    config=config or {}
+                    config=config or {},
                 )
 
                 # Initialize plugin
@@ -299,14 +294,20 @@ class PluginRegistry:
 
                 # Create error record
                 plugin_record = PluginInstance(
-                    plugin_id=plugin_id if 'plugin_id' in locals() else "error",
-                    manifest=manifest if 'manifest' in locals() else PluginManifest(
-                        name="unknown", version="0.0.0", description="",
-                        author="", plugin_type="", entry_point=""
+                    plugin_id=plugin_id if "plugin_id" in locals() else "error",
+                    manifest=manifest
+                    if "manifest" in locals()
+                    else PluginManifest(
+                        name="unknown",
+                        version="0.0.0",
+                        description="",
+                        author="",
+                        plugin_type="",
+                        entry_point="",
                     ),
                     instance=None,
                     status=PluginStatus.ERROR.value,
-                    error_message=error_msg
+                    error_message=error_msg,
                 )
                 return plugin_record
 
@@ -346,8 +347,9 @@ class PluginRegistry:
                 if manifest.plugin_type == PluginType.TOOL.value:
                     # Remove tools provided by this plugin
                     tools_to_remove = [
-                        name for name, func in self.tools.items()
-                        if getattr(func, '_plugin_id', None) == plugin_id
+                        name
+                        for name, func in self.tools.items()
+                        if getattr(func, "_plugin_id", None) == plugin_id
                     ]
                     for tool_name in tools_to_remove:
                         del self.tools[tool_name]
@@ -371,19 +373,14 @@ class PluginRegistry:
                 return False
 
     async def execute_with_interceptors(
-        self,
-        tool_name: str,
-        params: Dict[str, Any],
-        executor: Callable
+        self, tool_name: str, params: dict[str, Any], executor: Callable
     ) -> Any:
         """Execute a tool with interceptor chain."""
         # Before hooks
         modified_params = params
         for interceptor in self.interceptors:
             try:
-                modified_params = await interceptor.before_tool_call(
-                    tool_name, modified_params
-                )
+                modified_params = await interceptor.before_tool_call(tool_name, modified_params)
             except Exception as e:
                 print(f"⚠ Interceptor error (before): {e}")
 
@@ -407,15 +404,11 @@ class PluginRegistry:
 
         return result
 
-    def get_plugin(self, plugin_id: str) -> Optional[PluginInstance]:
+    def get_plugin(self, plugin_id: str) -> PluginInstance:
         """Get a plugin by ID."""
         return self.plugins.get(plugin_id)
 
-    def list_plugins(
-        self,
-        plugin_type: Optional[str] = None,
-        status: Optional[str] = None
-    ) -> List[PluginInstance]:
+    def list_plugins(self, plugin_type: str = None, status: str = None) -> list[PluginInstance]:
         """List all plugins with optional filtering."""
         plugins = list(self.plugins.values())
 
@@ -427,15 +420,11 @@ class PluginRegistry:
 
         return plugins
 
-    def get_available_tools(self) -> Dict[str, Callable]:
+    def get_available_tools(self) -> dict[str, Callable]:
         """Get all available tools from plugins."""
         return self.tools.copy()
 
-    async def evaluate_policies(
-        self,
-        action: str,
-        context: Dict[str, Any]
-    ) -> List[dict[str, Any]]:
+    async def evaluate_policies(self, action: str, context: dict[str, Any]) -> list[dict[str, Any]]:
         """Evaluate all policy plugins."""
         results = []
 
@@ -454,7 +443,7 @@ class PluginRegistry:
             self.hooks[hook_name] = []
         self.hooks[hook_name].append(callback)
 
-    async def trigger_hook(self, hook_name: str, data: Dict[str, Any]) -> List[Any]:
+    async def trigger_hook(self, hook_name: str, data: dict[str, Any]) -> list[Any]:
         """Trigger all callbacks for a hook."""
         results = []
 
@@ -471,7 +460,7 @@ class PluginRegistry:
 
         return results
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get plugin registry statistics."""
         by_type = {}
         by_status = {}
@@ -489,7 +478,7 @@ class PluginRegistry:
             "available_tools": len(self.tools),
             "active_interceptors": len(self.interceptors),
             "active_policies": len(self.policies),
-            "registered_hooks": len(self.hooks)
+            "registered_hooks": len(self.hooks),
         }
 
 
@@ -498,7 +487,7 @@ plugin_registry = PluginRegistry()
 
 
 # Convenience functions
-async def load_plugin(plugin_path: str, config: Optional[dict[str, Any]] = None) -> Optional[PluginInstance]:
+async def load_plugin(plugin_path: str, config: dict[str, Optional[Any]] = None) -> PluginInstance:
     """Load a plugin."""
     return await plugin_registry.load_plugin(plugin_path, config)
 
@@ -521,17 +510,15 @@ async def discover_and_load_all():
     return loaded
 
 
-def get_plugin_tools() -> Dict[str, Callable]:
+def get_plugin_tools() -> dict[str, Callable]:
     """Get all plugin-provided tools."""
     return plugin_registry.get_available_tools()
 
 
-async def execute_tool_with_plugins(tool_name: str, params: Dict[str, Any]) -> Any:
+async def execute_tool_with_plugins(tool_name: str, params: dict[str, Any]) -> Any:
     """Execute a tool with plugin interceptors."""
     tool = plugin_registry.tools.get(tool_name)
     if not tool:
         raise ValueError(f"Tool '{tool_name}' not found")
 
-    return await plugin_registry.execute_with_interceptors(
-        tool_name, params, tool
-    )
+    return await plugin_registry.execute_with_interceptors(tool_name, params, tool)

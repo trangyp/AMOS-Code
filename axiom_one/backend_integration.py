@@ -15,15 +15,12 @@ Version: 3.0.0
 
 import asyncio
 import json
-import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
-# Add paths for AMOS imports
-REPO_ROOT = Path(__file__).parent.parent
-sys.path.insert(0, str(REPO_ROOT))
-sys.path.insert(0, str(REPO_ROOT / "clawspring"))
+# Import alias modules to set up paths
+import clawspring  # noqa: F401
 
 # Backend integration - optional (avoids circular import)
 try:
@@ -72,14 +69,14 @@ class BackendIntegratedOrchestrator:
     - AMOS organism for lifecycle management
     """
 
-    def __init__(self, config: Optional[BackendIntegrationConfig] = None):
+    def __init__(self, config: BackendIntegrationConfig = None):
         self.config = config or BackendIntegrationConfig()
         self.slot_manager = ExecutionSlotManager()
         self._twin = Twin(self.config.repo_path) if self.config.enable_twin else None
         self._ledger = Ledger()
 
         # Backend connections (lazy-loaded)
-        self._orchestrator_bridge: Optional[RealOrchestratorBridge] = None
+        self._orchestrator_bridge: RealOrchestratorBridge = None
         self._websocket: Any = None
         self._connected: bool = False
 
@@ -102,7 +99,7 @@ class BackendIntegratedOrchestrator:
         objective: str,
         mode: SlotMode = SlotMode.LOCAL,
         priority: str = "MEDIUM",
-        context: Dict[str, Any] = None,
+        context: dict[str, Any] = None,
     ) -> ExecutionSlot:
         """
         Execute objective through real AMOS backend.
@@ -267,15 +264,15 @@ class BackendIntegratedOrchestrator:
             }
         )
 
-    def get_slot(self, slot_id: str) -> Optional[ExecutionSlot]:
+    def get_slot(self, slot_id: str) -> ExecutionSlot:
         """Get slot by ID."""
         return self.slot_manager.get(slot_id)
 
-    def list_active_slots(self) -> List[ExecutionSlot]:
+    def list_active_slots(self) -> list[ExecutionSlot]:
         """List all active slots."""
         return self.slot_manager.list_active()
 
-    def get_backend_status(self) -> Dict[str, Any]:
+    def get_backend_status(self) -> dict[str, Any]:
         """Get backend connection status."""
         status = {
             "connected": self._connected,
@@ -289,7 +286,7 @@ class BackendIntegratedOrchestrator:
 
 
 # Global instance
-_backend_orchestrator: Optional[BackendIntegratedOrchestrator] = None
+_backend_orchestrator: BackendIntegratedOrchestrator = None
 
 
 def get_backend_orchestrator() -> BackendIntegratedOrchestrator:

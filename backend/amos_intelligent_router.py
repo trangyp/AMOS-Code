@@ -1,4 +1,6 @@
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
+
+from typing import Any, Optional
 
 """AMOS Intelligent Task Router
 
@@ -60,10 +62,10 @@ class IntelligentTaskRouter:
             return
         self._reading_service = get_reading_service()
         self._orchestrator = get_real_orchestrator_bridge()
-        self._routing_history: List[RoutingResult] = []
+        self._routing_history: list[RoutingResult] = []
         self._initialized = True
 
-    async def route_and_execute(self, text: str, context: Dict[str, Any] = None) -> RoutingResult:
+    async def route_and_execute(self, text: str, context: dict[str, Any] = None) -> RoutingResult:
         """Complete pipeline: read → route → execute."""
         total_start = time.time()
         task_id = f"route_{uuid.uuid4().hex[:12]}"
@@ -201,11 +203,11 @@ class IntelligentTaskRouter:
             self._routing_history.append(result)
             return result
 
-    def get_history(self, limit: int = 100) -> List[RoutingResult]:
+    def get_history(self, limit: int = 100) -> list[RoutingResult]:
         """Get routing history."""
         return self._routing_history[-limit:]
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get routing statistics."""
         if not self._routing_history:
             return {
@@ -244,7 +246,7 @@ def get_intelligent_router() -> IntelligentTaskRouter:
     return _intelligent_router
 
 
-async def route_task(text: str, context: Dict[str, Any] = None) -> RoutingResult:
+async def route_task(text: str, context: dict[str, Any] = None) -> RoutingResult:
     """Route a task through the intelligent router."""
     router = get_intelligent_router()
     return await router.route_and_execute(text, context)

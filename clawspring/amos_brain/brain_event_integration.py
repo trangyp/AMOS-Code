@@ -4,13 +4,18 @@ Integrates brain processing with event streaming for real-time updates.
 Based on research: Event-driven agent architectures for responsive systems.
 """
 
+from __future__ import annotations
+
 import time
 import uuid
 from collections.abc import AsyncIterator
 from dataclasses import dataclass
 from datetime import datetime, timezone
+
 UTC = timezone.utc
-from typing import Any, Dict, List, Optional, Protocol
+
+UTC = timezone.utc
+from typing import Any, Protocol
 
 from amos_brain.integrated_brain_api import (
     BrainResponse,
@@ -22,7 +27,7 @@ from amos_brain.integrated_brain_api import (
 class EventEmitter(Protocol):
     """Protocol for event emission."""
 
-    async def emit(self, event_type: str, payload: Dict[str, Any], source: str) -> None:
+    async def emit(self, event_type: str, payload: dict[str, Any], source: str) -> None:
         """Emit an event."""
         ...
 
@@ -42,8 +47,7 @@ class BrainProcessingEvent:
 
 
 class BrainEventProcessor:
-    """
-    Process brain queries with real-time event streaming.
+    """Process brain queries with real-time event streaming.
 
     Emits events for each step of brain processing:
     - query_received
@@ -56,21 +60,20 @@ class BrainEventProcessor:
 
     def __init__(
         self,
-        brain: Optional[IntegratedBrainAPI] = None,
-        event_emitter: Optional[EventEmitter] = None,
+        brain: IntegratedBrainAPI = None,
+        event_emitter: EventEmitter = None,
     ):
         self.brain = brain or get_brain_api()
         self.emitter = event_emitter
-        self._active_queries: Dict[str, dict[str, Any]] = {}
+        self._active_queries: dict[str, dict[str, Any]] = {}
 
     async def process_with_events(
         self,
         query: str,
         mode: str = "auto",
-        context: Dict[str, Any] = None,
+        context: dict[str, Any] = None,
     ) -> BrainResponse:
-        """
-        Process query with event streaming.
+        """Process query with event streaming.
 
         Args:
             query: User query
@@ -79,6 +82,7 @@ class BrainEventProcessor:
 
         Returns:
             BrainResponse with final result
+
         """
         query_id = f"brain_{uuid.uuid4().hex[:8]}"
         start_time = time.perf_counter()
@@ -151,13 +155,13 @@ class BrainEventProcessor:
     async def stream_react_steps(
         self,
         query: str,
-        available_tools: List[str] = None,
+        available_tools: list[str] = None,
     ) -> AsyncIterator[BrainProcessingEvent]:
-        """
-        Stream ReAct steps in real-time.
+        """Stream ReAct steps in real-time.
 
         Yields:
             BrainProcessingEvent for each step
+
         """
         query_id = f"react_{uuid.uuid4().hex[:8]}"
         iteration = 0
@@ -229,7 +233,7 @@ class BrainEventProcessor:
             timestamp=datetime.now(timezone.utc).isoformat(),
         )
 
-    def _estimate_components(self, mode: str) -> List[str]:
+    def _estimate_components(self, mode: str) -> list[str]:
         """Estimate which components will be used."""
         if mode == "fast":
             return ["proactive_inference"]
@@ -243,13 +247,13 @@ class BrainEventProcessor:
     async def _emit(
         self,
         event_type: str,
-        payload: Dict[str, Any],
+        payload: dict[str, Any],
     ) -> None:
         """Emit event if emitter is available."""
         if self.emitter:
             await self.emitter.emit(event_type, payload, "brain")
 
-    def get_active_queries(self) -> Dict[str, dict[str, Any]]:
+    def get_active_queries(self) -> dict[str, dict[str, Any]]:
         """Get currently active queries."""
         return self._active_queries.copy()
 
@@ -266,7 +270,7 @@ class BrainEventProcessor:
 
 
 # Global instance
-_global_event_processor: Optional[BrainEventProcessor] = None
+_global_event_processor: BrainEventProcessor = None
 
 
 def get_brain_event_processor() -> BrainEventProcessor:

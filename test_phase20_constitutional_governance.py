@@ -8,7 +8,7 @@ Tests cover:
 - Edge cases and error handling
 """
 
-from typing import Any, Dict
+from typing import Any
 
 import pytest
 
@@ -33,7 +33,7 @@ def governance() -> ConstitutionalGovernance:
 
 
 @pytest.fixture
-def safe_action() -> Dict[str, Any]:
+def safe_action() -> dict[str, Any]:
     """Create a safe action that should pass governance."""
     return {
         "operation": "data_analysis",
@@ -45,7 +45,7 @@ def safe_action() -> Dict[str, Any]:
 
 
 @pytest.fixture
-def risky_action() -> Dict[str, Any]:
+def risky_action() -> dict[str, Any]:
     """Create a risky action that should trigger governance intervention."""
     return {"operation": "autonomous_deployment", "autonomous": True, "safety_check_passed": False}
 
@@ -86,7 +86,7 @@ class TestActionEvaluation:
     """Test action evaluation against constitutional principles."""
 
     def test_safe_action_allows(
-        self, governance: ConstitutionalGovernance, safe_action: Dict[str, Any]
+        self, governance: ConstitutionalGovernance, safe_action: dict[str, Any]
     ) -> None:
         """Test that safe actions are allowed."""
         result = governance.evaluate_action("data_analysis", safe_action)
@@ -97,7 +97,7 @@ class TestActionEvaluation:
         assert not result.requires_correction
 
     def test_risky_action_triggers_modification(
-        self, governance: ConstitutionalGovernance, risky_action: Dict[str, Any]
+        self, governance: ConstitutionalGovernance, risky_action: dict[str, Any]
     ) -> None:
         """Test that risky actions trigger modification or rejection."""
         result = governance.evaluate_action("deployment", risky_action)
@@ -118,7 +118,7 @@ class TestActionEvaluation:
         assert result.requires_correction
 
     def test_principle_checks_populated(
-        self, governance: ConstitutionalGovernance, safe_action: Dict[str, Any]
+        self, governance: ConstitutionalGovernance, safe_action: dict[str, Any]
     ) -> None:
         """Test that all principles are checked."""
         result = governance.evaluate_action("test", safe_action)
@@ -131,7 +131,7 @@ class TestActionEvaluation:
             assert 0.0 <= check.compliance_score <= 1.0
 
     def test_evaluation_logged(
-        self, governance: ConstitutionalGovernance, safe_action: Dict[str, Any]
+        self, governance: ConstitutionalGovernance, safe_action: dict[str, Any]
     ) -> None:
         """Test that evaluations are logged."""
         initial_count = len(governance.evaluation_history)
@@ -140,7 +140,7 @@ class TestActionEvaluation:
         assert len(governance.evaluation_history) == initial_count + 1
 
     def test_audit_log_created(
-        self, governance: ConstitutionalGovernance, safe_action: Dict[str, Any]
+        self, governance: ConstitutionalGovernance, safe_action: dict[str, Any]
     ) -> None:
         """Test that audit logs are created."""
         initial_count = len(governance.audit_logs)
@@ -241,7 +241,7 @@ class TestPrincipleManagement:
     def test_add_custom_principle(self, governance: ConstitutionalGovernance) -> None:
         """Test adding a custom principle."""
 
-        def custom_eval(params: Dict[str, Any]) -> float:
+        def custom_eval(params: dict[str, Any]) -> float:
             return 1.0 if params.get("custom_check") else 0.5
 
         principle = ConstitutionalPrinciple(
@@ -286,7 +286,7 @@ class TestGovernanceReport:
         assert "active_principles" in report
 
     def test_report_updates_with_evaluations(
-        self, governance: ConstitutionalGovernance, safe_action: Dict[str, Any]
+        self, governance: ConstitutionalGovernance, safe_action: dict[str, Any]
     ) -> None:
         """Test that report reflects evaluations."""
         governance.evaluate_action("test", safe_action)

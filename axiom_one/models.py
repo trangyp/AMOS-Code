@@ -72,7 +72,7 @@ class User(BaseModel):
     id: str
     email: str
     name: str
-    avatar_url: Optional[str] = None
+    avatar_url: str = None
     role: UserRole
     workspace_ids: list[str] = Field(default_factory=list)
 
@@ -86,7 +86,7 @@ class Repository(BaseModel):
     url: str
     default_branch: str = "main"
     is_private: bool = True
-    last_synced_at: Optional[datetime] = None
+    last_synced_at: datetime = None
     metadata: dict[str, Any] = Field(default_factory=dict)
 
 
@@ -95,8 +95,8 @@ class FileNode(BaseModel):
     name: str
     type: FileNodeType
     size: int = 0
-    children: Optional[list[FileNode] ] = None
-    git_status: Optional[str] = None
+    children: list[FileNode] = None
+    git_status: str = None
 
 
 class CodeChange(BaseModel):
@@ -106,7 +106,7 @@ class CodeChange(BaseModel):
     line_end: int
     old_content: str
     new_content: str
-    hunk_header: Optional[str] = None
+    hunk_header: str = None
 
 
 class Commit(BaseModel):
@@ -119,7 +119,7 @@ class Commit(BaseModel):
     committer_email: str
     committed_at: datetime
     parent_shas: list[str]
-    stats: Optional[dict[str, int] ] = None
+    stats: dict[str, int] = None
 
 
 class Branch(BaseModel):
@@ -129,22 +129,22 @@ class Branch(BaseModel):
     is_protected: bool = False
     ahead_count: int = 0
     behind_count: int = 0
-    last_commit_at: Optional[datetime] = None
+    last_commit_at: datetime = None
 
 
 class TerminalSession(BaseModel):
     id: str
     workspace_id: str
-    repository_id: Optional[str] = None
+    repository_id: str = None
     command: str
     cwd: str
     env: dict[str, str] = Field(default_factory=dict)
-    pid: Optional[int] = None
+    pid: int = None
     status: str
     output: list[str] = Field(default_factory=list)
-    exit_code: Optional[int] = None
+    exit_code: int = None
     created_at: datetime
-    finished_at: Optional[datetime] = None
+    finished_at: datetime = None
 
 
 class TestResult(BaseModel):
@@ -154,9 +154,9 @@ class TestResult(BaseModel):
     duration_ms: float
     suite: str
     file_path: str
-    line_number: Optional[int] = None
-    error_message: Optional[str] = None
-    stack_trace: Optional[str] = None
+    line_number: int = None
+    error_message: str = None
+    stack_trace: str = None
 
 
 class HealthFinding(BaseModel):
@@ -165,10 +165,10 @@ class HealthFinding(BaseModel):
     category: str
     title: str
     description: str
-    file_path: Optional[str] = None
-    line_start: Optional[int] = None
-    line_end: Optional[int] = None
-    suggested_fix: Optional[str] = None
+    file_path: str = None
+    line_start: int = None
+    line_end: int = None
+    suggested_fix: str = None
     auto_fixable: bool = False
 
 

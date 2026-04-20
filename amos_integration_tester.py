@@ -19,7 +19,7 @@ import uuid
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Protocol
+from typing import Any, Protocol
 
 
 class TestStatus(Enum):
@@ -55,7 +55,7 @@ class TestCase:
     # Classification
     test_type: TestType = TestType.INTEGRATION
     component: str = "unknown"
-    depends_on: List[str] = field(default_factory=list)
+    depends_on: list[str] = field(default_factory=list)
 
     # Execution
     timeout_seconds: int = 60
@@ -65,7 +65,7 @@ class TestCase:
     status: TestStatus = TestStatus.PENDING
     duration_ms: float = 0.0
     error_message: str = None
-    output_data: Dict[str, Any] = field(default_factory=dict)
+    output_data: dict[str, Any] = field(default_factory=dict)
 
     # Metadata
     created_at: float = field(default_factory=time.time)
@@ -81,7 +81,7 @@ class TestSuite:
     description: str
 
     # Tests
-    tests: List[TestCase] = field(default_factory=list)
+    tests: list[TestCase] = field(default_factory=list)
 
     # Configuration
     parallel: bool = True
@@ -118,9 +118,9 @@ class ComponentContract:
     version: str
 
     # Interface definition
-    inputs: Dict[str, Any] = field(default_factory=dict)
-    outputs: Dict[str, Any] = field(default_factory=dict)
-    errors: List[str] = field(default_factory=list)
+    inputs: dict[str, Any] = field(default_factory=dict)
+    outputs: dict[str, Any] = field(default_factory=dict)
+    errors: list[str] = field(default_factory=list)
 
     # Performance expectations
     max_latency_ms: float = 1000.0
@@ -162,14 +162,14 @@ class AMOSIntegrationTester:
 
     def __init__(self):
         # Test registry
-        self.test_suites: Dict[str, TestSuite] = {}
-        self.test_cases: Dict[str, TestCase] = {}
+        self.test_suites: dict[str, TestSuite] = {}
+        self.test_cases: dict[str, TestCase] = {}
 
         # Contracts
-        self.contracts: Dict[str, ComponentContract] = {}
+        self.contracts: dict[str, ComponentContract] = {}
 
         # Results
-        self.test_history: List[TestCase] = []
+        self.test_history: list[TestCase] = []
         self.max_history = 1000
 
         # Metrics
@@ -178,7 +178,7 @@ class AMOSIntegrationTester:
         self.total_failed = 0
 
         # Handlers
-        self.test_handlers: Dict[str, Callable[[TestCase], Awaitable[TestStatus]]] = {}
+        self.test_handlers: dict[str, Callable[[TestCase], Awaitable[TestStatus]]] = {}
 
     def register_test_handler(
         self, test_type: TestType, handler: Callable[[TestCase], Awaitable[TestStatus]]
@@ -318,7 +318,7 @@ class AMOSIntegrationTester:
 
         return suite
 
-    async def run_all_suites(self) -> Dict[str, TestSuite]:
+    async def run_all_suites(self) -> dict[str, TestSuite]:
         """Run all registered test suites."""
         results = {}
 
@@ -327,9 +327,9 @@ class AMOSIntegrationTester:
 
         return results
 
-    def get_component_coverage(self) -> Dict[str, dict[str, int]]:
+    def get_component_coverage(self) -> dict[str, dict[str, int]]:
         """Get test coverage by component."""
-        coverage: Dict[str, dict[str, int]] = {}
+        coverage: dict[str, dict[str, int]] = {}
 
         for test in self.test_cases.values():
             if test.component not in coverage:
@@ -360,8 +360,8 @@ class AMOSIntegrationTester:
 ╠════════════════════════════════════════════════════════════╣
   Total Test Suites:     {len(self.test_suites)}
   Total Test Cases:      {total_tests}
-  Passed:                {passed} ({passed/max(total_tests,1):.1%})
-  Failed:                {failed} ({failed/max(total_tests,1):.1%})
+  Passed:                {passed} ({passed / max(total_tests, 1):.1%})
+  Failed:                {failed} ({failed / max(total_tests, 1):.1%})
   Pending:               {pending}
 ╠════════════════════════════════════════════════════════════╣
   Component Coverage:
@@ -377,7 +377,7 @@ class AMOSIntegrationTester:
         return report
 
     def validate_contract(
-        self, component_name: str, version: str, actual_output: Dict[str, Any]
+        self, component_name: str, version: str, actual_output: dict[str, Any]
     ) -> bool:
         """Validate output against component contract."""
         key = f"{component_name}:{version}"

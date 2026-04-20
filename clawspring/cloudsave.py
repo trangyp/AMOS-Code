@@ -11,11 +11,12 @@ Config keys (stored in ~/.clawspring/config.json):
   cloudsave_last_gist_id — last uploaded gist ID (for in-place update)
 """
 
+from __future__ import annotations
+
 import json
 import urllib.error
 import urllib.request
 from datetime import datetime
-from typing import Tuple
 
 GIST_TAG = "[clawspring]"
 _API = "https://api.github.com"
@@ -60,7 +61,7 @@ def _request_safe(method: str, path: str, token: str, body: dict = None):
 # ── Public API ────────────────────────────────────────────────────────────────
 
 
-def validate_token(token: str) -> Tuple[bool, str]:
+def validate_token(token: str) -> tuple[bool, str]:
     """Check token is valid and has gist scope. Returns (ok, message)."""
     result, err = _request_safe("GET", "/user", token)
     if err:
@@ -77,7 +78,7 @@ def upload_session(
     token: str,
     description: str = "",
     gist_id: str = None,
-) -> Tuple[str, str]:
+) -> tuple[str, str]:
     """Create or update a Gist with the session JSON.
     Returns (gist_id, error). On success gist_id is the Gist ID.
     """
@@ -102,7 +103,7 @@ def upload_session(
     return result["id"], None
 
 
-def list_sessions(token: str, max_results: int = 20) -> Tuple[list[dict], str]:
+def list_sessions(token: str, max_results: int = 20) -> tuple[list[dict], str]:
     """List Gists tagged as clawspring sessions.
     Returns (list of {id, description, updated_at, url}), error).
     """
@@ -124,7 +125,7 @@ def list_sessions(token: str, max_results: int = 20) -> Tuple[list[dict], str]:
     return sessions[:max_results], None
 
 
-def download_session(token: str, gist_id: str) -> Tuple[dict, str]:
+def download_session(token: str, gist_id: str) -> tuple[dict, str]:
     """Fetch a Gist and return the parsed session JSON.
     Returns (session_data, error).
     """

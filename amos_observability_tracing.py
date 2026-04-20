@@ -17,13 +17,15 @@ Owner: Trang
 Version: 1.0.0
 """
 
+from __future__ import annotations
+
 import time
 import uuid
 from collections import defaultdict
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 @dataclass
@@ -45,8 +47,8 @@ class Span:
     name: str
     start_time: float
     end_time: float = None
-    attributes: Dict[str, Any] = field(default_factory=dict)
-    events: List[dict[str, Any]] = field(default_factory=list)
+    attributes: dict[str, Any] = field(default_factory=dict)
+    events: list[dict[str, Any]] = field(default_factory=list)
     status: str = "ok"  # ok, error
 
     def duration_ms(self) -> float:
@@ -55,7 +57,7 @@ class Span:
             return (time.time() - self.start_time) * 1000
         return (self.end_time - self.start_time) * 1000
 
-    def add_event(self, name: str, attributes: Optional[dict] = None) -> None:
+    def add_event(self, name: str, attributes: dict | None = None) -> None:
         """Add event to span."""
         self.events.append({"name": name, "timestamp": time.time(), "attributes": attributes or {}})
 
@@ -64,7 +66,7 @@ class Span:
         self.status = "error"
         self.attributes["error.message"] = error_message
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert span to dictionary."""
         return {
             "span_id": self.span_id,
@@ -94,10 +96,10 @@ class Trace:
     trace_id: str
     name: str
     start_time: float
-    spans: List[Span] = field(default_factory=list)
-    attributes: Dict[str, Any] = field(default_factory=dict)
+    spans: list[Span] = field(default_factory=list)
+    attributes: dict[str, Any] = field(default_factory=dict)
 
-    def add_span(self, name: str, parent_id: str = None, attributes: Optional[dict] = None) -> Span:
+    def add_span(self, name: str, parent_id: str = None, attributes: dict | None = None) -> Span:
         """Add new span to trace."""
         span = Span(
             span_id=str(uuid.uuid4())[:16],
@@ -125,7 +127,7 @@ class Trace:
         end = max(s.end_time or time.time() for s in self.spans)
         return (end - start) * 1000
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert trace to dictionary."""
         return {
             "trace_id": self.trace_id,
@@ -150,10 +152,10 @@ class Tracer:
 
     def __init__(self, service_name: str):
         self.service_name = service_name
-        self.active_spans: Dict[str, Span] = {}
+        self.active_spans: dict[str, Span] = {}
         self.current_trace: Optional[Trace] = None
 
-    def start_trace(self, name: str, attributes: Optional[dict] = None) -> Trace:
+    def start_trace(self, name: str, attributes: dict | None = None) -> Trace:
         """Start new distributed trace."""
         trace = Trace(
             trace_id=str(uuid.uuid4())[:16],
@@ -164,9 +166,7 @@ class Tracer:
         self.current_trace = trace
         return trace
 
-    def start_span(
-        self, name: str, parent_id: str = None, attributes: Optional[dict] = None
-    ) -> Span:
+    def start_span(self, name: str, parent_id: str = None, attributes: dict | None = None) -> Span:
         """Start new span."""
         if self.current_trace is None:
             self.start_trace(name)
@@ -182,7 +182,7 @@ class Tracer:
             del self.active_spans[span_id]
 
     @contextmanager
-    def span(self, name: str, attributes: Optional[dict] = None):
+    def span(self, name: str, attributes: dict | None = None):
         """Context manager for automatic span lifecycle."""
         span = self.start_span(name, attributes=attributes)
         try:
@@ -197,7 +197,7 @@ class Tracer:
         """Get current trace."""
         return self.current_trace
 
-    def inject_context(self) -> Dict[str, str]:
+    def inject_context(self) -> dict[str, str]:
         """Inject trace context for propagation."""
         if self.current_trace:
             root = self.current_trace.get_root_span()
@@ -218,10 +218,10 @@ class AMOSObservabilitySystem:
     """
 
     def __init__(self):
-        self.traces: List[Trace] = []
-        self.tracers: Dict[str, Tracer] = {}
-        self.metrics: Dict[str, list[float]] = defaultdict(list)
-        self.health_status: Dict[str, dict] = {}
+        self.traces: list[Trace] = []
+        self.tracers: dict[str, Tracer] = {}
+        self.metrics: dict[str, list[float]] = defaultdict(list)
+        self.health_status: dict[str, dict] = {}
         self.max_traces = 1000  # Keep last 1000 traces
 
     def get_tracer(self, service_name: str) -> Tracer:
@@ -244,7 +244,7 @@ class AMOSObservabilitySystem:
         if len(self.metrics[name]) > 1000:
             self.metrics[name].pop(0)
 
-    def update_health(self, service: str, status: str, details: Optional[dict] = None) -> None:
+    def update_health(self, service: str, status: str, details: dict | None = None) -> None:
         """Update service health status."""
         self.health_status[service] = {
             "status": status,
@@ -259,21 +259,21 @@ class AMOSObservabilitySystem:
                 return trace
         return None
 
-    def get_traces_by_service(self, service: str) -> List[Trace]:
+    def get_traces_by_service(self, service: str) -> list[Trace]:
         """Get traces for specific service."""
         return [
             t for t in self.traces if any(s.attributes.get("service") == service for s in t.spans)
         ]
 
-    def get_slow_traces(self, threshold_ms: float = 1000) -> List[Trace]:
+    def get_slow_traces(self, threshold_ms: float = 1000) -> list[Trace]:
         """Get traces exceeding duration threshold."""
         return [t for t in self.traces if t.total_duration_ms() > threshold_ms]
 
-    def get_error_traces(self) -> List[Trace]:
+    def get_error_traces(self) -> list[Trace]:
         """Get traces with errors."""
         return [t for t in self.traces if any(s.status == "error" for s in t.spans)]
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """Get observability statistics."""
         if not self.traces:
             return {"status": "no_data"}
@@ -293,7 +293,7 @@ class AMOSObservabilitySystem:
             "health_checks": len(self.health_status),
         }
 
-    def get_dashboard_data(self) -> Dict[str, Any]:
+    def get_dashboard_data(self) -> dict[str, Any]:
         """Get data for observability dashboard."""
         recent_traces = self.traces[-50:]  # Last 50 traces
 
@@ -325,7 +325,7 @@ def get_observability() -> AMOSObservabilitySystem:
 
 
 @contextmanager
-def trace_operation(name: str, service: str = "amos", attributes: Optional[dict] = None):
+def trace_operation(name: str, service: str = "amos", attributes: dict | None = None):
     """
     Decorator for tracing operations.
 
@@ -379,7 +379,7 @@ def monitor_function(func_name: str, service: str = "amos"):
 
 
 # Convenience functions for AMOS components
-def trace_brain_operation(operation: str, query: str) -> Dict[str, str]:
+def trace_brain_operation(operation: str, query: str) -> dict[str, str]:
     """Trace brain operation and return context."""
     obs = get_observability()
     tracer = obs.get_tracer("brain")
@@ -388,7 +388,7 @@ def trace_brain_operation(operation: str, query: str) -> Dict[str, str]:
     return tracer.inject_context()
 
 
-def trace_engine_operation(engine: str, operation: str) -> Dict[str, str]:
+def trace_engine_operation(engine: str, operation: str) -> dict[str, str]:
     """Trace engine operation."""
     obs = get_observability()
     tracer = obs.get_tracer(f"engine.{engine}")
@@ -397,7 +397,7 @@ def trace_engine_operation(engine: str, operation: str) -> Dict[str, str]:
     return tracer.inject_context()
 
 
-def trace_subsystem_operation(subsystem: str, operation: str) -> Dict[str, str]:
+def trace_subsystem_operation(subsystem: str, operation: str) -> dict[str, str]:
     """Trace subsystem operation."""
     obs = get_observability()
     tracer = obs.get_tracer(f"subsystem.{subsystem}")
@@ -411,12 +411,12 @@ def record_metric(name: str, value: float) -> None:
     get_observability().record_metric(name, value)
 
 
-def update_health(service: str, status: str, details: Optional[dict] = None) -> None:
+def update_health(service: str, status: str, details: dict | None = None) -> None:
     """Update health status."""
     get_observability().update_health(service, status, details)
 
 
-def get_observability_dashboard() -> Dict[str, Any]:
+def get_observability_dashboard() -> dict[str, Any]:
     """Get dashboard data."""
     return get_observability().get_dashboard_data()
 

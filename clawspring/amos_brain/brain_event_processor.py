@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
-from typing import Any, Dict, Optional
+from __future__ import annotations
+
+from typing import Any
 
 """AMOS Brain Event Processor - Event-driven cognitive processing.
 
@@ -18,8 +20,10 @@ import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+
 UTC = timezone.utc
 
+UTC = timezone.utc
 try:
     from .api_integration import brain_process_sync, brain_submit_task
     from .brain_workflow_engine import create_brain_workflow, run_brain_workflow
@@ -34,7 +38,7 @@ class Event:
     id: str
     source: str
     event_type: str
-    payload: Dict[str, Any]
+    payload: dict[str, Any]
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     priority: str = "MEDIUM"
 
@@ -48,14 +52,14 @@ class EventAnalysis:
     severity: str
     recommended_action: str
     confidence: float
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class BrainEventProcessor:
     """Event processor using brain for cognitive analysis."""
 
     def __init__(self):
-        self._handlers: Dict[str, list[Callable]] = {}
+        self._handlers: dict[str, list[Callable]] = {}
         self._event_queue: asyncio.Queue[Event] = asyncio.Queue()
         self._processing = False
         self._processor_task = None
@@ -120,7 +124,7 @@ class BrainEventProcessor:
             except Exception as e:
                 print(f"[EventProcessor] Handler error: {e}")
 
-    def _calculate_severity(self, result: Dict[str, Any]) -> str:
+    def _calculate_severity(self, result: dict[str, Any]) -> str:
         """Calculate event severity from brain result."""
         domain = result.get("domain", "unknown")
         if domain in {"error", "security", "failure"}:
@@ -129,13 +133,13 @@ class BrainEventProcessor:
             return "MEDIUM"
         return "LOW"
 
-    def _generate_action(self, result: Dict[str, Any], event: Event) -> str:
+    def _generate_action(self, result: dict[str, Any], event: Event) -> str:
         """Generate recommended action."""
         domain = result.get("domain", "unknown")
         return f"Handle {domain} event from {event.source}"
 
     async def emit(
-        self, source: str, event_type: str, payload: Dict[str, Any], priority: str = "MEDIUM"
+        self, source: str, event_type: str, payload: dict[str, Any], priority: str = "MEDIUM"
     ) -> str:
         """Emit event for processing."""
         event_id = f"evt-{uuid.uuid4().hex[:8]}"
@@ -155,7 +159,7 @@ class BrainEventProcessor:
             self._handlers[event_type] = []
         self._handlers[event_type].append(handler)
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get processor statistics."""
         return {
             "processed_count": self._processed_count,
@@ -179,7 +183,7 @@ async def get_event_processor() -> BrainEventProcessor:
 
 
 async def emit_event(
-    source: str, event_type: str, payload: Dict[str, Any], priority: str = "MEDIUM"
+    source: str, event_type: str, payload: dict[str, Any], priority: str = "MEDIUM"
 ) -> str:
     """Emit event."""
     processor = await get_event_processor()

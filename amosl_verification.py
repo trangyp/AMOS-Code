@@ -20,13 +20,15 @@ Owner: Trang
 Version: 1.0.0
 """
 
+from __future__ import annotations
+
 import hashlib
 import json
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Optional
 
 from amosl_ledger import EntryType, LedgerEntry, StateLedger
 
@@ -70,9 +72,9 @@ class VerificationResult:
     valid: bool
     constraints_checked: int
     constraints_passed: int
-    failed_constraints: List[str]
+    failed_constraints: list[str]
     proof_hash: str
-    details: Dict[str, Any]
+    details: dict[str, Any]
 
 
 class VerificationEngine:
@@ -87,7 +89,7 @@ class VerificationEngine:
 
     def __init__(self, ledger: Optional[StateLedger] = None):
         self.ledger = ledger or StateLedger()
-        self.constraints: Dict[str, Constraint] = {}
+        self.constraints: dict[str, Constraint] = {}
         self._initialize_default_constraints()
 
     def _initialize_default_constraints(self):
@@ -184,7 +186,7 @@ class VerificationEngine:
         """Register a new constraint."""
         self.constraints[constraint.name] = constraint
 
-    def verify_state(self, state: Dict[str, Any]) -> VerificationResult:
+    def verify_state(self, state: dict[str, Any]) -> VerificationResult:
         """Verify state against all constraints.
 
         Computes: Valid(Σ) = ∧_i C_i(Σ)
@@ -248,7 +250,7 @@ class VerificationEngine:
 
         return result
 
-    def _log_verification(self, result: VerificationResult, state: Dict[str, Any]):
+    def _log_verification(self, result: VerificationResult, state: dict[str, Any]):
         """Log verification to ledger."""
         self.ledger.append(
             EntryType.VERIFICATION_RESULT,
@@ -263,7 +265,7 @@ class VerificationEngine:
         )
 
     # Constraint check implementations
-    def _check_state_structure(self, state: Dict[str, Any]) -> Tuple[bool, str]:
+    def _check_state_structure(self, state: dict[str, Any]) -> tuple[bool, str]:
         """Check C1: State has required structure."""
         required_keys = ["classical", "quantum", "biological"]
         present = [k for k in required_keys if k in str(state).lower()]
@@ -271,34 +273,34 @@ class VerificationEngine:
             return True, f"State structure valid ({len(present)} substrates)"
         return False, "Missing required state substrates"
 
-    def _check_evolution_valid(self, state: Dict[str, Any]) -> Tuple[bool, str]:
+    def _check_evolution_valid(self, state: dict[str, Any]) -> tuple[bool, str]:
         """Check C2: Evolution produces valid states."""
         if "evolution" in state and "error" in str(state.get("evolution", {})):
             return False, "Evolution produced error state"
         return True, "Evolution valid"
 
-    def _check_invariants(self, state: Dict[str, Any]) -> Tuple[bool, str]:
+    def _check_invariants(self, state: dict[str, Any]) -> tuple[bool, str]:
         """Check C3: Invariants preserved."""
         violated = state.get("invariant_violations", [])
         if violated:
             return False, f"{len(violated)} invariants violated"
         return True, "All invariants preserved"
 
-    def _check_dual_perspective(self, state: Dict[str, Any]) -> Tuple[bool, str]:
+    def _check_dual_perspective(self, state: dict[str, Any]) -> tuple[bool, str]:
         """Check C4: Rule of 2 (dual perspective)."""
         perspectives = state.get("perspectives", [])
         if len(perspectives) >= 2:
             return True, f"{len(perspectives)} perspectives present"
         return False, f"Only {len(perspectives)} perspective(s), need 2+"
 
-    def _check_four_quadrant(self, state: Dict[str, Any]) -> Tuple[bool, str]:
+    def _check_four_quadrant(self, state: dict[str, Any]) -> tuple[bool, str]:
         """Check C5: Rule of 4 (four quadrant)."""
         quadrants = state.get("quadrants", [])
         if len(quadrants) >= 4:
             return True, "All 4 quadrants covered"
         return False, f"Only {len(quadrants)}/4 quadrants"
 
-    def _check_biological_safety(self, state: Dict[str, Any]) -> Tuple[bool, str]:
+    def _check_biological_safety(self, state: dict[str, Any]) -> tuple[bool, str]:
         """Check C6: UBI alignment."""
         harm_indicators = ["harm", "damage", "destroy", "kill"]
         state_str = json.dumps(state).lower()
@@ -307,7 +309,7 @@ class VerificationEngine:
                 return False, f"Potential biological harm detected: {indicator}"
         return True, "No biological harm detected"
 
-    def _check_communication(self, state: Dict[str, Any]) -> Tuple[bool, str]:
+    def _check_communication(self, state: dict[str, Any]) -> tuple[bool, str]:
         """Check C7: Clear communication."""
         vague_terms = ["field", "energy field", "vibrations", "frequency"]
         state_str = json.dumps(state).lower()
@@ -316,13 +318,13 @@ class VerificationEngine:
             return False, f"Vague terms found: {violations}"
         return True, "Communication clear and grounded"
 
-    def _check_ledger_integrity(self, state: Dict[str, Any]) -> Tuple[bool, str]:
+    def _check_ledger_integrity(self, state: dict[str, Any]) -> tuple[bool, str]:
         """Check C8: Ledger chain integrity."""
         if self.ledger.verify_chain():
             return True, f"Ledger chain valid ({len(self.ledger._entries)} entries)"
         return False, "Ledger chain integrity compromised"
 
-    def get_verification_history(self, count: int = 10) -> List[VerificationResult]:
+    def get_verification_history(self, count: int = 10) -> list[VerificationResult]:
         """Get recent verification results from ledger."""
         # Query ledger for verification entries
         history = []
@@ -346,7 +348,7 @@ class VerificationEngine:
             details={},
         )
 
-    def generate_formal_proof(self, state: Dict[str, Any]) -> Dict[str, Any]:
+    def generate_formal_proof(self, state: dict[str, Any]) -> dict[str, Any]:
         """Generate formal mathematical proof of state validity.
 
         Returns:

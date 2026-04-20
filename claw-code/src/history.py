@@ -1,5 +1,4 @@
 from dataclasses import dataclass, field
-from typing import List
 
 
 @dataclass(frozen=True)
@@ -10,7 +9,7 @@ class HistoryEvent:
 
 @dataclass
 class HistoryLog:
-    events: List[HistoryEvent] = field(default_factory=list)
+    events: list[HistoryEvent] = field(default_factory=list)
 
     def add(self, title: str, detail: str) -> None:
         self.events.append(HistoryEvent(title=title, detail=detail))

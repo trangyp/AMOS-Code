@@ -8,11 +8,7 @@ Usage:
     python3 debug_integration_example.py
 """
 
-import os
 import sys
-
-# Add project root to path
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 # Import debug utilities from amos_brain
 from amos_brain import DebugContext, ic, pretty_print, print_table, trace

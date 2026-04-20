@@ -75,10 +75,12 @@ Author: AMOS Advanced Reasoning Team
 Version: 24.0.0
 """
 
+from __future__ import annotations
+
 import random
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class ReasoningStrategy(Enum):
@@ -109,7 +111,7 @@ class ReasoningStep:
     verification_status: VerificationStatus = VerificationStatus.UNCERTAIN
     verification_score: float = 0.0
     parent_step: int = None
-    children_steps: List[int] = field(default_factory=list)
+    children_steps: list[int] = field(default_factory=list)
 
     # MCTS metadata
     visit_count: int = 0
@@ -122,7 +124,7 @@ class ReasoningTrace:
 
     trace_id: str
     problem: str
-    steps: List[ReasoningStep] = field(default_factory=list)
+    steps: list[ReasoningStep] = field(default_factory=list)
     final_answer: str = ""
     confidence: float = 0.0
     compute_used: int = 0
@@ -141,7 +143,7 @@ class MCTSNode:
     node_id: int
     state: str  # Current reasoning state
     parent: Optional[MCTSNode] = None
-    children: List[MCTSNode] = field(default_factory=list)
+    children: list[MCTSNode] = field(default_factory=list)
 
     # MCTS statistics
     visits: int = 0
@@ -184,7 +186,7 @@ class AMOSTestTimeCompute:
         # Statistics
         self.total_problems_solved: int = 0
         self.total_compute_used: int = 0
-        self.reasoning_history: List[ReasoningTrace] = []
+        self.reasoning_history: list[ReasoningTrace] = []
 
         # MCTS state
         self.mcts_root: Optional[MCTSNode] = None
@@ -377,7 +379,7 @@ class AMOSTestTimeCompute:
             current.total_value += value
             current = current.parent
 
-    def _extract_best_path(self, root: MCTSNode) -> List[MCTSNode]:
+    def _extract_best_path(self, root: MCTSNode) -> list[MCTSNode]:
         """Extract best reasoning path from root to leaf."""
         path = [root]
         current = root
@@ -460,7 +462,7 @@ class AMOSTestTimeCompute:
                 break
 
             # Generate candidate step
-            candidate = f"Reasoning step {i+1} based on current state"
+            candidate = f"Reasoning step {i + 1} based on current state"
 
             # Verify with process reward model (simulated)
             verification = self._verify_step(candidate)
@@ -549,10 +551,63 @@ class AMOSTestTimeCompute:
 
         return trace
 
-    def _verify_step(self, content: str) -> Dict[str, Any]:
-        """Simulate verification of a reasoning step."""
-        # In production, this uses a learned process reward model
-        score = random.uniform(0.6, 0.98)
+    def _verify_step(self, content: str) -> dict[str, Any]:
+        """Verify reasoning step using AMOS brain."""
+        # Use AMOS brain for verification
+        try:
+            from amos_brain.facade import BrainClient
+
+            brain = BrainClient()
+
+            prompt = f"Verify this reasoning step: '{content}'\nRate correctness (0-1) and provide status: correct/partial/uncertain/incorrect"
+            response = brain.think(prompt, domain="reasoning_verification")
+            brain_content = str(response.content) if hasattr(response, "content") else str(response)
+
+            # Extract score from response
+            import re
+
+            numbers = re.findall(r"0\.\d+|1\.0|0|1", brain_content)
+            score = float(numbers[0]) if numbers else 0.7
+
+            # Determine status based on score and content analysis
+            if score >= 0.9 or "correct" in brain_content.lower():
+                status = VerificationStatus.CORRECT
+            elif score >= 0.7 or "partial" in brain_content.lower():
+                status = VerificationStatus.PARTIAL
+            elif score >= 0.5 or "uncertain" in brain_content.lower():
+                status = VerificationStatus.UNCERTAIN
+            else:
+                status = VerificationStatus.INCORRECT
+
+            return {
+                "status": status,
+                "score": score,
+                "feedback": f"Brain verification: {brain_content[:100]}",
+                "source": "amos_brain",
+            }
+        except Exception as e:
+            print(f"[TestTimeCompute] Brain verification failed: {e}")
+            # Fallback to rule-based scoring
+            return self._verify_step_fallback(content)
+
+    def _verify_step_fallback(self, content: str) -> dict[str, Any]:
+        """Fallback verification using heuristics."""
+        # Simple heuristic scoring based on content characteristics
+        score = 0.7
+
+        # Increase score for longer, more detailed content
+        if len(content) > 50:
+            score += 0.1
+        if len(content) > 100:
+            score += 0.05
+
+        # Increase score for presence of logical keywords
+        logical_keywords = ["because", "therefore", "since", "thus", "hence"]
+        if any(kw in content.lower() for kw in logical_keywords):
+            score += 0.05
+
+        # Clamp score
+        score = min(0.98, max(0.5, score))
 
         if score >= 0.9:
             status = VerificationStatus.CORRECT
@@ -563,9 +618,14 @@ class AMOSTestTimeCompute:
         else:
             status = VerificationStatus.INCORRECT
 
-        return {"status": status, "score": score, "feedback": f"Verification score: {score:.2f}"}
+        return {
+            "status": status,
+            "score": score,
+            "feedback": f"Heuristic verification: {score:.2f}",
+            "source": "fallback",
+        }
 
-    def get_reasoning_stats(self) -> Dict[str, Any]:
+    def get_reasoning_stats(self) -> dict[str, Any]:
         """Get comprehensive reasoning statistics."""
         if not self.reasoning_history:
             return {"status": "no_history"}

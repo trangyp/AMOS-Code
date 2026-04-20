@@ -16,26 +16,25 @@ Author: AMOS Architectural Integration
 Version: 1.0.0
 """
 
-
 import asyncio
-import importlib.util
-import sys
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
+import hashlib
+import time
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional
-import time
-import hashlib
-import json
+from typing import Any
+
 
 # Define State dataclass locally since kernel runtime doesn't have it
 @dataclass
 class State:
     """AMOS State for kernel execution."""
+
     intent: str
-    content: Dict[str, Any]
+    content: dict[str, Any]
     energy: float = 1.0
     complexity: float = 0.0
 
@@ -45,34 +44,36 @@ from clawspring.amos_brain.amos_kernel_runtime import (
     AMOSKernelRuntime,
 )
 
-# Try to import equation registry
-sys.path.insert(0, str(Path(__file__).parent))
+# Try to import equation registry from amos_brain package
 try:
-    from amos_unified_equation_registry import (
-        UnifiedEquationRegistry,
+    from amos_brain.equation_registry import (
         EquationEntry,
         PhaseStatus,
+        UnifiedEquationRegistry,
         get_unified_registry,
     )
+
     REGISTRY_AVAILABLE = True
 except ImportError:
     REGISTRY_AVAILABLE = False
 
-# Try to import SuperBrain equation bridge
+# Try to import SuperBrain equation bridge from amos_brain package
 try:
-    from amos_superbrain_equation_bridge import (
+    from amos_brain.superbrain_equation_bridge import (
         AMOSSuperBrainBridge,
-        ExecutionResult,
         Domain,
+        ExecutionResult,
         MathematicalPattern,
     )
-    BRIDGE_AVAILABLE = True
+
+    SUPERBRIDGE_AVAILABLE = True
 except ImportError:
-    BRIDGE_AVAILABLE = False
+    SUPERBRIDGE_AVAILABLE = False
 
 
 class EquationExecutionMode(Enum):
     """Execution modes for equation-kernel integration."""
+
     DIRECT = auto()  # Execute without kernel
     KERNEL_GOVERNED = auto()  # Full kernel law enforcement
     SIMULATION = auto()  # Simulate without committing
@@ -82,42 +83,46 @@ class EquationExecutionMode(Enum):
 @dataclass
 class EquationKernelContext:
     """Context for equation execution within kernel."""
+
     equation_name: str
-    inputs: Dict[str, Any]
+    inputs: dict[str, Any]
     mode: EquationExecutionMode
     track_state: bool = True
     enforce_laws: bool = True
     require_collapse: bool = True
     allow_rollback: bool = True
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
-    session_id: str = field(default_factory=lambda: hashlib.sha256(
-        f"{time.time()}{id(object())}".encode()
-    ).hexdigest()[:16])
+    session_id: str = field(
+        default_factory=lambda: hashlib.sha256(f"{time.time()}{id(object())}".encode()).hexdigest()[
+            :16
+        ]
+    )
 
 
 @dataclass
 class EquationKernelResult:
     """Result of equation execution through kernel."""
+
     equation_name: str
-    inputs: Dict[str, Any]
-    outputs: Dict[str, Any]
+    inputs: dict[str, Any]
+    outputs: dict[str, Any]
     success: bool
 
     # Kernel integration fields
-    state_graph_id: str  = None
+    state_graph_id: str = None
     law_score: float = 0.0  # L = I × S
     stability_index: float = 0.0  # σ = Ω / K
-    collapse_branch_id: str  = None
+    collapse_branch_id: str = None
     morph_applied: bool = False
     rollback_triggered: bool = False
 
     # Execution metadata
     execution_time_ms: float = 0.0
-    invariant_violations: List[str] = field(default_factory=list)
-    warnings: List[str] = field(default_factory=list)
+    invariant_violations: list[str] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
     kernel_decision: str = ""  # collapse decision reason
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
             "equation_name": self.equation_name,
@@ -153,17 +158,17 @@ class EquationKernelIntegration:
         CollapseKernel → CascadeKernel → Result with Audit
     """
 
-    def __init__(self, repo_path: str  = None):
+    def __init__(self, repo_path: str = None):
         self.repo_path = Path(repo_path) if repo_path else Path.cwd()
 
         # Core components
-        self._kernel_runtime: Optional[AMOSKernelRuntime] = None
-        self._equation_registry: Optional[UnifiedEquationRegistry] = None
-        self._superbrain_bridge: Optional[AMOSSuperBrainBridge] = None
+        self._kernel_runtime: AMOSKernelRuntime = None
+        self._equation_registry: UnifiedEquationRegistry = None
+        self._superbrain_bridge: AMOSSuperBrainBridge = None
 
         # State tracking
-        self._equation_state_graphs: Dict[str, StateGraph] = {}
-        self._execution_history: List[EquationKernelResult] = []
+        self._equation_state_graphs: dict[str, StateGraph] = {}
+        self._execution_history: list[EquationKernelResult] = []
         self._initialized = False
 
         # Statistics
@@ -204,7 +209,9 @@ class EquationKernelIntegration:
             if BRIDGE_AVAILABLE:
                 self._superbrain_bridge = AMOSSuperBrainBridge()
                 pattern_stats = self._superbrain_bridge.get_pattern_analysis()
-                print(f"  ✅ SuperBrain Bridge: {pattern_stats.get('total_equations', 0)} equations")
+                print(
+                    f"  ✅ SuperBrain Bridge: {pattern_stats.get('total_equations', 0)} equations"
+                )
             else:
                 print("  ⚠️  SuperBrain Bridge: Not available")
 
@@ -225,13 +232,14 @@ class EquationKernelIntegration:
         except Exception as e:
             print(f"\n❌ Integration layer initialization failed: {e}")
             import traceback
+
             traceback.print_exc()
             return False
 
     def execute_equation(
         self,
         equation_name: str,
-        inputs: Dict[str, Any],
+        inputs: dict[str, Any],
         mode: EquationExecutionMode = EquationExecutionMode.KERNEL_GOVERNED,
         enforce_laws: bool = True,
         require_collapse: bool = True,
@@ -260,7 +268,7 @@ class EquationKernelIntegration:
                 outputs={},
                 success=False,
                 warnings=["Integration layer not initialized"],
-                kernel_decision="initialization_failure"
+                kernel_decision="initialization_failure",
             )
 
         start_time = time.time()
@@ -308,7 +316,7 @@ class EquationKernelIntegration:
                 success=False,
                 execution_time_ms=(time.time() - start_time) * 1000,
                 invariant_violations=[str(e)],
-                kernel_decision="execution_exception"
+                kernel_decision="execution_exception",
             )
 
     def _create_state_from_context(self, context: EquationKernelContext) -> State:
@@ -336,9 +344,7 @@ class EquationKernelIntegration:
         )
 
     def _execute_via_kernel(
-        self,
-        state: State,
-        context: EquationKernelContext
+        self, state: State, context: EquationKernelContext
     ) -> EquationKernelResult:
         """Execute equation through full AMOS kernel runtime."""
 
@@ -360,21 +366,27 @@ class EquationKernelIntegration:
 
             # Create relations for graph coherence
             relations = [
-                {"source": f"equation:{context.equation_name}",
-                 "target": f"session:{context.session_id}",
-                 "properties": {"type": "executed_in"}},
-                {"source": f"equation:{context.equation_name}",
-                 "target": "type:mathematical_operation",
-                 "properties": {"type": "instance_of"}},
+                {
+                    "source": f"equation:{context.equation_name}",
+                    "target": f"session:{context.session_id}",
+                    "properties": {"type": "executed_in"},
+                },
+                {
+                    "source": f"equation:{context.equation_name}",
+                    "target": "type:mathematical_operation",
+                    "properties": {"type": "instance_of"},
+                },
             ]
 
             # Add parameter relations
             for key in context.inputs.keys():
-                relations.append({
-                    "source": f"equation:{context.equation_name}",
-                    "target": f"param:{key}",
-                    "properties": {"type": "has_parameter"}
-                })
+                relations.append(
+                    {
+                        "source": f"equation:{context.equation_name}",
+                        "target": f"param:{key}",
+                        "properties": {"type": "has_parameter"},
+                    }
+                )
 
             observation = {
                 "intent": state.intent,
@@ -447,10 +459,7 @@ class EquationKernelIntegration:
             )
 
     def _execute_direct(
-        self,
-        equation_name: str,
-        inputs: Dict[str, Any],
-        context: EquationKernelContext
+        self, equation_name: str, inputs: dict[str, Any], context: EquationKernelContext
     ) -> EquationKernelResult:
         """Execute equation directly without kernel (fallback)."""
         errors = []
@@ -477,13 +486,17 @@ class EquationKernelIntegration:
         if self._superbrain_bridge:
             try:
                 result = self._superbrain_bridge.compute(equation_name, inputs)
-                if result is not None and hasattr(result, 'outputs'):
+                if result is not None and hasattr(result, "outputs"):
                     return EquationKernelResult(
                         equation_name=equation_name,
                         inputs=inputs,
                         outputs=result.outputs,
-                        success=result.invariants_valid if hasattr(result, 'invariants_valid') else True,
-                        invariant_violations=result.invariant_violations if hasattr(result, 'invariant_violations') else [],
+                        success=result.invariants_valid
+                        if hasattr(result, "invariants_valid")
+                        else True,
+                        invariant_violations=result.invariant_violations
+                        if hasattr(result, "invariant_violations")
+                        else [],
                         kernel_decision="direct_bridge_execution",
                         warnings=["No kernel law enforcement applied"],
                     )
@@ -500,7 +513,7 @@ class EquationKernelIntegration:
             warnings=["Equation not found in any registry"],
         )
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get integration layer statistics."""
         return {
             **self._stats,
@@ -511,7 +524,7 @@ class EquationKernelIntegration:
             "execution_history_size": len(self._execution_history),
         }
 
-    def list_available_equations(self) -> List[str]:
+    def list_available_equations(self) -> list[str]:
         """List all equations available through integration."""
         equations = set()
 
@@ -534,8 +547,8 @@ class EquationKernelIntegration:
     def get_execution_history(
         self,
         limit: int = 100,
-        equation_filter: str  = None,
-    ) -> List[EquationKernelResult]:
+        equation_filter: str = None,
+    ) -> list[EquationKernelResult]:
         """Get execution history with optional filtering."""
         history = self._execution_history[-limit:]
 
@@ -546,7 +559,7 @@ class EquationKernelIntegration:
 
 
 # Singleton instance
-_integration_instance: Optional[EquationKernelIntegration] = None
+_integration_instance: EquationKernelIntegration = None
 
 
 def get_equation_kernel_integration() -> EquationKernelIntegration:
@@ -565,7 +578,7 @@ async def initialize_equation_kernel_integration() -> bool:
 
 def execute_equation_with_kernel(
     equation_name: str,
-    inputs: Dict[str, Any],
+    inputs: dict[str, Any],
     enforce_laws: bool = True,
 ) -> EquationKernelResult:
     """
@@ -605,6 +618,7 @@ __all__ = [
 
 # Self-test
 if __name__ == "__main__":
+
     async def test():
         """Test the equation-kernel integration."""
         print("\n" + "=" * 70)
@@ -637,7 +651,7 @@ if __name__ == "__main__":
 
         # Print stats
         stats = integration.get_stats()
-        print(f"\n[STATS] Integration Statistics:")
+        print("\n[STATS] Integration Statistics:")
         for key, value in stats.items():
             print(f"  {key}: {value}")
 

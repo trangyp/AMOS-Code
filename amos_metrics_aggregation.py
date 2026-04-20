@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 """AMOS Metrics Aggregation System - Production Observability Layer
 
@@ -24,9 +24,11 @@ import time
 from collections import defaultdict
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 from enum import Enum
+
 
 class MetricType(Enum):
     COUNTER = "counter"
@@ -34,14 +36,16 @@ class MetricType(Enum):
     HISTOGRAM = "histogram"
     SUMMARY = "summary"
 
+
 @dataclass
 class MetricSample:
     """Single metric sample with labels."""
 
     name: str
     value: float
-    labels: Dict[str, str] = field(default_factory=dict)
+    labels: dict[str, str] = field(default_factory=dict)
     timestamp: float = field(default_factory=time.time)
+
 
 @dataclass
 class MetricFamily:
@@ -50,25 +54,26 @@ class MetricFamily:
     name: str
     metric_type: MetricType
     help_text: str
-    samples: List[MetricSample] = field(default_factory=list)
+    samples: list[MetricSample] = field(default_factory=list)
+
 
 class MetricsRegistry:
     """Central registry for all AMOS metrics."""
 
     def __init__(self):
-        self._counters: Dict[str, float] = defaultdict(float)
-        self._gauges: Dict[str, float] = {}
-        self._histograms: Dict[str, list[float]] = defaultdict(list)
-        self._labels: Dict[str, dict[str, str]] = {}
+        self._counters: dict[str, float] = defaultdict(float)
+        self._gauges: dict[str, float] = {}
+        self._histograms: dict[str, list[float]] = defaultdict(list)
+        self._labels: dict[str, dict[str, str]] = {}
         self._lock = threading.RLock()
-        self._help_texts: Dict[str, str] = {}
-        self._collectors: List[Callable[[], list[MetricFamily]]] = []
+        self._help_texts: dict[str, str] = {}
+        self._collectors: list[Callable[[], list[MetricFamily]]] = []
 
     def register_collector(self, collector: Callable[[], list[MetricFamily]]) -> None:
         """Register a custom metrics collector."""
         self._collectors.append(collector)
 
-    def counter(self, name: str, help_text: str = "", labels: Dict[str, str]  = None) -> None:
+    def counter(self, name: str, help_text: str = "", labels: dict[str, str] = None) -> None:
         """Create or get a counter metric."""
         with self._lock:
             if name not in self._help_texts:
@@ -78,13 +83,13 @@ class MetricsRegistry:
                 self._counters[key] = 0.0
                 self._labels[key] = labels or {}
 
-    def inc(self, name: str, value: float = 1, labels: Dict[str, str]  = None) -> None:
+    def inc(self, name: str, value: float = 1, labels: dict[str, str] = None) -> None:
         """Increment a counter."""
         with self._lock:
             key = self._key(name, labels or {})
             self._counters[key] += value
 
-    def gauge(self, name: str, help_text: str = "", labels: Dict[str, str]  = None) -> None:
+    def gauge(self, name: str, help_text: str = "", labels: dict[str, str] = None) -> None:
         """Create or get a gauge metric."""
         with self._lock:
             if name not in self._help_texts:
@@ -94,13 +99,13 @@ class MetricsRegistry:
                 self._gauges[key] = 0.0
                 self._labels[key] = labels or {}
 
-    def set(self, name: str, value: float, labels: Dict[str, str]  = None) -> None:
+    def set(self, name: str, value: float, labels: dict[str, str] = None) -> None:
         """Set a gauge value."""
         with self._lock:
             key = self._key(name, labels or {})
             self._gauges[key] = value
 
-    def observe(self, name: str, value: float, labels: Dict[str, str]  = None) -> None:
+    def observe(self, name: str, value: float, labels: dict[str, str] = None) -> None:
         """Observe a histogram value."""
         with self._lock:
             key = self._key(name, labels or {})
@@ -109,20 +114,20 @@ class MetricsRegistry:
             if len(self._histograms[key]) > 1000:
                 self._histograms[key] = self._histograms[key][-1000:]
 
-    def _key(self, name: str, labels: Dict[str, str]) -> str:
+    def _key(self, name: str, labels: dict[str, str]) -> str:
         """Generate unique key for metric + labels."""
         if not labels:
             return name
         label_str = ",".join(f'{k}="{v}"' for k, v in sorted(labels.items()))
         return f"{name}{{{label_str}}}"
 
-    def collect(self) -> List[MetricFamily]:
+    def collect(self) -> list[MetricFamily]:
         """Collect all metrics."""
         families = []
 
         with self._lock:
             # Group counters by name
-            counter_groups: Dict[str, list] = defaultdict(list)
+            counter_groups: dict[str, list] = defaultdict(list)
             for key, value in self._counters.items():
                 name = key.split("{")[0]
                 counter_groups[name].append((key, value, self._labels.get(key, {})))
@@ -137,7 +142,7 @@ class MetricsRegistry:
                 families.append(family)
 
             # Group gauges by name
-            gauge_groups: Dict[str, list] = defaultdict(list)
+            gauge_groups: dict[str, list] = defaultdict(list)
             for key, value in self._gauges.items():
                 name = key.split("{")[0]
                 gauge_groups[name].append((key, value, self._labels.get(key, {})))
@@ -152,7 +157,7 @@ class MetricsRegistry:
                 families.append(family)
 
             # Group histograms by name
-            hist_groups: Dict[str, list] = defaultdict(list)
+            hist_groups: dict[str, list] = defaultdict(list)
             for key, values in self._histograms.items():
                 name = key.split("{")[0]
                 if values:
@@ -201,7 +206,7 @@ class MetricsRegistry:
 
         return "\n".join(lines)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Export metrics as dictionary."""
         return {
             "timestamp": datetime.now(timezone.utc).isoformat(),
@@ -218,6 +223,7 @@ class MetricsRegistry:
             ],
         }
 
+
 # Layer-specific collectors
 class LayerMetricsCollector:
     """Collects metrics for each AMOS architectural layer."""
@@ -225,7 +231,7 @@ class LayerMetricsCollector:
     def __init__(self, layer_name: str):
         self.layer_name = layer_name
 
-    def __call__(self) -> List[MetricFamily]:
+    def __call__(self) -> list[MetricFamily]:
         """Return metrics for this layer."""
         return [
             MetricFamily(
@@ -242,10 +248,11 @@ class LayerMetricsCollector:
             )
         ]
 
+
 class CacheMetricsCollector:
     """Collects distributed cache metrics."""
 
-    def __call__(self) -> List[MetricFamily]:
+    def __call__(self) -> list[MetricFamily]:
         try:
             from amos_distributed_cache import get_cache
 
@@ -271,12 +278,14 @@ class CacheMetricsCollector:
         except Exception:
             return []
 
+
 class AlertMetricsCollector:
     """Collects alert system metrics."""
 
-    def __call__(self) -> List[MetricFamily]:
+    def __call__(self) -> list[MetricFamily]:
         try:
             from amos_alert_manager import get_alert_manager
+
             mgr = get_alert_manager()
 
             critical = len(mgr.get_alerts(severity=mgr.AlertSeverity.CRITICAL))
@@ -306,8 +315,10 @@ class AlertMetricsCollector:
         except Exception:
             return []
 
+
 # Global registry
 _registry: Optional[MetricsRegistry] = None
+
 
 def get_metrics_registry() -> MetricsRegistry:
     """Get singleton metrics registry."""
@@ -340,6 +351,7 @@ def get_metrics_registry() -> MetricsRegistry:
 
     return _registry
 
+
 # Convenience functions
 def record_request_duration(method: str, endpoint: str, duration_ms: float) -> None:
     """Record API request duration."""
@@ -347,6 +359,7 @@ def record_request_duration(method: str, endpoint: str, duration_ms: float) -> N
     registry.observe(
         "amos_request_duration_ms", duration_ms, labels={"method": method, "endpoint": endpoint}
     )
+
 
 def record_request_count(method: str, endpoint: str, status_code: int) -> None:
     """Record API request count."""
@@ -356,18 +369,22 @@ def record_request_count(method: str, endpoint: str, status_code: int) -> None:
         labels={"method": method, "endpoint": endpoint, "status": str(status_code)},
     )
 
+
 def set_system_health(component: str, healthy: bool) -> None:
     """Set system health metric."""
     registry = get_metrics_registry()
     registry.set("amos_system_health", 1.0 if healthy else 0.0, labels={"component": component})
 
+
 def get_prometheus_metrics() -> str:
     """Get metrics in Prometheus format."""
     return get_metrics_registry().to_prometheus()
 
-def get_metrics_json() -> Dict[str, Any]:
+
+def get_metrics_json() -> dict[str, Any]:
     """Get metrics as JSON."""
     return get_metrics_registry().to_dict()
+
 
 if __name__ == "__main__":
     # Test metrics aggregation

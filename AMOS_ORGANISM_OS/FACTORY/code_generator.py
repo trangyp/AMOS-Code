@@ -1,12 +1,15 @@
 """FACTORY code_generator stub — Re-exports from 13_FACTORY"""
 
-import sys
+import importlib.util
 from pathlib import Path
 
-factory_path = Path(__file__).parent.parent / "13_FACTORY"
-if str(factory_path) not in sys.path:
-    sys.path.insert(0, str(factory_path))
-
-from code_generator import CodeGenerator, CodeTemplate, GeneratedCode
+# Load from 13_FACTORY using importlib
+_factory_path = Path(__file__).parent.parent / "13_FACTORY" / "code_generator.py"
+_spec = importlib.util.spec_from_file_location("_code_gen", _factory_path)
+_mod = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_mod)
+CodeGenerator = _mod.CodeGenerator
+CodeTemplate = _mod.CodeTemplate
+GeneratedCode = _mod.GeneratedCode
 
 __all__ = ["CodeGenerator", "CodeTemplate", "GeneratedCode"]

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from typing import Any, Dict, List
+from typing import Any
 
 """AMOS Brain - Unified Coding Tools Interface
 
@@ -10,8 +10,9 @@ cognitive engine for intelligent code analysis.
 import json
 import subprocess
 from dataclasses import dataclass
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 from pathlib import Path
 
 
@@ -21,7 +22,7 @@ class ToolResult:
 
     tool: str
     status: str
-    issues: List[dict[str, Any]]
+    issues: list[dict[str, Any]]
     summary: str
     timestamp: str
 
@@ -32,7 +33,7 @@ class AMOSBrainCodingTools:
     def __init__(self, repo_path: str = ".") -> None:
         self.repo_path = Path(repo_path).resolve()
         self.brain_id = self._generate_brain_id()
-        self.results: List[ToolResult] = []
+        self.results: list[ToolResult] = []
 
     def _generate_brain_id(self) -> str:
         """Generate unique brain session ID."""
@@ -171,7 +172,7 @@ class AMOSBrainCodingTools:
             timestamp=datetime.now(timezone.utc).isoformat(),
         )
 
-    def run_all(self) -> Dict[str, ToolResult]:
+    def run_all(self) -> dict[str, ToolResult]:
         """Run all strongest coding tools."""
         print("=" * 60)
         print("AMOS BRAIN: Running Strongest Coding Tools")
@@ -218,7 +219,7 @@ class AMOSBrainCodingTools:
 
         return results
 
-    def generate_report(self, results: Dict[str, ToolResult]) -> str:
+    def generate_report(self, results: dict[str, ToolResult]) -> str:
         """Generate comprehensive analysis report."""
         lines = [
             "# AMOS Brain Coding Analysis Report",

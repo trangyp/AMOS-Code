@@ -7,10 +7,12 @@ exist simultaneously until collapse/decision.
 import json
 import uuid
 from dataclasses import asdict, dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class SuperpositionStatus(Enum):
@@ -30,10 +32,10 @@ class PotentialState:
     name: str = ""
     description: str = ""
     probability: float = 0.5  # 0-1
-    attributes: Dict[str, Any] = field(default_factory=dict)
+    attributes: dict[str, Any] = field(default_factory=dict)
     created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
@@ -43,14 +45,14 @@ class SuperpositionState:
 
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     context: str = ""  # What is being decided/considered
-    potential_states: List[PotentialState] = field(default_factory=list)
+    potential_states: list[PotentialState] = field(default_factory=list)
     status: SuperpositionStatus = SuperpositionStatus.ACTIVE
     created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     collapsed_at: str = None
     collapsed_to: str = None  # ID of chosen state
     collapse_reason: str = ""
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "status": self.status.value,
@@ -65,13 +67,13 @@ class SuperpositionManager:
     or decision causes collapse to a single outcome.
     """
 
-    def __init__(self, data_dir: Optional[Path] = None):
+    def __init__(self, data_dir: Path = None):
         if data_dir is None:
             data_dir = Path(__file__).parent / "data"
         self.data_dir = data_dir
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
-        self.superpositions: List[SuperpositionState] = []
+        self.superpositions: list[SuperpositionState] = []
 
         self._load_data()
 
@@ -120,7 +122,7 @@ class SuperpositionManager:
     def create_superposition(
         self,
         context: str,
-        potential_states: List[PotentialState],
+        potential_states: list[PotentialState],
     ) -> SuperpositionState:
         """Create a new superposition state."""
         # Normalize probabilities
@@ -137,7 +139,7 @@ class SuperpositionManager:
         self.save()
         return sp
 
-    def get_superposition(self, sp_id: str) -> Optional[SuperpositionState]:
+    def get_superposition(self, sp_id: str) -> SuperpositionState:
         """Get a superposition by ID."""
         for sp in self.superpositions:
             if sp.id == sp_id:
@@ -149,7 +151,7 @@ class SuperpositionManager:
         sp_id: str,
         chosen_state_id: str,
         reason: str = "",
-    ) -> Optional[SuperpositionState]:
+    ) -> SuperpositionState:
         """Collapse superposition to a specific state."""
         sp = self.get_superposition(sp_id)
         if not sp or sp.status != SuperpositionStatus.ACTIVE:
@@ -168,7 +170,7 @@ class SuperpositionManager:
         self.save()
         return sp
 
-    def probabilistic_collapse(self, sp_id: str) -> Optional[SuperpositionState]:
+    def probabilistic_collapse(self, sp_id: str) -> SuperpositionState:
         """Collapse based on probability weights."""
         import random
 
@@ -185,18 +187,18 @@ class SuperpositionManager:
 
         return self.collapse(sp_id, chosen.id, "probabilistic")
 
-    def get_active_superpositions(self) -> List[dict[str, Any]]:
+    def get_active_superpositions(self) -> list[dict[str, Any]]:
         """Get all active (non-collapsed) superpositions."""
         active = [s for s in self.superpositions if s.status == SuperpositionStatus.ACTIVE]
         return [s.to_dict() for s in active]
 
-    def get_collapse_history(self, limit: int = 10) -> List[dict[str, Any]]:
+    def get_collapse_history(self, limit: int = 10) -> list[dict[str, Any]]:
         """Get recent collapse events."""
         collapsed = [s for s in self.superpositions if s.status == SuperpositionStatus.COLLAPSED]
         collapsed.sort(key=lambda x: x.collapsed_at or "", reverse=True)
         return [s.to_dict() for s in collapsed[:limit]]
 
-    def get_uncertainty_for_context(self, context: str) -> Dict[str, Any]:
+    def get_uncertainty_for_context(self, context: str) -> dict[str, Any]:
         """Get uncertainty metrics for a context."""
         relevant = [
             s
@@ -229,10 +231,10 @@ class SuperpositionManager:
 
 
 # Global instance
-_MANAGER: Optional[SuperpositionManager] = None
+_MANAGER: SuperpositionManager = None
 
 
-def get_superposition_manager(data_dir: Optional[Path] = None) -> SuperpositionManager:
+def get_superposition_manager(data_dir: Path = None) -> SuperpositionManager:
     """Get or create global superposition manager."""
     global _MANAGER
     if _MANAGER is None:

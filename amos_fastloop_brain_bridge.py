@@ -1,4 +1,6 @@
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
+
+from typing import Any, Optional
 
 """
 AMOS FastLoop Brain Bridge
@@ -14,9 +16,9 @@ This bridge connects:
 import asyncio
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
 
+UTC = UTC
 from amos_delta_state import (
     create_delta,
     get_delta_manager,
@@ -42,23 +44,24 @@ from clawspring.amos_brain.kernel_router import KernelRouter, TaskIntent
 
 # AMOS Brain components
 from clawspring.amos_brain.loader import get_brain
-from typing import Any, Dict, List, Optional
+
 
 @dataclass
 class BrainBridgeResult:
     """Result from FastLoop-Brain bridge execution."""
 
     success: bool
-    output: Dict[str, Any]
+    output: dict[str, Any]
     latency_ms: float
     path_taken: str  # "fast" or "full"
     classification: ClassificationResult
     route: RouteResult
-    engines_used: List[str]
+    engines_used: list[str]
     state_id: Optional[str]
     branch_count: int = 0
-    laws_checked: List[str] = field(default_factory=list)
+    laws_checked: list[str] = field(default_factory=list)
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
 
 class FastLoopBrainBridge:
     """
@@ -95,9 +98,7 @@ class FastLoopBrainBridge:
         await self.brain_kernel.initialize_siks()
         return True  # Continue even if SIKS not available
 
-    async def execute(
-        self, request: str, context: Dict[str, Any]  = None
-    ) -> BrainBridgeResult:
+    async def execute(self, request: str, context: dict[str, Any] = None) -> BrainBridgeResult:
         """
         Execute request through FastLoop-Brain bridge.
 
@@ -166,8 +167,8 @@ class FastLoopBrainBridge:
         request: str,
         classification: ClassificationResult,
         route: RouteResult,
-        context: Dict[str, Any] ,
-    ) -> Dict[str, Any]:
+        context: dict[str, Any],
+    ) -> dict[str, Any]:
         """
         Execute fast path using engine executor.
 
@@ -229,8 +230,8 @@ class FastLoopBrainBridge:
         request: str,
         classification: ClassificationResult,
         route: RouteResult,
-        context: Dict[str, Any] ,
-    ) -> Dict[str, Any]:
+        context: dict[str, Any],
+    ) -> dict[str, Any]:
         """
         Execute full path using AMOS Brain kernel.
 
@@ -346,7 +347,7 @@ class FastLoopBrainBridge:
 
     def _select_engines_for_fast_path(
         self, classification: ClassificationResult, intent: TaskIntent
-    ) -> List[str]:
+    ) -> list[str]:
         """Select engines for fast path execution."""
         engines = []
 
@@ -367,7 +368,7 @@ class FastLoopBrainBridge:
 
         return engines
 
-    def _select_engines_for_full_path(self, intent: TaskIntent) -> List[str]:
+    def _select_engines_for_full_path(self, intent: TaskIntent) -> list[str]:
         """Select engines for full path execution."""
         engines = []
 
@@ -403,7 +404,7 @@ class FastLoopBrainBridge:
 
         return engines
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get bridge statistics."""
         return {
             "total_requests": self._request_count,
@@ -414,8 +415,10 @@ class FastLoopBrainBridge:
             "kernel_ready": self.brain_kernel is not None,
         }
 
+
 # Global bridge instance
 _bridge: Optional[FastLoopBrainBridge] = None
+
 
 def get_brain_bridge() -> FastLoopBrainBridge:
     """Get global FastLoop-Brain bridge instance."""
@@ -424,14 +427,14 @@ def get_brain_bridge() -> FastLoopBrainBridge:
         _bridge = FastLoopBrainBridge()
     return _bridge
 
-async def execute_with_brain(
-    request: str, context: Dict[str, Any]  = None
-) -> BrainBridgeResult:
+
+async def execute_with_brain(request: str, context: dict[str, Any] = None) -> BrainBridgeResult:
     """Convenience function for brain bridge execution."""
     bridge = get_brain_bridge()
     if not bridge.brain_kernel:
         await bridge.initialize()
     return await bridge.execute(request, context)
+
 
 # Test
 if __name__ == "__main__":

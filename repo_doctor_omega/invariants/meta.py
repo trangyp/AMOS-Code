@@ -47,7 +47,7 @@ class LawHierarchyInvariant(HardInvariant):
     def __init__(self):
         super().__init__(InvariantKind.META, BasisVector.LAW_HIERARCHY)
 
-    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
+    def check(self, repo_path: str, context: dict[str, Any] = None) -> InvariantResult:
         """Check law hierarchy declarations."""
         violations = []
 
@@ -131,7 +131,7 @@ class LawScopeInvariant(HardInvariant):
     def __init__(self):
         super().__init__(InvariantKind.META, BasisVector.LAW_SCOPE)
 
-    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
+    def check(self, repo_path: str, context: dict[str, Any] = None) -> InvariantResult:
         """Check law scope declarations."""
         violations = []
 
@@ -206,7 +206,7 @@ class EmergencyConstitutionInvariant(HardInvariant):
     def __init__(self):
         super().__init__(InvariantKind.META, BasisVector.EMERGENCY_CONSTITUTION)
 
-    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
+    def check(self, repo_path: str, context: dict[str, Any] = None) -> InvariantResult:
         """Check emergency constitution declarations."""
         violations = []
 
@@ -303,7 +303,7 @@ class SilenceSemanticsInvariant(HardInvariant):
     def __init__(self):
         super().__init__(InvariantKind.META, BasisVector.SILENCE)
 
-    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
+    def check(self, repo_path: str, context: dict[str, Any] = None) -> InvariantResult:
         """Check silence semantics in logging/observability code."""
         violations = []
 
@@ -383,7 +383,7 @@ class ConstraintProvenanceInvariant(HardInvariant):
     def __init__(self):
         super().__init__(InvariantKind.META, BasisVector.CONSTRAINT_PROVENANCE)
 
-    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
+    def check(self, repo_path: str, context: dict[str, Any] = None) -> InvariantResult:
         """Check for constraint provenance documentation."""
         violations = []
 
@@ -462,7 +462,7 @@ class ObserverPluralityInvariant(HardInvariant):
     def __init__(self):
         super().__init__(InvariantKind.META, BasisVector.OBSERVER_PLURALITY)
 
-    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
+    def check(self, repo_path: str, context: dict[str, Any] = None) -> InvariantResult:
         """Check for observer reconciliation mechanisms."""
         violations = []
 
@@ -539,7 +539,7 @@ class EvidenceSurvivalInvariant(HardInvariant):
     def __init__(self):
         super().__init__(InvariantKind.META, BasisVector.EVIDENCE_SURVIVAL)
 
-    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
+    def check(self, repo_path: str, context: dict[str, Any] = None) -> InvariantResult:
         """Check evidence retention policies."""
         violations = []
 
@@ -608,7 +608,7 @@ class PathDependenceInvariant(HardInvariant):
     def __init__(self):
         super().__init__(InvariantKind.META, BasisVector.PATH_DEPENDENCE)
 
-    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
+    def check(self, repo_path: str, context: dict[str, Any] = None) -> InvariantResult:
         """Check for path history tracking."""
         violations = []
 
@@ -679,7 +679,7 @@ class TopologyRewriteInvariant(HardInvariant):
     def __init__(self):
         super().__init__(InvariantKind.META, BasisVector.TOPOLOGY_REWRITE)
 
-    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
+    def check(self, repo_path: str, context: dict[str, Any] = None) -> InvariantResult:
         """Check for topology change documentation."""
         violations = []
 
@@ -747,7 +747,7 @@ class AntiObjectiveInvariant(HardInvariant):
     def __init__(self):
         super().__init__(InvariantKind.META, BasisVector.ANTI_OBJECTIVE)
 
-    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
+    def check(self, repo_path: str, context: dict[str, Any] = None) -> InvariantResult:
         """Check for anti-objective declarations."""
         violations = []
 
@@ -814,7 +814,7 @@ class LegibilityInvariant(HardInvariant):
     def __init__(self):
         super().__init__(InvariantKind.META, BasisVector.LEGIBILITY)
 
-    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
+    def check(self, repo_path: str, context: dict[str, Any] = None) -> InvariantResult:
         """Check for legibility indicators."""
         violations = []
 
@@ -896,7 +896,7 @@ class ModelTransportInvariant(HardInvariant):
     def __init__(self):
         super().__init__(InvariantKind.META, BasisVector.MODEL_TRANSPORT)
 
-    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
+    def check(self, repo_path: str, context: dict[str, Any] = None) -> InvariantResult:
         """Check for model validation on transport."""
         violations = []
 
@@ -963,7 +963,7 @@ class WorldDriftInvariant(HardInvariant):
     def __init__(self):
         super().__init__(InvariantKind.META, BasisVector.WORLD_DRIFT)
 
-    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
+    def check(self, repo_path: str, context: dict[str, Any] = None) -> InvariantResult:
         """Check for world-drift monitoring."""
         violations = []
 

@@ -12,9 +12,11 @@ Version: 1.0.0
 import json
 import statistics
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import UTC, datetime
+
+UTC = UTC, timedelta
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 
 @dataclass
@@ -56,8 +58,8 @@ class PredictiveEngine:
         self.analytics_dir.mkdir(parents=True, exist_ok=True)
 
         # Historical data storage
-        self.execution_history: List[dict[str, Any]] = []
-        self.subsystem_metrics: Dict[str, list[Dict]] = {}
+        self.execution_history: list[dict[str, Any]] = []
+        self.subsystem_metrics: dict[str, list[dict]] = {}
 
         # Load historical data
         self._load_history()
@@ -265,7 +267,7 @@ class PredictiveEngine:
             horizon=f"{horizon_hours}h",
         )
 
-    def get_all_predictions(self) -> Dict[str, Any]:
+    def get_all_predictions(self) -> dict[str, Any]:
         """Get comprehensive predictions for all systems."""
         # Load current queue status
         try:

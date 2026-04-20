@@ -1,4 +1,6 @@
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
+
+from typing import Any, Optional
 
 """Brain-Powered API Endpoints - Direct brain integration for main backend.
 
@@ -9,22 +11,21 @@ Add these to main.py via: app.include_router(brain_powered_router)
 import sys
 import time
 from datetime import datetime, timezone
-
-UTC = timezone.utc
 from pathlib import Path
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
+UTC = timezone.utc
+
 # Setup paths
 AMOS_ROOT = Path(__file__).parent.parent.parent.resolve()
 for p in [AMOS_ROOT, AMOS_ROOT / "clawspring", AMOS_ROOT / "clawspring" / "amos_brain"]:
     if str(p) not in sys.path:
-        sys.path.insert(0, str(p))
 
 router = APIRouter(prefix="/api/v1/brain-powered", tags=["Brain Powered"])
 
-# Lazy imports
+#Lazy imports
 _brain_available: Optional[bool] = None
 
 
@@ -52,7 +53,7 @@ class CognitiveQueryRequest(BaseModel):
     """Request for brain-powered cognitive query."""
 
     query: str = Field(..., min_length=1, max_length=10000)
-    context: Dict[str, Any] = Field(default_factory=dict)
+    context: dict[str, Any] = Field(default_factory=dict)
     goal_type: str = Field(default="cognitive_task")
     timeout_ms: int = Field(default=5000, ge=100, le=30000)
 
@@ -85,9 +86,9 @@ class BrainStatusResponse(BaseModel):
 class StateAnalysisRequest(BaseModel):
     """Request for state graph analysis."""
 
-    entities: List[str] = Field(default_factory=list)
-    relations: List[dict[str, Any]] = Field(default_factory=list)
-    metrics: Dict[str, float] = Field(default_factory=dict)
+    entities: list[str] = Field(default_factory=list)
+    relations: list[dict[str, Any]] = Field(default_factory=list)
+    metrics: dict[str, float] = Field(default_factory=dict)
 
 
 class StateAnalysisResponse(BaseModel):
@@ -241,7 +242,7 @@ async def analyze_state(request: StateAnalysisRequest) -> StateAnalysisResponse:
 
 
 @router.get("/recent-activity")
-async def get_recent_brain_activity(limit: int = 10) -> List[dict[str, Any]]:
+async def get_recent_brain_activity(limit: int = 10) -> list[dict[str, Any]]:
     """Get recent brain activity from memory."""
     if not _check_brain():
         return []

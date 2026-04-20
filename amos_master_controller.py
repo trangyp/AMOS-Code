@@ -16,8 +16,10 @@ Usage:
 
 import argparse
 import sys
-from datetime import datetime
-from typing import Any, Dict
+from datetime import UTC, datetime
+from typing import Any
+
+UTC = UTC
 
 
 class AMOSMasterController:
@@ -118,7 +120,7 @@ class AMOSMasterController:
     }
 
     def __init__(self):
-        self.loaded_modules: Dict[str, Any] = {}
+        self.loaded_modules: dict[str, Any] = {}
         self.active_version: str = None
 
     def show_architecture(self):

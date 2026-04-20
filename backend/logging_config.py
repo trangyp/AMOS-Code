@@ -9,10 +9,11 @@ Version: 3.0.0
 """
 
 import logging
-import sys
-import structlog
-from typing import Any, Dict, List
 import os
+import sys
+from typing import Any
+
+import structlog
 
 # Environment-based configuration
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
@@ -31,7 +32,7 @@ def configure_logging() -> None:
     )
 
     # Configure structlog
-    shared_processors: List[Any] = [
+    shared_processors: list[Any] = [
         # Add timestamp
         structlog.processors.TimeStamper(fmt="iso"),
         # Add log level
@@ -45,13 +46,9 @@ def configure_logging() -> None:
     if LOG_FORMAT == "json":
         # Production: JSON format for log aggregation
         structlog.configure(
-            processors=shared_processors + [
-                structlog.processors.dict_tracebacks,
-                structlog.processors.JSONRenderer()
-            ],
-            wrapper_class=structlog.make_filtering_bound_logger(
-                getattr(logging, LOG_LEVEL)
-            ),
+            processors=shared_processors
+            + [structlog.processors.dict_tracebacks, structlog.processors.JSONRenderer()],
+            wrapper_class=structlog.make_filtering_bound_logger(getattr(logging, LOG_LEVEL)),
             context_class=dict,
             logger_factory=structlog.PrintLoggerFactory(),
             cache_logger_on_first_use=True,
@@ -59,15 +56,14 @@ def configure_logging() -> None:
     else:
         # Development: Console format
         structlog.configure(
-            processors=shared_processors + [
+            processors=shared_processors
+            + [
                 structlog.dev.ConsoleRenderer(
                     colors=True,
                     pad_level=True,
                 )
             ],
-            wrapper_class=structlog.make_filtering_bound_logger(
-                getattr(logging, LOG_LEVEL)
-            ),
+            wrapper_class=structlog.make_filtering_bound_logger(getattr(logging, LOG_LEVEL)),
             context_class=dict,
             logger_factory=structlog.PrintLoggerFactory(),
             cache_logger_on_first_use=True,
@@ -93,6 +89,7 @@ class RequestLoggingMiddleware:
             return
 
         import time
+
         start_time = time.time()
 
         request_id = scope.get("headers", {}).get(b"x-request-id", b"").decode()
@@ -155,8 +152,8 @@ class MetricsCollector:
 
     def __init__(self):
         self.logger = get_logger("amos.metrics")
-        self._counters: Dict[str, int] = {}
-        self._gauges: Dict[str, float] = {}
+        self._counters: dict[str, int] = {}
+        self._gauges: dict[str, float] = {}
 
     def increment(self, metric_name: str, value: int = 1, tags: dict = None):
         """Increment a counter metric."""
@@ -196,18 +193,10 @@ metrics = MetricsCollector()
 def log_system_event(event_type: str, data: dict) -> None:
     """Log a system event with structured data."""
     logger = get_logger("amos.system")
-    logger.info(
-        event_type,
-        environment=ENVIRONMENT,
-        **data
-    )
+    logger.info(event_type, environment=ENVIRONMENT, **data)
 
 
 def log_security_event(event_type: str, details: dict) -> None:
     """Log a security-related event."""
     logger = get_logger("amos.security")
-    logger.warning(
-        event_type,
-        environment=ENVIRONMENT,
-        **details
-    )
+    logger.warning(event_type, environment=ENVIRONMENT, **details)

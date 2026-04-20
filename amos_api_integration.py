@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 """AMOS API Integration Layer - FastAPI Endpoints for Production Systems
 
@@ -18,7 +18,9 @@ Version: 12.0.0
 """
 
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 
 # FastAPI imports (with fallback)
 try:
@@ -60,7 +62,6 @@ except ImportError:
     SECRETS_AVAILABLE = False
 
 try:
-
     from amos_metrics_aggregation import get_metrics_registry, get_prometheus_metrics
 
     METRICS_AVAILABLE = True
@@ -101,9 +102,9 @@ class SagaResponse:
     status: str
     current_step: int
     total_steps: int
-    completed_steps: List[str]
-    failed_step: Optional[str]
-    error: Optional[str]
+    completed_steps: list[str]
+    failed_step: str
+    error: str
     duration_seconds: float
 
 
@@ -113,14 +114,14 @@ class SecretMetadataResponse:
     type: str
     version_count: int
     active_versions: int
-    last_rotated: Optional[str]
+    last_rotated: str
     rotation_days: int
 
 
 if FASTAPI_AVAILABLE:
 
     @router.get("/health/complete")
-    async def complete_health_check() -> Dict[str, Any]:
+    async def complete_health_check() -> dict[str, Any]:
         """
         Comprehensive health check across all AMOS production systems.
         Returns status of Cache, Alert, Saga, Secrets, and Metrics systems.
@@ -217,7 +218,7 @@ if FASTAPI_AVAILABLE:
         return get_prometheus_metrics()
 
     @router.get("/cache/stats")
-    async def cache_stats() -> Dict[str, Any]:
+    async def cache_stats() -> dict[str, Any]:
         """Get distributed cache statistics."""
         if not CACHE_AVAILABLE:
             raise HTTPException(
@@ -230,7 +231,7 @@ if FASTAPI_AVAILABLE:
         return {"l1_cache": stats["l1"], "timestamp": datetime.now(UTC).isoformat()}
 
     @router.post("/cache/invalidate/{key_pattern}")
-    async def cache_invalidate(key_pattern: str) -> Dict[str, Any]:
+    async def cache_invalidate(key_pattern: str) -> dict[str, Any]:
         """Invalidate cache keys matching pattern (admin only)."""
         if not CACHE_AVAILABLE:
             raise HTTPException(
@@ -249,8 +250,8 @@ if FASTAPI_AVAILABLE:
 
     @router.get("/alerts")
     async def list_alerts(
-        severity: Optional[str] = None, unresolved_only: bool = False
-    ) -> List[AlertResponse]:
+        severity: str = None, unresolved_only: bool = False
+    ) -> list[AlertResponse]:
         """List alerts with optional filtering."""
         if not ALERT_AVAILABLE:
             raise HTTPException(
@@ -286,7 +287,7 @@ if FASTAPI_AVAILABLE:
         ]
 
     @router.post("/alerts/{alert_id}/acknowledge")
-    async def acknowledge_alert(alert_id: str) -> Dict[str, Any]:
+    async def acknowledge_alert(alert_id: str) -> dict[str, Any]:
         """Acknowledge an alert."""
         if not ALERT_AVAILABLE:
             raise HTTPException(
@@ -309,7 +310,7 @@ if FASTAPI_AVAILABLE:
         }
 
     @router.get("/sagas")
-    async def list_sagas() -> List[SagaResponse]:
+    async def list_sagas() -> list[SagaResponse]:
         """List active saga instances."""
         if not SAGA_AVAILABLE:
             raise HTTPException(
@@ -365,7 +366,7 @@ if FASTAPI_AVAILABLE:
         )
 
     @router.get("/secrets", include_in_schema=False)
-    async def list_secrets() -> List[SecretMetadataResponse]:
+    async def list_secrets() -> list[SecretMetadataResponse]:
         """List secrets metadata (admin only, no values exposed)."""
         if not SECRETS_AVAILABLE:
             raise HTTPException(

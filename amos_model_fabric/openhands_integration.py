@@ -9,7 +9,7 @@ import logging
 import subprocess
 import sys
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -70,16 +70,30 @@ class OpenHandsIntegration:
 
         # OpenHands Docker command with LiteLLM proxy
         cmd = [
-            "docker", "run", "-it", "--rm",
-            "-e", f"LLM_API_KEY=sk-amos-local",
-            "-e", f"LLM_BASE_URL={self.proxy_url}",
-            "-e", f"LLM_MODEL={model}",
-            "-e", "AGENT_MEMORY_ENABLED=true",
-            "-v", f"{self.workspace_dir}:/workspace",
-            "-v", "/var/run/docker.sock:/var/run/docker.sock",
+            "docker",
+            "run",
+            "-it",
+            "--rm",
+            "-e",
+            "LLM_API_KEY=sk-amos-local",
+            "-e",
+            f"LLM_BASE_URL={self.proxy_url}",
+            "-e",
+            f"LLM_MODEL={model}",
+            "-e",
+            "AGENT_MEMORY_ENABLED=true",
+            "-v",
+            f"{self.workspace_dir}:/workspace",
+            "-v",
+            "/var/run/docker.sock:/var/run/docker.sock",
             "ghcr.io/all-hands-ai/runtime:0.9-docker",
-            "poetry", "run", "python", "-m", "openhands.core.main",
-            "-t", task,
+            "poetry",
+            "run",
+            "python",
+            "-m",
+            "openhands.core.main",
+            "-t",
+            task,
         ]
 
         return subprocess.Popen(
@@ -95,20 +109,29 @@ class OpenHandsIntegration:
             raise RuntimeError("Docker not available")
 
         cmd = [
-            "docker", "run", "-it", "--rm",
-            "-e", f"LLM_API_KEY=sk-amos-local",
-            "-e", f"LLM_BASE_URL={self.proxy_url}",
-            "-e", f"LLM_MODEL={model}",
-            "-e", "AGENT_MEMORY_ENABLED=true",
-            "-v", f"{self.workspace_dir}:/workspace",
-            "-v", "/var/run/docker.sock:/var/run/docker.sock",
+            "docker",
+            "run",
+            "-it",
+            "--rm",
+            "-e",
+            "LLM_API_KEY=sk-amos-local",
+            "-e",
+            f"LLM_BASE_URL={self.proxy_url}",
+            "-e",
+            f"LLM_MODEL={model}",
+            "-e",
+            "AGENT_MEMORY_ENABLED=true",
+            "-v",
+            f"{self.workspace_dir}:/workspace",
+            "-v",
+            "/var/run/docker.sock:/var/run/docker.sock",
             "ghcr.io/all-hands-ai/runtime:0.9-docker",
             "/bin/bash",
         ]
 
         return subprocess.Popen(cmd)
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get OpenHands integration status."""
         return {
             "docker_available": self.is_docker_available(),

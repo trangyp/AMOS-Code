@@ -1,14 +1,16 @@
 """AMOS Tools stub for compatibility."""
 
+from __future__ import annotations
+
 from collections.abc import Callable
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class ToolRegistry:
     """Registry for AMOS tools."""
 
     def __init__(self):
-        self._tools: Dict[str, Callable] = {}
+        self._tools: dict[str, Callable] = {}
 
     def register(self, name: str, func: Callable) -> None:
         """Register a tool."""
@@ -18,7 +20,7 @@ class ToolRegistry:
         """Get tool by name."""
         return self._tools.get(name)
 
-    def list(self) -> List[str]:
+    def list(self) -> list[str]:
         """List all registered tools."""
         return list(self._tools.keys())
 
@@ -26,7 +28,7 @@ class ToolRegistry:
 class ToolExecutor:
     """Executor for AMOS tools."""
 
-    def __init__(self, registry: Optional["ToolRegistry"] = None):
+    def __init__(self, registry: Optional[ToolRegistry] = None):
         self.registry = registry or ToolRegistry()
 
     def execute(self, tool_name: str, **kwargs: Any) -> Any:

@@ -8,9 +8,10 @@ Version: 1.0.0
 """
 
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from enum import Enum
-from typing import Dict, List
 
 
 class ValuePriority(Enum):
@@ -51,7 +52,7 @@ class ValueSystem:
     id: str
     name: str
     description: str
-    principles: List[MoralPrinciple]
+    principles: list[MoralPrinciple]
     created_at: datetime
 
 
@@ -62,7 +63,7 @@ class MoralDecision:
     context: str
     action: str
     framework_used: FrameworkType
-    principles_considered: List[str]
+    principles_considered: list[str]
     value_alignment_score: float
     recommendation: str
     timestamp: datetime
@@ -76,9 +77,9 @@ class MoralFramework:
     """
 
     def __init__(self):
-        self.principles: Dict[str, MoralPrinciple] = {}
-        self.value_systems: Dict[str, ValueSystem] = {}
-        self.decisions: List[MoralDecision] = []
+        self.principles: dict[str, MoralPrinciple] = {}
+        self.value_systems: dict[str, ValueSystem] = {}
+        self.decisions: list[MoralDecision] = []
         self._load_default_principles()
         self._load_default_value_systems()
 
@@ -197,11 +198,11 @@ class MoralFramework:
         """Get a moral principle."""
         return self.principles.get(principle_id)
 
-    def get_principles_by_priority(self, priority: ValuePriority) -> List[MoralPrinciple]:
+    def get_principles_by_priority(self, priority: ValuePriority) -> list[MoralPrinciple]:
         """Get principles by priority level."""
         return [p for p in self.principles.values() if p.priority == priority]
 
-    def get_core_values(self) -> List[MoralPrinciple]:
+    def get_core_values(self) -> list[MoralPrinciple]:
         """Get all core values."""
         return self.get_principles_by_priority(ValuePriority.CORE)
 

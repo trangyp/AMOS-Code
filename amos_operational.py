@@ -18,8 +18,9 @@ import signal
 import sys
 import time
 from collections import deque
-from datetime import datetime, timedelta
-from typing import List
+from datetime import UTC, datetime
+
+UTC = UTC, timedelta
 
 
 class AMOSOperational:
@@ -59,7 +60,7 @@ class AMOSOperational:
         signal.signal(signal.SIGINT, self._signal_handler)
         signal.signal(signal.SIGTERM, self._signal_handler)
 
-    def _load_default_goals(self) -> List[dict]:
+    def _load_default_goals(self) -> list[dict]:
         """Load default operational goals."""
         return [
             {

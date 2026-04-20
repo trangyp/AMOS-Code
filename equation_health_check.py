@@ -3,9 +3,11 @@
 
 import sys
 import time
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Dict, Tuple
+
+UTC = UTC
+from typing import Any
 
 sys.path.insert(0, str(Path(__file__).parent))
 
@@ -28,7 +30,7 @@ if FASTAPI_AVAILABLE:
 else:
     router = None
 
-_health_status: Dict[str, Any] = {
+_health_status: dict[str, Any] = {
     "status": "healthy",
     "timestamp": datetime.now(UTC).isoformat(),
     "version": "2.0.0",
@@ -38,7 +40,7 @@ _health_status: Dict[str, Any] = {
 _start_time = time.time()
 
 
-def _check_api_available() -> Tuple[bool, str]:
+def _check_api_available() -> tuple[bool, str]:
     """Check if equation API is available."""
     try:
         if API_AVAILABLE:
@@ -49,7 +51,7 @@ def _check_api_available() -> Tuple[bool, str]:
         return False, str(e)
 
 
-def _check_memory_usage() -> Tuple[bool, str]:
+def _check_memory_usage() -> tuple[bool, str]:
     """Check system memory usage."""
     try:
         import psutil
@@ -62,7 +64,7 @@ def _check_memory_usage() -> Tuple[bool, str]:
         return True, "psutil not available"
 
 
-def _check_disk_space() -> Tuple[bool, str]:
+def _check_disk_space() -> tuple[bool, str]:
     """Check disk space."""
     try:
         import psutil
@@ -78,7 +80,7 @@ def _check_disk_space() -> Tuple[bool, str]:
 if FASTAPI_AVAILABLE:
 
     @router.get("/")
-    async def health_check() -> Dict[str, Any]:
+    async def health_check() -> dict[str, Any]:
         """Basic health check endpoint."""
         uptime = time.time() - _start_time
         return {
@@ -89,7 +91,7 @@ if FASTAPI_AVAILABLE:
         }
 
     @router.get("/ready")
-    async def readiness_check() -> Dict[str, Any]:
+    async def readiness_check() -> dict[str, Any]:
         """Readiness check for Kubernetes."""
         checks = {}
         overall = True
@@ -102,12 +104,12 @@ if FASTAPI_AVAILABLE:
         return {"status": status, "timestamp": datetime.now(UTC).isoformat(), "checks": checks}
 
     @router.get("/live")
-    async def liveness_check() -> Dict[str, Any]:
+    async def liveness_check() -> dict[str, Any]:
         """Liveness check for Kubernetes."""
         return {"status": "alive", "timestamp": datetime.now(UTC).isoformat()}
 
     @router.get("/detailed")
-    async def detailed_health() -> Dict[str, Any]:
+    async def detailed_health() -> dict[str, Any]:
         """Detailed health check with all components."""
         checks = {}
 

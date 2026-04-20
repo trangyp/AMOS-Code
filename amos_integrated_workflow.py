@@ -9,12 +9,6 @@ Integrates the 3 engines you have open:
 Usage: python amos_integrated_workflow.py <task>
 """
 
-import sys
-from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).parent))
-sys.path.insert(0, str(Path(__file__).parent / "AMOS_ORGANISM_OS"))
-
 
 class IntegratedWorkflow:
     """Workflow integrating coherence, prediction, and execution."""

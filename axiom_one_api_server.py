@@ -9,14 +9,18 @@ Production-ready FastAPI server with:
 - Integration with AMOS brain
 """
 
+from __future__ import annotations
+
 import json
 import logging
 import sys
 import uuid
 from contextlib import asynccontextmanager
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 # Setup paths
 AMOS_ROOT = Path(__file__).parent.resolve()
@@ -51,8 +55,8 @@ class AgentInfo(BaseModel):
     type: str
     description: str
     status: str
-    capabilities: List[str]
-    permissions: List[str]
+    capabilities: list[str]
+    permissions: list[str]
 
 
 class CreateWorkflowRequest(BaseModel):
@@ -68,9 +72,9 @@ class AssignTaskRequest(BaseModel):
 
     agent_type: str
     description: str
-    input_data: Dict[str, Any] = Field(default_factory=dict)
+    input_data: dict[str, Any] = Field(default_factory=dict)
     priority: str = "normal"
-    dependencies: List[str] = Field(default_factory=list)
+    dependencies: list[str] = Field(default_factory=list)
 
 
 class WorkflowResponse(BaseModel):
@@ -80,7 +84,7 @@ class WorkflowResponse(BaseModel):
     name: str
     description: str
     status: str
-    tasks: List[dict[str, Any]]
+    tasks: list[dict[str, Any]]
     created_at: str
     completed_at: str = None
 
@@ -92,7 +96,7 @@ class ExecuteResponse(BaseModel):
     status: str
     tasks_completed: int
     tasks_failed: int
-    results: Dict[str, Any]
+    results: dict[str, Any]
 
 
 class SystemGraphNode(BaseModel):
@@ -102,16 +106,14 @@ class SystemGraphNode(BaseModel):
     node_type: str
     name: str
     path: str
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Global State
-# ─────────────────────────────────────────────────────────────────────────────
-
-fleet: Optional[AxiomOneAgentFleet] = None
-workflows: Dict[str, Workflow] = {}
-connections: List[WebSocket] = []
+# ─────────────────────────────────────────────────────────────────────────────fleet: Optional[AxiomOneAgentFleet] = None
+workflows: dict[str, Workflow] = {}
+connections: list[WebSocket] = []
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -458,7 +460,7 @@ async def analyze_impact(path: str):
 # ─────────────────────────────────────────────────────────────────────────────
 
 
-async def broadcast(message: Dict[str, Any]):
+async def broadcast(message: dict[str, Any]):
     """Broadcast message to all connected WebSocket clients."""
     disconnected = []
     for conn in connections:

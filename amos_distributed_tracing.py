@@ -11,10 +11,12 @@ orchestrator architecture. Provides request flow visibility through:
 - Layer 5: API
 """
 
+from __future__ import annotations
+
 import functools
 from collections.abc import Callable
 from contextlib import contextmanager
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 from opentelemetry import trace
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
@@ -71,7 +73,7 @@ class AMOSTracing:
         self,
         name: str,
         kind: SpanKind = SpanKind.INTERNAL,
-        attributes: Dict[str, Any] = None,
+        attributes: dict[str, Any] = None,
     ):
         """Context manager for creating spans."""
         with self.tracer.start_as_current_span(

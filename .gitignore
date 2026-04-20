@@ -1,10 +1,30 @@
 __pycache__/
 *.pyc
+*.pyo
 *.egg-info/
 build/
 dist/
 debug_payload.json
 brainstorm_outputs/
+
+# Generated artifacts
+.axiom_generated/
+generated/
+*.generated.py
+
+# Runtime logs and data
+amos_logs/
+*.log
+*.audit.jsonl
+
+# Profiling and test artifacts
+profiling_results/
+test_state/
+*.pkl
+
+# System graphs (generated)
+.axiom_system_graph.dot
+.axiom_system_graph.json
 
 # Large archive files (GitHub warns >50MB)
 _AMOS_BRAIN/_Archive/*.json
@@ -21,10 +41,48 @@ Thumbs.db
 
 # Cache
 .mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.venv/
+venv/
 
 # Temp files
 *.tmp
-*.log
+*.temp
 
 # Runtime data
 AMOS_ORGANISM_OS/**/data/
+
+# Generated/runtime artifacts
+.axiom_generated/
+amos_logs/
+generated/
+profiling_results/
+test_state/
+amos_learning/
+.benchmarks/
+.hypothesis/
+.pytest_cache/
+.ruff_cache/
+
+# Local environment
+.env
+.env.local
+
+# Additional runtime artifacts
+amos_memory.db
+*.db
+*.sqlite
+*.sqlite3
+coverage.xml
+htmlcov/
+.tox/
+.nox/
+*.egg
+*.whl
+pip-wheel-metadata/
+*.manifest
+*.spec
+*.so
+*.dylib
+*.dll

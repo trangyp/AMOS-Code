@@ -13,9 +13,11 @@ import json
 import sys
 import threading
 import webbrowser
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from typing import Any, Set
+from typing import Any
 from urllib.parse import urlparse
 
 import websockets
@@ -23,7 +25,7 @@ import websockets
 from amos_brain import decide, think, validate
 
 # Global state for WebSocket connections
-connected_clients: Set[websockets.WebSocketServerProtocol] = set()
+connected_clients: set[websockets.WebSocketServerProtocol] = set()
 
 
 class UnifiedBrainUIHandler(BaseHTTPRequestHandler):

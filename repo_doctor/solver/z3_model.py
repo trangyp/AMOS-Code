@@ -16,7 +16,6 @@ Advanced features from Z3 research:
 - Optimization for multi-objective repairs
 """
 
-
 from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
@@ -36,8 +35,8 @@ class Z3Result:
     """Result of Z3 verification."""
 
     satisfiable: bool
-    model: Dict[str, Any]  = None
-    unsat_core: List[str]  = None
+    model: Dict[str, Any] = None
+    unsat_core: List[str] = None
     proof_time_ms: float = 0.0
 
 

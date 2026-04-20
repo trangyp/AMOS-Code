@@ -64,24 +64,21 @@ jobs:
         if: github.event.inputs.scan_type == 'quick' || github.event_name == 'push'
         id: quick_scan
         run: |
-          python -m repo_doctor.cli scan . --json > repo_doctor_report.json || true
-          cat repo_doctor_report.json | python -m json.tool > repo_doctor_report_formatted.json || cat repo_doctor_report.json
-        continue-on-error: true
+          python -m repo_doctor.cli scan . --json > repo_doctor_report.json
+          cat repo_doctor_report.json | python -m json.tool > repo_doctor_report_formatted.json 2>/dev/null || cat repo_doctor_report.json
 
       - name: Run Repo Doctor - Full Scan
         if: github.event.inputs.scan_type == 'full' || github.event_name == 'pull_request' || github.event_name == 'schedule'
         id: full_scan
         run: |
-          python -m repo_doctor.cli scan . --sensors --json > repo_doctor_full_report.json || true
-          cat repo_doctor_full_report.json | python -m json.tool > repo_doctor_full_report_formatted.json || cat repo_doctor_full_report.json
-        continue-on-error: true
+          python -m repo_doctor.cli scan . --sensors --json > repo_doctor_full_report.json
+          cat repo_doctor_full_report.json | python -m json.tool > repo_doctor_full_report_formatted.json 2>/dev/null || cat repo_doctor_full_report.json
 
       - name: Run Repo Doctor - Sensor Scan
         if: github.event.inputs.scan_type == 'sensors'
         id: sensor_scan
         run: |
-          python -m repo_doctor.cli scan . --sensors --json > repo_doctor_sensor_report.json || true
-        continue-on-error: true
+          python -m repo_doctor.cli scan . --sensors --json > repo_doctor_sensor_report.json
 
       - name: Analyze Repository Energy
         id: energy_analysis
@@ -112,7 +109,7 @@ jobs:
         id: security_check
         run: |
           # Run bandit for security scan
-          bandit -r . -f json -o bandit_report.json || true
+          bandit -r . -f json -o bandit_report.json
 
       - name: Upload Scan Artifacts
         uses: actions/upload-artifact@v4

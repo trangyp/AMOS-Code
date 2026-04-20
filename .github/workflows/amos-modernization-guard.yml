@@ -57,10 +57,10 @@ jobs:
           found_issues=0
           for file in ${{ steps.changed-files.outputs.files }}; do
             if [ -f "$file" ]; then
-              count=$(grep -c "datetime\.utcnow()" "$file" || true)
+              count=$(grep -c "datetime\.utcnow()" "$file" 2>/dev/null || echo 0)
               if [ "$count" -gt 0 ]; then
                 echo "❌ $file: Found $count deprecated datetime.utcnow() calls"
-                grep -n "datetime\.utcnow()" "$file" || true
+                grep -n "datetime\.utcnow()" "$file" 2>/dev/null
                 found_issues=$((found_issues + count))
               fi
             fi
@@ -84,12 +84,12 @@ jobs:
               # Check for deprecated imports
               if grep -q "from typing import.*\(Optional\|List\|Dict\|Set\|Tuple\|Union\)" "$file"; then
                 echo "❌ $file: Found deprecated typing imports"
-                grep -n "from typing import.*\(Optional\|List\|Dict\|Set\|Tuple\|Union\)" "$file" || true
+                grep -n "from typing import.*\(Optional\|List\|Dict\|Set\|Tuple\|Union\)" "$file" 2>/dev/null
                 found_issues=$((found_issues + 1))
               fi
               # Check for deprecated type annotations
               for pattern in "Optional\[" "List\[" "Dict\[" "Set\[" "Tuple\[" "Union\["; do
-                count=$(grep -c "$pattern" "$file" || true)
+                count=$(grep -c "$pattern" "$file" 2>/dev/null || echo 0)
                 if [ "$count" -gt 0 ]; then
                   echo "❌ $file: Found $count $pattern patterns"
                   found_issues=$((found_issues + count))
@@ -107,10 +107,10 @@ jobs:
           found_issues=0
           for file in ${{ steps.changed-files.outputs.files }}; do
             if [ -f "$file" ]; then
-              count=$(grep -c "except:" "$file" || true)
+              count=$(grep -c "except:" "$file" 2>/dev/null || echo 0)
               if [ "$count" -gt 0 ]; then
                 echo "❌ $file: Found $count bare except clauses"
-                grep -n "except:" "$file" || true
+                grep -n "except:" "$file" 2>/dev/null
                 found_issues=$((found_issues + count))
               fi
             fi
@@ -122,7 +122,7 @@ jobs:
         if: steps.changed-files.outputs.files != ''
         run: |
           echo "Running Ruff..."
-          ruff check ${{ steps.changed-files.outputs.files }} --output-format=github || true
+          ruff check ${{ steps.changed-files.outputs.files }} --output-format=github
 
       - name: Generate modernization report
         if: always()

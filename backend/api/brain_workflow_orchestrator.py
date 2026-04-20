@@ -8,25 +8,25 @@ Integrates with AMOS workflow systems and adds brain-powered capabilities:
 - Predictive workflow analytics
 """
 
+from __future__ import annotations
 
 import asyncio
 import sys
 from collections.abc import AsyncIterator
 from datetime import datetime, timezone
-
-UTC = timezone.utc
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
+UTC = timezone.utc
+
 # Setup paths
 AMOS_ROOT = Path(__file__).parent.parent.parent.resolve()
 for p in [AMOS_ROOT, AMOS_ROOT / "clawspring", AMOS_ROOT / "amos_brain"]:
     if str(p) not in sys.path:
-        sys.path.insert(0, str(p))
 
 # Import real brain and workflow systems
 try:
@@ -44,16 +44,16 @@ router = APIRouter(prefix="/api/v1/brain/workflow", tags=["Brain Workflow Orches
 class WorkflowOptimizationRequest(BaseModel):
     """Request to optimize a workflow."""
 
-    workflow_definition: Dict[str, Any] = Field(..., description="Workflow steps and dependencies")
-    optimization_goals: List[str] = Field(default_factory=lambda: ["speed", "reliability"])
-    constraints: Dict[str, Any] = Field(default_factory=dict)
+    workflow_definition: dict[str, Any] = Field(..., description="Workflow steps and dependencies")
+    optimization_goals: list[str] = Field(default_factory=lambda: ["speed", "reliability"])
+    constraints: dict[str, Any] = Field(default_factory=dict)
 
 
 class WorkflowOptimizationResult(BaseModel):
     """Workflow optimization result from brain analysis."""
 
-    optimized_workflow: Dict[str, Any]
-    improvements: List[str]
+    optimized_workflow: dict[str, Any]
+    improvements: list[str]
     estimated_speedup: float = Field(ge=0.0)
     risk_assessment: str
     confidence: float = Field(ge=0.0, le=1.0)
@@ -64,15 +64,15 @@ class TaskRoutingRequest(BaseModel):
     """Request for intelligent task routing."""
 
     task_description: str = Field(..., min_length=1)
-    available_agents: List[dict[str, Any]] = Field(default_factory=list)
-    task_requirements: Dict[str, Any] = Field(default_factory=dict)
+    available_agents: list[dict[str, Any]] = Field(default_factory=list)
+    task_requirements: dict[str, Any] = Field(default_factory=dict)
 
 
 class TaskRoutingResult(BaseModel):
     """Intelligent task routing recommendation."""
 
     recommended_agent: str
-    alternative_agents: List[str]
+    alternative_agents: list[str]
     reasoning: str
     estimated_completion_time: float
     confidence: float = Field(ge=0.0, le=1.0)
@@ -82,9 +82,9 @@ class TaskRoutingResult(BaseModel):
 class WorkflowDecisionRequest(BaseModel):
     """Request for brain-powered workflow decision."""
 
-    context: Dict[str, Any] = Field(..., description="Current workflow state")
+    context: dict[str, Any] = Field(..., description="Current workflow state")
     decision_point: str = Field(..., description="What decision needs to be made")
-    options: List[dict[str, Any]] = Field(default_factory=list)
+    options: list[dict[str, Any]] = Field(default_factory=list)
 
 
 class WorkflowDecisionResult(BaseModel):
@@ -93,16 +93,16 @@ class WorkflowDecisionResult(BaseModel):
     recommendation: str
     reasoning: str
     confidence: float = Field(ge=0.0, le=1.0)
-    risk_factors: List[str]
-    alternative_actions: List[str]
+    risk_factors: list[str]
+    alternative_actions: list[str]
     timestamp: datetime
 
 
 class WorkflowPatternRequest(BaseModel):
     """Request for workflow pattern recognition."""
 
-    workflow_history: List[dict[str, Any]] = Field(..., description="Past workflow executions")
-    pattern_types: List[str] = Field(default_factory=lambda: ["bottlenecks", "optimizations"])
+    workflow_history: list[dict[str, Any]] = Field(..., description="Past workflow executions")
+    pattern_types: list[str] = Field(default_factory=lambda: ["bottlenecks", "optimizations"])
 
 
 class WorkflowPattern(BaseModel):
@@ -111,15 +111,15 @@ class WorkflowPattern(BaseModel):
     pattern_type: str
     description: str
     frequency: float = Field(ge=0.0, le=1.0)
-    affected_steps: List[str]
+    affected_steps: list[str]
     recommendation: str
 
 
 class WorkflowPatternResult(BaseModel):
     """Pattern recognition results."""
 
-    patterns: List[WorkflowPattern]
-    insights: List[str]
+    patterns: list[WorkflowPattern]
+    insights: list[str]
     timestamp: datetime
 
 
@@ -127,7 +127,7 @@ class PredictiveAnalyticsRequest(BaseModel):
     """Request for predictive workflow analytics."""
 
     workflow_type: str = Field(..., min_length=1)
-    historical_data: List[dict[str, Any]] = Field(default_factory=list)
+    historical_data: list[dict[str, Any]] = Field(default_factory=list)
     prediction_horizon: str = Field(default="24h")
 
 
@@ -137,8 +137,8 @@ class PredictiveAnalyticsResult(BaseModel):
     predicted_completion_time: float
     success_probability: float = Field(ge=0.0, le=1.0)
     risk_score: float = Field(ge=0.0, le=1.0)
-    resource_forecast: Dict[str, Any]
-    recommendations: List[str]
+    resource_forecast: dict[str, Any]
+    recommendations: list[str]
     timestamp: datetime
 
 
@@ -177,14 +177,14 @@ class BrainWorkflowEngine:
 
     async def optimize_workflow(
         self,
-        workflow_definition: Dict[str, Any],
-        optimization_goals: List[str],
-        constraints: Dict[str, Any],
+        workflow_definition: dict[str, Any],
+        optimization_goals: list[str],
+        constraints: dict[str, Any],
     ) -> WorkflowOptimizationResult:
         """Use brain to optimize workflow design."""
         brain = await self._get_brain()
 
-        query = f"""Optimize this workflow for goals: {', '.join(optimization_goals)}
+        query = f"""Optimize this workflow for goals: {", ".join(optimization_goals)}
 
 Workflow: {workflow_definition}
 Constraints: {constraints}
@@ -218,8 +218,8 @@ Suggest improvements to workflow structure, step ordering, and parallelization."
     async def route_task(
         self,
         task_description: str,
-        available_agents: List[dict[str, Any]],
-        task_requirements: Dict[str, Any],
+        available_agents: list[dict[str, Any]],
+        task_requirements: dict[str, Any],
     ) -> TaskRoutingResult:
         """Use brain for intelligent task routing."""
         brain = await self._get_brain()
@@ -259,7 +259,7 @@ Which agent is best suited? Consider capabilities, current load, and past perfor
         )
 
     async def make_decision(
-        self, context: Dict[str, Any], decision_point: str, options: List[dict[str, Any]]
+        self, context: dict[str, Any], decision_point: str, options: list[dict[str, Any]]
     ) -> WorkflowDecisionResult:
         """Use brain for workflow decision support."""
         brain = await self._get_brain()
@@ -295,7 +295,7 @@ Analyze risks and recommend the best action."""
         )
 
     async def recognize_patterns(
-        self, workflow_history: List[dict[str, Any]], pattern_types: List[str]
+        self, workflow_history: list[dict[str, Any]], pattern_types: list[str]
     ) -> WorkflowPatternResult:
         """Use brain for workflow pattern recognition."""
         brain = await self._get_brain()
@@ -303,7 +303,7 @@ Analyze risks and recommend the best action."""
         query = f"""Analyze workflow history for patterns:
 
 History: {len(workflow_history)} executions
-Pattern Types: {', '.join(pattern_types)}
+Pattern Types: {", ".join(pattern_types)}
 
 Identify bottlenecks, common failures, and optimization opportunities."""
 
@@ -333,7 +333,7 @@ Identify bottlenecks, common failures, and optimization opportunities."""
         )
 
     async def predict_analytics(
-        self, workflow_type: str, historical_data: List[dict[str, Any]], prediction_horizon: str
+        self, workflow_type: str, historical_data: list[dict[str, Any]], prediction_horizon: str
     ) -> PredictiveAnalyticsResult:
         """Use brain for predictive workflow analytics."""
         brain = await self._get_brain()
@@ -409,7 +409,7 @@ Forecast completion time, success probability, and resource needs."""
             "timestamp": datetime.now(UTC).isoformat(),
         }
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get engine statistics."""
         return {
             "brain_available": _BRAIN_AVAILABLE,
@@ -420,7 +420,7 @@ Forecast completion time, success probability, and resource needs."""
         }
 
 
-# Global engine
+#Global engine
 _workflow_engine: Optional[BrainWorkflowEngine] = None
 
 
@@ -513,14 +513,14 @@ async def stream_workflow_intelligence(
 
 
 @router.get("/stats")
-async def get_engine_stats() -> Dict[str, Any]:
+async def get_engine_stats() -> dict[str, Any]:
     """Get brain workflow engine statistics."""
     engine = get_workflow_engine()
     return engine.get_stats()
 
 
 @router.get("/health")
-async def health_check() -> Dict[str, Any]:
+async def health_check() -> dict[str, Any]:
     """Check brain workflow orchestrator health."""
     return {
         "status": "healthy" if _BRAIN_AVAILABLE else "degraded",

@@ -9,19 +9,20 @@ Manages MCP server connections with:
 
 from __future__ import annotations
 
-
-
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any
+
+UTC = UTC
+
 
 class MCPProtocol(Enum):
     """MCP protocol versions."""
 
     V2024_11_05 = "2024-11-05"
     V2025_03_26 = "2025-03-26"
+
 
 class ServerStatus(Enum):
     """MCP server connection status."""
@@ -31,13 +32,15 @@ class ServerStatus(Enum):
     ERROR = "error"
     PENDING = "pending"
 
+
 @dataclass
 class MCPTool:
     """MCP tool definition."""
 
     name: str
     description: str
-    input_schema: Dict[str, Any]
+    input_schema: dict[str, Any]
+
 
 @dataclass
 class MCPResource:
@@ -46,7 +49,8 @@ class MCPResource:
     uri: str
     name: str
     description: str
-    mime_type: Optional[str] = None
+    mime_type: str = None
+
 
 @dataclass
 class MCPServer:
@@ -57,15 +61,15 @@ class MCPServer:
     url: str
     protocol: MCPProtocol
     status: ServerStatus
-    capabilities: List[str]
-    tools: List[MCPTool] = field(default_factory=list)
-    resources: List[MCPResource] = field(default_factory=list)
+    capabilities: list[str]
+    tools: list[MCPTool] = field(default_factory=list)
+    resources: list[MCPResource] = field(default_factory=list)
     registered_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
-    last_ping: Optional[str] = None
+    last_ping: str = None
     error_count: int = 0
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "id": self.id,
@@ -97,11 +101,12 @@ class MCPServer:
             "metadata": self.metadata,
         }
 
+
 class MCPRegistry:
     """Registry for MCP server management."""
 
     def __init__(self):
-        self._servers: Dict[str, MCPServer] = {}
+        self._servers: dict[str, MCPServer] = {}
         self._initialized = False
 
     def initialize(self) -> None:
@@ -183,15 +188,15 @@ class MCPRegistry:
             return True
         return False
 
-    def get_server(self, server_id: str) -> Optional[MCPServer]:
+    def get_server(self, server_id: str) -> MCPServer:
         """Get a specific MCP server."""
         return self._servers.get(server_id)
 
     def list_servers(
         self,
-        status: Optional[ServerStatus] = None,
-        capability: Optional[str] = None,
-    ) -> List[MCPServer]:
+        status: ServerStatus = None,
+        capability: str = None,
+    ) -> list[MCPServer]:
         """List MCP servers with optional filtering."""
         servers = list(self._servers.values())
 
@@ -203,7 +208,7 @@ class MCPRegistry:
 
         return servers
 
-    def update_status(self, server_id: str, status: ServerStatus) -> Optional[MCPServer]:
+    def update_status(self, server_id: str, status: ServerStatus) -> MCPServer:
         """Update server connection status."""
         server = self._servers.get(server_id)
         if server:
@@ -228,7 +233,7 @@ class MCPRegistry:
             return True
         return False
 
-    def get_all_tools(self) -> List[dict[str, Any]]:
+    def get_all_tools(self) -> list[dict[str, Any]]:
         """Get all tools from all connected servers."""
         tools = []
         for server in self._servers.values():
@@ -245,7 +250,7 @@ class MCPRegistry:
                     )
         return tools
 
-    def get_all_resources(self) -> List[dict[str, Any]]:
+    def get_all_resources(self) -> list[dict[str, Any]]:
         """Get all resources from all connected servers."""
         resources = []
         for server in self._servers.values():
@@ -263,8 +268,10 @@ class MCPRegistry:
                     )
         return resources
 
+
 # Global MCP registry instance
-_mcp_registry: Optional[MCPRegistry] = None
+_mcp_registry: MCPRegistry = None
+
 
 def get_mcp_registry() -> MCPRegistry:
     """Get global MCP registry."""

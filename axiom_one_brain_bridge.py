@@ -9,14 +9,17 @@ Owner: Trang Phan
 Version: 1.0.0
 """
 
+from __future__ import annotations
+
 import sys
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 from pathlib import Path
 from threading import Lock
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 # Add repo root to path
 _REPO_ROOT = Path(__file__).parent.resolve()
@@ -39,10 +42,10 @@ class BrainTask:
 
     id: str
     query: str
-    context: Dict[str, Any] = field(default_factory=dict)
+    context: dict[str, Any] = field(default_factory=dict)
     status: str = "pending"
     created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    result: Dict[str, Any] = None
+    result: dict[str, Any] = None
     error: str = None
     completed_at: datetime = None
 
@@ -54,7 +57,7 @@ class AxiomOneBrainBridge:
         """Initialize the brain bridge."""
         self._think_func = amos_think if _BRAIN_AVAILABLE else None
         self._initialized = _BRAIN_AVAILABLE
-        self._tasks: Dict[str, BrainTask] = {}
+        self._tasks: dict[str, BrainTask] = {}
         self._stats = {"total": 0, "completed": 0, "failed": 0, "pending": 0}
         self._lock = Lock()
 
@@ -73,7 +76,7 @@ class AxiomOneBrainBridge:
             print(f"Brain initialization failed: {e}")
             return False
 
-    def think(self, query: str, context: Dict[str, Any] = None) -> Dict[str, Any]:
+    def think(self, query: str, context: dict[str, Any] = None) -> dict[str, Any]:
         """Use brain to think about a query using real AMOS brain."""
         with self._lock:
             task_id = str(uuid.uuid4())
@@ -138,7 +141,7 @@ class AxiomOneBrainBridge:
                 "task_id": task_id,
             }
 
-    def analyze_code(self, code: str, language: str = "python") -> Dict[str, Any]:
+    def analyze_code(self, code: str, language: str = "python") -> dict[str, Any]:
         """Analyze code using brain cognitive capabilities."""
         prompt = f"""Analyze this {language} code:
 
@@ -156,12 +159,12 @@ Provide:
         return self.think(prompt, domain="code_review")
 
     def suggest_fixes(
-        self, code: str, issues: List[str], language: str = "python"
-    ) -> Dict[str, Any]:
+        self, code: str, issues: list[str], language: str = "python"
+    ) -> dict[str, Any]:
         """Suggest fixes for identified issues."""
         prompt = f"""Given this {language} code with these issues:
 
-Issues: {', '.join(issues)}
+Issues: {", ".join(issues)}
 
 Code:
 ```{language}
@@ -172,7 +175,7 @@ Provide specific fixes with code examples."""
 
         return self.think(prompt, domain="code_fix")
 
-    def explain_architecture(self, file_tree: List[str], repo_name: str) -> Dict[str, Any]:
+    def explain_architecture(self, file_tree: list[str], repo_name: str) -> dict[str, Any]:
         """Explain repository architecture."""
         prompt = f"""Analyze the architecture of repository '{repo_name}':
 
@@ -187,7 +190,7 @@ Provide:
 
         return self.think(prompt, domain="architecture")
 
-    def get_task_status(self, task_id: str) -> Dict[str, Any]:
+    def get_task_status(self, task_id: str) -> dict[str, Any]:
         """Get task status."""
         task = self._tasks.get(task_id)
         if task is None:
@@ -203,7 +206,7 @@ Provide:
             "error": task.error,
         }
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get bridge statistics."""
         total = len(self._tasks)
         completed = sum(1 for t in self._tasks.values() if t.status == "completed")

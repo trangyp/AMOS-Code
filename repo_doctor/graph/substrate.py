@@ -269,7 +269,7 @@ class GraphSubstrate:
         """Get all edges of a specific type."""
         return [self.edges[e_id] for e_id in self._edges_by_type[etype]]
 
-    def get_neighbors(self, vertex_id: str, edge_type: Optional[EdgeType] = None) -> List[Vertex]:
+    def get_neighbors(self, vertex_id: str, edge_type: EdgeType | None = None) -> List[Vertex]:
         """Get neighboring vertices."""
         neighbors = []
         for edge_id in self._outgoing.get(vertex_id, []):
@@ -279,9 +279,7 @@ class GraphSubstrate:
                     neighbors.append(self.vertices[edge.target])
         return neighbors
 
-    def get_predecessors(
-        self, vertex_id: str, edge_type: Optional[EdgeType] = None
-    ) -> List[Vertex]:
+    def get_predecessors(self, vertex_id: str, edge_type: EdgeType | None = None) -> List[Vertex]:
         """Get predecessor vertices."""
         predecessors = []
         for edge_id in self._incoming.get(vertex_id, []):
@@ -304,7 +302,7 @@ class GraphSubstrate:
 
 
 # Singleton instance
-_graph_instance: Optional[GraphSubstrate] = None
+_graph_instance: GraphSubstrate | None = None
 
 
 def get_graph_substrate() -> GraphSubstrate:

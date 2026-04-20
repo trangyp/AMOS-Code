@@ -8,12 +8,11 @@ Not a demo. Real implementation using asyncio and AMOS brain.
 from __future__ import annotations
 
 import asyncio
-from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from typing import Any
+from datetime import UTC, datetime
+from typing import Any, Optional
 
-from amos_brain import BrainClient, get_brain, process_task
+from amos_brain import BrainClient, get_brain
 from amos_brain.task_processor import BrainTaskProcessor, TaskResult
 
 
@@ -25,9 +24,7 @@ class AsyncTaskResult:
     input_task: str
     brain_result: TaskResult
     execution_time_ms: float
-    timestamp: str = field(
-        default_factory=lambda: datetime.now(timezone.utc).isoformat()
-    )
+    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
 
 class AsyncBrainProcessor:
@@ -52,7 +49,7 @@ class AsyncBrainProcessor:
         self._last_request_time: float = 0.0
 
     async def process_single(
-        self, task: str, context: dict[str, Any] | None = None, priority: int = 5
+        self, task: str, context: Optional[dict[str, Any]] = None, priority: int = 5
     ) -> AsyncTaskResult:
         """Process a single task through the brain asynchronously.
 
@@ -113,7 +110,7 @@ class AsyncBrainProcessor:
         self,
         tasks: list[str],
         contexts: list[dict[str, Any]] | None = None,
-        priorities: list[int] | None = None,
+        priorities: Optional[list[int]] = None,
     ) -> list[AsyncTaskResult]:
         """Process multiple tasks concurrently.
 
@@ -172,7 +169,7 @@ class AsyncBrainProcessor:
         return processed_results
 
     async def process_with_aggregation(
-        self, tasks: list[str], aggregate_prompt: str | None = None
+        self, tasks: list[str], aggregate_prompt: Optional[str] = None
     ) -> tuple[list[AsyncTaskResult], TaskResult]:
         """Process tasks and aggregate results through brain.
 
@@ -218,14 +215,17 @@ Provide:
 
 
 # Convenience async functions
-async def brain_process_async(task: str, context: dict[str, Any] | None = None) -> AsyncTaskResult:
+async def brain_process_async(
+    task: str, context: Optional[dict[str, Any]] = None
+) -> AsyncTaskResult:
     """Quick async brain processing."""
     processor = AsyncBrainProcessor()
     return await processor.process_single(task, context)
 
 
 async def brain_process_batch(
-    tasks: list[str], contexts: list[dict[str, Any]] | None = None
+    tasks: Optional[list[str]] = None,
+    contexts: list[dict[str, Any]] | None = None,
 ) -> list[AsyncTaskResult]:
     """Quick batch brain processing."""
     processor = AsyncBrainProcessor()

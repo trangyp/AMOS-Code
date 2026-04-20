@@ -1,9 +1,10 @@
 import json
 from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 from workers import WORKER_REGISTRY, WorkerResponse
 

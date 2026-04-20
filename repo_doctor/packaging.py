@@ -39,7 +39,7 @@ class PackagingAnalyzer:
     Analyzes packaging configuration for consistency.
     """
 
-    def __init__(self, repo_path: str | Path):
+    def __init__(self, repo_path: Union[str, Path]):
         self.repo_path = Path(repo_path).resolve()
         self.issues: List[PackagingIssue] = []
         self.config: dict = {}

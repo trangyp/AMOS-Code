@@ -1,0 +1,45 @@
+# ============================================================================
+# OpenClaws: Import Linter Configuration
+# Tool Lattice: Architecture Enforcement Kernel
+# ============================================================================
+
+[importlinter]
+root_package = "openclaws"
+include_external_packages = false
+
+# ============================================================================
+# CONTRACT 1: OpenClaws Layer Architecture (L0-L9 mapping)
+# Layers: frontends → api → orchestration → tools → memory → runtimes → protocols → core → config
+# ============================================================================
+
+[[importlinter.contracts]]
+name = "OpenClaws layers"
+type = "layers"
+layers = [
+    "frontends",
+    "api",
+    "orchestration",
+    "tools",
+    "memory",
+    "runtimes",
+    "protocols",
+    "core",
+    "config"
+]
+containers = ["openclaws"]
+exhaustive = true
+exhaustive_ignores = ["tests", "examples"]
+
+# ============================================================================
+# CONTRACT 2: Core Isolation
+# Core must not depend on outer layers
+# ============================================================================
+
+[[importlinter.contracts]]
+name = "Core isolation"
+type = "forbidden"
+source_modules = ["openclaws.core"]
+forbidden_modules = [
+    "openclaws.frontends",
+    "openclaws.api",
+]

@@ -11,14 +11,14 @@ import ast
 import hashlib
 import json
 import re
-from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
-from pathlib import Path
-from typing import Any
+from datetime import UTC, datetime, timezone
 
-from amos_brain import BrainClient, get_brain, process_task
+UTC = UTC
+
+from pathlib import Path
+
+from amos_brain import BrainClient, get_brain
 from amos_brain.task_processor import BrainTaskProcessor, TaskResult
 
 
@@ -49,9 +49,7 @@ class AnalysisResult:
     issues_found: list[CodeIssue]
     summary: str
     brain_task_results: list[TaskResult]
-    timestamp: str = field(
-        default_factory=lambda: datetime.now(timezone.utc).isoformat()
-    )
+    timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
 
 class BrainRepoAnalyzer:
@@ -64,14 +62,14 @@ class BrainRepoAnalyzer:
     4. Can apply fixes to files
     """
 
-    def __init__(self, repo_path: str | Path | None = None):
+    def __init__(self, repo_path: Optional[Union[str, Path]] = None):
         self.repo_path = Path(repo_path) if repo_path else Path.cwd()
         self.brain_client = BrainClient()  # Lazy loader takes no args
         self.task_processor = BrainTaskProcessor()
         _ = get_brain()  # Ensure brain is loaded
         self.analysis_history: list[AnalysisResult] = []
 
-    def analyze_file(self, file_path: str | Path) -> list[CodeIssue]:
+    def analyze_file(self, file_path: Union[str, Path]) -> list[CodeIssue]:
         """Analyze a single file using brain-guided analysis.
 
         Args:
@@ -265,8 +263,8 @@ What systemic issues should we look for in remaining files?"""
 
 Files analyzed: {len(files)}
 Total issues: {len(all_issues)}
-Critical: {sum(1 for i in all_issues if i.severity == 'critical')}
-Warnings: {sum(1 for i in all_issues if i.severity == 'warning')}
+Critical: {sum(1 for i in all_issues if i.severity == "critical")}
+Warnings: {sum(1 for i in all_issues if i.severity == "warning")}
 
 Top issue types: {json.dumps([i.issue_type for i in all_issues[:10]])}
 
@@ -351,13 +349,13 @@ Provide executive summary and recommended actions."""
 
 
 # Convenience functions
-def analyze_repo(repo_path: str | Path | None = None) -> AnalysisResult:
+def analyze_repo(repo_path: Optional[Union[str, Path]] = None) -> AnalysisResult:
     """Quick repo analysis using brain."""
     analyzer = BrainRepoAnalyzer(repo_path)
     return analyzer.analyze_repository()
 
 
-def analyze_file(file_path: str | Path) -> list[CodeIssue]:
+def analyze_file(file_path: Union[str, Path]) -> list[CodeIssue]:
     """Quick file analysis using brain."""
     analyzer = BrainRepoAnalyzer()
     return analyzer.analyze_file(file_path)
@@ -373,11 +371,9 @@ if __name__ == "__main__":
 
     # Analyze a few files
     test_files = list(Path.cwd().rglob("*.py"))
-    test_files = [
-        f
-        for f in test_files
-        if ".venv" not in str(f) and "__pycache__" not in str(f)
-    ][:5]
+    test_files = [f for f in test_files if ".venv" not in str(f) and "__pycache__" not in str(f)][
+        :5
+    ]
 
     for file_path in test_files:
         print(f"\nAnalyzing: {file_path.name}")

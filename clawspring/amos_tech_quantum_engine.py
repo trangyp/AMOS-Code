@@ -1,12 +1,15 @@
 """AMOS Tech Quantum Engine - Quantum computing analysis and design."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class QuantumDomain(Enum):
     """Quantum computing domains."""
+
     ALGORITHMS = "quantum_algorithms"
     HARDWARE = "quantum_hardware"
     CONTROL = "quantum_control"
@@ -37,9 +40,9 @@ class QuantumAlgorithmsKernel:
     ]
 
     def __init__(self):
-        self.findings: List[QuantumFinding] = []
+        self.findings: list[QuantumFinding] = []
 
-    def analyze(self, scenario: str) -> List[QuantumFinding]:
+    def analyze(self, scenario: str) -> list[QuantumFinding]:
         """Analyze quantum algorithm aspects."""
         findings = []
         scenario_lower = scenario.lower()
@@ -65,10 +68,10 @@ class QuantumAlgorithmsKernel:
         self.findings = findings
         return findings
 
-    def get_primitives(self) -> List[str]:
+    def get_primitives(self) -> list[str]:
         return self.PRIMITIVES
 
-    def get_algorithms(self) -> List[str]:
+    def get_algorithms(self) -> list[str]:
         return self.ALGORITHMS
 
 
@@ -85,9 +88,9 @@ class QuantumHardwareKernel:
     ]
 
     def __init__(self):
-        self.findings: List[QuantumFinding] = []
+        self.findings: list[QuantumFinding] = []
 
-    def analyze(self, scenario: str) -> List[QuantumFinding]:
+    def analyze(self, scenario: str) -> list[QuantumFinding]:
         """Analyze quantum hardware aspects."""
         findings = []
         scenario_lower = scenario.lower()
@@ -114,10 +117,10 @@ class QuantumHardwareKernel:
         self.findings = findings
         return findings
 
-    def get_primitives(self) -> List[str]:
+    def get_primitives(self) -> list[str]:
         return self.PRIMITIVES
 
-    def get_platforms(self) -> List[str]:
+    def get_platforms(self) -> list[str]:
         return self.PLATFORMS
 
 
@@ -132,9 +135,9 @@ class QuantumControlKernel:
     ]
 
     def __init__(self):
-        self.findings: List[QuantumFinding] = []
+        self.findings: list[QuantumFinding] = []
 
-    def analyze(self, scenario: str) -> List[QuantumFinding]:
+    def analyze(self, scenario: str) -> list[QuantumFinding]:
         """Analyze quantum control aspects."""
         findings = []
         scenario_lower = scenario.lower()
@@ -160,7 +163,7 @@ class QuantumControlKernel:
         self.findings = findings
         return findings
 
-    def get_principles(self) -> List[str]:
+    def get_principles(self) -> list[str]:
         return self.PRINCIPLES
 
 
@@ -170,9 +173,9 @@ class QuantumErrorCorrectionKernel:
     PRIMITIVES = ["stabilizer", "syndrome", "logical_qubit", "surface_code", "threshold"]
 
     def __init__(self):
-        self.findings: List[QuantumFinding] = []
+        self.findings: list[QuantumFinding] = []
 
-    def analyze(self, scenario: str) -> List[QuantumFinding]:
+    def analyze(self, scenario: str) -> list[QuantumFinding]:
         """Analyze error correction aspects."""
         findings = []
         scenario_lower = scenario.lower()
@@ -197,7 +200,7 @@ class QuantumErrorCorrectionKernel:
         self.findings = findings
         return findings
 
-    def get_primitives(self) -> List[str]:
+    def get_primitives(self) -> list[str]:
         return self.PRIMITIVES
 
 
@@ -214,9 +217,9 @@ class QuantumApplicationsKernel:
     ]
 
     def __init__(self):
-        self.findings: List[QuantumFinding] = []
+        self.findings: list[QuantumFinding] = []
 
-    def analyze(self, scenario: str) -> List[QuantumFinding]:
+    def analyze(self, scenario: str) -> list[QuantumFinding]:
         """Analyze quantum application aspects."""
         findings = []
         scenario_lower = scenario.lower()
@@ -243,7 +246,7 @@ class QuantumApplicationsKernel:
         self.findings = findings
         return findings
 
-    def get_domains(self) -> List[str]:
+    def get_domains(self) -> list[str]:
         return self.DOMAINS
 
 
@@ -260,9 +263,7 @@ class TechQuantumEngine:
         self.error_correction_kernel = QuantumErrorCorrectionKernel()
         self.applications_kernel = QuantumApplicationsKernel()
 
-    def analyze(
-        self, description: str, domains: Optional[List[str]] = None
-    ) -> Dict[str, Any]:
+    def analyze(self, description: str, domains: list[str | None] = None) -> dict[str, Any]:
         """Run tech quantum analysis."""
         domains = domains or [
             "algorithms",
@@ -271,7 +272,7 @@ class TechQuantumEngine:
             "error_correction",
             "applications",
         ]
-        results: Dict[str, Any] = {}
+        results: dict[str, Any] = {}
         if "algorithms" in domains:
             results["algorithms"] = self._analyze_algorithms(description)
         if "hardware" in domains:
@@ -290,8 +291,7 @@ class TechQuantumEngine:
             "query": description[:100],
             "findings_count": len(findings),
             "findings": [
-                {"concept": f.concept, "application": f.application}
-                for f in findings[:3]
+                {"concept": f.concept, "application": f.application} for f in findings[:3]
             ],
             "primitives": self.algorithms_kernel.get_primitives(),
             "algorithms": self.algorithms_kernel.get_algorithms(),
@@ -303,8 +303,7 @@ class TechQuantumEngine:
             "query": description[:100],
             "findings_count": len(findings),
             "findings": [
-                {"concept": f.concept, "application": f.application}
-                for f in findings[:3]
+                {"concept": f.concept, "application": f.application} for f in findings[:3]
             ],
             "primitives": self.hardware_kernel.get_primitives(),
             "platforms": self.hardware_kernel.get_platforms(),
@@ -316,8 +315,7 @@ class TechQuantumEngine:
             "query": description[:100],
             "findings_count": len(findings),
             "findings": [
-                {"concept": f.concept, "application": f.application}
-                for f in findings[:3]
+                {"concept": f.concept, "application": f.application} for f in findings[:3]
             ],
             "principles": self.control_kernel.get_principles(),
         }
@@ -328,8 +326,7 @@ class TechQuantumEngine:
             "query": description[:100],
             "findings_count": len(findings),
             "findings": [
-                {"concept": f.concept, "application": f.application}
-                for f in findings[:3]
+                {"concept": f.concept, "application": f.application} for f in findings[:3]
             ],
             "primitives": self.error_correction_kernel.get_primitives(),
         }
@@ -340,8 +337,7 @@ class TechQuantumEngine:
             "query": description[:100],
             "findings_count": len(findings),
             "findings": [
-                {"concept": f.concept, "application": f.application}
-                for f in findings[:3]
+                {"concept": f.concept, "application": f.application} for f in findings[:3]
             ],
             "domains": self.applications_kernel.get_domains(),
         }
@@ -380,38 +376,40 @@ class TechQuantumEngine:
                     lines.append(f"- **Platforms**: {', '.join(data['platforms'][:3])}...")
                 if "domains" in data:
                     lines.append(f"- **Application Domains**: {', '.join(data['domains'][:3])}...")
-        lines.extend([
-            "",
-            "## Quantum Computing Stack",
-            "- **Algorithms**: Shor, Grover, VQE, QAOA, Quantum ML",
-            "- **Hardware**: Superconducting, Trapped Ion, Photonic, Neutral Atom",
-            "- **Control**: Qiskit, Cirq, PennyLane, AWS Braket, Azure Quantum",
-            "- **Error Correction**: Surface code, Stabilizer codes, Logical qubits",
-            "- **Applications**: Cryptography, Drug discovery, Finance, Optimization",
-            "",
-            "## NISQ Era Considerations",
-            "- Current quantum computers are noisy intermediate-scale quantum (NISQ) devices",
-            "- Limited qubit counts (100s to 1000s)",
-            "- High error rates requiring error mitigation",
-            "- Hybrid classical-quantum algorithms most practical",
-            "- Fault-tolerant quantum computing still in research",
-            "",
-            "## Gaps and Limitations",
-            "- Does not simulate quantum circuits",
-            "- Cannot estimate quantum advantage",
-            "- Hardware-specific constraints not detailed",
-            "- No real quantum hardware integration",
-            "",
-            "## Safety Disclaimer",
-            "Quantum computing analysis is advisory. Does not guarantee quantum speedup. "
-            "Actual quantum advantage depends on hardware evolution. "
-            "Not a substitute for quantum physicists or quantum software engineers.",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Quantum Computing Stack",
+                "- **Algorithms**: Shor, Grover, VQE, QAOA, Quantum ML",
+                "- **Hardware**: Superconducting, Trapped Ion, Photonic, Neutral Atom",
+                "- **Control**: Qiskit, Cirq, PennyLane, AWS Braket, Azure Quantum",
+                "- **Error Correction**: Surface code, Stabilizer codes, Logical qubits",
+                "- **Applications**: Cryptography, Drug discovery, Finance, Optimization",
+                "",
+                "## NISQ Era Considerations",
+                "- Current quantum computers are noisy intermediate-scale quantum (NISQ) devices",
+                "- Limited qubit counts (100s to 1000s)",
+                "- High error rates requiring error mitigation",
+                "- Hybrid classical-quantum algorithms most practical",
+                "- Fault-tolerant quantum computing still in research",
+                "",
+                "## Gaps and Limitations",
+                "- Does not simulate quantum circuits",
+                "- Cannot estimate quantum advantage",
+                "- Hardware-specific constraints not detailed",
+                "- No real quantum hardware integration",
+                "",
+                "## Safety Disclaimer",
+                "Quantum computing analysis is advisory. Does not guarantee quantum speedup. "
+                "Actual quantum advantage depends on hardware evolution. "
+                "Not a substitute for quantum physicists or quantum software engineers.",
+            ]
+        )
         return "\n".join(lines)
 
 
 # Singleton instance
-_tech_quantum_engine: Optional[TechQuantumEngine] = None
+_tech_quantum_engine: TechQuantumEngine | None = None
 
 
 def get_tech_quantum_engine() -> TechQuantumEngine:

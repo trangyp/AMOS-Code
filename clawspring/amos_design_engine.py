@@ -1,12 +1,11 @@
 """AMOS Design Engine - UI/UX production with biological constraints."""
 
+from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from amos_execution import get_execution_kernel
-
-from amos_runtime import get_runtime
-from typing import Dict, List, Optional
+from clawspring.amos_execution import get_execution_kernel
+from clawspring.amos_runtime import get_runtime
 
 
 @dataclass
@@ -15,8 +14,8 @@ class DesignSpec:
 
     component_type: str
     purpose: str
-    user_segments: List[str] = field(default_factory=list)
-    constraints: List[str] = field(default_factory=list)
+    user_segments: list[str] = field(default_factory=list)
+    constraints: list[str] = field(default_factory=list)
     accessibility_required: bool = True
 
 
@@ -26,12 +25,12 @@ class DesignResult:
 
     component_type: str
     design_system: dict
-    interaction_flow: List[dict]
-    copy_blocks: Dict[str, str]
-    accessibility_notes: List[str]
-    assumptions: List[str]
+    interaction_flow: list[dict]
+    copy_blocks: dict[str, str]
+    accessibility_notes: list[str]
+    assumptions: list[str]
     gap_acknowledgment: str
-    biological_constraints: List[str] = field(default_factory=list)
+    biological_constraints: list[str] = field(default_factory=list)
 
 
 class InformationArchitectureKernel:
@@ -180,7 +179,7 @@ class AMOSDesignEngine:
             biological_constraints=bio_constraints,
         )
 
-    def _build_interaction_flow(self, spec: DesignSpec, ia: dict) -> List[dict]:
+    def _build_interaction_flow(self, spec: DesignSpec, ia: dict) -> list[dict]:
         """Build interaction flow from IA."""
         return [
             {
@@ -202,7 +201,7 @@ class AMOSDesignEngine:
             },
         ]
 
-    def _generate_copy(self, language: dict, spec: DesignSpec) -> Dict[str, str]:
+    def _generate_copy(self, language: dict, spec: DesignSpec) -> dict[str, str]:
         """Generate copy blocks from language kernel."""
         terms = language.get("terminology", {})
         return {
@@ -213,7 +212,7 @@ class AMOSDesignEngine:
             "error": f"Unable to complete {spec.purpose}. Please try again.",
         }
 
-    def _build_a11y_notes(self, a11y: dict) -> List[str]:
+    def _build_a11y_notes(self, a11y: dict) -> list[str]:
         """Build accessibility implementation notes."""
         notes = [
             "Ensure 4.5:1 contrast ratio for all text",
@@ -224,7 +223,7 @@ class AMOSDesignEngine:
             notes.extend([f"Support: {path}" for path in a11y["assistive_paths"]])
         return notes
 
-    def _get_biological_constraints(self, spec: DesignSpec) -> List[str]:
+    def _get_biological_constraints(self, spec: DesignSpec) -> list[str]:
         """Get biological constraints per UBI alignment (L6)."""
         return [
             "L6 - UBI Alignment: Design respects human nervous system limits",
@@ -239,7 +238,7 @@ class AMOSDesignEngine:
         self,
         component_type: str,
         purpose: str,
-        user_segments: Optional[List[str] ] = None,
+        user_segments: list[str | None] = None,
         accessibility: bool = True,
     ) -> DesignResult:
         """Quick design generation."""
@@ -267,7 +266,7 @@ class AMOSDesignEngine:
 
 
 # Singleton
-_design_engine: Optional[AMOSDesignEngine] = None
+_design_engine: AMOSDesignEngine | None = None
 
 
 def get_design_engine() -> AMOSDesignEngine:
@@ -281,7 +280,7 @@ def get_design_engine() -> AMOSDesignEngine:
 def design_amos_component(
     component_type: str,
     purpose: str,
-    user_segments: Optional[List[str] ] = None,
+    user_segments: list[str | None] = None,
 ) -> DesignResult:
     """Quick design generation with AMOS compliance."""
     return get_design_engine().design_component(component_type, purpose, user_segments)

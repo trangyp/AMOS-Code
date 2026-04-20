@@ -1,9 +1,12 @@
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
+
+from typing import Any, Optional
 
 """Reading Kernel API Router
 
 Exposes AMOSExecutableCore reading pipeline as REST endpoints.
 """
+
 
 from fastapi import APIRouter
 from pydantic import BaseModel
@@ -18,7 +21,7 @@ router = APIRouter()
 
 class ReadRequest(BaseModel):
     text: str
-    context: Dict[str, Any] = None
+    context: dict[str, Any] = None
 
 
 class SegmentResponse(BaseModel):
@@ -31,17 +34,17 @@ class SegmentResponse(BaseModel):
 class StableReadResponse(BaseModel):
     input_class: str
     primary_goal: Optional[str]
-    constraints: List[str]
-    ambiguities: List[str]
-    references: List[str]
+    constraints: list[str]
+    ambiguities: list[str]
+    references: list[str]
     confidence: float
-    clarification_questions: List[str]
+    clarification_questions: list[str]
 
 
 class VerifiedGoalResponse(BaseModel):
     mode: str
     objective: str
-    constraints: List[str]
+    constraints: list[str]
     executable: bool
     confidence: float
     reason: str
@@ -60,11 +63,11 @@ class ReadResponse(BaseModel):
     raw_text: str
     normalized_text: str
     speech_act: str
-    segments: List[SegmentResponse]
-    references: List[str]
-    constraints: List[str]
-    goals: List[str]
-    risks: List[str]
+    segments: list[SegmentResponse]
+    references: list[str]
+    constraints: list[str]
+    goals: list[str]
+    risks: list[str]
     stable_read: StableReadResponse
     verified_goal: VerifiedGoalResponse
     execution_plan: Optional[ExecutionPlanResponse]
@@ -131,7 +134,7 @@ async def read_request(req: ReadRequest) -> ReadResponse:
 
 
 @router.post("/understand")
-async def understand_task(req: ReadRequest) -> Dict[str, Any]:
+async def understand_task(req: ReadRequest) -> dict[str, Any]:
     """Quick task understanding endpoint."""
     service = get_reading_service()
     result = service.process(req.text, req.context)
@@ -151,7 +154,7 @@ async def understand_task(req: ReadRequest) -> Dict[str, Any]:
 
 
 @router.get("/health")
-async def reading_kernel_health() -> Dict[str, Any]:
+async def reading_kernel_health() -> dict[str, Any]:
     """Health check for reading kernel service."""
     service = get_reading_service()
     history = service.get_history(limit=1)

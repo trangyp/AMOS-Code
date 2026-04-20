@@ -16,11 +16,10 @@ This creates a biosocial AI architecture that:
 State-of-the-art human-centric autonomous AI architecture.
 """
 
-
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 @dataclass
@@ -33,15 +32,15 @@ class BiosocialState:
     governance_grade: str
 
     # Biological state (UBI)
-    biological_context: Dict[str, Any]
-    human_factors: Dict[str, Any]
+    biological_context: dict[str, Any]
+    human_factors: dict[str, Any]
 
     # Repository state (Repo Doctor)
     repo_energy: float
-    invariant_status: Dict[str, bool]
+    invariant_status: dict[str, bool]
 
     # Evolution state
-    improvement_opportunities: List[str]
+    improvement_opportunities: list[str]
     last_evolution: float
 
     # Unified metrics
@@ -60,7 +59,7 @@ class HumanCentricDecision:
     # UBI considerations
     cognitive_load_impact: str  # low/medium/high
     emotional_impact: str  # neutral/positive/negative
-    physical_ergonomics: List[str]
+    physical_ergonomics: list[str]
 
     # Human readiness
     human_fatigue_estimate: str
@@ -78,7 +77,7 @@ class AMOSUnifiedBiosocialSystem:
     biological intelligence, and self-evolution capabilities.
     """
 
-    def __init__(self, repo_path: str  = None):
+    def __init__(self, repo_path: str = None):
         self.repo_path = Path(repo_path) if repo_path else Path(".")
 
         # Component references
@@ -214,9 +213,7 @@ class AMOSUnifiedBiosocialSystem:
                 }
 
                 human_factors = {
-                    "design_recommendations": self._extract_design_recommendations(
-                        ubi_results
-                    ),
+                    "design_recommendations": self._extract_design_recommendations(ubi_results),
                     "safety_notices": self._extract_safety_notices(ubi_results),
                 }
             except Exception as e:
@@ -278,7 +275,7 @@ class AMOSUnifiedBiosocialSystem:
 
         return self.biosocial_state
 
-    def _extract_design_recommendations(self, ubi_results: Dict) -> List[str]:
+    def _extract_design_recommendations(self, ubi_results: dict) -> list[str]:
         """Extract human-centric design recommendations from UBI."""
         recommendations = []
 
@@ -288,7 +285,7 @@ class AMOSUnifiedBiosocialSystem:
 
         return list(set(recommendations))  # Remove duplicates
 
-    def _extract_safety_notices(self, ubi_results: Dict) -> List[str]:
+    def _extract_safety_notices(self, ubi_results: dict) -> list[str]:
         """Extract safety notices from UBI."""
         notices = []
 
@@ -299,7 +296,7 @@ class AMOSUnifiedBiosocialSystem:
         return notices
 
     def make_human_centric_decision(
-        self, action_description: str, context: Optional[Dict] = None
+        self, action_description: str, context: Optional[dict] = None
     ) -> HumanCentricDecision:
         """
         Make a decision considering human biological factors.
@@ -371,7 +368,7 @@ class AMOSUnifiedBiosocialSystem:
             rationale="; ".join(rationale_parts),
         )
 
-    def get_unified_status(self) -> Dict[str, Any]:
+    def get_unified_status(self) -> dict[str, Any]:
         """Get complete unified system status."""
         if not self.biosocial_state:
             self.compute_biosocial_state()
@@ -393,7 +390,9 @@ class AMOSUnifiedBiosocialSystem:
             },
             "biological": {
                 "domains_active": len(state.biological_context),
-                "design_recommendations": len(state.human_factors.get("design_recommendations", [])),
+                "design_recommendations": len(
+                    state.human_factors.get("design_recommendations", [])
+                ),
             },
             "evolution": {
                 "opportunities": len(state.improvement_opportunities),
@@ -410,7 +409,6 @@ class AMOSUnifiedBiosocialSystem:
 
 def main():
     """Run the unified biosocial system."""
-    import sys
 
     print("\n" + "=" * 70)
     print("AMOS UNIFIED BIOSOCIAL SYSTEM")

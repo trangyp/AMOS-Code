@@ -29,10 +29,7 @@ import sys
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
-
-sys.path.insert(0, str(Path(__file__).parent / "clawspring"))
-sys.path.insert(0, str(Path(__file__).parent))
+from typing import Any, Optional
 
 
 @dataclass
@@ -44,7 +41,7 @@ class KnowledgeItem:
     category: str
     size_bytes: int
     modified: datetime
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class KnowledgeDiscovery:
@@ -52,7 +49,7 @@ class KnowledgeDiscovery:
 
     def __init__(self, brain_root: Optional[Path] = None):
         self.brain_root = brain_root or Path(__file__).parent / "_AMOS_BRAIN"
-        self.index: Dict[str, list[KnowledgeItem]] = {
+        self.index: dict[str, list[KnowledgeItem]] = {
             "cognitive": [],
             "tech": [],
             "domains": [],
@@ -71,7 +68,7 @@ class KnowledgeDiscovery:
             "txt_specs": 0,
         }
 
-    def scan(self) -> Dict[str, Any]:
+    def scan(self) -> dict[str, Any]:
         """Scan entire _AMOS_BRAIN directory and build index."""
         print("=" * 70)
         print("AMOS KNOWLEDGE DISCOVERY - SCANNING ECOSYSTEM")
@@ -171,7 +168,7 @@ class KnowledgeDiscovery:
         else:
             return "other"
 
-    def search(self, query: str) -> List[KnowledgeItem]:
+    def search(self, query: str) -> list[KnowledgeItem]:
         """Search all knowledge by name or content."""
         query_lower = query.lower()
         results = []
@@ -195,11 +192,11 @@ class KnowledgeDiscovery:
 
         return results
 
-    def list_category(self, category: str) -> List[KnowledgeItem]:
+    def list_category(self, category: str) -> list[KnowledgeItem]:
         """List all items in a category."""
         return self.index.get(category, [])
 
-    def get_pdf_manuals(self) -> List[KnowledgeItem]:
+    def get_pdf_manuals(self) -> list[KnowledgeItem]:
         """Get all PDF training manuals."""
         pdfs = []
         for category, items in self.index.items():
@@ -208,7 +205,7 @@ class KnowledgeDiscovery:
                     pdfs.append(item)
         return sorted(pdfs, key=lambda x: x.size_bytes, reverse=True)
 
-    def get_country_packs(self) -> List[KnowledgeItem]:
+    def get_country_packs(self) -> list[KnowledgeItem]:
         """Get all country knowledge packs."""
         return [
             i

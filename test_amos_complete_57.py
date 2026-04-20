@@ -11,9 +11,6 @@ Total: 57 components validated
 """
 
 import sys
-
-sys.path.insert(0, "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code")
-
 import unittest
 from datetime import timedelta
 

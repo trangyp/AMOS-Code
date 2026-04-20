@@ -1,9 +1,10 @@
 """AMOS Integration Test Suite - Validates all 11 layers."""
 
+from __future__ import annotations
+
 import time
 import traceback
 from dataclasses import dataclass
-from typing import Dict, List
 
 
 @dataclass
@@ -25,7 +26,7 @@ class TestSuiteResult:
     total_tests: int
     passed_tests: int
     failed_tests: int
-    layer_results: Dict[str, list[TestResult]]
+    layer_results: dict[str, list[TestResult]]
     total_time: float
     gap_acknowledgment: str
 
@@ -34,7 +35,7 @@ class AMOSIntegrationTests:
     """Integration test suite for AMOS 11-layer architecture."""
 
     def __init__(self):
-        self.results: List[TestResult] = []
+        self.results: list[TestResult] = []
 
     def run_all_tests(self) -> TestSuiteResult:
         """Run complete integration test suite."""
@@ -74,7 +75,7 @@ class AMOSIntegrationTests:
         self._test_layer_11_tools()
 
         # Organize by layer
-        layer_results: Dict[str, list[TestResult]] = {}
+        layer_results: dict[str, list[TestResult]] = {}
         for r in self.results:
             if r.layer not in layer_results:
                 layer_results[r.layer] = []

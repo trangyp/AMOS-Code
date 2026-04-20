@@ -1,12 +1,10 @@
 """AMOS Memory Layer - Persistence for brain state and cognitive artifacts."""
 
-
 import json
 import time
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional
 
 
 @dataclass
@@ -17,7 +15,7 @@ class MemoryEntry:
     content: dict
     memory_type: str  # 'reasoning', 'decision', 'code', 'design', 'ubi', 'workflow'
     timestamp: float = field(default_factory=time.time)
-    tags: List[str] = field(default_factory=list)
+    tags: list[str] = field(default_factory=list)
     source: str = ""  # Which component created this
     law_compliance: dict = field(default_factory=dict)
     gap_acknowledged: bool = True
@@ -29,10 +27,10 @@ class BrainState:
 
     timestamp: float
     runtime_config: dict
-    workflow_history: List[str]
-    cognitive_artifacts: List[dict]
-    law_violations: List[dict]
-    gap_statements: List[str]
+    workflow_history: list[str]
+    cognitive_artifacts: list[dict]
+    law_violations: list[dict]
+    gap_statements: list[str]
     version: str = "vInfinity"
     creator: str = "Trang Phan"
 
@@ -43,7 +41,7 @@ class AMOSMemoryStore:
     def __init__(self, storage_path: Optional[Path] = None):
         self.storage_path = storage_path or Path("./amos_memory")
         self.storage_path.mkdir(exist_ok=True)
-        self._cache: Dict[str, MemoryEntry] = {}
+        self._cache: dict[str, MemoryEntry] = {}
 
     def store(self, entry: MemoryEntry) -> str:
         """Store a memory entry."""
@@ -73,7 +71,7 @@ class AMOSMemoryStore:
 
         return None
 
-    def query_by_type(self, memory_type: str) -> List[MemoryEntry]:
+    def query_by_type(self, memory_type: str) -> list[MemoryEntry]:
         """Query all memories of a specific type."""
         entries = []
         for file_path in self.storage_path.glob(f"{memory_type}_*.json"):
@@ -82,7 +80,7 @@ class AMOSMemoryStore:
                 entries.append(MemoryEntry(**data))
         return sorted(entries, key=lambda x: x.timestamp, reverse=True)
 
-    def query_by_tag(self, tag: str) -> List[MemoryEntry]:
+    def query_by_tag(self, tag: str) -> list[MemoryEntry]:
         """Query all memories with a specific tag."""
         entries = []
         for file_path in self.storage_path.glob("*.json"):
@@ -247,7 +245,7 @@ class AMOSMemoryBridge:
         )
         return self.store.save_brain_state(state)
 
-    def recall_recent(self, memory_type: str  = None, limit: int = 10) -> List[MemoryEntry]:
+    def recall_recent(self, memory_type: str = None, limit: int = 10) -> list[MemoryEntry]:
         """Recall recent memories."""
         if memory_type:
             entries = self.store.query_by_type(memory_type)
@@ -306,7 +304,7 @@ def remember(task_type: str, data: dict) -> str:
     return ""
 
 
-def recall(memory_type: str  = None, limit: int = 10) -> List[MemoryEntry]:
+def recall(memory_type: str = None, limit: int = 10) -> list[MemoryEntry]:
     """Quick recall helper."""
     return get_memory_bridge().recall_recent(memory_type, limit)
 

@@ -12,9 +12,11 @@ Block matrix T:
     [0     0     0     0     0     T_tt]
 """
 
+from __future__ import annotations
+
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 @dataclass
@@ -25,13 +27,12 @@ class BlockMatrix:
     Off-diagonal blocks: cross-domain coupling
     """
 
-    # Diagonal blocks (intra-domain)
-    T_cc: Optional[Any] = None  # Classical → Classical
-    T_qq: Optional[Any] = None  # Quantum → Quantum
-    T_bb: Optional[Any] = None  # Biological → Biological
-    T_hh: Optional[Any] = None  # Hybrid → Hybrid
-    T_ee: Optional[Any] = None  # Environment → Environment
-    T_tt: Optional[Any] = None  # Time → Time
+    # Diagonal blocks (intra-domain)T_cc: Any | None = None  # Classical →Classical
+    T_qq: Any | None = None  # Quantum →Quantum
+    T_bb: Any | None = None  # Biological →Biological
+    T_hh: Any | None = None  # Hybrid →Hybrid
+    T_ee: Any | None = None  # Environment →Environment
+    T_tt: Any | None = None  # Time → Time
 
     # Off-diagonal blocks (cross-domain)
     T_cq: float = 0.0  # Classical → Quantum
@@ -73,17 +74,17 @@ class BlockMatrix:
 class EvolutionOperator:
     """Implements 𝐒_{t+1} = 𝐓(𝐒_t, 𝐮_t, 𝐧_t)."""
 
-    def __init__(self, matrix: Optional[BlockMatrix] = None):
+    def __init__(self, matrix: BlockMatrix | None = None):
         self.matrix = matrix or BlockMatrix()
-        self.noise_generator: Optional[Callable] = None
+        self.noise_generator: Callable | None = None
         self.step_count = 0
 
     def evolve(
         self,
-        state_vector: List[Any],
-        control: Dict[str, Any] = None,
+        state_vector: list[Any],
+        control: dict[str, Any] = None,
         noise_scale: float = 0.01,
-    ) -> List[Any]:
+    ) -> list[Any]:
         """Apply evolution: 𝐒_{t+1} = 𝐓(𝐒_t, 𝐮_t, 𝐧_t).
 
         Args:
@@ -221,8 +222,8 @@ class EvolutionOperator:
         return state
 
     def run_steps(
-        self, initial_state: List[Any], steps: int, controls: List[dict] = None
-    ) -> List[list[Any]]:
+        self, initial_state: list[Any], steps: int, controls: list[dict] = None
+    ) -> list[list[Any]]:
         """Run evolution for multiple steps.
 
         Returns trajectory: [S_0, S_1, ..., S_n]

@@ -14,16 +14,17 @@ Owner: Trang Phan
 Version: 2.0.0
 """
 
+from __future__ import annotations
 
 import hashlib
 import json
 from collections import defaultdict
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+from typing import Any, Optional
 
-UTC = timezone.utc
-from typing import Any, Dict, List, Optional
+UTC = UTC
 
 # Kafka integration
 try:
@@ -60,13 +61,13 @@ class StreamEvent:
     event_type: str
     source_system: str
     target_system: str
-    payload: Dict[str, Any]
+    payload: dict[str, Any]
     timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     correlation_id: str = None
     user_id: str = None
     requires_governance: bool = True
     processed: bool = False
-    lineage: List[dict] = field(default_factory=list)
+    lineage: list[dict] = field(default_factory=list)
 
 
 @dataclass
@@ -119,8 +120,8 @@ class DataPipelineManager:
         self._redis: redis.Redis = None
         self._brain = None
         self._metrics = StreamMetrics()
-        self._local_buffer: List[StreamEvent] = []
-        self._processors: Dict[str, list[Callable]] = defaultdict(list)
+        self._local_buffer: list[StreamEvent] = []
+        self._processors: dict[str, list[Callable]] = defaultdict(list)
 
         self._init_connections()
 
@@ -193,7 +194,7 @@ class DataPipelineManager:
         self,
         event_type: str,
         source_system: str,
-        payload: Dict[str, Any],
+        payload: dict[str, Any],
         target_system: str = None,
         correlation_id: str = None,
         requires_governance: bool = True,
@@ -288,7 +289,7 @@ class DataPipelineManager:
         event.processed = True
         return True
 
-    def create_stream_topology(self, system: str) -> Dict[str, Any]:
+    def create_stream_topology(self, system: str) -> dict[str, Any]:
         """Create stream topology for a system."""
         topology = {
             "system": system,
@@ -324,7 +325,7 @@ class DataPipelineManager:
 
         return self._metrics
 
-    def get_lineage_report(self, event_id: str) -> List[dict]:
+    def get_lineage_report(self, event_id: str) -> list[dict]:
         """Get data lineage for specific event."""
         # Search in local buffer
         for event in self._local_buffer:
@@ -409,6 +410,26 @@ def publish_workflow_completion(workflow_id: str, status: str, correlation_id: s
         source_system="master_orchestrator",
         payload={"workflow": workflow_id, "status": status},
         correlation_id=correlation_id,
+    )
+
+
+def publish_event(
+    event_type: str,
+    source_system: str,
+    payload: dict[str, Any],
+    correlation_id: str = None,
+    requires_governance: bool = True,
+) -> bool:
+    """Publish event to the data pipeline.
+
+    Convenience function for publishing events without accessing the pipeline directly.
+    """
+    return pipeline.publish_event(
+        event_type=event_type,
+        source_system=source_system,
+        payload=payload,
+        correlation_id=correlation_id,
+        requires_governance=requires_governance,
     )
 
 

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """AMOS Brain Code Cognition - Real Cognitive Code Analysis
 
 Uses the actual AMOS Brain infrastructure:
@@ -11,22 +13,25 @@ This is REAL code using REAL brain components.
 
 import ast
 import logging
-from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from dataclasses import dataclass
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
+
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
+
+from amos_brain import get_state_manager
 
 # REAL brain imports
 from amos_brain.facade import BrainClient
-from amos_brain import think, get_state_manager
-from amos_brain.thinking_engine import ThinkingEngine, ThinkingState, Goal, WorkspaceItem
+from amos_brain.thinking_engine import Goal, ThinkingEngine, ThinkingState, WorkspaceItem
 from amos_brain_semantics_bridge import BrainSemanticsBridge, SemanticsTask
-from amos_secure_equation_runner import SecureEquationRunner
 
 # Model fabric
 from amos_model_fabric.providers import OllamaProvider
 from amos_model_fabric.schemas import FabricRequest
+from amos_secure_equation_runner import SecureEquationRunner
 
 # Repo doctor
 from repo_doctor.security_scanner import SecurityVerificationEngine
@@ -37,12 +42,13 @@ logger = logging.getLogger(__name__)
 @dataclass
 class CodeAnalysis:
     """Cognitive analysis of code."""
+
     file_path: str
-    ast_tree: ast.AST | None
+    ast_tree: ast.Optional[AST]
     complexity_score: float
-    security_risks: List[dict]
-    semantic_issues: List[str]
-    repair_suggestions: List[str]
+    security_risks: list[dict]
+    semantic_issues: list[str]
+    repair_suggestions: list[str]
     thinking_steps: int
     analysis_time_ms: float
 
@@ -50,6 +56,7 @@ class CodeAnalysis:
 @dataclass
 class CognitiveRepair:
     """Brain-generated code repair."""
+
     repair_id: str
     original_file: str
     repaired_code: str
@@ -126,23 +133,19 @@ class BrainCodeCognition:
         # Step 1: Initialize thinking state with code
         state = self.thinking.initialize(
             problem=f"Analyze and repair code in {file_path}",
-            goals=[Goal(id="analyze", description="Understand code structure", priority=1.0)]
+            goals=[Goal(id="analyze", description="Understand code structure", priority=1.0)],
         )
 
         # Step 2: Parse AST (structural understanding)
         try:
             ast_tree = ast.parse(code)
             state.workspace.append(
-                WorkspaceItem(
-                    id="ast", content=ast_tree, activation=1.0, source="parser"
-                )
+                WorkspaceItem(id="ast", content=ast_tree, activation=1.0, source="parser")
             )
         except SyntaxError as e:
             ast_tree = None
             state.workspace.append(
-                WorkspaceItem(
-                    id="syntax_error", content=str(e), activation=1.0, source="error"
-                )
+                WorkspaceItem(id="syntax_error", content=str(e), activation=1.0, source="error")
             )
 
         # Step 3: Brain thinks about code (semantic understanding)
@@ -183,7 +186,7 @@ class BrainCodeCognition:
 
     async def _think_about_code(
         self, state: ThinkingState, code: str, file_path: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Use brain to think about code."""
         # Run thinking steps
         iterations = 0
@@ -214,9 +217,7 @@ class BrainCodeCognition:
             "brain_confidence": brain_response.confidence,
         }
 
-    async def cognitively_repair_file(
-        self, file_path: str, issue: str
-    ) -> CognitiveRepair:
+    async def cognitively_repair_file(self, file_path: str, issue: str) -> CognitiveRepair:
         """
         Generate repair using cognitive process.
 
@@ -287,7 +288,7 @@ Provide the COMPLETE fixed code. Do not explain, just output the fixed file."""
         # Simple heuristic based on workspace size
         return min(len(state.workspace) / 10.0, 1.0)
 
-    def _extract_expressions(self, tree: ast.AST) -> List[str]:
+    def _extract_expressions(self, tree: ast.AST) -> list[str]:
         """Extract formal expressions from AST."""
         expressions = []
         for node in ast.walk(tree):
@@ -309,7 +310,7 @@ async def demo_cognition():
 
     # Create test file with issues
     test_file = Path("demo_test_file.py")
-    test_file.write_text('''
+    test_file.write_text("""
 def calculate(x, y):
     # Security issue: eval
     result = eval(x) + y
@@ -317,7 +318,7 @@ def calculate(x, y):
 
 def unused():
     pass
-''')
+""")
 
     print(f"\nAnalyzing: {test_file}")
     print("-" * 60)
@@ -343,8 +344,7 @@ def unused():
     print("=" * 60)
 
     repair = await cognition.cognitively_repair_file(
-        "demo_test_file.py",
-        "Remove eval() security vulnerability"
+        "demo_test_file.py", "Remove eval() security vulnerability"
     )
 
     print(f"\nRepair ID: {repair.repair_id}")

@@ -23,9 +23,6 @@ import os
 import sys
 import unittest
 
-# Add project root to path
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 
 class TestLayer1BrainLoader(unittest.TestCase):
     """Layer 1: Brain loads 26 engines from 17MB spec."""

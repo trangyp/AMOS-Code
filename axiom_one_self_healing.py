@@ -16,10 +16,12 @@ import threading
 import time
 from collections.abc import Callable
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 AMOS_ROOT = Path(__file__).parent.resolve()
 sys.path.insert(0, str(AMOS_ROOT))
@@ -108,12 +110,12 @@ class SelfHealingAgentExecutor(AgentExecutor):
 
     def __init__(self):
         super().__init__()
-        self.circuit_breakers: Dict[str, CircuitBreaker] = {}
-        self.agent_health: Dict[str, AgentHealth] = {}
+        self.circuit_breakers: dict[str, CircuitBreaker] = {}
+        self.agent_health: dict[str, AgentHealth] = {}
         self.monitoring = False
         self.monitor_thread: threading.Thread = None
         self._lock = threading.Lock()
-        self.recovery_strategies: Dict[str, Callable[[str], bool]] = {}
+        self.recovery_strategies: dict[str, Callable[[str], bool]] = {}
         self._setup_recovery_strategies()
 
     def _setup_recovery_strategies(self) -> None:
@@ -134,7 +136,7 @@ class SelfHealingAgentExecutor(AgentExecutor):
 
     def execute_with_circuit_breaker(
         self, tool_name: str, func: Callable, *args, **kwargs
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Execute tool with circuit breaker protection."""
         cb = self.get_circuit_breaker(tool_name)
 
@@ -159,7 +161,7 @@ class SelfHealingAgentExecutor(AgentExecutor):
             cb.record_failure()
             return {"success": False, "error": str(e), "circuit_state": cb.state.value}
 
-    def _run_task(self, agent: Agent, task: Task) -> Dict[str, Any]:
+    def _run_task(self, agent: Agent, task: Task) -> dict[str, Any]:
         """Run task with health monitoring."""
         start_time = time.time()
 
@@ -287,7 +289,7 @@ class SelfHealingAgentExecutor(AgentExecutor):
         if open_circuits:
             logger.warning(f"Open circuits: {open_circuits}")
 
-    def get_health_report(self) -> Dict[str, Any]:
+    def get_health_report(self) -> dict[str, Any]:
         """Get comprehensive health report."""
         with self._lock:
             return {
@@ -337,7 +339,7 @@ class AxiomOneSelfHealingFleet(AxiomOneAgentFleet):
         """Stop self-healing monitoring."""
         self.agent_executor.stop_monitoring()
 
-    def get_health(self) -> Dict[str, Any]:
+    def get_health(self) -> dict[str, Any]:
         """Get health report."""
         return self.agent_executor.get_health_report()
 

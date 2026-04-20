@@ -19,7 +19,6 @@ Usage:
     result = bridge.execute_decision("Refactor the auth module")
 """
 
-
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -35,6 +34,7 @@ from amos_brain.cookbook import ArchitectureDecision, ProblemDiagnosis
 # Import organism subsystems (with fallback stubs)
 try:
     from organism import AmosOrganism
+
     _organism_available = True
 except ImportError:
     _organism_available = False
@@ -71,7 +71,7 @@ class BrainOrganismBridge:
             except Exception as e:
                 print(f"[Bridge] Organism init failed: {e}")
 
-    def analyze_and_execute(self, task: str, context: dict  = None) -> ExecutionResult:
+    def analyze_and_execute(self, task: str, context: dict = None) -> ExecutionResult:
         """Full pipeline: Brain analysis → Organism execution.
 
         Args:
@@ -122,9 +122,7 @@ class BrainOrganismBridge:
 
         return "generic"
 
-    def _execute_code_task(
-        self, task: str, analysis: dict, context: dict
-    ) -> ExecutionResult:
+    def _execute_code_task(self, task: str, analysis: dict, context: dict) -> ExecutionResult:
         """Execute code-related task through MUSCLE subsystem."""
         print("[Bridge] Routing to MUSCLE (code execution)...")
 
@@ -168,9 +166,7 @@ class BrainOrganismBridge:
             resources_used={"compute": "high", "time": "5min"},
         )
 
-    def _execute_diagnosis_task(
-        self, task: str, analysis: dict, context: dict
-    ) -> ExecutionResult:
+    def _execute_diagnosis_task(self, task: str, analysis: dict, context: dict) -> ExecutionResult:
         """Execute diagnosis through SENSES + BRAIN."""
         print("[Bridge] Running ProblemDiagnosis workflow...")
 
@@ -191,9 +187,7 @@ class BrainOrganismBridge:
             output=output,
         )
 
-    def _execute_generic_task(
-        self, task: str, analysis: dict, context: dict
-    ) -> ExecutionResult:
+    def _execute_generic_task(self, task: str, analysis: dict, context: dict) -> ExecutionResult:
         """Execute generic task through default pipeline."""
         print("[Bridge] Executing generic task...")
 

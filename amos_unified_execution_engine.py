@@ -3,7 +3,7 @@
 
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any
 
 
 @dataclass
@@ -23,10 +23,10 @@ class UnifiedExecutionContext:
     """Context for coordinating multi-subsystem execution."""
 
     task: str
-    parameters: Dict[str, Any] = field(default_factory=dict)
-    subsystems_involved: List[str] = field(default_factory=list)
-    results: List[ExecutionResult] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    parameters: dict[str, Any] = field(default_factory=dict)
+    subsystems_involved: list[str] = field(default_factory=list)
+    results: list[ExecutionResult] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class UnifiedExecutionEngine:
@@ -60,7 +60,7 @@ class UnifiedExecutionEngine:
         self.execution_count = 0
         self.subsystem_status = dict.fromkeys(self.SUBSYSTEMS, "idle")
 
-    def initialize(self) -> Dict[str, Any]:
+    def initialize(self) -> dict[str, Any]:
         """Initialize all 15 subsystems."""
         try:
             from amos_brain import initialize_organism
@@ -84,7 +84,7 @@ class UnifiedExecutionEngine:
                 "note": f"Using standalone mode: {e}",
             }
 
-    def route_to_subsystem(self, task: str) -> List[str]:
+    def route_to_subsystem(self, task: str) -> list[str]:
         """Determine which subsystems should handle a task.
 
         Returns list of subsystem codes based on task analysis.
@@ -210,7 +210,7 @@ class UnifiedExecutionEngine:
             },
         }
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get current execution engine status."""
         return {
             "initialized": self.initialized,

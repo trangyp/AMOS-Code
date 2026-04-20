@@ -1,13 +1,16 @@
 """AMOS Signal Processing Engine - Multi-domain signal analysis."""
 
+from __future__ import annotations
+
 import math
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 
 class SignalDomain(Enum):
     """Signal processing domain classifications."""
+
     TIME_FREQUENCY = "time_frequency"
     BIOLOGICAL = "biological"
     CONTROL = "control"
@@ -29,12 +32,10 @@ class TimeFrequencyKernel:
     """Kernel for time and frequency domain analysis."""
 
     def __init__(self):
-        self.signals: List[dict] = []
-        self.filters: List[dict] = []
+        self.signals: list[dict] = []
+        self.filters: list[dict] = []
 
-    def add_signal(
-        self, name: str, samples: List[float], sampling_rate_hz: float
-    ) -> dict:
+    def add_signal(self, name: str, samples: list[float], sampling_rate_hz: float) -> dict:
         """Add time-domain signal."""
         signal = {
             "name": name,
@@ -55,9 +56,7 @@ class TimeFrequencyKernel:
         self.filters.append(filt)
         return filt
 
-    def calculate_fft_bin_resolution(
-        self, sampling_rate_hz: float, n_samples: int
-    ) -> dict:
+    def calculate_fft_bin_resolution(self, sampling_rate_hz: float, n_samples: int) -> dict:
         """Calculate FFT frequency resolution."""
         if n_samples == 0:
             return {"error": "Zero samples"}
@@ -69,7 +68,7 @@ class TimeFrequencyKernel:
             "nyquist_hz": sampling_rate_hz / 2,
         }
 
-    def compute_rms(self, samples: List[float]) -> dict:
+    def compute_rms(self, samples: list[float]) -> dict:
         """Compute RMS of signal."""
         if not samples:
             return {"error": "Empty samples"}
@@ -81,7 +80,7 @@ class TimeFrequencyKernel:
             "mean_square": mean_square,
         }
 
-    def get_principles(self) -> List[str]:
+    def get_principles(self) -> list[str]:
         return [
             "FFT and spectral analysis",
             "Time-domain statistics",
@@ -94,8 +93,8 @@ class BiologicalSignalKernel:
     """Kernel for biological signal analysis (non-clinical)."""
 
     def __init__(self):
-        self.bio_signals: List[dict] = []
-        self.hrv_metrics: List[dict] = []
+        self.bio_signals: list[dict] = []
+        self.hrv_metrics: list[dict] = []
 
     def add_ecg_signal(self, name: str, sampling_rate_hz: float) -> dict:
         """Add ECG signal reference."""
@@ -117,13 +116,13 @@ class BiologicalSignalKernel:
         self.bio_signals.append(signal)
         return signal
 
-    def calculate_hrv_simple(self, rr_intervals_ms: List[float]) -> dict:
+    def calculate_hrv_simple(self, rr_intervals_ms: list[float]) -> dict:
         """Calculate simple HRV metrics from RR intervals."""
         if len(rr_intervals_ms) < 2:
             return {"error": "Need at least 2 RR intervals"}
         mean_rr = sum(rr_intervals_ms) / len(rr_intervals_ms)
         # Simple SDNN calculation
-        variance = sum((rr - mean_rr)**2 for rr in rr_intervals_ms) / len(rr_intervals_ms)
+        variance = sum((rr - mean_rr) ** 2 for rr in rr_intervals_ms) / len(rr_intervals_ms)
         sdnn = math.sqrt(variance)
         return {
             "n_intervals": len(rr_intervals_ms),
@@ -132,7 +131,7 @@ class BiologicalSignalKernel:
             "note": "Non-clinical supportive use only",
         }
 
-    def get_principles(self) -> List[str]:
+    def get_principles(self) -> list[str]:
         return [
             "ECG morphology and intervals",
             "EEG frequency bands (delta, theta, alpha, beta)",
@@ -145,12 +144,10 @@ class ControlSystemsKernel:
     """Kernel for control system signal analysis."""
 
     def __init__(self):
-        self.actuators: List[dict] = []
-        self.sensors: List[dict] = []
+        self.actuators: list[dict] = []
+        self.sensors: list[dict] = []
 
-    def add_actuator(
-        self, name: str, actuator_type: str, input_range: Tuple[float, float]
-    ) -> dict:
+    def add_actuator(self, name: str, actuator_type: str, input_range: tuple[float, float]) -> dict:
         """Add actuator."""
         actuator = {
             "name": name,
@@ -161,9 +158,7 @@ class ControlSystemsKernel:
         self.actuators.append(actuator)
         return actuator
 
-    def add_sensor(
-        self, name: str, sensor_type: str, output_range: Tuple[float, float]
-    ) -> dict:
+    def add_sensor(self, name: str, sensor_type: str, output_range: tuple[float, float]) -> dict:
         """Add sensor."""
         sensor = {
             "name": name,
@@ -174,9 +169,7 @@ class ControlSystemsKernel:
         self.sensors.append(sensor)
         return sensor
 
-    def compute_pid_output(
-        self, error: float, kp: float, ki: float, kd: float, dt: float
-    ) -> dict:
+    def compute_pid_output(self, error: float, kp: float, ki: float, kd: float, dt: float) -> dict:
         """Compute simple PID output (one step)."""
         # Simplified PID calculation
         p_term = kp * error
@@ -192,7 +185,7 @@ class ControlSystemsKernel:
             "dt": dt,
         }
 
-    def get_principles(self) -> List[str]:
+    def get_principles(self) -> list[str]:
         return [
             "PID control fundamentals",
             "Sensor/actuator signal conditioning",
@@ -205,12 +198,10 @@ class CommunicationKernel:
     """Kernel for communication signal analysis."""
 
     def __init__(self):
-        self.channels: List[dict] = []
-        self.modulations: List[dict] = []
+        self.channels: list[dict] = []
+        self.modulations: list[dict] = []
 
-    def add_channel(
-        self, name: str, bandwidth_hz: float, noise_level_db: float
-    ) -> dict:
+    def add_channel(self, name: str, bandwidth_hz: float, noise_level_db: float) -> dict:
         """Add communication channel."""
         channel = {
             "name": name,
@@ -230,11 +221,9 @@ class CommunicationKernel:
         self.modulations.append(modulation)
         return modulation
 
-    def calculate_shannon_capacity(
-        self, bandwidth_hz: float, snr_db: float
-    ) -> dict:
+    def calculate_shannon_capacity(self, bandwidth_hz: float, snr_db: float) -> dict:
         """Calculate Shannon channel capacity."""
-        snr_linear = 10**(snr_db / 10)
+        snr_linear = 10 ** (snr_db / 10)
         capacity = bandwidth_hz * math.log2(1 + snr_linear)
         return {
             "bandwidth_hz": bandwidth_hz,
@@ -243,7 +232,7 @@ class CommunicationKernel:
             "capacity_kbps": capacity / 1000,
         }
 
-    def get_principles(self) -> List[str]:
+    def get_principles(self) -> list[str]:
         return [
             "Modulation schemes (AM, FM, digital)",
             "Channel capacity (Shannon limit)",
@@ -264,14 +253,10 @@ class SignalProcessingEngine:
         self.control_kernel = ControlSystemsKernel()
         self.comm_kernel = CommunicationKernel()
 
-    def analyze(
-        self, description: str, domains: Optional[List[str]] = None
-    ) -> Dict[str, Any]:
+    def analyze(self, description: str, domains: list[str | None] = None) -> dict[str, Any]:
         """Run signal processing analysis across specified domains."""
-        domains = domains or [
-            "time_frequency", "biological", "control", "communication"
-        ]
-        results: Dict[str, Any] = {}
+        domains = domains or ["time_frequency", "biological", "control", "communication"]
+        results: dict[str, Any] = {}
         if "time_frequency" in domains:
             results["time_frequency"] = self._analyze_time_frequency(description)
         if "biological" in domains:
@@ -337,28 +322,28 @@ class SignalProcessingEngine:
                     if key not in ("principles", "query"):
                         lines.append(f"- **{key}**: {value}")
                 if "principles" in data:
-                    lines.append(
-                        f"- **Principles**: {', '.join(data['principles'][:2])}..."
-                    )
-        lines.extend([
-            "",
-            "## Gaps and Limitations",
-            "- Real-time signal acquisition not included",
-            "- Biological analysis is non-clinical only",
-            "- Hardware-level implementation not provided",
-            "- Machine learning classification simplified",
-            "",
-            "## Safety Disclaimer",
-            "Biomedical analysis is for informational purposes only. "
-            "Never diagnose diseases. Always consult licensed professionals "
-            "for medical decisions. For safety-critical engineering, "
-            "require expert review.",
-        ])
+                    lines.append(f"- **Principles**: {', '.join(data['principles'][:2])}...")
+        lines.extend(
+            [
+                "",
+                "## Gaps and Limitations",
+                "- Real-time signal acquisition not included",
+                "- Biological analysis is non-clinical only",
+                "- Hardware-level implementation not provided",
+                "- Machine learning classification simplified",
+                "",
+                "## Safety Disclaimer",
+                "Biomedical analysis is for informational purposes only. "
+                "Never diagnose diseases. Always consult licensed professionals "
+                "for medical decisions. For safety-critical engineering, "
+                "require expert review.",
+            ]
+        )
         return "\n".join(lines)
 
 
 # Singleton instance
-_signal_processing_engine: Optional[SignalProcessingEngine] = None
+_signal_processing_engine: SignalProcessingEngine | None = None
 
 
 def get_signal_processing_engine() -> SignalProcessingEngine:

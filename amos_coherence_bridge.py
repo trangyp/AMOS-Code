@@ -4,7 +4,9 @@ Integrates the signal detection/coherence induction system with
 the local LLM runtime for privacy-preserving cognitive support.
 """
 
-from typing import Any, Dict, Optional
+from __future__ import annotations
+
+from typing import Any, Optional
 
 from amos_brain.local_runtime import AMOSLocalRuntime, create_local_runtime
 from amos_coherence_engine import (
@@ -36,7 +38,7 @@ class CoherenceLocalBridge:
         self.state_regulator = StateRegulationEngine()
         self.intervention_selector = InterventionSelectionEngine()
 
-    def initialize(self) -> Dict[str, Any]:
+    def initialize(self) -> dict[str, Any]:
         """Initialize both systems."""
         # Initialize local runtime
         runtime_status = self.runtime.initialize()

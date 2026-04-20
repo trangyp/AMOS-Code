@@ -34,7 +34,6 @@ from pathlib import Path
 _AMOS_ROOT = Path(__file__).parent
 sys.path.insert(0, str(_AMOS_ROOT))
 
-from typing import Optional
 
 from amos_unified_deployment_orchestrator import (
     AMOSDeploymentOrchestrator,

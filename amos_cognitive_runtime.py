@@ -5,14 +5,18 @@ Implements the 6-layer cognition architecture from AMOS_Cognition_Engine_v0.json
 with real tool execution, memory systems, and global law enforcement.
 """
 
+from __future__ import annotations
+
 import json
 import logging
 import re
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime, timezone
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
+
+UTC = UTC
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -42,7 +46,7 @@ class LawViolation:
     law: GlobalLaw
     context: str
     severity: str  # "warning", "error", "critical"
-    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
 
 class MetaLogicKernel:
@@ -51,10 +55,10 @@ class MetaLogicKernel:
     """
 
     def __init__(self):
-        self.violations: List[LawViolation] = []
+        self.violations: list[LawViolation] = []
         self.active_laws = set(GlobalLaw)
 
-    def check_rule_of_2(self, claim: str, alternatives: List[str]) -> Dict[str, Any]:
+    def check_rule_of_2(self, claim: str, alternatives: list[str]) -> dict[str, Any]:
         """Enforce Rule of 2: Must have at least two contrasting perspectives."""
         has_alternatives = len(alternatives) >= 1
 
@@ -74,7 +78,7 @@ class MetaLogicKernel:
             "violations": [v for v in self.violations if v.law == GlobalLaw.RULE_OF_2],
         }
 
-    def check_rule_of_4(self, analysis: Dict[str, Any]) -> Dict[str, Any]:
+    def check_rule_of_4(self, analysis: dict[str, Any]) -> dict[str, Any]:
         """Enforce Rule of 4: Must cover four quadrants."""
         quadrants = ["biological", "experiential", "logical", "systemic"]
         covered = [q for q in quadrants if analysis.get(q)]
@@ -95,7 +99,7 @@ class MetaLogicKernel:
             "coverage_ratio": len(covered) / 4,
         }
 
-    def validate_structural_integrity(self, output: str) -> Dict[str, Any]:
+    def validate_structural_integrity(self, output: str) -> dict[str, Any]:
         """Check for structural integrity: no contradictions, clear assumptions."""
         checks = {
             "has_clear_assumptions": "assumption" in output.lower() or "assume" in output.lower(),
@@ -132,7 +136,7 @@ class MetaLogicKernel:
         violations = [term for term in vague_terms if term in text.lower()]
         return len(violations) == 0
 
-    def get_compliance_report(self) -> Dict[str, Any]:
+    def get_compliance_report(self) -> dict[str, Any]:
         """Generate overall compliance report."""
         return {
             "total_violations": len(self.violations),
@@ -159,7 +163,7 @@ class MemoryEntry:
     timestamp: str
     domain: str
     certainty: float  # 0.0 to 1.0
-    tags: List[str] = field(default_factory=list)
+    tags: list[str] = field(default_factory=list)
 
 
 class WorkingMemory:
@@ -170,10 +174,10 @@ class WorkingMemory:
     CAPACITY = 16
 
     def __init__(self):
-        self.buffer: List[MemoryEntry] = []
-        self.access_count: Dict[str, int] = {}
+        self.buffer: list[MemoryEntry] = []
+        self.access_count: dict[str, int] = {}
 
-    def add(self, content: Any, domain: str, certainty: float = 1.0, tags: List[str] = None) -> str:
+    def add(self, content: Any, domain: str, certainty: float = 1.0, tags: list[str] = None) -> str:
         """Add item to working memory, evict if at capacity."""
         if len(self.buffer) >= self.CAPACITY:
             self._evict_low_value()
@@ -203,7 +207,7 @@ class WorkingMemory:
         removed = self.buffer.pop(least_accessed_idx)
         logger.debug(f"Evicted from working memory: {removed.domain}")
 
-    def query(self, domain: str = None, tags: List[str] = None) -> List[MemoryEntry]:
+    def query(self, domain: str = None, tags: list[str] = None) -> list[MemoryEntry]:
         """Query working memory by domain or tags."""
         results = self.buffer
         if domain:
@@ -212,7 +216,7 @@ class WorkingMemory:
             results = [e for e in results if any(t in e.tags for t in tags)]
         return results
 
-    def snapshot(self) -> Dict[str, Any]:
+    def snapshot(self) -> dict[str, Any]:
         """Create snapshot of current working memory."""
         return {
             "capacity": self.CAPACITY,
@@ -236,9 +240,9 @@ class CanonicalMemory:
 
     def __init__(self, brain_dir: Path):
         self.brain_dir = brain_dir
-        self.engines: Dict[str, dict] = {}
-        self.ubi_definitions: Dict[str, Any] = {}
-        self.logic_axioms: List[str] = []
+        self.engines: dict[str, dict] = {}
+        self.ubi_definitions: dict[str, Any] = {}
+        self.logic_axioms: list[str] = []
         self._load_engines()
 
     def _load_engines(self):
@@ -283,7 +287,7 @@ class CanonicalMemory:
         """Retrieve an engine by name."""
         return self.engines.get(name)
 
-    def query_by_domain(self, domain: str) -> List[dict]:
+    def query_by_domain(self, domain: str) -> list[dict]:
         """Find all engines related to a domain."""
         results = []
         for name, engine in self.engines.items():
@@ -311,10 +315,10 @@ class CaseMemory:
     """
 
     def __init__(self):
-        self.cases: List[dict[str, Any]] = []
+        self.cases: list[dict[str, Any]] = []
 
     def add_case(
-        self, domain: str, scale: str, trajectory: str, resolution: str, outcome: Dict[str, Any]
+        self, domain: str, scale: str, trajectory: str, resolution: str, outcome: dict[str, Any]
     ):
         """Add a resolved case to memory."""
         case = {
@@ -328,7 +332,7 @@ class CaseMemory:
         }
         self.cases.append(case)
 
-    def find_analogs(self, domain: str, scale: str, trajectory: str) -> List[dict]:
+    def find_analogs(self, domain: str, scale: str, trajectory: str) -> list[dict]:
         """Find similar past cases."""
         matches = []
         for case in self.cases:
@@ -356,8 +360,8 @@ class ProblemNode:
 
     id: str
     question: str
-    sub_questions: List[str] = field(default_factory=list)
-    components: List[str] = field(default_factory=list)
+    sub_questions: list[str] = field(default_factory=list)
+    components: list[str] = field(default_factory=list)
     domain: str = ""
     timescale: str = ""
 
@@ -384,7 +388,7 @@ class StructuralReasoningEngine:
 
         return node
 
-    def _extract_sub_questions(self, question: str) -> List[str]:
+    def _extract_sub_questions(self, question: str) -> list[str]:
         """Extract implicit sub-questions from the main question."""
         sub_qs = []
 
@@ -435,7 +439,7 @@ class StructuralReasoningEngine:
             return "long_term"
         return "medium_term"
 
-    def build_scenario_tree(self, current_state: dict, target_states: List[dict]) -> Dict[str, Any]:
+    def build_scenario_tree(self, current_state: dict, target_states: list[dict]) -> dict[str, Any]:
         """Generate scenario tree with transitions."""
         tree = {"root": current_state, "branches": []}
 
@@ -450,7 +454,7 @@ class StructuralReasoningEngine:
 
         return tree
 
-    def _identify_transitions(self, current: dict, target: dict) -> List[str]:
+    def _identify_transitions(self, current: dict, target: dict) -> list[str]:
         """Identify transition types needed."""
         transitions = []
 
@@ -466,7 +470,7 @@ class StructuralReasoningEngine:
 
         return transitions
 
-    def _identify_risks(self, current: dict, target: dict) -> List[str]:
+    def _identify_risks(self, current: dict, target: dict) -> list[str]:
         """Identify risks in the transition."""
         risks = []
 
@@ -493,8 +497,8 @@ class SuperposedHypothesis:
     id: str
     description: str
     weight: float  # 0.0 to 1.0
-    supporting_evidence: List[str] = field(default_factory=list)
-    conflicting_evidence: List[str] = field(default_factory=list)
+    supporting_evidence: list[str] = field(default_factory=list)
+    conflicting_evidence: list[str] = field(default_factory=list)
     decision_relevance: float = 0.5
 
 
@@ -504,15 +508,15 @@ class QuantumReasoningLayer:
     """
 
     def __init__(self):
-        self.hypotheses: Dict[str, SuperposedHypothesis] = {}
-        self.entangled_pairs: List[tuple] = []
+        self.hypotheses: dict[str, SuperposedHypothesis] = {}
+        self.entangled_pairs: list[tuple] = []
 
     def add_hypothesis(
         self,
         description: str,
         weight: float = 0.5,
-        supporting: List[str] = None,
-        conflicting: List[str] = None,
+        supporting: list[str] = None,
+        conflicting: list[str] = None,
     ) -> str:
         """Add a hypothesis to superposition."""
         h_id = f"hyp_{len(self.hypotheses)}"
@@ -530,7 +534,7 @@ class QuantumReasoningLayer:
         if h1_id in self.hypotheses and h2_id in self.hypotheses:
             self.entangled_pairs.append((h1_id, h2_id, strength))
 
-    def collapse(self, h_id: str, outcome: str) -> Dict[str, Any]:
+    def collapse(self, h_id: str, outcome: str) -> dict[str, Any]:
         """Collapse a hypothesis when decision requires.
         Returns affected entangled hypotheses.
         """
@@ -559,7 +563,7 @@ class QuantumReasoningLayer:
             "final_weight": hypothesis.weight,
         }
 
-    def get_superposition_state(self) -> Dict[str, Any]:
+    def get_superposition_state(self) -> dict[str, Any]:
         """Get current state of all hypotheses."""
         return {
             "hypotheses": [
@@ -621,7 +625,7 @@ class BiologicalLogicLayer:
             "bioelectromagnetic": {"environmental_compatibility": True, "signal_clarity": True},
         }
 
-    def check_human_constraints(self, proposal: Dict[str, Any]) -> Dict[str, Any]:
+    def check_human_constraints(self, proposal: dict[str, Any]) -> dict[str, Any]:
         """Check if a proposal respects biological constraints."""
         violations = []
 
@@ -644,8 +648,8 @@ class BiologicalLogicLayer:
         }
 
     def _generate_biological_recommendations(
-        self, proposal: dict, violations: List[str]
-    ) -> List[str]:
+        self, proposal: dict, violations: list[str]
+    ) -> list[str]:
         """Generate biologically-informed recommendations."""
         recs = []
 
@@ -663,7 +667,7 @@ class BiologicalLogicLayer:
 
         return recs
 
-    def apply_ubi_alignment(self, reasoning_output: str) -> Dict[str, Any]:
+    def apply_ubi_alignment(self, reasoning_output: str) -> dict[str, Any]:
         """Check UBI alignment of reasoning output."""
         checks = {
             "protects_biological_integrity": not any(
@@ -723,7 +727,7 @@ class IntegrationKernel:
 
         self.current_mode = "exploratory_mapping"
 
-    def integrate_and_decide(self, question: str, mode: str = None) -> Dict[str, Any]:
+    def integrate_and_decide(self, question: str, mode: str = None) -> dict[str, Any]:
         """Full integration pipeline:
         1. Route through meta-logic
         2. Decompose problem
@@ -874,7 +878,7 @@ class AMOSCognitiveRuntime:
 
         logger.info("AMOS Cognitive Runtime initialized successfully")
 
-    def think(self, question: str, mode: str = "exploratory_mapping") -> Dict[str, Any]:
+    def think(self, question: str, mode: str = "exploratory_mapping") -> dict[str, Any]:
         """Main entry point: Process a question through all 6 cognitive layers.
 
         Args:
@@ -907,11 +911,11 @@ class AMOSCognitiveRuntime:
         """Retrieve information about a specific cognitive engine."""
         return self.canonical_mem.get_engine(engine_name)
 
-    def list_available_engines(self) -> List[str]:
+    def list_available_engines(self) -> list[str]:
         """List all loaded cognitive engines."""
         return list(self.canonical_mem.engines.keys())
 
-    def query_memory(self, domain: str = None, tags: List[str] = None) -> List[MemoryEntry]:
+    def query_memory(self, domain: str = None, tags: list[str] = None) -> list[MemoryEntry]:
         """Query the working memory."""
         return self.working_mem.query(domain, tags)
 
@@ -919,7 +923,7 @@ class AMOSCognitiveRuntime:
         """Add a resolved case to case memory."""
         self.case_mem.add_case(domain, scale, trajectory, resolution, outcome)
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get full runtime status."""
         return {
             "initialized": True,
@@ -940,6 +944,13 @@ class AMOSCognitiveRuntime:
 def main():
     """Command-line interface for AMOS Cognitive Runtime."""
     import argparse
+
+    # Import alias modules to set up paths
+    import AMOS_ORGANISM_OS  # noqa: F401
+    import BLOOD  # noqa: F401
+    import BRAIN  # noqa: F401
+    import IMMUNE  # noqa: F401
+    import MUSCLE  # noqa: F401
 
     # Compute default brain dir relative to this file for portability
     default_brain_dir = str(Path(__file__).resolve().parent / "_AMOS_BRAIN")
@@ -1007,6 +1018,18 @@ def main():
                 print(f"Error: {e}")
 
         print("\nGoodbye.")
+
+
+# Singleton instance
+_cognitive_runtime_instance: Optional[AMOSCognitiveRuntime] = None
+
+
+def get_cognitive_runtime() -> AMOSCognitiveRuntime:
+    """Get the singleton cognitive runtime instance."""
+    global _cognitive_runtime_instance
+    if _cognitive_runtime_instance is None:
+        _cognitive_runtime_instance = AMOSCognitiveRuntime()
+    return _cognitive_runtime_instance
 
 
 if __name__ == "__main__":

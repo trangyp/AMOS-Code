@@ -40,7 +40,7 @@ class RepairAction:
     priority: int
     description: str
     files_to_modify: list[str]
-    invariant_dimension: Optional[StateDimension] = None
+    invariant_dimension: StateDimension | None = None
     estimated_risk: str = "medium"  # "low", "medium", "high"
     auto_fixable: bool = False
     fix_suggestion: str = None
@@ -124,7 +124,7 @@ class RepairPlanner:
             manual_fixes=manual,
         )
 
-    def _create_action_for_failure(self, result: InvariantResult) -> Optional[RepairAction]:
+    def _create_action_for_failure(self, result: InvariantResult) -> RepairAction | None:
         """Create a repair action for a specific invariant failure."""
         if result.dimension == StateDimension.SYNTAX:
             return RepairAction(
@@ -263,7 +263,7 @@ class RepairPlanner:
             manual_fixes=manual,
         )
 
-    def _create_arch_action_for_failure(self, result: ArchInvariantResult) -> Optional[RepairAction]:
+    def _create_arch_action_for_failure(self, result: ArchInvariantResult) -> RepairAction | None:
         """Create an architecture-aware repair action for an arch invariant failure."""
         if result.invariant_name == "boundary_integrity":
             return RepairAction(

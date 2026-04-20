@@ -1,0 +1,1 @@
+"""AMOS Search Package."""

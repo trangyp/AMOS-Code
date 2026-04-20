@@ -27,8 +27,8 @@ class ProjectScaffold:
         self.name = name
         self.description = description
         self.project_type = project_type
-        self.engines: List[dict] = []
-        self.files: Dict[str, str] = {}
+        self.engines: list[dict] = []
+        self.files: dict[str, str] = {}
         self.brain_analysis: dict = {}
 
 
@@ -80,7 +80,7 @@ class AMOSProjectGenerator:
 
         return analysis
 
-    def find_engines(self, description: str) -> List[dict]:
+    def find_engines(self, description: str) -> list[dict]:
         """Find relevant cognitive engines."""
         print("\n📚 PHASE 2: Knowledge Exploration")
         print("─" * 60)
@@ -125,7 +125,7 @@ class AMOSProjectGenerator:
             return "general"
 
     def generate_scaffold(
-        self, name: str, description: str, analysis: dict, engines: List[dict]
+        self, name: str, description: str, analysis: dict, engines: list[dict]
     ) -> ProjectScaffold:
         """Generate project scaffold."""
         print("\n🏗️  PHASE 3: Project Scaffolding")
@@ -159,7 +159,7 @@ class AMOSProjectGenerator:
         return scaffold
 
     def _generate_main_py(
-        self, name: str, description: str, project_type: str, engines: List[dict]
+        self, name: str, description: str, project_type: str, engines: list[dict]
     ) -> str:
         """Generate main Python module."""
         class_name = "".join(word.capitalize() for word in name.replace("-", "_").split("_"))
@@ -246,7 +246,7 @@ if __name__ == "__main__":
 '''
         return template
 
-    def _generate_config_py(self, name: str, engines: List[dict]) -> str:
+    def _generate_config_py(self, name: str, engines: list[dict]) -> str:
         """Generate configuration module."""
         engine_list = (
             "\n".join([f'    "{e["name"]}",  # {e["type"]}' for e in engines[:3]])
@@ -283,7 +283,7 @@ class Config:
 '''
 
     def _generate_readme(
-        self, name: str, description: str, project_type: str, engines: List[dict], analysis: dict
+        self, name: str, description: str, project_type: str, engines: list[dict], analysis: dict
     ) -> str:
         """Generate README."""
         engine_section = (
@@ -320,7 +320,7 @@ python main.py
 
 # Or import and use programmatically
 from main import {name.replace("-", "_").title().replace(" ", "")}
-from typing import Dict, Final, List, Optional
+from typing import Final
 
 app = {name.replace("-", "_").title().replace(" ", "")}()
 result = app.analyze("Your problem here")

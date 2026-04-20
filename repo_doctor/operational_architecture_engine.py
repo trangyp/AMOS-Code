@@ -1,4 +1,5 @@
-"""Operational Architecture Engine.
+"""
+Operational Architecture Engine.
 
 Validates operational, caching, queue, and fallback aspects of architecture.
 
@@ -89,7 +90,7 @@ class FallbackConfig:
     name: str
     current_level: FallbackLevel
     levels: dict[FallbackLevel, list[str]]  # Level -> available features
-    triggers: Dict[str, FallbackLevel]  # Condition -> level transition
+    triggers: dict[str, FallbackLevel]  # Condition -> level transition
 
 
 @dataclass
@@ -128,7 +129,7 @@ class OperationalViolation:
     description: str
     invariant_broken: str
     component: str
-    evidence: List[str] = field(default_factory=list)
+    evidence: list[str] = field(default_factory=list)
     remediation: str = ""
 
 
@@ -140,13 +141,13 @@ class OperationalAssessment:
     timestamp: str
 
     # Configurations
-    cache_configs: List[CacheConfig]
-    fallback_configs: List[FallbackConfig]
-    queue_configs: List[QueueConfig]
-    idempotency_configs: List[IdempotencyConfig]
+    cache_configs: list[CacheConfig]
+    fallback_configs: list[FallbackConfig]
+    queue_configs: list[QueueConfig]
+    idempotency_configs: list[IdempotencyConfig]
 
     # Violations
-    violations: List[OperationalViolation]
+    violations: list[OperationalViolation]
 
     # Invariant status
     cache_valid: bool
@@ -154,7 +155,7 @@ class OperationalAssessment:
     queue_valid: bool
     idempotency_valid: bool
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "assessment_id": self.assessment_id,
@@ -188,11 +189,11 @@ class OperationalArchitectureEngine:
     """
 
     def __init__(self):
-        self.cache_configs: List[CacheConfig] = []
-        self.fallback_configs: List[FallbackConfig] = []
-        self.queue_configs: List[QueueConfig] = []
-        self.idempotency_configs: List[IdempotencyConfig] = []
-        self.assessments: List[OperationalAssessment] = []
+        self.cache_configs: list[CacheConfig] = []
+        self.fallback_configs: list[FallbackConfig] = []
+        self.queue_configs: list[QueueConfig] = []
+        self.idempotency_configs: list[IdempotencyConfig] = []
+        self.assessments: list[OperationalAssessment] = []
 
     def add_cache_config(self, config: CacheConfig) -> None:
         """Add cache configuration."""
@@ -216,8 +217,9 @@ class OperationalArchitectureEngine:
 
         Returns:
             Assessment with all violations found
+
         """
-        violations: List[OperationalViolation] = []
+        violations: list[OperationalViolation] = []
 
         # 1. Check cache coherence (I_cache)
         for config in self.cache_configs:
@@ -439,7 +441,7 @@ class OperationalArchitectureEngine:
         cache_id: str,
         cold_start: bool,
         warm_hit_rate: float,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Check cache safety under cold/warm transitions.
 
@@ -450,6 +452,7 @@ class OperationalArchitectureEngine:
 
         Returns:
             Safety assessment
+
         """
         issues = []
 
@@ -474,8 +477,8 @@ class OperationalArchitectureEngine:
         service_id: str,
         from_level: str,
         to_level: str,
-        feature_set: List[str],
-    ) -> Dict[str, Any]:
+        feature_set: list[str],
+    ) -> dict[str, Any]:
         """Validate fallback transition preserves monotonicity."""
         try:
             from_enum = FallbackLevel(from_level)
@@ -532,8 +535,8 @@ class OperationalArchitectureEngine:
         self,
         queue_id: str,
         expected_order: str,
-        observed_sequence: List[str],
-    ) -> Dict[str, Any]:
+        observed_sequence: list[str],
+    ) -> dict[str, Any]:
         """Check if observed sequence matches expected ordering."""
         try:
             order_enum = QueueOrder(expected_order)
@@ -566,7 +569,7 @@ class OperationalArchitectureEngine:
         key: str,
         first_result: Any,
         second_result: Any,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Verify operation is idempotent by comparing repeated results."""
         # Find config
         config = next((c for c in self.idempotency_configs if c.operation_id == operation_id), None)

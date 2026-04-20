@@ -13,7 +13,9 @@ import logging
 import os
 import platform
 from dataclasses import asdict, dataclass
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from pathlib import Path
 from typing import Any
 
@@ -28,7 +30,7 @@ class SensoryInput:
     timestamp: str
     source: str  # filesystem, system, user, environment
     input_type: str
-    payload: Dict[str, Any]
+    payload: dict[str, Any]
     priority: int = 5  # 1-10, lower is higher priority
     raw_data: str = None
 
@@ -41,7 +43,7 @@ class EnvironmentState:
     platform: str
     cwd: str
     python_version: str
-    env_vars: Dict[str, str]
+    env_vars: dict[str, str]
     system_load: dict[str, float] = None
 
 
@@ -59,11 +61,11 @@ class SensesKernel:
         self.logs_path.mkdir(parents=True, exist_ok=True)
 
         # Input buffer
-        self.input_buffer: List[SensoryInput] = []
+        self.input_buffer: list[SensoryInput] = []
         self.buffer_capacity = 100
 
         # Registered sensors
-        self.sensors: Dict[str, callable] = {}
+        self.sensors: dict[str, callable] = {}
 
         logger.info(f"SensesKernel initialized at {self.senses_path}")
 
@@ -72,7 +74,7 @@ class SensesKernel:
         self.sensors[name] = sensor_fn
         logger.info(f"Registered sensor: {name}")
 
-    def scan_filesystem(self, path: Optional[Path] = None, depth: int = 2) -> Dict[str, Any]:
+    def scan_filesystem(self, path: Path = None, depth: int = 2) -> dict[str, Any]:
         """Scan the filesystem for relevant files."""
         target = path or self.root
         structure = {}
@@ -104,7 +106,7 @@ class SensesKernel:
         )
 
     def receive_input(
-        self, source: str, input_type: str, payload: Dict[str, Any], priority: int = 5
+        self, source: str, input_type: str, payload: dict[str, Any], priority: int = 5
     ) -> SensoryInput:
         """Receive and buffer an input."""
         # Manage buffer
@@ -129,12 +131,12 @@ class SensesKernel:
 
         return input_obj
 
-    def get_prioritized_inputs(self, max_items: int = 10) -> List[SensoryInput]:
+    def get_prioritized_inputs(self, max_items: int = 10) -> list[SensoryInput]:
         """Get inputs sorted by priority."""
         sorted_inputs = sorted(self.input_buffer, key=lambda x: (x.priority, x.timestamp))
         return sorted_inputs[:max_items]
 
-    def sense_all(self) -> Dict[str, Any]:
+    def sense_all(self) -> dict[str, Any]:
         """Run all registered sensors and return combined result."""
         results = {
             "timestamp": datetime.now(UTC).isoformat(),
@@ -153,7 +155,7 @@ class SensesKernel:
 
         return results
 
-    def detect_user_state(self, text_input: str) -> Dict[str, Any]:
+    def detect_user_state(self, text_input: str) -> dict[str, Any]:
         """Detect emotional/cognitive state from text input.
         Simple heuristic implementation.
         """

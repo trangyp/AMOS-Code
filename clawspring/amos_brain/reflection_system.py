@@ -1,4 +1,6 @@
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
+
+from typing import Any
 
 """Self-Reflection System for AMOS Brain
 
@@ -36,11 +38,11 @@ class Critique:
     """Critique of generated output."""
 
     critique_text: str
-    issues: List[str]
+    issues: list[str]
     severity: float  # 0-1
-    suggestions: List[str]
+    suggestions: list[str]
     validated: bool
-    validation_data: Dict[str, Any] = None
+    validation_data: dict[str, Any] = None
 
 
 @dataclass
@@ -48,21 +50,20 @@ class Revision:
     """Revised output."""
 
     output: str
-    changes_made: List[str]
+    changes_made: list[str]
     confidence: float
     iteration: int
 
 
 class SelfReflectionSystem:
-    """
-    Self-reflection with iterative refinement.
+    """Self-reflection with iterative refinement.
 
     Implements generate-critic-revise loop with optional tool validation.
     """
 
     def __init__(
         self,
-        kernel: Optional[AMOSKernelRuntime] = None,
+        kernel: AMOSKernelRuntime | None = None,
         max_iterations: int = 3,
         improvement_threshold: float = 0.1,
     ):
@@ -71,17 +72,16 @@ class SelfReflectionSystem:
         self.improvement_threshold = improvement_threshold
 
         # Revision history
-        self._history: List[dict[str, Any]] = []
+        self._history: list[dict[str, Any]] = []
 
     async def refine(
         self,
         initial_output: str,
-        context: Dict[str, Any],
+        context: dict[str, Any],
         critique_fn: Callable[[str, dict], Critique] = None,
         revise_fn: Callable[[str, Critique, dict], str] = None,
     ) -> Revision:
-        """
-        Refine output through iterative critique and revision.
+        """Refine output through iterative critique and revision.
 
         Args:
             initial_output: Starting output to refine
@@ -91,6 +91,7 @@ class SelfReflectionSystem:
 
         Returns:
             Final revision after iterations
+
         """
         current_output = initial_output
         current_confidence = 0.5
@@ -150,7 +151,7 @@ class SelfReflectionSystem:
     async def _generate_critique(
         self,
         output: str,
-        context: Dict[str, Any],
+        context: dict[str, Any],
         custom_fn: Callable[[str, dict], Critique],
     ) -> Critique:
         """Generate critique of output."""
@@ -193,7 +194,7 @@ class SelfReflectionSystem:
         self,
         output: str,
         critique: Critique,
-        context: Dict[str, Any],
+        context: dict[str, Any],
         custom_fn: Callable[[str, Critique, dict], str],
     ) -> str:
         """Generate revised output based on critique."""
@@ -237,13 +238,13 @@ class SelfReflectionSystem:
         similarity = len(common) / len(union) if union else 1.0
         return 1.0 - similarity
 
-    def get_history(self) -> List[dict[str, Any]]:
+    def get_history(self) -> list[dict[str, Any]]:
         """Get refinement history."""
         return self._history.copy()
 
 
 # Global reflection system
-_global_reflection: Optional[SelfReflectionSystem] = None
+_global_reflection: SelfReflectionSystem | None = None
 
 
 def get_reflection_system() -> SelfReflectionSystem:

@@ -8,31 +8,30 @@ Provides knowledge graph operations:
 - Concept clustering
 """
 
+from __future__ import annotations
 
 import asyncio
 import sys
 import uuid
 from collections.abc import AsyncIterator
 from datetime import datetime, timezone
-
-UTC = timezone.utc
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Optional
 
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
+UTC = timezone.utc
+
 # Setup paths
 AMOS_ROOT = Path(__file__).parent.parent.parent.resolve()
 for p in [AMOS_ROOT, AMOS_ROOT / "amos_brain"]:
     if str(p) not in sys.path:
-        sys.path.insert(0, str(p))
 
 # Import brain components
 try:
-
     from knowledge_loader import KnowledgeLoader
 
     from memory import BrainMemory
@@ -75,12 +74,12 @@ class KnowledgeNode(BaseModel):
     label: str
     node_type: NodeType = NodeType.CONCEPT
     description: str = ""
-    properties: Dict[str, Any] = Field(default_factory=dict)
+    properties: dict[str, Any] = Field(default_factory=dict)
     confidence: float = Field(ge=0.0, le=1.0, default=0.8)
     source: str = ""
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
-    tags: List[str] = Field(default_factory=list)
+    tags: list[str] = Field(default_factory=list)
 
 
 class KnowledgeEdge(BaseModel):
@@ -91,7 +90,7 @@ class KnowledgeEdge(BaseModel):
     target_id: str
     relation_type: RelationType = RelationType.RELATED_TO
     weight: float = Field(ge=0.0, le=1.0, default=1.0)
-    properties: Dict[str, Any] = Field(default_factory=dict)
+    properties: dict[str, Any] = Field(default_factory=dict)
     bidirectional: bool = False
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
@@ -100,8 +99,8 @@ class KnowledgeQuery(BaseModel):
     """Knowledge graph query."""
 
     query_text: str = Field(..., min_length=1, description="Natural language query")
-    node_types: List[NodeType] = Field(default_factory=list)
-    relation_types: List[RelationType] = Field(default_factory=list)
+    node_types: list[NodeType] = Field(default_factory=list)
+    relation_types: list[RelationType] = Field(default_factory=list)
     min_confidence: float = Field(default=0.5, ge=0.0, le=1.0)
     max_depth: int = Field(default=2, ge=1, le=5)
     limit: int = Field(default=20, ge=1, le=100)
@@ -111,8 +110,8 @@ class KnowledgePath(BaseModel):
     """Path through knowledge graph."""
 
     path_id: str
-    nodes: List[KnowledgeNode]
-    edges: List[KnowledgeEdge]
+    nodes: list[KnowledgeNode]
+    edges: list[KnowledgeEdge]
     total_weight: float
     path_length: int
     relevance_score: float
@@ -123,7 +122,7 @@ class KnowledgeCluster(BaseModel):
 
     cluster_id: str
     label: str
-    nodes: List[KnowledgeNode]
+    nodes: list[KnowledgeNode]
     center_node: KnowledgeNode
     cohesion_score: float
     dominant_type: NodeType
@@ -134,9 +133,9 @@ class KnowledgeGraphStats(BaseModel):
 
     total_nodes: int
     total_edges: int
-    nodes_by_type: Dict[str, int]
-    edges_by_type: Dict[str, int]
-    avg_connectivity: float
+    nodes_by_type: dict[str, int]
+    edges_by_type: dict[str, int]
+    avg_connectivity:float
     last_updated: Optional[datetime] = None
 
 
@@ -144,9 +143,9 @@ class KnowledgeGraphEngine:
     """Knowledge graph engine using AMOS brain."""
 
     def __init__(self) -> None:
-        self._nodes: Dict[str, KnowledgeNode] = {}
-        self._edges: Dict[str, KnowledgeEdge] = {}
-        self._adjacency: Dict[str, list[str]] = {}  # node_id -> list of edge_ids
+        self._nodes: dict[str, KnowledgeNode] = {}
+        self._edges: dict[str, KnowledgeEdge] = {}
+        self._adjacency: dict[str, list[str]] = {}  # node_id -> list of edge_ids
         self._knowledge_loader: Any = None
         self._memory: Any = None
         self._lock = asyncio.Lock()
@@ -200,7 +199,7 @@ class KnowledgeGraphEngine:
         """Get a knowledge node by ID."""
         return self._nodes.get(node_id)
 
-    async def update_node(self, node_id: str, updates: Dict[str, Any]) -> KnowledgeNode:
+    async def update_node(self, node_id: str, updates: dict[str, Any]) -> KnowledgeNode:
         """Update a knowledge node."""
         async with self._lock:
             if node_id not in self._nodes:
@@ -265,9 +264,9 @@ class KnowledgeGraphEngine:
 
             return edge
 
-    async def query_knowledge(self, query: KnowledgeQuery) -> List[KnowledgeNode]:
+    async def query_knowledge(self, query: KnowledgeQuery) -> list[KnowledgeNode]:
         """Query knowledge graph."""
-        results: List[KnowledgeNode] = []
+        results: list[KnowledgeNode] = []
 
         # Simple text-based search
         query_lower = query.query_text.lower()
@@ -300,18 +299,18 @@ class KnowledgeGraphEngine:
 
     async def find_paths(
         self, source_id: str, target_id: str, max_depth: int = 3
-    ) -> List[KnowledgePath]:
+    ) -> list[KnowledgePath]:
         """Find paths between two nodes."""
         if source_id not in self._nodes:
             raise HTTPException(status_code=404, detail=f"Source {source_id} not found")
         if target_id not in self._nodes:
             raise HTTPException(status_code=404, detail=f"Target {target_id} not found")
 
-        paths: List[KnowledgePath] = []
+        paths: list[KnowledgePath] = []
 
         # Simple BFS for paths
-        visited: Set[str] = set()
-        queue: List[tuple[str, list[str], list[str], float]] = [(source_id, [source_id], [], 0.0)]
+        visited: set[str] = set()
+        queue: list[tuple[str, list[str], list[str], float]] = [(source_id, [source_id], [], 0.0)]
 
         while queue and len(paths) < 10:
             current_id, node_path, edge_path, weight = queue.pop(0)
@@ -355,12 +354,12 @@ class KnowledgeGraphEngine:
 
         return paths
 
-    async def get_clusters(self) -> List[KnowledgeCluster]:
+    async def get_clusters(self) -> list[KnowledgeCluster]:
         """Get knowledge clusters."""
-        clusters: List[KnowledgeCluster] = []
+        clusters: list[KnowledgeCluster] = []
 
         # Group by node type as simple clustering
-        by_type: Dict[NodeType, list[KnowledgeNode]] = {}
+        by_type: dict[NodeType, list[KnowledgeNode]] = {}
         for node in self._nodes.values():
             if node.node_type not in by_type:
                 by_type[node.node_type] = []
@@ -384,12 +383,12 @@ class KnowledgeGraphEngine:
 
     async def get_stats(self) -> KnowledgeGraphStats:
         """Get knowledge graph statistics."""
-        nodes_by_type: Dict[str, int] = {}
+        nodes_by_type: dict[str, int] = {}
         for node in self._nodes.values():
             t = node.node_type.value
             nodes_by_type[t] = nodes_by_type.get(t, 0) + 1
 
-        edges_by_type: Dict[str, int] = {}
+        edges_by_type: dict[str, int] = {}
         for edge in self._edges.values():
             t = edge.relation_type.value
             edges_by_type[t] = edges_by_type.get(t, 0) + 1
@@ -413,7 +412,7 @@ class KnowledgeGraphEngine:
             yield node
 
 
-# Global engine
+#Global engine
 _graph_engine: Optional[KnowledgeGraphEngine] = None
 
 
@@ -443,11 +442,10 @@ async def get_node(node_id: str) -> KnowledgeNode:
 
 
 @router.get("/nodes")
-async def list_nodes(
-    node_type: Optional[NodeType] = None,
+async def list_nodes(node_type: Optional[NodeType] =None,
     tag: Optional[str] = None,
     limit: int = Query(default=50, ge=1, le=200),
-) -> List[KnowledgeNode]:
+) -> list[KnowledgeNode]:
     """List knowledge nodes with optional filtering."""
     engine = get_graph_engine()
     nodes = list(engine._nodes.values())
@@ -462,14 +460,14 @@ async def list_nodes(
 
 
 @router.patch("/nodes/{node_id}")
-async def update_node(node_id: str, updates: Dict[str, Any]) -> KnowledgeNode:
+async def update_node(node_id: str, updates: dict[str, Any]) -> KnowledgeNode:
     """Update a knowledge node."""
     engine = get_graph_engine()
     return await engine.update_node(node_id, updates)
 
 
 @router.delete("/nodes/{node_id}")
-async def delete_node(node_id: str) -> Dict[str, Any]:
+async def delete_node(node_id: str) -> dict[str, Any]:
     """Delete a knowledge node."""
     engine = get_graph_engine()
     success = await engine.delete_node(node_id)
@@ -484,7 +482,7 @@ async def create_edge(edge: KnowledgeEdge) -> KnowledgeEdge:
 
 
 @router.post("/query", response_model=list[KnowledgeNode])
-async def query_knowledge(query: KnowledgeQuery) -> List[KnowledgeNode]:
+async def query_knowledge(query: KnowledgeQuery) -> list[KnowledgeNode]:
     """Query knowledge graph."""
     engine = get_graph_engine()
     return await engine.query_knowledge(query)
@@ -493,14 +491,14 @@ async def query_knowledge(query: KnowledgeQuery) -> List[KnowledgeNode]:
 @router.get("/paths")
 async def find_paths(
     source_id: str, target_id: str, max_depth: int = Query(default=3, ge=1, le=5)
-) -> List[KnowledgePath]:
+) -> list[KnowledgePath]:
     """Find paths between two knowledge nodes."""
     engine = get_graph_engine()
     return await engine.find_paths(source_id, target_id, max_depth)
 
 
 @router.get("/clusters", response_model=list[KnowledgeCluster])
-async def get_clusters() -> List[KnowledgeCluster]:
+async def get_clusters() -> list[KnowledgeCluster]:
     """Get knowledge clusters."""
     engine = get_graph_engine()
     return await engine.get_clusters()
@@ -527,7 +525,7 @@ async def stream_nodes() -> StreamingResponse:
 
 
 @router.get("/health")
-async def health_check() -> Dict[str, Any]:
+async def health_check() -> dict[str, Any]:
     """Health check for knowledge graph."""
     engine = get_graph_engine()
     stats = await engine.get_stats()

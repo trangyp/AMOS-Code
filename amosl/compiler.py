@@ -13,9 +13,7 @@ from .ast_nodes import (
     QuantumEntityDecl,
     StateDecl,
 )
-from typing import Dict, Tuple
-
-from .ast_nodes import (
+from .ir import (
     BIR,
     CIR,
     HIR,
@@ -46,9 +44,9 @@ class IRGenerator:
         self.qir = QIR()
         self.bir = BIR()
         self.hir = HIR()
-        self.symbol_table: Dict[str, str] = {}
+        self.symbol_table: dict[str, str] = {}
 
-    def generate(self, program: Program) -> Tuple[CIR, QIR, BIR, HIR]:
+    def generate(self, program: Program) -> tuple[CIR, QIR, BIR, HIR]:
         """Generate all IRs from program."""
         self.process_ontology(program.ontology)
         self.process_state(program.state)
@@ -199,7 +197,7 @@ class IRGenerator:
                 )
 
 
-def compile_program(program: Program) -> Tuple[CIR, QIR, BIR, HIR]:
+def compile_program(program: Program) -> tuple[CIR, QIR, BIR, HIR]:
     """Compile AMOSL program to 4 IRs.
 
     Returns (CIR, QIR, BIR, HIR) tuple.

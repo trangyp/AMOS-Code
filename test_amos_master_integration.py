@@ -14,9 +14,11 @@ import asyncio
 import sys
 import time
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
+
+UTC = UTC
 
 
 @dataclass
@@ -27,7 +29,7 @@ class TestResult:
     passed: bool
     duration_ms: float
     message: str = ""
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -35,7 +37,7 @@ class TestSuite:
     """A suite of tests."""
 
     name: str
-    results: List[TestResult] = field(default_factory=list)
+    results: list[TestResult] = field(default_factory=list)
     started_at: str = None
     completed_at: str = None
 
@@ -56,11 +58,11 @@ class AMOSMasterIntegrationTest:
     """Master test suite for AMOS ecosystem."""
 
     def __init__(self):
-        self.suites: List[TestSuite] = []
+        self.suites: list[TestSuite] = []
         self.start_time: float = 0.0
-        self.report: Dict[str, Any] = {}
+        self.report: dict[str, Any] = {}
 
-    async def run_all_tests(self) -> Dict[str, Any]:
+    async def run_all_tests(self) -> dict[str, Any]:
         """Execute complete test suite."""
         print("=" * 70)
         print("🧪 AMOS MASTER INTEGRATION TEST SUITE")
@@ -523,7 +525,7 @@ class AMOSMasterIntegrationTest:
         self.suites.append(suite)
         print(f"  ✅ {suite.passed_count}/{len(suite.results)} tests passed")
 
-    async def _generate_report(self) -> Dict[str, Any]:
+    async def _generate_report(self) -> dict[str, Any]:
         """Generate comprehensive test report."""
         total_duration = (time.time() - self.start_time) * 1000
 
@@ -539,7 +541,7 @@ class AMOSMasterIntegrationTest:
                 "total_tests": total_tests,
                 "passed": total_passed,
                 "failed": total_failed,
-                "success_rate": f"{(total_passed/total_tests*100):.1f}%"
+                "success_rate": f"{(total_passed / total_tests * 100):.1f}%"
                 if total_tests > 0
                 else "0%",
             },

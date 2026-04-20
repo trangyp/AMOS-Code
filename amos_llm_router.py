@@ -12,13 +12,16 @@ Implements 2025 LLM gateway patterns (Bifrost, LiteLLM, Cloudflare AI Gateway):
 Component #72 - AI Gateway & Routing Layer
 """
 
+from __future__ import annotations
+
 import asyncio
 import hashlib
 import json
+import os
 import time
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any, Optional, Protocol
 
 
 class RoutingStrategy(Enum):
@@ -83,13 +86,13 @@ class RoutingRule:
     priority: int = 0
 
     # Matching conditions
-    required_capabilities: List[str] = field(default_factory=list)
+    required_capabilities: list[str] = field(default_factory=list)
     max_cost_per_request: float = None
     max_latency_ms: int = None
 
     # Action
-    preferred_providers: List[ProviderType] = field(default_factory=list)
-    excluded_providers: List[ProviderType] = field(default_factory=list)
+    preferred_providers: list[ProviderType] = field(default_factory=list)
+    excluded_providers: list[ProviderType] = field(default_factory=list)
     fallback_endpoint: str = None
 
 
@@ -99,7 +102,7 @@ class CachedRequest:
 
     cache_key: str
     request_hash: str
-    response: Dict[str, Any]
+    response: dict[str, Any]
     created_at: float = field(default_factory=time.time)
     access_count: int = 0
 
@@ -111,11 +114,11 @@ class CachedRequest:
 class LLMRequest:
     """LLM request payload."""
 
-    messages: List[dict[str, str]]
+    messages: list[dict[str, str]]
     model_preference: str = None
     temperature: float = 0.7
     max_tokens: int = None
-    tools: List[dict] = None
+    tools: list[dict] = None
     require_vision: bool = False
     require_tools: bool = False
 
@@ -149,31 +152,254 @@ class LLMProvider(Protocol):
         ...
 
 
-class MockLLMProvider:
-    """Mock provider for testing."""
+class OpenAIProvider:
+    """Real OpenAI GPT provider."""
 
     async def complete(self, endpoint: ModelEndpoint, request: LLMRequest) -> LLMResponse:
-        await asyncio.sleep(0.1)  # Simulate latency
+        import time
 
-        # Simulate token counting
-        input_tokens = sum(len(m["content"].split()) for m in request.messages)
-        output_tokens = 50  # Simulated response
+        import openai
 
-        # Calculate cost
-        cost = (
-            input_tokens / 1000 * endpoint.cost_per_1k_input
-            + output_tokens / 1000 * endpoint.cost_per_1k_output
-        )
+        start_time = time.time()
+        api_key = os.environ.get(endpoint.api_key_env)
+        if not api_key:
+            raise RuntimeError(f"API key not found: {endpoint.api_key_env}")
 
-        return LLMResponse(
-            content=f"Mock response from {endpoint.model_name}: Processed your request",
-            model_used=endpoint.model_name,
-            provider=endpoint.provider,
-            latency_ms=100.0,
-            input_tokens=input_tokens,
-            output_tokens=output_tokens,
-            cost_usd=cost,
-        )
+        client = openai.AsyncOpenAI(api_key=api_key, base_url=endpoint.base_url)
+
+        try:
+            response = await client.chat.completions.create(
+                model=endpoint.model_name,
+                messages=request.messages,
+                temperature=request.temperature,
+                max_tokens=request.max_tokens or endpoint.max_tokens,
+            )
+
+            latency_ms = (time.time() - start_time) * 1000
+            content = response.choices[0].message.content
+            usage = response.usage
+
+            # Calculate cost
+            input_tokens = usage.prompt_tokens
+            output_tokens = usage.completion_tokens
+            cost = (
+                input_tokens / 1000 * endpoint.cost_per_1k_input
+                + output_tokens / 1000 * endpoint.cost_per_1k_output
+            )
+
+            return LLMResponse(
+                content=content,
+                model_used=response.model,
+                provider=endpoint.provider,
+                latency_ms=latency_ms,
+                input_tokens=input_tokens,
+                output_tokens=output_tokens,
+                cost_usd=cost,
+            )
+        except Exception as e:
+            raise RuntimeError(f"OpenAI API error: {e}")
+
+
+class AnthropicProvider:
+    """Real Anthropic Claude provider."""
+
+    async def complete(self, endpoint: ModelEndpoint, request: LLMRequest) -> LLMResponse:
+        import time
+
+        start_time = time.time()
+        api_key = os.environ.get(endpoint.api_key_env)
+        if not api_key:
+            raise RuntimeError(f"API key not found: {endpoint.api_key_env}")
+
+        try:
+            import anthropic
+
+            client = anthropic.AsyncAnthropic(api_key=api_key)
+
+            # Convert messages to Anthropic format
+            system_msg = None
+            messages = []
+            for m in request.messages:
+                if m.get("role") == "system":
+                    system_msg = m.get("content", "")
+                else:
+                    messages.append({"role": m.get("role"), "content": m.get("content", "")})
+
+            response = await client.messages.create(
+                model=endpoint.model_name,
+                messages=messages,
+                system=system_msg or "You are a helpful assistant.",
+                temperature=request.temperature,
+                max_tokens=request.max_tokens or min(4096, endpoint.max_tokens),
+            )
+
+            latency_ms = (time.time() - start_time) * 1000
+            content = response.content[0].text if response.content else ""
+            input_tokens = response.usage.input_tokens
+            output_tokens = response.usage.output_tokens
+
+            # Calculate cost
+            cost = (
+                input_tokens / 1000 * endpoint.cost_per_1k_input
+                + output_tokens / 1000 * endpoint.cost_per_1k_output
+            )
+
+            return LLMResponse(
+                content=content,
+                model_used=endpoint.model_name,
+                provider=endpoint.provider,
+                latency_ms=latency_ms,
+                input_tokens=input_tokens,
+                output_tokens=output_tokens,
+                cost_usd=cost,
+            )
+        except ImportError:
+            raise RuntimeError("anthropic package not installed. Run: pip install anthropic")
+        except Exception as e:
+            raise RuntimeError(f"Anthropic API error: {e}")
+
+
+class LocalProvider:
+    """Real local LLM provider (Ollama, LM Studio, etc.)."""
+
+    async def complete(self, endpoint: ModelEndpoint, request: LLMRequest) -> LLMResponse:
+        import time
+
+        import aiohttp
+
+        start_time = time.time()
+        base_url = endpoint.base_url or "http://localhost:11434"
+
+        # Try Ollama API first
+        try:
+            async with aiohttp.ClientSession() as session:
+                payload = {
+                    "model": endpoint.model_name,
+                    "messages": request.messages,
+                    "temperature": request.temperature,
+                    "stream": False,
+                }
+                if request.max_tokens:
+                    payload["max_tokens"] = request.max_tokens
+
+                async with session.post(
+                    f"{base_url}/api/chat", json=payload, timeout=aiohttp.ClientTimeout(total=120)
+                ) as resp:
+                    if resp.status == 200:
+                        data = await resp.json()
+                        latency_ms = (time.time() - start_time) * 1000
+                        content = data.get("message", {}).get("content", "")
+
+                        # Estimate tokens (local models don't always report usage)
+                        input_tokens = sum(
+                            len(m.get("content", "").split()) for m in request.messages
+                        )
+                        output_tokens = len(content.split())
+
+                        return LLMResponse(
+                            content=content,
+                            model_used=endpoint.model_name,
+                            provider=endpoint.provider,
+                            latency_ms=latency_ms,
+                            input_tokens=input_tokens,
+                            output_tokens=output_tokens,
+                            cost_usd=0.0,  # Local models are free
+                        )
+                    else:
+                        raise RuntimeError(f"Ollama error: {resp.status}")
+        except Exception as e:
+            raise RuntimeError(f"Local LLM error: {e}")
+
+
+class HuggingFaceProvider:
+    """Real HuggingFace provider using huggingface_hub inference API."""
+
+    def __init__(self) -> None:
+        self.api_token = os.getenv("HUGGINGFACE_API_TOKEN", "")
+        self.base_url = "https://api-inference.huggingface.co/models"
+
+    async def complete(self, endpoint: ModelEndpoint, request: LLMRequest) -> LLMResponse:
+        """Complete request using HuggingFace Inference API."""
+        import aiohttp
+
+        start_time = time.time()
+
+        # Format messages for HuggingFace
+        prompt = self._format_messages(request.messages)
+
+        headers = {"Authorization": f"Bearer {self.api_token}"} if self.api_token else {}
+        payload = {
+            "inputs": prompt,
+            "parameters": {
+                "max_new_tokens": request.max_tokens or 500,
+                "temperature": request.temperature or 0.7,
+                "top_p": request.top_p or 0.9,
+            },
+        }
+
+        model_id = endpoint.model_name
+        url = f"{self.base_url}/{model_id}"
+
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.post(url, headers=headers, json=payload, timeout=120) as resp:
+                    if resp.status == 200:
+                        result = await resp.json()
+                        content = self._extract_response(result)
+                    else:
+                        error_text = await resp.text()
+                        content = f"HuggingFace API error: {resp.status} - {error_text}"
+
+            latency_ms = (time.time() - start_time) * 1000
+
+            # Calculate tokens
+            input_tokens = len(prompt.split())
+            output_tokens = len(content.split())
+            cost = (
+                input_tokens / 1000 * endpoint.cost_per_1k_input
+                + output_tokens / 1000 * endpoint.cost_per_1k_output
+            )
+
+            return LLMResponse(
+                content=content,
+                model_used=endpoint.model_name,
+                provider=endpoint.provider,
+                latency_ms=latency_ms,
+                input_tokens=input_tokens,
+                output_tokens=output_tokens,
+                cost_usd=cost,
+            )
+        except Exception as e:
+            return LLMResponse(
+                content=f"HuggingFace error: {e}",
+                model_used=endpoint.model_name,
+                provider=endpoint.provider,
+                latency_ms=(time.time() - start_time) * 1000,
+                input_tokens=0,
+                output_tokens=0,
+                cost_usd=0.0,
+            )
+
+    def _format_messages(self, messages: list[dict[str, str]]) -> str:
+        """Format messages for HuggingFace prompt."""
+        formatted = []
+        for msg in messages:
+            role = msg.get("role", "user")
+            content = msg.get("content", "")
+            if role == "system":
+                formatted.append(f"System: {content}")
+            elif role == "user":
+                formatted.append(f"User: {content}")
+            else:
+                formatted.append(f"Assistant: {content}")
+        return "\n\n".join(formatted) + "\n\nAssistant:"
+
+    def _extract_response(self, result: Any) -> str:
+        """Extract text from HuggingFace response."""
+        if isinstance(result, list) and len(result) > 0:
+            if isinstance(result[0], dict) and "generated_text" in result[0]:
+                return result[0]["generated_text"]
+        return str(result)
 
 
 class AMOSLLMRouter:
@@ -195,17 +421,17 @@ class AMOSLLMRouter:
     """
 
     def __init__(self, default_strategy: RoutingStrategy = RoutingStrategy.COST_OPTIMIZED):
-        self.endpoints: Dict[str, ModelEndpoint] = {}
-        self.routing_rules: List[RoutingRule] = []
-        self.cache: Dict[str, CachedRequest] = {}
+        self.endpoints: dict[str, ModelEndpoint] = {}
+        self.routing_rules: list[RoutingRule] = []
+        self.cache: dict[str, CachedRequest] = {}
         self.default_strategy = default_strategy
 
-        # Provider implementations
-        self.providers: Dict[ProviderType, LLMProvider] = {
-            ProviderType.OPENAI: MockLLMProvider(),
-            ProviderType.ANTHROPIC: MockLLMProvider(),
-            ProviderType.HUGGINGFACE: MockLLMProvider(),
-            ProviderType.LOCAL: MockLLMProvider(),
+        # Provider implementations (real providers)
+        self.providers: dict[ProviderType, LLMProvider] = {
+            ProviderType.OPENAI: OpenAIProvider(),
+            ProviderType.ANTHROPIC: AnthropicProvider(),
+            ProviderType.HUGGINGFACE: HuggingFaceProvider(),
+            ProviderType.LOCAL: LocalProvider(),
         }
 
         # Stats
@@ -261,11 +487,11 @@ class AMOSLLMRouter:
         self,
         name: str,
         priority: int = 0,
-        required_capabilities: List[str] = None,
+        required_capabilities: list[str] = None,
         max_cost: float = None,
         max_latency: int = None,
-        preferred_providers: List[ProviderType] = None,
-        excluded_providers: List[ProviderType] = None,
+        preferred_providers: list[ProviderType] = None,
+        excluded_providers: list[ProviderType] = None,
     ) -> RoutingRule:
         """Add a routing rule."""
         rule_id = f"rule_{name.lower().replace(' ', '_')}"
@@ -323,7 +549,7 @@ class AMOSLLMRouter:
 
     def _select_endpoint(
         self, request: LLMRequest, strategy: RoutingStrategy
-    ) -> Optional[ModelEndpoint]:
+    ) -> ModelEndpoOptional[int]:
         """Select optimal endpoint based on strategy."""
         # Filter by capabilities
         candidates = []
@@ -451,7 +677,7 @@ class AMOSLLMRouter:
 
         raise RuntimeError("All retries failed")
 
-    def get_router_stats(self) -> Dict[str, Any]:
+    def get_router_stats(self) -> dict[str, Any]:
         """Get router statistics."""
         avg_latency = self.total_latency / max(1, self.request_count)
         cache_hit_rate = self.cache_hits / max(1, self.request_count)

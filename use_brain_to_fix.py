@@ -96,7 +96,7 @@ def main() -> int:
 
     for i, f in enumerate(python_files[:100]):  # Check first 100
         if i % 20 == 0:
-            print(f"\n  Processing {i+1}-{min(i+20, len(python_files))}...")
+            print(f"\n  Processing {i + 1}-{min(i + 20, len(python_files))}...")
 
         if fix_with_brain(f, brain):
             fixed += 1

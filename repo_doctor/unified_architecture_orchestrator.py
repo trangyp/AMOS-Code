@@ -1,4 +1,5 @@
-"""Unified Architecture Intelligence Orchestrator (Layer 16).
+"""
+Unified Architecture Intelligence Orchestrator (Layer 16).
 
 Integrates all 19 architectural invariants from Layer 15 into unified decision-making.
 
@@ -75,7 +76,7 @@ class UnifiedArchitecturalDecision:
 
     # Synthesis
     overall_confidence: DecisionConfidence
-    primary_concerns: List[str]
+    primary_concerns: list[str]
     conflicting_invariants: list[tuple[str, str]]
     recommended_actions: list[dict[str, Any]]
 
@@ -93,10 +94,10 @@ class UnifiedArchitectureState:
     timestamp: str
 
     # All 19 invariants
-    invariants: Dict[str, InvariantStatus]
+    invariants: dict[str, InvariantStatus]
 
     # Correlations
-    correlations: List[CrossDomainCorrelation]
+    correlations: list[CrossDomainCorrelation]
 
     # Derived metrics
     constitutional_health: float  # 0-1
@@ -106,10 +107,10 @@ class UnifiedArchitectureState:
     overall_health: float
 
     # Critical issues
-    critical_violations: List[str]
-    warning_violations: List[str]
+    critical_violations: list[str]
+    warning_violations: list[str]
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "state_id": self.state_id,
             "timestamp": self.timestamp,
@@ -141,10 +142,10 @@ class UnifiedArchitectureOrchestrator:
     """
 
     def __init__(self):
-        self.engines: Dict[str, Any] = {}
-        self.correlations: List[CrossDomainCorrelation] = []
-        self.decisions: List[UnifiedArchitecturalDecision] = []
-        self.states: List[UnifiedArchitectureState] = []
+        self.engines: dict[str, Any] = {}
+        self.correlations: list[CrossDomainCorrelation] = []
+        self.decisions: list[UnifiedArchitecturalDecision] = []
+        self.states: list[UnifiedArchitectureState] = []
 
         # Define known cross-domain correlations
         self._initialize_correlations()
@@ -214,7 +215,7 @@ class UnifiedArchitectureOrchestrator:
 
     def collect_invariant_status(self) -> dict[str, InvariantStatus]:
         """Collect status from all registered engines."""
-        invariants: Dict[str, InvariantStatus] = {}
+        invariants: dict[str, InvariantStatus] = {}
 
         # This would query each engine in practice
         # For now, return placeholder
@@ -251,8 +252,8 @@ class UnifiedArchitectureOrchestrator:
         return invariants
 
     def detect_correlations(
-        self, invariants: Dict[str, InvariantStatus]
-    ) -> List[CrossDomainCorrelation]:
+        self, invariants: dict[str, InvariantStatus]
+    ) -> list[CrossDomainCorrelation]:
         """Detect active correlations between invariant violations."""
         active_correlations = []
 
@@ -266,7 +267,7 @@ class UnifiedArchitectureOrchestrator:
 
         return active_correlations
 
-    def calculate_health_scores(self, invariants: Dict[str, InvariantStatus]) -> dict[str, float]:
+    def calculate_health_scores(self, invariants: dict[str, InvariantStatus]) -> dict[str, float]:
         """Calculate health scores for each domain."""
         constitutional = [
             invariants.get("I_constitution"),
@@ -397,6 +398,7 @@ class UnifiedArchitectureOrchestrator:
 
         Returns:
             Complete architectural state with correlations and decisions
+
         """
         # Collect from all engines
         invariants = self.collect_invariant_status()
@@ -464,7 +466,7 @@ class UnifiedArchitectureOrchestrator:
             },
         ]
 
-    def get_architectural_decision_report(self) -> Dict[str, Any]:
+    def get_architectural_decision_report(self) -> dict[str, Any]:
         """Get comprehensive decision report."""
         if not self.states:
             return {"error": "No assessment performed yet"}

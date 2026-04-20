@@ -1,25 +1,18 @@
 """Core agent loop: neutral message format, multi-provider streaming."""
 
-import os
+from __future__ import annotations
 
 # AMOS Brain integration (standalone package)
-import sys
 from collections.abc import Generator
 from dataclasses import dataclass, field
 
+from clawspring.tool_registry import get_tool_schemas
 from compaction import maybe_compact
 from providers import AssistantTurn, TextChunk, ThinkingChunk, stream
 from tools import execute_tool
 
-from tool_registry import get_tool_schemas
-from typing import Optional
-
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-try:
-    _amos_available = True
-except Exception:
-    _amos_available = False
+# AMOS Brain availability flag
+_amos_available = True
 
 # ── Re-export event types (used by clawspring.py) ────────────────────────
 __all__ = [
@@ -83,7 +76,7 @@ def _get_enhanced_system_prompt(base_prompt: str, use_amos: bool = True) -> str:
         state = brain.get_state()
 
         amos_section = f"""# AMOS SuperBrain (vInfinity)
-Brain ID: {state.brain_id if hasattr(state, 'brain_id') else 'AMOS-SB'}
+Brain ID: {state.brain_id if hasattr(state, "brain_id") else "AMOS-SB"}
 Status: {state.status}
 Core Frozen: {state.core_frozen}
 Health Score: {state.health_score:.2f}
@@ -105,13 +98,14 @@ def run(
     use_amos_brain: bool = True,
 ) -> Generator:
     """Multi-turn agent loop (generator).
-            Yields: TextChunk | ThinkingChunk | ToolStart | ToolEnd |
-                PermissionRequest | TurnDone
+        Yields: Union[TextChunk, ThinkingChunk] | ToolStart | ToolEnd |
+            PermissionRequest | TurnDone
 
-        Args:
-            depth: sub-agent nesting depth, 0 for top-level
-            cancel_check: callable returning True to abort the loop early
-            use_amos_brain: whether to apply AMOS brain enhancement (default: True)
+    Args:
+        depth: sub-agent nesting depth, 0 for top-level
+        cancel_check: callable returning True to abort the loop early
+        use_amos_brain: whether to apply AMOS brain enhancement (default: True)
+
     """
     # Enhance system prompt with AMOS brain context
     enhanced_prompt = _get_enhanced_system_prompt(system_prompt, use_amos_brain)

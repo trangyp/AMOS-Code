@@ -7,10 +7,12 @@ time budgets, and financial allocations.
 import json
 import uuid
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timedelta
+from datetime import UTC, datetime
+
+UTC = UTC, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class ResourceType(Enum):
@@ -34,11 +36,11 @@ class ResourceAllocation:
     allocated_to: str = ""  # Subsystem or task
     purpose: str = ""
     allocated_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
-    expires_at: Optional[str] = None
+    expires_at: str = None
     returned: bool = False
-    returned_at: Optional[str] = None
+    returned_at: str = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "resource_type": self.resource_type.value,
@@ -56,7 +58,7 @@ class ResourcePool:
     allocated: float = 0.0
     unit: str = "units"
     min_reserve: float = 0.1  # 10% minimum reserve
-    allocations: List[ResourceAllocation] = field(default_factory=list)
+    allocations: list[ResourceAllocation] = field(default_factory=list)
     created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
     @property
@@ -77,8 +79,8 @@ class ResourcePool:
         amount: float,
         allocated_to: str,
         purpose: str = "",
-        duration_hours: Optional[int] = None,
-    ) -> Optional[ResourceAllocation]:
+        duration_hours: int = None,
+    ) -> ResourceAllocation:
         """Allocate resources from this pool."""
         if amount > self.available:
             return None
@@ -123,7 +125,7 @@ class ResourcePool:
 
         return cleaned
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "resource_type": self.resource_type.value,
@@ -139,13 +141,13 @@ class ResourceEngine:
     monitors utilization, and enforces limits.
     """
 
-    def __init__(self, data_dir: Optional[Path] = None):
+    def __init__(self, data_dir: Path = None):
         if data_dir is None:
             data_dir = Path(__file__).parent / "data"
         self.data_dir = data_dir
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
-        self.pools: Dict[str, ResourcePool] = {}
+        self.pools: dict[str, ResourcePool] = {}
         self._load_pools()
 
         # Initialize default pools if none exist
@@ -224,7 +226,7 @@ class ResourceEngine:
         }
         pools_file.write_text(json.dumps(data, indent=2))
 
-    def get_pool(self, name: str) -> Optional[ResourcePool]:
+    def get_pool(self, name: str) -> ResourcePool:
         """Get a resource pool by name."""
         return self.pools.get(name)
 
@@ -234,8 +236,8 @@ class ResourceEngine:
         amount: float,
         allocated_to: str,
         purpose: str = "",
-        duration_hours: Optional[int] = None,
-    ) -> Optional[ResourceAllocation]:
+        duration_hours: int = None,
+    ) -> ResourceAllocation:
         """Allocate resources from a specific pool."""
         pool = self.pools.get(pool_name)
         if not pool:
@@ -257,7 +259,7 @@ class ResourceEngine:
             self.save()
         return result
 
-    def cleanup(self) -> Dict[str, int]:
+    def cleanup(self) -> dict[str, int]:
         """Cleanup expired allocations across all pools."""
         results = {}
         for name, pool in self.pools.items():
@@ -268,7 +270,7 @@ class ResourceEngine:
             self.save()
         return results
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get overall resource status."""
         return {
             "pools_count": len(self.pools),
@@ -306,10 +308,10 @@ class ResourceEngine:
 
 
 # Global instance
-_ENGINE: Optional[ResourceEngine] = None
+_ENGINE: ResourceEngine = None
 
 
-def get_resource_engine(data_dir: Optional[Path] = None) -> ResourceEngine:
+def get_resource_engine(data_dir: Path = None) -> ResourceEngine:
     """Get or create global resource engine."""
     global _ENGINE
     if _ENGINE is None:

@@ -3,7 +3,7 @@
 This package defines the API contracts used between:
 - AMOS-Consulting (API hub) - imports and validates requests/responses
 - AMOS-Claws (agent client) - imports to structure API calls
-- Mailinhconect (product client) - imports to structure API calls  
+- Mailinhconect (product client) - imports to structure API calls
 - AMOS-Invest (investor client) - imports to structure API calls
 
 Usage:
@@ -13,69 +13,69 @@ Usage:
 """
 
 from amos_universe.contracts.pydantic.base import BaseAMOSModel, TimestampsMixin
+from amos_universe.contracts.pydantic.brain import (
+    BrainRunRequest,
+    BrainRunResponse,
+    BranchResult,
+    MorphExecution,
+    StateGraphInput,
+)
 from amos_universe.contracts.pydantic.chat import (
+    ChatContext,
+    ChatMessage,
     ChatRequest,
     ChatResponse,
-    ChatMessage,
-    ChatContext,
     ConversationSummary,
 )
-from amos_universe.contracts.pydantic.repo import (
-    RepoScanRequest,
-    RepoScanResult,
-    RepoFixRequest,
-    RepoFixResult,
-    FileChange,
-    ScanIssue,
-    IssueSeverity,
+from amos_universe.contracts.pydantic.errors import (
+    ApiError,
+    AuthenticationError,
+    ErrorCode,
+    NotFoundError,
+    ValidationError,
+)
+from amos_universe.contracts.pydantic.events import (
+    BaseEvent,
+    ClawsAgentCompletedEvent,
+    ClawsAgentRequestedEvent,
+    EventMetadata,
+    EventType,
+    ModelRunCompletedEvent,
+    RepoFixCompletedEvent,
+    RepoScanCompletedEvent,
+    UniverseContractPublishedEvent,
+    UniverseOntologyChangedEvent,
+    UniverseSchemaUpdatedEvent,
+    WorkflowCompletedEvent,
+    WorkflowStartedEvent,
 )
 from amos_universe.contracts.pydantic.models import (
-    ModelInfo,
     ModelCapabilities,
+    ModelInfo,
     ModelProvider,
     ModelRequest,
     ModelResponse,
 )
+from amos_universe.contracts.pydantic.repo import (
+    FileChange,
+    IssueSeverity,
+    RepoFixRequest,
+    RepoFixResult,
+    RepoScanRequest,
+    RepoScanResult,
+    ScanIssue,
+)
 from amos_universe.contracts.pydantic.session import (
-    UserSession,
     SessionContext,
-    Workspace,
     User,
-)
-from amos_universe.contracts.pydantic.errors import (
-    ApiError,
-    ErrorCode,
-    ValidationError,
-    AuthenticationError,
-    NotFoundError,
-)
-from amos_universe.contracts.pydantic.brain import (
-    BrainRunRequest,
-    BrainRunResponse,
-    StateGraphInput,
-    BranchResult,
-    MorphExecution,
+    UserSession,
+    Workspace,
 )
 from amos_universe.contracts.pydantic.workflow import (
+    TaskResult,
     WorkflowRunRequest,
     WorkflowRunResponse,
     WorkflowStatus,
-    TaskResult,
-)
-from amos_universe.contracts.pydantic.events import (
-    BaseEvent,
-    EventType,
-    EventMetadata,
-    ClawsAgentRequestedEvent,
-    ClawsAgentCompletedEvent,
-    RepoScanCompletedEvent,
-    RepoFixCompletedEvent,
-    ModelRunCompletedEvent,
-    WorkflowStartedEvent,
-    WorkflowCompletedEvent,
-    UniverseSchemaUpdatedEvent,
-    UniverseContractPublishedEvent,
-    UniverseOntologyChangedEvent,
 )
 
 __all__ = [

@@ -14,9 +14,9 @@ from __future__ import annotations
 
 import time
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Optional
 
-from .canon_knowledge_engine import get_canon_knowledge_engine, CanonKnowledgeEntry
+from .canon_knowledge_engine import CanonKnowledgeEntry, get_canon_knowledge_engine
 
 
 @dataclass
@@ -57,7 +57,7 @@ class CanonCognitiveProcessor:
         self,
         query: str,
         domain: str = "general",
-        context: Optional[dict[str, Any] ] = None,
+        context: dict[str, Optional[Any]] = None,
     ) -> CanonCognitiveResult:
         """Process query with Canon enrichment.
 
@@ -190,7 +190,7 @@ class CanonCognitiveProcessor:
         """
         # Return Canon-enriched processing result
         if canon_context:
-            return f"Processed: {query}\n\n" f"[With Canon Knowledge]\n" f"{canon_context[:500]}..."
+            return f"Processed: {query}\n\n[With Canon Knowledge]\n{canon_context[:500]}..."
         return f"Processed: {query}"
 
     def _calculate_confidence(self, num_entries: int, num_terms: int) -> float:

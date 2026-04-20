@@ -13,14 +13,17 @@ import asyncio
 import hashlib
 import re
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
+
 from enum import Enum, auto
-from typing import Any, Final
+from typing import Any
 
 # ============================================================================
 # 1. ENUMS AND TYPE DEFINITIONS
 # ============================================================================
+
 
 class ReadingMode(Enum):
     """Global reading modes reflecting cognitive state."""
@@ -31,6 +34,7 @@ class ReadingMode(Enum):
     REFLECT = auto()  # Metacognitive processing
     STABILIZE = auto()  # Coherence verification
     EXECUTE = auto()  # Action-ready comprehension
+
 
 class ChunkType(Enum):
     """Types of semantic chunks."""
@@ -47,6 +51,7 @@ class ChunkType(Enum):
     COMMAND = auto()
     CRITICISM = auto()
 
+
 class IntentType(Enum):
     """Classified intent types."""
 
@@ -59,6 +64,7 @@ class IntentType(Enum):
     SPECIFICATION = auto()
     MIXED = auto()
 
+
 class ConflictType(Enum):
     """Types of detected conflicts."""
 
@@ -69,6 +75,7 @@ class ConflictType(Enum):
     INSTRUCTION_CONFLICT = auto()
     TEMPORAL_CONFLICT = auto()
 
+
 class ReadingDepth(Enum):
     """Depth control levels."""
 
@@ -77,9 +84,11 @@ class ReadingDepth(Enum):
     DEEP = auto()
     FORENSIC = auto()
 
+
 # ============================================================================
 # 2. CORE DATA STRUCTURES
 # ============================================================================
+
 
 @dataclass
 class GlobalState:
@@ -92,7 +101,7 @@ class GlobalState:
     prediction_stability: float = 0.0  # 0-1, how stable predictions are
     working_memory_pressure: float = 0.0  # 0-1, WM load
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "mode": self.mode.name,
             "arousal": self.arousal,
@@ -102,15 +111,17 @@ class GlobalState:
             "working_memory_pressure": self.working_memory_pressure,
         }
 
+
 @dataclass
 class PriorSet:
     """Predictive priors for reading."""
 
-    topic_priors: List[str] = field(default_factory=list)
-    intent_priors: List[str] = field(default_factory=list)
-    reference_priors: List[str] = field(default_factory=list)
-    structure_priors: List[str] = field(default_factory=list)
-    risk_priors: List[str] = field(default_factory=list)
+    topic_priors: list[str] = field(default_factory=list)
+    intent_priors: list[str] = field(default_factory=list)
+    reference_priors: list[str] = field(default_factory=list)
+    structure_priors: list[str] = field(default_factory=list)
+    risk_priors: list[str] = field(default_factory=list)
+
 
 @dataclass
 class AttentionUnit:
@@ -121,13 +132,15 @@ class AttentionUnit:
     focus_strength: float = 0.0  # 0-1
     suppression_level: float = 0.0  # 0-1, how much suppressed
 
+
 @dataclass
 class AttentionState:
     """Dynamic attention allocation."""
 
-    focus_units: List[AttentionUnit] = field(default_factory=list)
-    suppressed_units: List[AttentionUnit] = field(default_factory=list)
-    salience_map: Dict[str, float] = field(default_factory=dict)  # chunk_id -> salience
+    focus_units: list[AttentionUnit] = field(default_factory=list)
+    suppressed_units: list[AttentionUnit] = field(default_factory=list)
+    salience_map: dict[str, float] = field(default_factory=dict)  # chunk_id -> salience
+
 
 @dataclass
 class MemoryChunk:
@@ -138,21 +151,23 @@ class MemoryChunk:
     chunk_type: ChunkType = ChunkType.CLAIM
     coherence: float = 0.0
     salience: float = 0.0
-    binding_requirements: List[str] = field(default_factory=list)
+    binding_requirements: list[str] = field(default_factory=list)
     risk_weight: float = 0.0
-    tokens: List[str] = field(default_factory=list)
+    tokens: list[str] = field(default_factory=list)
     position: Tuple[int, int] = (0, 0)  # start, end in text
+
 
 @dataclass
 class Binding:
     """Entity-relation binding."""
 
     entity_id: str = ""
-    surface_forms: List[str] = field(default_factory=list)
+    surface_forms: list[str] = field(default_factory=list)
     canonical_form: str = ""
     entity_type: str = ""  # person, system, module, goal, constraint, etc.
     confidence: float = 0.0
-    bound_to: List[str] = field(default_factory=list)  # other entity_ids
+    bound_to: list[str] = field(default_factory=list)  # other entity_ids
+
 
 @dataclass
 class Relation:
@@ -163,22 +178,25 @@ class Relation:
     target: str = ""
     confidence: float = 0.0
 
+
 @dataclass
 class OpenBinding:
     """Unresolved binding slot."""
 
     slot: str = ""
     required_type: str = ""
-    candidates: List[str] = field(default_factory=list)
+    candidates: list[str] = field(default_factory=list)
     severity: float = 0.0  # how critical is resolution
+
 
 @dataclass
 class BindingWorkspace:
     """Working memory for entity binding."""
 
-    entities: List[Binding] = field(default_factory=list)
-    relations: List[Relation] = field(default_factory=list)
-    open_bindings: List[OpenBinding] = field(default_factory=list)
+    entities: list[Binding] = field(default_factory=list)
+    relations: list[Relation] = field(default_factory=list)
+    open_bindings: list[OpenBinding] = field(default_factory=list)
+
 
 @dataclass
 class PredictionError:
@@ -190,26 +208,29 @@ class PredictionError:
     error_magnitude: float = 0.0
     error_type: str = ""  # semantic, syntactic, contextual
 
+
 @dataclass
 class Conflict:
     """Detected conflict."""
 
     id: str = ""
     conflict_type: ConflictType = ConflictType.GOAL_CONFLICT
-    units_involved: List[str] = field(default_factory=list)
+    units_involved: list[str] = field(default_factory=list)
     severity: float = 0.0
     resolvable: bool = True
     description: str = ""
+
 
 @dataclass
 class ErrorState:
     """Aggregate error and conflict state."""
 
-    prediction_errors: List[PredictionError] = field(default_factory=list)
-    conflicts: List[Conflict] = field(default_factory=list)
-    ambiguities: List[dict[str, Any]] = field(default_factory=list)
-    resolution_failures: List[dict[str, Any]] = field(default_factory=list)
+    prediction_errors: list[PredictionError] = field(default_factory=list)
+    conflicts: list[Conflict] = field(default_factory=list)
+    ambiguities: list[dict[str, Any]] = field(default_factory=list)
+    resolution_failures: list[dict[str, Any]] = field(default_factory=list)
     global_conflict_score: float = 0.0
+
 
 @dataclass
 class ReadObject:
@@ -217,10 +238,11 @@ class ReadObject:
 
     stable: bool = False
     coherent: bool = False
-    resolved_intent: Optional[IntentType] = None
-    resolved_constraints: List[str] = field(default_factory=list)
-    resolved_references: List[str] = field(default_factory=list)
-    diagnostic_state: Dict[str, Any] = field(default_factory=dict)
+    resolved_intent: IntentType = None
+    resolved_constraints: list[str] = field(default_factory=list)
+    resolved_references: list[str] = field(default_factory=list)
+    diagnostic_state: dict[str, Any] = field(default_factory=dict)
+
 
 @dataclass
 class BrainReadState:
@@ -229,11 +251,12 @@ class BrainReadState:
     global_state: GlobalState = field(default_factory=GlobalState)
     priors: PriorSet = field(default_factory=PriorSet)
     attention: AttentionState = field(default_factory=AttentionState)
-    working_memory: List[MemoryChunk] = field(default_factory=list)
+    working_memory: list[MemoryChunk] = field(default_factory=list)
     binding_workspace: BindingWorkspace = field(default_factory=BindingWorkspace)
     error_state: ErrorState = field(default_factory=ErrorState)
     read_object: ReadObject = field(default_factory=ReadObject)
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
 
 @dataclass
 class SalienceUnit:
@@ -259,14 +282,16 @@ class SalienceUnit:
             + 0.10 * self.recurrence_weight
         )
 
+
 @dataclass
 class CompiledGoal:
     """Compiled action goal from reading."""
 
     goal_type: str = ""  # respond, design, plan, simulate, clarify, defer, block
     objective: str = ""
-    constraints: List[str] = field(default_factory=list)
-    success_criteria: List[str] = field(default_factory=list)
+    constraints: list[str] = field(default_factory=list)
+    success_criteria: list[str] = field(default_factory=list)
+
 
 @dataclass
 class StableRead:
@@ -276,22 +301,24 @@ class StableRead:
     primary_intent: Tuple[IntentType, float] = field(
         default_factory=lambda: (IntentType.MIXED, 0.0)
     )
-    goal_structure: List[str] = field(default_factory=list)
-    constraint_structure: List[str] = field(default_factory=list)
-    reference_structure: List[str] = field(default_factory=list)
-    reader_estimate: Dict[str, Any] = field(default_factory=dict)
-    speaker_estimate: Dict[str, Any] = field(default_factory=dict)
-    diagnostic_noise: List[dict[str, Any]] = field(default_factory=list)
-    conflicts: List[Conflict] = field(default_factory=list)
-    ambiguities: List[dict[str, Any]] = field(default_factory=list)
+    goal_structure: list[str] = field(default_factory=list)
+    constraint_structure: list[str] = field(default_factory=list)
+    reference_structure: list[str] = field(default_factory=list)
+    reader_estimate: dict[str, Any] = field(default_factory=dict)
+    speaker_estimate: dict[str, Any] = field(default_factory=dict)
+    diagnostic_noise: list[dict[str, Any]] = field(default_factory=list)
+    conflicts: list[Conflict] = field(default_factory=list)
+    ambiguities: list[dict[str, Any]] = field(default_factory=list)
     coherence_score: float = 0.0
     stable: bool = False
     compiled_goal: CompiledGoal = field(default_factory=CompiledGoal)
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
+
 # ============================================================================
 # 3. PREDICTIVE READING CORE
 # ============================================================================
+
 
 class PredictiveModel:
     """
@@ -301,16 +328,16 @@ class PredictiveModel:
     """
 
     def __init__(self):
-        self.prediction_history: List[dict[str, Any]] = []
+        self.prediction_history: list[dict[str, Any]] = []
         self.learning_rate = 0.1
 
     def predict(
         self,
-        chunks: List[MemoryChunk],
+        chunks: list[MemoryChunk],
         priors: PriorSet,
-        goals: List[str],
-        memory_context: Dict[str, Any],
-    ) -> Dict[str, str]:
+        goals: list[str],
+        memory_context: dict[str, Any],
+    ) -> dict[str, str]:
         """
         Predict likely meaning structure from chunks.
 
@@ -369,9 +396,11 @@ class PredictiveModel:
             error_type="semantic" if error_mag > 0.3 else "syntactic",
         )
 
+
 # ============================================================================
 # 4. CHUNKING ENGINE
 # ============================================================================
+
 
 class ChunkingEngine:
     """
@@ -471,7 +500,7 @@ class ChunkingEngine:
         ],
     }
 
-    def chunk_input(self, text: str) -> List[MemoryChunk]:
+    def chunk_input(self, text: str) -> list[MemoryChunk]:
         """
         Segment text into cognitive chunks.
 
@@ -502,7 +531,7 @@ class ChunkingEngine:
 
         return chunks
 
-    def _segment_text(self, text: str) -> List[str]:
+    def _segment_text(self, text: str) -> list[str]:
         """Segment text using boundary markers."""
         # Normalize
         text = text.replace("\n\n", " [PARA] ")
@@ -545,9 +574,11 @@ class ChunkingEngine:
 
         return ChunkType.CLAIM
 
+
 # ============================================================================
 # 5. BINDING ENGINE
 # ============================================================================
+
 
 class BindingEngine:
     """
@@ -578,9 +609,9 @@ class BindingEngine:
 
     def bind_entities(
         self,
-        chunks: List[MemoryChunk],
-        dialogue_context: Dict[str, Any],
-        memory_context: Dict[str, Any],
+        chunks: list[MemoryChunk],
+        dialogue_context: dict[str, Any],
+        memory_context: dict[str, Any],
     ) -> BindingWorkspace:
         """
         Build binding workspace from chunks.
@@ -613,7 +644,7 @@ class BindingEngine:
 
         return workspace
 
-    def _extract_entities(self, chunk: MemoryChunk) -> List[Binding]:
+    def _extract_entities(self, chunk: MemoryChunk) -> list[Binding]:
         """Extract entities from a chunk."""
         entities = []
         text = chunk.content.lower()
@@ -659,8 +690,8 @@ class BindingEngine:
         return entities
 
     def _extract_relations(
-        self, chunks: List[MemoryChunk], entities: List[Binding]
-    ) -> List[Relation]:
+        self, chunks: list[MemoryChunk], entities: list[Binding]
+    ) -> list[Relation]:
         """Extract relations between entities."""
         relations = []
 
@@ -707,8 +738,8 @@ class BindingEngine:
         return relations
 
     def _find_open_bindings(
-        self, chunks: List[MemoryChunk], entities: List[Binding]
-    ) -> List[OpenBinding]:
+        self, chunks: list[MemoryChunk], entities: list[Binding]
+    ) -> list[OpenBinding]:
         """Find unresolved reference bindings."""
         open_bindings = []
 
@@ -734,9 +765,11 @@ class BindingEngine:
 
         return open_bindings
 
+
 # ============================================================================
 # 6. SALIENCE ENGINE
 # ============================================================================
+
 
 class SalienceEngine:
     """
@@ -748,11 +781,11 @@ class SalienceEngine:
 
     def compute_salience(
         self,
-        chunks: List[MemoryChunk],
+        chunks: list[MemoryChunk],
         bindings: BindingWorkspace,
-        goals: List[str],
-        errors: List[PredictionError],
-    ) -> List[SalienceUnit]:
+        goals: list[str],
+        errors: list[PredictionError],
+    ) -> list[SalienceUnit]:
         """
         Compute salience for all chunks.
 
@@ -813,7 +846,7 @@ class SalienceEngine:
 
         return salience_units
 
-    def select_primary_read_set(self, salience_units: List[SalienceUnit], k: int = 5) -> List[str]:
+    def select_primary_read_set(self, salience_units: list[SalienceUnit], k: int = 5) -> list[str]:
         """
         Select top-k chunks by salience.
 
@@ -822,9 +855,11 @@ class SalienceEngine:
         sorted_units = sorted(salience_units, key=lambda x: x.salience_score, reverse=True)
         return [u.chunk_id for u in sorted_units[:k]]
 
+
 # ============================================================================
 # 7. CONFLICT DETECTION
 # ============================================================================
+
 
 class ConflictDetector:
     """
@@ -833,7 +868,7 @@ class ConflictDetector:
     HighConflict ⇒ NoStableRead
     """
 
-    def detect_conflicts(self, chunks: List[MemoryChunk], bindings: BindingWorkspace) -> ErrorState:
+    def detect_conflicts(self, chunks: list[MemoryChunk], bindings: BindingWorkspace) -> ErrorState:
         """
         Detect all conflicts.
 
@@ -938,9 +973,11 @@ class ConflictDetector:
 
         return False
 
+
 # ============================================================================
 # 8. COHERENCE VERIFICATION
 # ============================================================================
+
 
 class CoherenceVerifier:
     """
@@ -953,11 +990,11 @@ class CoherenceVerifier:
 
     def verify_coherence(
         self,
-        chunks: List[MemoryChunk],
+        chunks: list[MemoryChunk],
         bindings: BindingWorkspace,
-        salience_units: List[SalienceUnit],
+        salience_units: list[SalienceUnit],
         error_state: ErrorState,
-        constraints: List[str],
+        constraints: list[str],
     ) -> Tuple[float, bool]:
         """
         Verify global coherence.
@@ -1007,9 +1044,11 @@ class CoherenceVerifier:
 
         return coherence, is_stable
 
+
 # ============================================================================
 # 9. DEPTH CONTROLLER
 # ============================================================================
+
 
 class DepthController:
     """
@@ -1020,8 +1059,8 @@ class DepthController:
 
     def select_depth(
         self,
-        chunks: List[MemoryChunk],
-        salience_units: List[SalienceUnit],
+        chunks: list[MemoryChunk],
+        salience_units: list[SalienceUnit],
         error_state: ErrorState,
         goal_relevance: float,
     ) -> ReadingDepth:
@@ -1045,9 +1084,11 @@ class DepthController:
         else:
             return ReadingDepth.SKIM
 
+
 # ============================================================================
 # 10. MULTI-PASS READING
 # ============================================================================
+
 
 class MultiPassReader:
     """
@@ -1082,10 +1123,10 @@ class MultiPassReader:
     async def read(
         self,
         text: str,
-        dialogue_context: Dict[str, Any]  = None,
-        memory_context: Dict[str, Any]  = None,
-        world_context: Dict[str, Any]  = None,
-        active_goals: Optional[list[str]] = None,
+        dialogue_context: dict[str, Any] = None,
+        memory_context: dict[str, Any] = None,
+        world_context: dict[str, Any] = None,
+        active_goals: list[str] = None,
     ) -> StableRead:
         """
         Execute full multi-pass reading.
@@ -1164,13 +1205,13 @@ class MultiPassReader:
 
     def _compile_stable_read(
         self,
-        chunks: List[MemoryChunk],
+        chunks: list[MemoryChunk],
         bindings: BindingWorkspace,
-        salience_units: List[SalienceUnit],
+        salience_units: list[SalienceUnit],
         brain_state: BrainReadState,
         coherence_score: float,
         is_stable: bool,
-        active_goals: List[str],
+        active_goals: list[str],
     ) -> StableRead:
         """Compile final stable read from brain state."""
 
@@ -1227,7 +1268,7 @@ class MultiPassReader:
         )
 
     def _compile_goal(
-        self, chunks: List[MemoryChunk], intent: IntentType, bindings: BindingWorkspace
+        self, chunks: list[MemoryChunk], intent: IntentType, bindings: BindingWorkspace
     ) -> CompiledGoal:
         """Compile action goal from reading."""
 
@@ -1261,9 +1302,11 @@ class MultiPassReader:
             goal_type=goal_type, objective=objective, constraints=constraints, success_criteria=[]
         )
 
+
 # ============================================================================
 # 11. BRAIN READING KERNEL - MAIN API
 # ============================================================================
+
 
 class BrainReadingKernel:
     """
@@ -1273,7 +1316,7 @@ class BrainReadingKernel:
     BrainLikeReading = Prediction + Chunking + Binding + Salience + ConflictDetection + GlobalCoherenceCheck
     """
 
-    _instance: Optional[BrainReadingKernel] = None
+    _instance: BrainReadingKernel = None
     _initialized = False
 
     def __new__(cls):
@@ -1299,11 +1342,11 @@ class BrainReadingKernel:
     async def read(
         self,
         text: str,
-        dialogue_context: Dict[str, Any]  = None,
-        memory_context: Dict[str, Any]  = None,
-        world_context: Dict[str, Any]  = None,
-        active_goals: Optional[list[str]] = None,
-        governance_context: Dict[str, Any]  = None,
+        dialogue_context: dict[str, Any] = None,
+        memory_context: dict[str, Any] = None,
+        world_context: dict[str, Any] = None,
+        active_goals: list[str] = None,
+        governance_context: dict[str, Any] = None,
     ) -> StableRead:
         """
         Execute brain-level reading.
@@ -1316,7 +1359,7 @@ class BrainReadingKernel:
             text, dialogue_context, memory_context, world_context, active_goals
         )
 
-    async def read_with_diagnostics(self, text: str, **kwargs) -> Dict[str, Any]:
+    async def read_with_diagnostics(self, text: str, **kwargs) -> dict[str, Any]:
         """
         Read with full diagnostic output.
 
@@ -1347,7 +1390,7 @@ class BrainReadingKernel:
             },
         }
 
-    def validate_invariants(self, stable_read: StableRead) -> List[dict[str, Any]]:
+    def validate_invariants(self, stable_read: StableRead) -> list[dict[str, Any]]:
         """
         Validate brain reading invariants.
 
@@ -1390,14 +1433,17 @@ class BrainReadingKernel:
 
         return violations
 
+
 # Global singleton
 def get_brain_reading_kernel() -> BrainReadingKernel:
     """Get the global BrainReadingKernel instance."""
     return BrainReadingKernel()
 
+
 # ============================================================================
 # 12. USAGE EXAMPLES
 # ============================================================================
+
 
 async def example_usage():
     """Example usage of BrainReadingKernel."""
@@ -1437,6 +1483,7 @@ async def example_usage():
         print(f"\nInvariant violations: {len(violations)}")
         for v in violations:
             print(f"  {v['invariant']}: {v['violation']}")
+
 
 if __name__ == "__main__":
     asyncio.run(example_usage())

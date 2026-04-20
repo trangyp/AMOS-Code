@@ -15,7 +15,6 @@ from .store import (
     search_memory,
 )
 from .types import MEMORY_SYSTEM_PROMPT
-from typing import List
 
 # ── Index truncation ───────────────────────────────────────────────────────
 
@@ -74,8 +73,9 @@ def get_memory_context(include_guidance: bool = False) -> str:
         include_guidance: if True, prepend the full memory system guidance
                           (MEMORY_SYSTEM_PROMPT). Normally False since the
                           system prompt template already includes brief guidance.
+
     """
-    parts: List[str] = []
+    parts: list[str] = []
 
     # User-level index
     user_content = get_index_content("user")
@@ -106,7 +106,7 @@ def find_relevant_memories(
     max_results: int = 5,
     use_ai: bool = False,
     config: dict = None,
-) -> List[dict]:
+) -> list[dict]:
     """Find memories relevant to a query.
 
     Strategy:
@@ -116,6 +116,7 @@ def find_relevant_memories(
     Returns:
         List of dicts with keys: name, description, type, scope, content,
         file_path, mtime_s, freshness_text
+
     """
     # Step 1: Keyword filter
     keyword_results = search_memory(query)
@@ -158,7 +159,7 @@ def _ai_select_memories(
     candidates: list,
     max_results: int,
     config: dict,
-) -> List[dict]:
+) -> list[dict]:
     """Use a fast AI call to select the most relevant memories from candidates.
 
     Falls back to keyword results on any error.

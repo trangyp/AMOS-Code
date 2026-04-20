@@ -1,8 +1,9 @@
 """AMOS Brain Master Orchestrator - Central cognitive orchestration interface."""
 
+from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Optional
 
 from .cognitive_engine import get_cognitive_engine
 from .meta_controller import get_meta_controller
@@ -25,7 +26,7 @@ class MasterOrchestrator:
         self._cognitive_engine = get_cognitive_engine()
 
     def orchestrate_cognitive_task(
-        self, task: str, domain: str = "general", context: Optional[dict[str, Any] ] = None
+        self, task: str, domain: str = "general", context: dict[str, Optional[Any]] = None
     ) -> dict[str, Any]:
         """Orchestrate a cognitive task.
 
@@ -42,7 +43,11 @@ class MasterOrchestrator:
 
         return {
             "output": result.content,
-            "confidence": 0.85 if result.confidence == "high" else 0.75 if result.confidence == "medium" else 0.6,
+            "confidence": 0.85
+            if result.confidence == "high"
+            else 0.75
+            if result.confidence == "medium"
+            else 0.6,
             "metadata": result.metadata,
         }
 

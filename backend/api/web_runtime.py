@@ -1,6 +1,8 @@
 """Fast Web Runtime API - High-precision web retrieval endpoints."""
 
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
+
+from typing import Any, Optional
 
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
@@ -35,7 +37,7 @@ class WebQueryResponse(BaseModel):
     time_ms: float
     pages_fetched: int
     confidence: Optional[float] = None
-    sources: List[dict[str, Any]]
+    sources: list[dict[str, Any]]
 
 
 @router.post("/query", response_model=WebQueryResponse)
@@ -99,7 +101,7 @@ async def web_query_get(
 
 
 @router.get("/health")
-async def web_runtime_health() -> Dict[str, Any]:
+async def web_runtime_health() -> dict[str, Any]:
     """Fast Web Runtime health check."""
     runtime = get_fast_web_runtime()
     return {

@@ -1,8 +1,8 @@
 """Signal Detector — External signal detection for AMOS."""
 
 from dataclasses import dataclass
-from datetime import datetime, timezone
-from typing import Any, Dict, List
+from datetime import datetime
+from typing import Any
 
 UTC = timezone.utc
 
@@ -15,7 +15,7 @@ class Signal:
     source: str  # filesystem, git, api, timer
     type: str  # change, alert, notification, heartbeat
     priority: str  # low, normal, high, critical
-    data: Dict[str, Any]
+    data: dict[str, Any]
     timestamp: str
 
 
@@ -23,11 +23,11 @@ class SignalDetector:
     """Detects external signals and events."""
 
     def __init__(self):
-        self._signals: List[Signal] = []
-        self._handlers: Dict[str, Any] = {}
+        self._signals: list[Signal] = []
+        self._handlers: dict[str, Any] = {}
         self._last_check = datetime.now(UTC).isoformat()
 
-    def detect(self, source: str = None) -> List[Signal]:
+    def detect(self, source: str = None) -> list[Signal]:
         """Detect signals from sources."""
         new_signals = []
 
@@ -46,12 +46,12 @@ class SignalDetector:
 
         return new_signals
 
-    def _check_filesystem(self) -> List[Signal]:
+    def _check_filesystem(self) -> list[Signal]:
         """Check for filesystem signals."""
         # Placeholder for filesystem monitoring
         return []
 
-    def _check_timer(self) -> List[Signal]:
+    def _check_timer(self) -> list[Signal]:
         """Check for timer-based signals."""
         import uuid
 
@@ -66,7 +66,7 @@ class SignalDetector:
             )
         ]
 
-    def get_signals(self, priority: str = None, limit: int = 50) -> List[Signal]:
+    def get_signals(self, priority: str = None, limit: int = 50) -> list[Signal]:
         """Get detected signals."""
         signals = self._signals
         if priority:
@@ -81,7 +81,7 @@ class SignalDetector:
                 return True
         return False
 
-    def status(self) -> Dict[str, Any]:
+    def status(self) -> dict[str, Any]:
         """Get detector status."""
         return {
             "total_signals": len(self._signals),
@@ -90,9 +90,9 @@ class SignalDetector:
             "last_check": self._last_check,
         }
 
-    def _count_by(self, field: str) -> Dict[str, int]:
+    def _count_by(self, field: str) -> dict[str, int]:
         """Count signals by field."""
-        counts: Dict[str, int] = {}
+        counts: dict[str, int] = {}
         for signal in self._signals:
             key = getattr(signal, field)
             counts[key] = counts.get(key, 0) + 1

@@ -16,6 +16,7 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+
 UTC = timezone.utc
 from pathlib import Path
 from typing import Any
@@ -34,10 +35,10 @@ try:
     from .architecture import (
         ArchEdge,
         ArchEdgeType,
-        ArchNode,
-        ArchNodeType,
         ArchitectureBuilder,
         ArchitectureGraph,
+        ArchNode,
+        ArchNodeType,
         AuthorityClaim,
         BoundaryViolation,
         HiddenInterface,
@@ -45,16 +46,11 @@ try:
     )
 except ImportError:
     from architecture import (
-        ArchEdge,
-        ArchEdgeType,
-        ArchNode,
-        ArchNodeType,
         ArchitectureBuilder,
         ArchitectureGraph,
-        AuthorityClaim,
+        ArchNodeType,
         BoundaryViolation,
         HiddenInterface,
-        PlaneType,
     )
 
 
@@ -68,8 +64,8 @@ class BrainArchitectureInsight:
     confidence: float
     affected_nodes: list[str] = field(default_factory=list)
     recommendation: str = ""
-    brain_sigma: Optional[float] = None
-    brain_legality: Optional[str] = None
+    brain_sigma: float | None = None
+    brain_legality: str | None = None
 
 
 @dataclass
@@ -77,7 +73,7 @@ class BrainArchitectureReport:
     """Complete brain-powered architecture analysis report."""
 
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
-    graph: Optional[ArchitectureGraph] = None
+    graph: ArchitectureGraph | None = None
     insights: list[BrainArchitectureInsight] = field(default_factory=list)
     violations: list[BoundaryViolation] = field(default_factory=list)
     hidden_interfaces: list[HiddenInterface] = field(default_factory=list)
@@ -108,6 +104,7 @@ class BrainPoweredArchitectureAnalyzer:
 
         Returns:
             BrainArchitectureReport with full analysis
+
         """
         report = BrainArchitectureReport()
 
@@ -289,9 +286,9 @@ Respond in structured format with severity levels.
 Generate prioritized architectural improvement recommendations:
 
 Context:
-- Violations: {context['violation_count']}
-- Insights: {context['insight_count']}
-- High Severity Issues: {len(context['high_severity_insights'])}
+- Violations: {context["violation_count"]}
+- Insights: {context["insight_count"]}
+- High Severity Issues: {len(context["high_severity_insights"])}
 
 Provide 3-5 concrete, actionable recommendations prioritized by impact.
 """
@@ -395,6 +392,7 @@ def analyze_repository_architecture(
 
     Returns:
         BrainArchitectureReport with full analysis
+
     """
     analyzer = BrainPoweredArchitectureAnalyzer(repo_path)
     return analyzer.analyze_with_brain(use_brain=use_brain)
@@ -430,7 +428,7 @@ if __name__ == "__main__":
         }
         print(json.dumps(output, indent=2))
     else:
-        print(f"\n📊 Architecture Summary:")
+        print("\n📊 Architecture Summary:")
         if report.graph:
             print(f"   Nodes: {len(report.graph.nodes)}")
             print(f"   Edges: {len(report.graph.edges)}")
@@ -452,6 +450,6 @@ if __name__ == "__main__":
                     print(f"      Brain σ: {insight.brain_sigma:.2f}")
 
         if report.recommendations:
-            print(f"\n📝 Recommendations:")
+            print("\n📝 Recommendations:")
             for i, rec in enumerate(report.recommendations[:5], 1):
                 print(f"   {i}. {rec}")

@@ -1,20 +1,38 @@
-"""SENSES module — Alias for 02_SENSES
+"""SENSES module — Alias for 02_SENSES"""
 
-NOTE: This uses sys.path to access 02_SENSES modules.
-This is a transitional pattern until package structure is fully refactored.
-"""
-
-import sys
+import importlib.util
 from pathlib import Path
 
-# Add 02_SENSES to path for module access (transitional pattern)
+# Load modules from 02_SENSES using importlib
 _02_SENSES_PATH = Path(__file__).parent.parent / "02_SENSES"
-if str(_02_SENSES_PATH) not in sys.path:
-    sys.path.insert(0, str(_02_SENSES_PATH))
 
-from context_gatherer import ContextGatherer, ContextSnapshot
-from environment_scanner import EnvironmentScanner, FileChange, ScanResult
-from signal_detector import Signal, SignalDetector
+# context_gatherer
+_spec_cg = importlib.util.spec_from_file_location(
+    "_ctx_gather", _02_SENSES_PATH / "context_gatherer.py"
+)
+_mod_cg = importlib.util.module_from_spec(_spec_cg)
+_spec_cg.loader.exec_module(_mod_cg)
+ContextGatherer = _mod_cg.ContextGatherer
+ContextSnapshot = _mod_cg.ContextSnapshot
+
+# environment_scanner
+_spec_es = importlib.util.spec_from_file_location(
+    "_env_scan", _02_SENSES_PATH / "environment_scanner.py"
+)
+_mod_es = importlib.util.module_from_spec(_spec_es)
+_spec_es.loader.exec_module(_mod_es)
+EnvironmentScanner = _mod_es.EnvironmentScanner
+FileChange = _mod_es.FileChange
+ScanResult = _mod_es.ScanResult
+
+# signal_detector
+_spec_sd = importlib.util.spec_from_file_location(
+    "_sig_det", _02_SENSES_PATH / "signal_detector.py"
+)
+_mod_sd = importlib.util.module_from_spec(_spec_sd)
+_spec_sd.loader.exec_module(_mod_sd)
+Signal = _mod_sd.Signal
+SignalDetector = _mod_sd.SignalDetector
 
 __all__ = [
     "EnvironmentScanner",

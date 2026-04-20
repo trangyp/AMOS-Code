@@ -1,0 +1,54 @@
+# ============================================================================
+# AMOS-Invest: Import Linter Configuration
+# Tool Lattice: Architecture Enforcement Kernel
+# ============================================================================
+
+[importlinter]
+root_package = "amos_invest"
+include_external_packages = false
+
+# ============================================================================
+# CONTRACT 1: Invest Layer Architecture (L0-L9 mapping)
+# Layers: cli → interfaces → runtime → execution → portfolio → market → decision → core → config
+# ============================================================================
+
+[[importlinter.contracts]]
+name = "Invest layers"
+type = "layers"
+layers = [
+    "cli",
+    "interfaces",
+    "runtime",
+    "execution",
+    "portfolio",
+    "market",
+    "decision",
+    "core",
+    "config"
+]
+containers = ["amos_invest"]
+exhaustive = true
+exhaustive_ignores = ["tests", "examples"]
+
+# ============================================================================
+# CONTRACT 2: Core Isolation
+# Core must not depend on outer layers
+# ============================================================================
+
+[[importlinter.contracts]]
+name = "Core isolation"
+type = "forbidden"
+source_modules = ["amos_invest.core"]
+forbidden_modules = [
+    "amos_invest.cli",
+    "amos_invest.interfaces",
+]
+
+# ============================================================================
+# CONTRACT 3: Finance Domain Boundaries
+# ============================================================================
+
+[[importlinter.contracts]]
+name = "Portfolio independence"
+type = "independence"
+modules = ["amos_invest.portfolio"]

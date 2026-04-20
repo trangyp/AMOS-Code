@@ -12,10 +12,11 @@ Real autonomous code healing using AMOS brain cognition.
 import ast
 import sys
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 from pathlib import Path
-from typing import Any, List, Optional
+from typing import Any, Optional
 
 # Import brain
 try:
@@ -43,15 +44,15 @@ class HealingReport:
 
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     files_scanned: int = 0
-    issues_found: List[CodeIssue] = field(default_factory=list)
-    issues_fixed: List[CodeIssue] = field(default_factory=list)
-    failures: List[dict[str, Any]] = field(default_factory=list)
+    issues_found: list[CodeIssue] = field(default_factory=list)
+    issues_fixed: list[CodeIssue] = field(default_factory=list)
+    failures: list[dict[str, Any]] = field(default_factory=list)
 
 
 class BrainPoweredCodeHealer:
     """Autonomous code healer using AMOS brain."""
 
-    def __init__(self, repo_path: Path | str | None = None):
+    def __init__(self, repo_path: Optional[Path | str] = None):
         self.repo_path = Path(repo_path) if repo_path else Path.cwd()
         self.report = HealingReport()
 
@@ -65,7 +66,7 @@ class BrainPoweredCodeHealer:
         Returns:
             HealingReport with results
         """
-        print(f"\n🔧 AMOS Brain-Powered Code Healer")
+        print("\n🔧 AMOS Brain-Powered Code Healer")
         print(f"   Repository: {self.repo_path}")
         print(f"   Mode: {'DRY RUN' if dry_run else 'LIVE HEALING'}")
         print("=" * 60)
@@ -178,7 +179,9 @@ class BrainPoweredCodeHealer:
                     issue_type="deprecated_datetime",
                     description="datetime.now(timezone.utc) is deprecated - use datetime.now(timezone.utc)",
                     severity="error",
-                    suggested_fix=line.replace("datetime.now(timezone.utc)", "datetime.now(timezone.utc)"),
+                    suggested_fix=line.replace(
+                        "datetime.now(timezone.utc)", "datetime.now(timezone.utc)"
+                    ),
                 )
                 self.report.issues_found.append(issue)
 

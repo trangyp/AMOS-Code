@@ -12,10 +12,10 @@ import asyncio
 import json
 import sys
 from datetime import datetime, timezone
-
-UTC = timezone.utc
 from pathlib import Path
 from typing import Any
+
+UTC = timezone.utc
 
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
@@ -23,7 +23,6 @@ from pydantic import BaseModel
 # Add Axiom One to path
 AMOS_ROOT = Path(__file__).parent.parent.parent.resolve()
 if str(AMOS_ROOT) not in sys.path:
-    sys.path.insert(0, str(AMOS_ROOT))
 
 # Import Axiom One components
 try:

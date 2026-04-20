@@ -11,17 +11,20 @@ Version: 2.0.0
 """
 
 import json
-from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
-UTC = timezone.utc
+from dataclasses import dataclass
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
+from collections.abc import Callable
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Optional
 
 from aiokafka import AIOKafkaConsumer, AIOKafkaProducer
 
 
 class EventType(str, Enum):
     """Domain event types."""
+
     EQUATION_CREATED = "equation.created"
     EQUATION_UPDATED = "equation.updated"
     EQUATION_DELETED = "equation.deleted"
@@ -37,14 +40,15 @@ class EventType(str, Enum):
 @dataclass
 class DomainEvent:
     """Domain event structure."""
+
     event_id: str
     event_type: EventType
     aggregate_id: str  # Entity identifier (equation_id, user_id)
     aggregate_type: str  # Entity type (equation, user)
     timestamp: datetime
     version: int  # Event version for optimistic concurrency
-    payload: Dict[str, Any]
-    metadata: Dict[str, Any]  # Correlation_id, user_agent, ip, etc.
+    payload: dict[str, Any]
+    metadata: dict[str, Any]  # Correlation_id, user_agent, ip, etc.
 
 
 class KafkaEventBus:
@@ -58,7 +62,7 @@ class KafkaEventBus:
         self.bootstrap_servers = bootstrap_servers
         self.topic_prefix = topic_prefix
         self._producer: Optional[AIOKafkaProducer] = None
-        self._consumers: List[AIOKafkaConsumer] = []
+        self._consumers: list[AIOKafkaConsumer] = []
 
     async def start(self) -> None:
         """Initialize Kafka producer."""
@@ -83,7 +87,7 @@ class KafkaEventBus:
     async def publish(
         self,
         event: DomainEvent,
-        partition: int  = None,
+        partition: int = None,
     ) -> None:
         """Publish event to Kafka."""
         if not self._producer:
@@ -113,7 +117,7 @@ class KafkaEventBus:
     async def subscribe(
         self,
         aggregate_type: str,
-        event_types: List[EventType],
+        event_types: list[EventType],
         handler: Callable[[DomainEvent], None],
         consumer_group: str,
     ) -> AIOKafkaConsumer:
@@ -141,7 +145,7 @@ class KafkaEventBus:
     async def _consume(
         self,
         consumer: AIOKafkaConsumer,
-        event_types: List[EventType],
+        event_types: list[EventType],
         handler: Callable[[DomainEvent], None],
     ) -> None:
         """Consume messages."""
@@ -177,15 +181,17 @@ class StreamProcessor:
 
     def __init__(self, kafka_bus: KafkaEventBus):
         self.kafka_bus = kafka_bus
-        self._handlers: Dict[EventType, list[Callable]] = {}
+        self._handlers: dict[EventType, list[Callable]] = {}
 
     def on(self, event_type: EventType) -> Callable:
         """Decorator to register event handler."""
+
         def decorator(func: Callable) -> Callable:
             if event_type not in self._handlers:
                 self._handlers[event_type] = []
             self._handlers[event_type].append(func)
             return func
+
         return decorator
 
     async def process(self, event: DomainEvent) -> None:
@@ -209,9 +215,9 @@ class EventSourcingRepository:
     ):
         self.kafka_bus = kafka_bus
         self.aggregate_type = aggregate_type
-        self._event_store: Dict[str, list[DomainEvent]] = {}  # In-memory for demo
+        self._event_store: dict[str, list[DomainEvent]] = {}  # In-memory for demo
 
-    async def save(self, aggregate_id: str, events: List[DomainEvent]) -> None:
+    async def save(self, aggregate_id: str, events: list[DomainEvent]) -> None:
         """Save events to event store and publish to Kafka."""
         # Store in event store
         if aggregate_id not in self._event_store:
@@ -226,7 +232,7 @@ class EventSourcingRepository:
         self,
         aggregate_id: str,
         from_version: int = 0,
-    ) -> List[DomainEvent]:
+    ) -> list[DomainEvent]:
         """Get events for aggregate."""
         events = self._event_store.get(aggregate_id, [])
         return [e for e in events if e.version > from_version]
@@ -235,14 +241,14 @@ class EventSourcingRepository:
         self,
         after_position: int = 0,
         limit: int = 100,
-    ) -> List[DomainEvent]:
+    ) -> list[DomainEvent]:
         """Get all events (for projections)."""
         all_events = []
         for events in self._event_store.values():
             all_events.extend(events)
 
         all_events.sort(key=lambda e: e.timestamp)
-        return all_events[after_position:after_position + limit]
+        return all_events[after_position : after_position + limit]
 
 
 # CDC (Change Data Capture) handler
@@ -300,7 +306,7 @@ class RealtimeAnalytics:
 
     def __init__(self, kafka_bus: KafkaEventBus):
         self.kafka_bus = kafka_bus
-        self._metrics: Dict[str, Any] = {
+        self._metrics: dict[str, Any] = {
             "events_per_second": 0,
             "equation_creates": 0,
             "active_users": set(),
@@ -333,7 +339,7 @@ class RealtimeAnalytics:
         self._metrics["active_users"].add(user_id)
         print(f"Real-time: {len(self._metrics['active_users'])} active users")
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """Get current real-time metrics."""
         return {
             "equation_creates": self._metrics["equation_creates"],

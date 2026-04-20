@@ -7,11 +7,13 @@ Unified interface to AMOS Brain with:
 - Kernel Runtime (state management + law enforcement)
 """
 
+from __future__ import annotations
+
 import asyncio
 import json
 import time
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 try:
     from .amos_kernel_runtime import AMOSKernelRuntime, get_kernel_runtime_async
@@ -30,6 +32,7 @@ try:
     _LEARNING_MEMORY_AVAILABLE = True
 except ImportError:
     from amos_kernel_runtime import AMOSKernelRuntime, get_kernel_runtime_async
+    from organism_bridge import get_organism_bridge
     from proactive_inference_engine import (
         ProactiveInferenceEngine,
     )
@@ -37,8 +40,6 @@ except ImportError:
     from reflection_system import (
         SelfReflectionSystem,
     )
-
-    from organism_bridge import get_organism_bridge
 
     try:
         from learning_memory_bridge import LearningMemoryBridge
@@ -56,13 +57,12 @@ class BrainResponse:
     latency_ms: float
     mode: str
     confidence: float
-    components_used: List[str]
-    metadata: Dict[str, Any]
+    components_used: list[str]
+    metadata: dict[str, Any]
 
 
 class IntegratedBrainAPI:
-    """
-    Unified brain API combining all components with SIKS integration.
+    """Unified brain API combining all components with SIKS integration.
 
     Usage:
         brain = IntegratedBrainAPI()
@@ -71,19 +71,19 @@ class IntegratedBrainAPI:
 
     def __init__(self):
         # Core kernel - initialized async via get_kernel_runtime_async
-        self.kernel: Optional[AMOSKernelRuntime] = None
+        self.kernel: AMOSKernelRuntime | None = None
         self._kernel_ready = False
 
         # Component systems
-        self.react_agent: Optional[AMOSReActAgent] = None
-        self.proactive_engine: Optional[ProactiveInferenceEngine] = None
-        self.reflection_system: Optional[SelfReflectionSystem] = None
+        self.react_agent: AMOSReActAgent | None = None
+        self.proactive_engine: ProactiveInferenceEngine | None = None
+        self.reflection_system: SelfReflectionSystem | None = None
 
         # Organism bridge for SIKS and organism components
-        self._organism_bridge: Optional[Any] = get_organism_bridge()
+        self._organism_bridge: Any | None = get_organism_bridge()
 
         # Learning memory bridge for experience-based improvements
-        self._learning_memory: Optional[Any] = None
+        self._learning_memory: Any | None = None
         if _LEARNING_MEMORY_AVAILABLE:
             try:
                 self._learning_memory = LearningMemoryBridge.get_instance()
@@ -119,10 +119,9 @@ class IntegratedBrainAPI:
         self,
         query: str,
         mode: str = "auto",
-        context: Dict[str, Any] = None,
+        context: dict[str, Any] = None,
     ) -> BrainResponse:
-        """
-        Process query using brain system.
+        """Process query using brain system.
 
         Args:
             query: User query
@@ -131,6 +130,7 @@ class IntegratedBrainAPI:
 
         Returns:
             BrainResponse with answer and metadata
+
         """
         # Ensure all components initialized
         await self._ensure_initialized()
@@ -138,7 +138,7 @@ class IntegratedBrainAPI:
         start_time = time.perf_counter()
         self._request_count += 1
 
-        components_used: List[str] = []
+        components_used: list[str] = []
 
         # Inject relevant memories into context for improved reasoning
         if self._learning_memory and self._learning_memory.initialized:
@@ -258,7 +258,7 @@ class IntegratedBrainAPI:
                 pass
 
         # Build metadata
-        metadata: Dict[str, Any] = {
+        metadata: dict[str, Any] = {
             "validation": validation,
             "avg_latency": self._total_latency / self._request_count,
         }
@@ -281,7 +281,7 @@ class IntegratedBrainAPI:
         complexity = min(1.0, words / 20.0)
         return complexity
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get brain system statistics."""
         stats = {
             "requests": self._request_count,
@@ -298,7 +298,7 @@ class IntegratedBrainAPI:
 
 
 # Global API instance
-_global_brain_api: Optional[IntegratedBrainAPI] = None
+_global_brain_api: IntegratedBrainAPI | None = None
 
 
 def get_brain_api() -> IntegratedBrainAPI:

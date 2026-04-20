@@ -18,7 +18,7 @@ import time
 import uuid
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List
+from typing import Any
 
 
 class ValidationSeverity(Enum):
@@ -65,14 +65,14 @@ class DataExpectation:
 
     # Configuration
     column: str = None
-    kwargs: Dict[str, Any] = field(default_factory=dict)
+    kwargs: dict[str, Any] = field(default_factory=dict)
 
     # Severity
     severity: ValidationSeverity = ValidationSeverity.ERROR
 
     # Metadata
     created_at: float = field(default_factory=time.time)
-    tags: List[str] = field(default_factory=list)
+    tags: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -108,7 +108,7 @@ class ValidationSuite:
     description: str
 
     # Expectations
-    expectation_ids: List[str] = field(default_factory=list)
+    expectation_ids: list[str] = field(default_factory=list)
 
     # Dataset info
     dataset_name: str = ""
@@ -131,7 +131,7 @@ class QualityReport:
     dataset_name: str
 
     # Results
-    results: List[ValidationResult] = field(default_factory=list)
+    results: list[ValidationResult] = field(default_factory=list)
 
     # Summary
     total_expectations: int = 0
@@ -144,7 +144,7 @@ class QualityReport:
 
     # Status
     overall_success: bool = False
-    severity_counts: Dict[str, int] = field(default_factory=dict)
+    severity_counts: dict[str, int] = field(default_factory=dict)
 
 
 class AMOSDataValidation:
@@ -172,13 +172,13 @@ class AMOSDataValidation:
     """
 
     def __init__(self):
-        self.expectations: Dict[str, DataExpectation] = {}
-        self.suites: Dict[str, ValidationSuite] = {}
-        self.results: Dict[str, ValidationResult] = {}
-        self.reports: Dict[str, QualityReport] = {}
+        self.expectations: dict[str, DataExpectation] = {}
+        self.suites: dict[str, ValidationSuite] = {}
+        self.results: dict[str, ValidationResult] = {}
+        self.reports: dict[str, QualityReport] = {}
 
         # Dataset statistics for drift detection
-        self.baseline_stats: Dict[str, dict[str, Any]] = {}
+        self.baseline_stats: dict[str, dict[str, Any]] = {}
 
     async def initialize(self) -> None:
         """Initialize the data validation framework."""
@@ -284,7 +284,7 @@ class AMOSDataValidation:
         column: str = None,
         kwargs: dict = None,
         severity: ValidationSeverity = ValidationSeverity.ERROR,
-        tags: List[str] = None,
+        tags: list[str] = None,
     ) -> str:
         """Create a new data expectation."""
         expectation_id = f"exp_{uuid.uuid4().hex[:8]}"
@@ -334,7 +334,7 @@ class AMOSDataValidation:
         return True
 
     async def validate_dataset(
-        self, suite_id: str, dataset: Dict[str, Any], dataset_name: str = None
+        self, suite_id: str, dataset: dict[str, Any], dataset_name: str = None
     ) -> QualityReport:
         """Validate a dataset against a suite."""
         start_time = time.time()
@@ -389,7 +389,7 @@ class AMOSDataValidation:
         return report
 
     def _run_expectation(
-        self, expectation: DataExpectation, dataset: Dict[str, Any]
+        self, expectation: DataExpectation, dataset: dict[str, Any]
     ) -> ValidationResult:
         """Run a single expectation against data."""
         result_id = f"result_{uuid.uuid4().hex[:8]}"
@@ -465,8 +465,8 @@ class AMOSDataValidation:
         )
 
     def detect_drift(
-        self, dataset_name: str, current_stats: Dict[str, Any], threshold: float = 0.1
-    ) -> Dict[str, Any]:
+        self, dataset_name: str, current_stats: dict[str, Any], threshold: float = 0.1
+    ) -> dict[str, Any]:
         """Detect data drift compared to baseline."""
         baseline = self.baseline_stats.get(dataset_name)
         if not baseline:
@@ -506,7 +506,7 @@ class AMOSDataValidation:
             "timestamp": time.time(),
         }
 
-    def get_quality_summary(self) -> Dict[str, Any]:
+    def get_quality_summary(self) -> dict[str, Any]:
         """Get overall quality summary."""
         total_reports = len(self.reports)
         successful_reports = sum(1 for r in self.reports.values() if r.overall_success)
@@ -520,7 +520,7 @@ class AMOSDataValidation:
             "success_rate": (successful_reports / total_reports * 100) if total_reports > 0 else 0,
         }
 
-    def get_suite_report_history(self, suite_id: str, limit: int = 10) -> List[QualityReport]:
+    def get_suite_report_history(self, suite_id: str, limit: int = 10) -> list[QualityReport]:
         """Get historical reports for a suite."""
         suite_reports = [r for r in self.reports.values() if r.suite_id == suite_id]
 

@@ -38,10 +38,10 @@ class CodeNode:
     path: str
     line: int
     parent: str = None
-    children: List[str] = field(default_factory=list)
-    dependencies: List[str] = field(default_factory=list)
-    dependents: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    children: list[str] = field(default_factory=list)
+    dependencies: list[str] = field(default_factory=list)
+    dependents: list[str] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -59,19 +59,19 @@ class PythonCodeParser:
 
     def __init__(self, root_path: str = "."):
         self.root_path = Path(root_path).resolve()
-        self.nodes: Dict[str, CodeNode] = {}
-        self.edges: List[ImportEdge] = []
+        self.nodes: dict[str, CodeNode] = {}
+        self.edges: list[ImportEdge] = []
         self.files_analyzed = 0
-        self.errors: List[str] = []
+        self.errors: list[str] = []
 
-    def scan_directory(self, pattern: str = "*.py") -> List[Path]:
+    def scan_directory(self, pattern: str = "*.py") -> list[Path]:
         """Scan for Python files."""
         files = list(self.root_path.rglob(pattern))
         # Exclude common directories
         exclude = {".venv", "venv", "__pycache__", ".git", "node_modules"}
         return [f for f in files if not any(e in str(f) for e in exclude)]
 
-    def parse_file(self, file_path: Path) -> Dict[str, Any]:
+    def parse_file(self, file_path: Path) -> dict[str, Any]:
         """Parse single Python file."""
         try:
             content = tool_read_file(str(file_path))
@@ -172,7 +172,7 @@ class PythonCodeParser:
             return f"{self._get_base_name(node.value)}.{node.attr}"
         return "unknown"
 
-    def build_graph(self, max_files: int = 100) -> Dict[str, Any]:
+    def build_graph(self, max_files: int = 100) -> dict[str, Any]:
         """Build full code dependency graph."""
         logger.info(f"Building system graph for {self.root_path}")
 
@@ -258,12 +258,12 @@ class PythonCodeParser:
             "errors": len(self.errors),
         }
 
-    def find_cycles(self) -> List[list[str]]:
+    def find_cycles(self) -> list[list[str]]:
         """Find circular dependencies."""
         visited = set()
         cycles = []
 
-        def dfs(node_id: str, path: List[str]) -> None:
+        def dfs(node_id: str, path: list[str]) -> None:
             if node_id in path:
                 cycle_start = path.index(node_id)
                 cycles.append(path[cycle_start:] + [node_id])
@@ -286,7 +286,7 @@ class PythonCodeParser:
 
         return cycles
 
-    def calculate_impact(self, target_node: str) -> Dict[str, Any]:
+    def calculate_impact(self, target_node: str) -> dict[str, Any]:
         """Calculate impact of changing a node."""
         if target_node not in self.nodes:
             return {"error": f"Node {target_node} not found"}

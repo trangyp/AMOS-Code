@@ -5,10 +5,8 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 
-from amos_execution import full_execute, get_execution_kernel
-
-from amos_runtime import get_runtime
-from typing import Dict, List, Optional
+from clawspring.amos_execution import full_execute, get_execution_kernel
+from clawspring.amos_runtime import get_runtime
 
 
 @dataclass
@@ -32,7 +30,7 @@ class Workflow:
 
     id: str
     name: str
-    steps: List[WorkflowStep] = field(default_factory=list)
+    steps: list[WorkflowStep] = field(default_factory=list)
     status: str = "pending"
     created_at: datetime = field(default_factory=datetime.now)
     completed_at: datetime = None
@@ -99,7 +97,7 @@ class StepHandlers:
 class AMOSWorkflowOrchestrator:
     """Orchestrates multi-step AMOS workflows."""
 
-    HANDLERS: Dict[str, Callable[[WorkflowStep], dict]] = {
+    HANDLERS: dict[str, Callable[[WorkflowStep], dict]] = {
         "cognitive": StepHandlers.cognitive,
         "execution": StepHandlers.execution,
         "validation": StepHandlers.validation,
@@ -107,11 +105,11 @@ class AMOSWorkflowOrchestrator:
     }
 
     def __init__(self):
-        self.workflows: Dict[str, Workflow] = {}
+        self.workflows: dict[str, Workflow] = {}
         self.runtime = get_runtime()
         self.execution = get_execution_kernel()
 
-    def create_workflow(self, name: str, steps_config: List[dict]) -> Workflow:
+    def create_workflow(self, name: str, steps_config: list[dict]) -> Workflow:
         """Create a new workflow from step configurations."""
         workflow_id = str(uuid.uuid4())[:8]
         steps = []
@@ -238,7 +236,7 @@ class AMOSWorkflowOrchestrator:
 
 
 # Singleton
-_orchestrator: Optional[AMOSWorkflowOrchestrator] = None
+_orchestrator: AMOSWorkflowOrchestrator | None = None
 
 
 def get_orchestrator() -> AMOSWorkflowOrchestrator:

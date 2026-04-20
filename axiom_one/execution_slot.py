@@ -29,7 +29,10 @@ import subprocess
 import uuid
 from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
+
 UTC = timezone.utc
 from enum import Enum, auto
 from pathlib import Path
@@ -258,10 +261,9 @@ class ExecutionSlot:
     mode: SlotMode = SlotMode.LOCAL
     status: SlotStatus = SlotStatus.PENDING
 
-    # Snapshots (immutable context)
-    repo_snapshot: Optional[RepoSnapshot] = None
-    environment_snapshot: Optional[EnvironmentSnapshot] = None
-    working_dir: Optional[Path] = None
+    # Snapshots (immutable context)repo_snapshot: RepoSnapshot  =None
+    environment_snapshot: EnvironmentSnapshot = None
+    working_dir: Path = None
 
     # Configuration
     tool_permissions: ToolPermissions = field(default_factory=ToolPermissions)
@@ -295,7 +297,7 @@ class ExecutionSlot:
         return json.dumps(self.to_dict(), indent=2, default=str)
 
     @classmethod
-    def create_local(cls, objective: str, repo_path: Optional[Path] = None, **kwargs) -> ExecutionSlot:
+    def create_local(cls, objective: str, repo_path: Path = None, **kwargs) -> ExecutionSlot:
         """Create a local-mode slot (Claude Code style)."""
         import subprocess
 
@@ -367,11 +369,11 @@ class ExecutionSlotManager:
         slot.log_event("allocated", slot_id=slot.slot_id, mode=slot.mode.value)
         return slot
 
-    def get(self, slot_id: str) -> Optional[ExecutionSlot]:
+    def get(self, slot_id: str) -> ExecutionSlot:
         """Get a slot by ID."""
         return self._slots.get(slot_id)
 
-    def start(self, slot_id: str) -> Optional[ExecutionSlot]:
+    def start(self, slot_id: str) -> ExecutionSlot:
         """Mark a slot as running."""
         slot = self._slots.get(slot_id)
         if slot:
@@ -379,9 +381,7 @@ class ExecutionSlotManager:
             slot.log_event("started")
         return slot
 
-    def complete(
-        self, slot_id: str, success: bool, result: dict[str, Any] = None
-    ) -> Optional[ExecutionSlot]:
+    def complete(self, slot_id: str, success: bool, result: dict[str, Any] = None) -> ExecutionSlot:
         """Mark a slot as completed."""
         slot = self._slots.get(slot_id)
         if slot:
@@ -496,7 +496,7 @@ class ExecutionSlotManager:
 
 
 # Global slot manager instance
-_slot_manager: Optional[ExecutionSlotManager] = None
+_slot_manager: ExecutionSlotManager = None
 
 
 def get_slot_manager() -> ExecutionSlotManager:

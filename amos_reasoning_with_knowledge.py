@@ -26,7 +26,7 @@ import sys
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 sys.path.insert(0, str(Path(__file__).parent / "clawspring"))
 sys.path.insert(0, str(Path(__file__).parent))
@@ -76,7 +76,7 @@ class KnowledgeIntegratedReasoning:
             print(f"Warning: Could not initialize knowledge activation: {e}")
             self.activation = None
 
-    def _get_active_knowledge(self) -> Dict[str, Any]:
+    def _get_active_knowledge(self) -> dict[str, Any]:
         """Get currently active knowledge."""
         if not self.activation:
             return {}
@@ -105,7 +105,7 @@ class KnowledgeIntegratedReasoning:
 
         return min(score, 1.0)
 
-    def find_relevant_knowledge(self, problem: str, top_n: int = 5) -> List[KnowledgeMatch]:
+    def find_relevant_knowledge(self, problem: str, top_n: int = 5) -> list[KnowledgeMatch]:
         """Find most relevant knowledge for a problem."""
         active = self._get_active_knowledge()
         if not active:
@@ -150,7 +150,7 @@ class KnowledgeIntegratedReasoning:
 
     def reason_with_knowledge(
         self, problem: str, use_rule_of_2: bool = True, use_rule_of_4: bool = True
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Perform knowledge-integrated reasoning."""
         print("=" * 70)
         print("AMOS KNOWLEDGE-INTEGRATED REASONING")
@@ -202,7 +202,7 @@ class KnowledgeIntegratedReasoning:
 
     def _base_reasoning(
         self, problem: str, use_rule_of_2: bool, use_rule_of_4: bool
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Perform base AMOS reasoning."""
         analysis = {
             "problem_type": self._classify_problem(problem),
@@ -271,8 +271,8 @@ class KnowledgeIntegratedReasoning:
         return analyses.get(quadrant, "Analysis not available")
 
     def _augment_with_knowledge(
-        self, base_analysis: dict, relevant: List[KnowledgeMatch]
-    ) -> Dict[str, Any]:
+        self, base_analysis: dict, relevant: list[KnowledgeMatch]
+    ) -> dict[str, Any]:
         """Augment analysis with knowledge."""
         augmentation = {"knowledge_contributions": [], "enhanced_insights": []}
 
@@ -300,7 +300,7 @@ class KnowledgeIntegratedReasoning:
 
     def _generate_conclusion(
         self, problem: str, base: dict, augmented: dict, relevant: list
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate final integrated conclusion."""
         conclusion = {
             "summary": f"Integrated analysis of: {problem[:60]}...",

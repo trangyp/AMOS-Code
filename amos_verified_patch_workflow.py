@@ -14,8 +14,9 @@ import json
 import subprocess
 import sys
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 from pathlib import Path
 
 from amos_brain.global_laws import GlobalLaws
@@ -23,7 +24,6 @@ from amos_brain.global_laws import GlobalLaws
 # AMOS Imports
 from amos_brain.clawspring_bridge import create_amos_agent
 from amos_openclaw_connector import BridgeConfig, StateSynchronizer
-from typing import List, Optional
 
 
 @dataclass
@@ -33,7 +33,7 @@ class VerificationStage:
     name: str
     passed: bool
     duration_ms: float
-    findings: List[dict] = field(default_factory=list)
+    findings: list[dict] = field(default_factory=list)
     output: str = ""
     error: str = None
 
@@ -46,7 +46,7 @@ class PatchVerificationReceipt:
     timestamp: str
     commit_hash: str
     author: str
-    stages: List[VerificationStage]
+    stages: list[VerificationStage]
     passed_all: bool
     amos_laws_compliant: bool
     security_clearance: str  # "clean" | "warnings" | "blocked"
@@ -59,9 +59,9 @@ class RepoDoctorVerifier:
 
     def __init__(self, repo_path: Path):
         self.repo_path = repo_path
-        self.findings: List[dict] = []
+        self.findings: list[dict] = []
 
-    async def run_full_verification(self, changed_files: List[Path]) -> List[VerificationStage]:
+    async def run_full_verification(self, changed_files: list[Path]) -> list[VerificationStage]:
         """Run complete verification pipeline on changed files."""
         stages = []
 
@@ -90,7 +90,7 @@ class RepoDoctorVerifier:
 
         return stages
 
-    async def _check_syntax(self, files: List[Path]) -> VerificationStage:
+    async def _check_syntax(self, files: list[Path]) -> VerificationStage:
         """Verify all Python files parse without SyntaxError."""
         start = datetime.now(timezone.utc)
         errors = []
@@ -113,7 +113,7 @@ class RepoDoctorVerifier:
             output="All files parse correctly" if not errors else f"{len(errors)} syntax errors",
         )
 
-    async def _check_imports(self, files: List[Path]) -> VerificationStage:
+    async def _check_imports(self, files: list[Path]) -> VerificationStage:
         """Verify imports resolve."""
         start = datetime.now(timezone.utc)
 
@@ -141,7 +141,7 @@ class RepoDoctorVerifier:
                 output="Import sensor not available, skipped",
             )
 
-    async def _run_ruff(self, files: List[Path]) -> VerificationStage:
+    async def _run_ruff(self, files: list[Path]) -> VerificationStage:
         """Run Ruff linter on changed files."""
         start = datetime.now(timezone.utc)
 
@@ -212,7 +212,7 @@ class RepoDoctorVerifier:
                 output="Pyright not available",
             )
 
-    async def _run_semgrep(self, files: List[Path]) -> VerificationStage:
+    async def _run_semgrep(self, files: list[Path]) -> VerificationStage:
         """Run Semgrep security scanner."""
         start = datetime.now(timezone.utc)
 
@@ -324,7 +324,7 @@ class RepoDoctorVerifier:
                 output="Gitleaks not available",
             )
 
-    async def _run_pytest(self, files: List[Path]) -> VerificationStage:
+    async def _run_pytest(self, files: list[Path]) -> VerificationStage:
         """Run pytest on affected tests."""
         start = datetime.now(timezone.utc)
 
@@ -372,7 +372,7 @@ class RepoDoctorVerifier:
                 output="pytest not available",
             )
 
-    async def _check_amos_laws(self, files: List[Path]) -> VerificationStage:
+    async def _check_amos_laws(self, files: list[Path]) -> VerificationStage:
         """Verify compliance with AMOS Global Laws L1-L6."""
         start = datetime.now(timezone.utc)
         violations = []
@@ -414,7 +414,7 @@ class VerifiedPatchWorkflow:
     AI-generated patches are validated before being trusted.
     """
 
-    def __init__(self, repo_path: Optional[Path] = None):
+    def __init__(self, repo_path: Path = None):
         self.repo_path = repo_path or Path.cwd()
         self.verifier = RepoDoctorVerifier(self.repo_path)
         self.state_sync = StateSynchronizer(BridgeConfig())
@@ -425,7 +425,7 @@ class VerifiedPatchWorkflow:
     async def process_patch(
         self,
         patch_description: str,
-        changed_files: List[Path],
+        changed_files: list[Path],
         author: str = "openclaw-agent",
         auto_commit: bool = False,
     ) -> PatchVerificationReceipt:
@@ -557,7 +557,7 @@ class VerifiedPatchWorkflow:
         print(f"   Receipt Signature: {receipt.receipt_signature}")
         print("=" * 60)
 
-    async def _commit_verified_patch(self, receipt: PatchVerificationReceipt, files: List[Path]):
+    async def _commit_verified_patch(self, receipt: PatchVerificationReceipt, files: list[Path]):
         """Commit the verified patch with receipt metadata."""
         # Stage files
         for f in files:
@@ -569,7 +569,7 @@ class VerifiedPatchWorkflow:
 Author: {receipt.author}
 Verification: {receipt.receipt_signature}
 Security: {receipt.security_clearance}
-AMOS Laws: {'✅' if receipt.amos_laws_compliant else '❌'}
+AMOS Laws: {"✅" if receipt.amos_laws_compliant else "❌"}
 
 Stages passed: {sum(1 for s in receipt.stages if s.passed)}/{len(receipt.stages)}
 """

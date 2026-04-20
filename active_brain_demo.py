@@ -40,7 +40,7 @@ def main() -> int:
     # ACTIVE THINKING
     print("\n4. Calling brain.think()...")
     thought = brain.think(
-        "What is the current status of the AMOS repository? " "Are there any F821 errors remaining?"
+        "What is the current status of the AMOS repository? Are there any F821 errors remaining?"
     )
     print(f"   Thought result type: {type(thought)}")
     if isinstance(thought, dict):

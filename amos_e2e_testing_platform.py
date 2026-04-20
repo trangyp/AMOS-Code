@@ -49,6 +49,8 @@ Version: 1.0.0
 Phase: 25
 """
 
+from __future__ import annotations
+
 import asyncio
 import json
 import os
@@ -56,10 +58,12 @@ import time
 import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from enum import Enum
 from pathlib import Path
-from typing import Dict, List, Optional, Protocol
+from typing import Optional, Protocol
 
 # Test framework imports
 try:
@@ -143,7 +147,7 @@ class TestCase:
     timeout_seconds: int = 60
     retries: int = 1
     parallelizable: bool = True
-    dependencies: List[str] = field(default_factory=list)
+    dependencies: list[str] = field(default_factory=list)
 
     # Test function
     test_func: Optional[Callable] = None
@@ -154,7 +158,7 @@ class TestCase:
     error_message: str = ""
     stdout: str = ""
     stderr: str = ""
-    artifacts: List[Path] = field(default_factory=list)
+    artifacts: list[Path] = field(default_factory=list)
 
     # Metadata
     created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
@@ -170,7 +174,7 @@ class TestSuite:
     description: str
     category: TestCategory
 
-    tests: List[TestCase] = field(default_factory=list)
+    tests: list[TestCase] = field(default_factory=list)
 
     # Execution
     parallel: bool = True
@@ -219,8 +223,8 @@ class TestReport:
     branch_coverage: float = 0.0
 
     # Details
-    suites: List[TestSuite] = field(default_factory=list)
-    failures: List[TestCase] = field(default_factory=list)
+    suites: list[TestSuite] = field(default_factory=list)
+    failures: list[TestCase] = field(default_factory=list)
 
     def pass_rate(self) -> float:
         executed = self.total_tests - self.skipped
@@ -272,10 +276,10 @@ class AMOSE2ETestPlatform:
     """
 
     def __init__(self):
-        self.suites: Dict[str, TestSuite] = {}
-        self.tests: Dict[str, TestCase] = {}
-        self.executors: Dict[TestType, TestExecutor] = {}
-        self.history: List[TestReport] = []
+        self.suites: dict[str, TestSuite] = {}
+        self.tests: dict[str, TestCase] = {}
+        self.executors: dict[TestType, TestExecutor] = {}
+        self.history: list[TestReport] = []
 
         # Create output directory
         TEST_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -305,7 +309,7 @@ class AMOSE2ETestPlatform:
         component: str,
         test_func: Optional[Callable] = None,
         timeout: int = 60,
-        dependencies: List[str] = None,
+        dependencies: list[str] = None,
     ) -> TestCase:
         """Add a test to a suite."""
         suite = self.suites.get(suite_id)
@@ -407,7 +411,7 @@ class AMOSE2ETestPlatform:
 
         return suite
 
-    async def run_all(self, categories: List[TestCategory] = None) -> TestReport:
+    async def run_all(self, categories: list[TestCategory] = None) -> TestReport:
         """Execute all test suites."""
         report = TestReport(
             report_id=f"report_{uuid.uuid4().hex[:8]}", generated_at=datetime.now(UTC)
@@ -526,7 +530,7 @@ class AMOSE2ETestPlatform:
                 html += f"""
         <div class="test {status_class}">
             <strong>{test.name}</strong> - {test.status.value}
-            {f'<br><small>{test.error_message}</small>' if test.error_message else ''}
+            {f"<br><small>{test.error_message}</small>" if test.error_message else ""}
         </div>
 """
             html += "    </div>\n"

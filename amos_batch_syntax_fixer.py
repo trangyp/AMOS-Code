@@ -8,7 +8,6 @@ Uses BrainClient for intelligent analysis when available.
 import ast
 import re
 from pathlib import Path
-from typing import List, Optional
 
 
 class SyntaxFixer:
@@ -16,21 +15,28 @@ class SyntaxFixer:
 
     def __init__(self):
         self.skip_dirs = {
-            '.venv', 'node_modules', '__pycache__', '.git',
-            '.pytest_cache', '.ruff_cache', '.hypothesis',
-            '.benchmarks', 'profiling_results', 'amos_logs'
+            ".venv",
+            "node_modules",
+            "__pycache__",
+            ".git",
+            ".pytest_cache",
+            ".ruff_cache",
+            ".hypothesis",
+            ".benchmarks",
+            "profiling_results",
+            "amos_logs",
         }
         self.fixed_count = 0
         self.failed_count = 0
 
-    def find_syntax_errors(self, root: Path = Path('.')) -> List[tuple[str, int, str]]:
+    def find_syntax_errors(self, root: Path = Path(".")) -> list[tuple[str, int, str]]:
         """Find all Python files with syntax errors."""
         errors = []
-        for py_file in root.rglob('*.py'):
+        for py_file in root.rglob("*.py"):
             if any(skip in str(py_file) for skip in self.skip_dirs):
                 continue
             try:
-                with open(py_file, 'r', encoding='utf-8', errors='ignore') as f:
+                with open(py_file, encoding="utf-8", errors="ignore") as f:
                     content = f.read()
                 ast.parse(content)
             except SyntaxError as e:
@@ -39,26 +45,28 @@ class SyntaxFixer:
 
     def fix_misplaced_typing_imports(self, content: str) -> str:
         """Fix typing imports that are indented inside functions/classes."""
-        lines = content.split('\n')
+        lines = content.split("\n")
         fixed_lines = []
         typing_imports_to_move = []
 
         for i, line in enumerate(lines):
             # Check if this is a misplaced typing import (indented but not at module level)
-            if re.match(r'^[ \t]+from typing import', line) or re.match(r'^[ \t]+import typing', line):
+            if re.match(r"^[ \t]+from typing import", line) or re.match(
+                r"^[ \t]+import typing", line
+            ):
                 # Check if we're inside a function/class by looking at previous lines
                 is_module_level = True
-                for j in range(i-1, -1, -1):
+                for j in range(i - 1, -1, -1):
                     prev_line = lines[j]
-                    if prev_line.strip() and not prev_line.strip().startswith('#'):
+                    if prev_line.strip() and not prev_line.strip().startswith("#"):
                         # Check if previous non-empty line ends with : (function/class definition)
-                        if prev_line.rstrip().endswith(':'):
+                        if prev_line.rstrip().endswith(":"):
                             # Check if it's a def or class
-                            if re.match(r'^[ \t]*(def|class|async def)\s', prev_line):
+                            if re.match(r"^[ \t]*(def|class|async def)\s", prev_line):
                                 is_module_level = False
                                 break
                         # If we hit an unindented line, we're at module level
-                        if not prev_line.startswith((' ', '\t')):
+                        if not prev_line.startswith((" ", "\t")):
                             break
 
                 if not is_module_level:
@@ -74,21 +82,21 @@ class SyntaxFixer:
             # Find where to insert (after other imports or at the very top)
             insert_idx = 0
             for i, line in enumerate(fixed_lines):
-                if line.strip().startswith(('from ', 'import ')):
+                if line.strip().startswith(("from ", "import ")):
                     insert_idx = i + 1
 
             for imp in typing_imports_to_move:
                 fixed_lines.insert(insert_idx, imp)
                 insert_idx += 1
 
-        return '\n'.join(fixed_lines)
+        return "\n".join(fixed_lines)
 
     def fix_missing_parens(self, content: str) -> str:
         """Fix missing closing parentheses in common patterns."""
         # Fix Tool() calls without closing paren
         patterns = [
-            (r'Tool\([^)]+\n\n', self._fix_tool_paren),
-            (r'Binding\([^)]+\n\n', self._fix_binding_paren),
+            (r"Tool\([^)]+\n\n", self._fix_tool_paren),
+            (r"Binding\([^)]+\n\n", self._fix_binding_paren),
         ]
 
         for pattern, fixer in patterns:
@@ -99,29 +107,29 @@ class SyntaxFixer:
     def _fix_tool_paren(self, match: re.Match) -> str:
         text = match.group(0)
         # Add closing paren before the double newline
-        return text.rstrip('\n') + ')\n\n'
+        return text.rstrip("\n") + ")\n\n"
 
     def _fix_binding_paren(self, match: re.Match) -> str:
         text = match.group(0)
-        return text.rstrip('\n') + ')\n\n'
+        return text.rstrip("\n") + ")\n\n"
 
     def fix_future_imports(self, content: str) -> str:
         """Fix misplaced __future__ imports."""
-        lines = content.split('\n')
+        lines = content.split("\n")
         fixed_lines = []
 
         for line in lines:
             # Remove __future__ imports that are inside functions/classes
-            if re.match(r'^[ \t]+from __future__ import', line):
+            if re.match(r"^[ \t]+from __future__ import", line):
                 continue  # Skip misplaced future imports
             fixed_lines.append(line)
 
-        return '\n'.join(fixed_lines)
+        return "\n".join(fixed_lines)
 
     def fix_file(self, filepath: Path) -> bool:
         """Attempt to fix syntax errors in a file."""
         try:
-            with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
+            with open(filepath, encoding="utf-8", errors="ignore") as f:
                 original = f.read()
 
             # Apply fixes
@@ -138,14 +146,14 @@ class SyntaxFixer:
 
             # Write back if changed
             if content != original:
-                with open(filepath, 'w', encoding='utf-8') as f:
+                with open(filepath, "w", encoding="utf-8") as f:
                     f.write(content)
                 self.fixed_count += 1
                 return True
 
             return False
 
-        except Exception as e:
+        except Exception:
             self.failed_count += 1
             return False
 
@@ -174,21 +182,21 @@ class SyntaxFixer:
                 failed_files.append((filepath, lineno, error))
 
         # Report
-        print(f"\n[3/3] Fix Report:")
+        print("\n[3/3] Fix Report:")
         print(f"  Fixed: {len(fixed_files)} files")
         print(f"  Failed: {len(failed_files)} files")
 
         if failed_files:
-            print(f"\n  Failed files (need manual fix):")
+            print("\n  Failed files (need manual fix):")
             for f, line, err in failed_files[:10]:
                 print(f"    {f}:{line}")
 
         return {
-            'total_errors': len(errors),
-            'fixed': len(fixed_files),
-            'failed': len(failed_files),
-            'fixed_files': fixed_files,
-            'failed_files': failed_files
+            "total_errors": len(errors),
+            "fixed": len(fixed_files),
+            "failed": len(failed_files),
+            "fixed_files": fixed_files,
+            "failed_files": failed_files,
         }
 
 
@@ -197,11 +205,11 @@ def main():
     results = fixer.run()
 
     # Exit with error code if there are still failed files
-    if results['failed'] > 0:
+    if results["failed"] > 0:
         print(f"\n⚠️ {results['failed']} files still have syntax errors")
         return 1
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     exit(main())

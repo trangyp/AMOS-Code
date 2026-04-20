@@ -64,19 +64,21 @@ Environment Variables:
     IMPORT_ALLOW_UPDATE: Allow updating existing records (default: false)
 """
 
-import io
+from __future__ import annotations
+
 import csv
 import json
 import logging
-from enum import Enum
-from typing import Any, Dict, List, Optional
 from dataclasses import dataclass, field
 from datetime import datetime
+from enum import Enum
 from pathlib import Path
+from typing import Any, Optional
 
 # FastAPI imports
 try:
-    from fastapi import UploadFile, HTTPException, status
+    from fastapi import HTTPException, UploadFile, status
+
     FASTAPI_AVAILABLE = True
 except ImportError:
     FASTAPI_AVAILABLE = False
@@ -86,6 +88,7 @@ except ImportError:
 # Data processing imports
 try:
     import pandas as pd
+
     PANDAS_AVAILABLE = True
 except ImportError:
     PANDAS_AVAILABLE = False
@@ -93,6 +96,7 @@ except ImportError:
 
 try:
     from openpyxl import load_workbook
+
     OPENPYXL_AVAILABLE = True
 except ImportError:
     OPENPYXL_AVAILABLE = False
@@ -100,6 +104,7 @@ except ImportError:
 # Service imports
 try:
     from equation_services import EquationService, get_equation_service
+
     SERVICES_AVAILABLE = True
 except ImportError:
     SERVICES_AVAILABLE = False
@@ -107,6 +112,7 @@ except ImportError:
 # Task queue imports
 try:
     from equation_tasks import celery_app
+
     TASKS_AVAILABLE = True
 except ImportError:
     TASKS_AVAILABLE = False
@@ -114,20 +120,23 @@ except ImportError:
 # Schema imports
 try:
     from equation_schemas import EquationRequestV1, validate_input
+
     SCHEMAS_AVAILABLE = True
 except ImportError:
     SCHEMAS_AVAILABLE = False
 
 # Database imports
 try:
-    from equation_database import get_session, async_session
+    from equation_database import async_session, get_session
+
     DATABASE_AVAILABLE = True
 except ImportError:
     DATABASE_AVAILABLE = False
 
 # Logging imports
 try:
-    from equation_logging import get_logger, audit_log, AuditAction
+    from equation_logging import AuditAction, audit_log, get_logger
+
     LOGGING_AVAILABLE = True
 except ImportError:
     LOGGING_AVAILABLE = False
@@ -139,8 +148,10 @@ logger = logging.getLogger("amos_equation_imports")
 # Enums and Constants
 # ============================================================================
 
+
 class ImportFormat(str, Enum):
     """Supported import formats."""
+
     CSV = "csv"
     EXCEL = "excel"
     JSON = "json"
@@ -149,6 +160,7 @@ class ImportFormat(str, Enum):
 
 class ImportStatus(str, Enum):
     """Import job status."""
+
     PENDING = "pending"
     VALIDATING = "validating"
     PROCESSING = "processing"
@@ -160,6 +172,7 @@ class ImportStatus(str, Enum):
 
 class DuplicateAction(str, Enum):
     """How to handle duplicate records."""
+
     SKIP = "skip"
     UPDATE = "update"
     ERROR = "error"
@@ -175,14 +188,16 @@ IMPORT_PREVIEW_ROWS = 10
 # Data Classes
 # ============================================================================
 
+
 @dataclass
 class FieldMapping:
     """Maps source fields to target fields."""
-    column_mapping: Dict[str, str]  # source_col -> target_field
-    default_values: Dict[str, Any] = field(default_factory=dict)
-    transforms: Dict[str, str] = field(default_factory=dict)  # field -> transform_name
 
-    def map_row(self, row: Dict[str, Any]) -> Dict[str, Any]:
+    column_mapping: dict[str, str]  # source_col -> target_field
+    default_values: dict[str, Any] = field(default_factory=dict)
+    transforms: dict[str, str] = field(default_factory=dict)  # field -> transform_name
+
+    def map_row(self, row: dict[str, Any]) -> dict[str, Any]:
         """Map a source row to target format."""
         result = {}
 
@@ -219,6 +234,7 @@ class FieldMapping:
 @dataclass
 class ValidationError:
     """Row validation error."""
+
     row_number: int
     field: str
     message: str
@@ -228,6 +244,7 @@ class ValidationError:
 @dataclass
 class ImportJob:
     """Import job information."""
+
     id: str
     format: ImportFormat
     entity_type: str
@@ -240,11 +257,11 @@ class ImportJob:
     processed_rows: int = 0
     success_count: int = 0
     error_count: int = 0
-    errors: List[ValidationError] = field(default_factory=list)
-    completed_at: datetime  = None
-    preview_data: List[dict[str, Any]]  = None
+    errors: list[ValidationError] = field(default_factory=list)
+    completed_at: datetime = None
+    preview_data: list[dict[str, Any]] = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "id": self.id,
@@ -264,7 +281,7 @@ class ImportJob:
                 {"row": e.row_number, "field": e.field, "message": e.message}
                 for e in self.errors[:100]  # Limit error details
             ],
-            "preview_data": self.preview_data
+            "preview_data": self.preview_data,
         }
 
     def _get_progress(self) -> float:
@@ -277,17 +294,19 @@ class ImportJob:
 @dataclass
 class ImportResult:
     """Result of import operation."""
+
     success: bool
     imported_count: int
     updated_count: int
     error_count: int
-    errors: List[ValidationError]
-    warnings: List[str]
+    errors: list[ValidationError]
+    warnings: list[str]
 
 
 # ============================================================================
 # File Readers (Strategy Pattern)
 # ============================================================================
+
 
 class BaseFileReader:
     """Base class for file readers."""
@@ -295,7 +314,7 @@ class BaseFileReader:
     def __init__(self, format: ImportFormat):
         self.format = format
 
-    def read(self, file_path: str) -> List[dict[str, Any]]:
+    def read(self, file_path: str) -> list[dict[str, Any]]:
         """Read file and return list of rows."""
         raise NotImplementedError
 
@@ -303,7 +322,7 @@ class BaseFileReader:
         """Read file as iterator for large files."""
         raise NotImplementedError
 
-    def preview(self, file_path: str, rows: int = 10) -> List[dict[str, Any]]:
+    def preview(self, file_path: str, rows: int = 10) -> list[dict[str, Any]]:
         """Preview first N rows."""
         raise NotImplementedError
 
@@ -314,10 +333,10 @@ class CSVFileReader(BaseFileReader):
     def __init__(self):
         super().__init__(ImportFormat.CSV)
 
-    def read(self, file_path: str) -> List[dict[str, Any]]:
+    def read(self, file_path: str) -> list[dict[str, Any]]:
         """Read CSV file."""
         rows = []
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, encoding="utf-8") as f:
             reader = csv.DictReader(f)
             for row in reader:
                 rows.append(dict(row))
@@ -327,15 +346,15 @@ class CSVFileReader(BaseFileReader):
 
     def read_streaming(self, file_path: str):
         """Stream CSV rows."""
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, encoding="utf-8") as f:
             reader = csv.DictReader(f)
             for row in reader:
                 yield dict(row)
 
-    def preview(self, file_path: str, rows: int = 10) -> List[dict[str, Any]]:
+    def preview(self, file_path: str, rows: int = 10) -> list[dict[str, Any]]:
         """Preview CSV rows."""
         result = []
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, encoding="utf-8") as f:
             reader = csv.DictReader(f)
             for i, row in enumerate(reader):
                 if i >= rows:
@@ -350,7 +369,7 @@ class ExcelFileReader(BaseFileReader):
     def __init__(self):
         super().__init__(ImportFormat.EXCEL)
 
-    def read(self, file_path: str, sheet_name: str  = None) -> List[dict[str, Any]]:
+    def read(self, file_path: str, sheet_name: str = None) -> list[dict[str, Any]]:
         """Read Excel file."""
         if not PANDAS_AVAILABLE or not pd:
             raise ImportError("pandas required for Excel import")
@@ -364,7 +383,7 @@ class ExcelFileReader(BaseFileReader):
         # Convert to list of dicts
         return df.replace({pd.NA: None, pd.NaT: None}).to_dict("records")
 
-    def read_streaming(self, file_path: str, sheet_name: str  = None):
+    def read_streaming(self, file_path: str, sheet_name: str = None):
         """Stream Excel rows in chunks."""
         if not PANDAS_AVAILABLE or not pd:
             raise ImportError("pandas required for Excel import")
@@ -378,7 +397,7 @@ class ExcelFileReader(BaseFileReader):
                 file_path,
                 sheet_name=sheet_name or 0,
                 skiprows=range(1, offset + 1) if offset > 0 else None,
-                nrows=chunk_size
+                nrows=chunk_size,
             )
 
             if df.empty:
@@ -392,7 +411,9 @@ class ExcelFileReader(BaseFileReader):
             if offset >= MAX_IMPORT_ROWS:
                 break
 
-    def preview(self, file_path: str, rows: int = 10, sheet_name: str  = None) -> List[dict[str, Any]]:
+    def preview(
+        self, file_path: str, rows: int = 10, sheet_name: str = None
+    ) -> list[dict[str, Any]]:
         """Preview Excel rows."""
         if not PANDAS_AVAILABLE or not pd:
             raise ImportError("pandas required for Excel import")
@@ -400,7 +421,7 @@ class ExcelFileReader(BaseFileReader):
         df = pd.read_excel(file_path, sheet_name=sheet_name or 0, nrows=rows)
         return df.replace({pd.NA: None, pd.NaT: None}).to_dict("records")
 
-    def get_sheets(self, file_path: str) -> List[str]:
+    def get_sheets(self, file_path: str) -> list[str]:
         """Get list of sheet names."""
         if not OPENPYXL_AVAILABLE:
             if not PANDAS_AVAILABLE:
@@ -418,9 +439,9 @@ class JSONFileReader(BaseFileReader):
     def __init__(self):
         super().__init__(ImportFormat.JSON)
 
-    def read(self, file_path: str) -> List[dict[str, Any]]:
+    def read(self, file_path: str) -> list[dict[str, Any]]:
         """Read JSON file."""
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, encoding="utf-8") as f:
             data = json.load(f)
 
         # Handle both single object and array
@@ -431,13 +452,13 @@ class JSONFileReader(BaseFileReader):
 
     def read_streaming(self, file_path: str):
         """Stream JSON Lines file."""
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, encoding="utf-8") as f:
             for line in f:
                 line = line.strip()
                 if line:
                     yield json.loads(line)
 
-    def preview(self, file_path: str, rows: int = 10) -> List[dict[str, Any]]:
+    def preview(self, file_path: str, rows: int = 10) -> list[dict[str, Any]]:
         """Preview JSON rows."""
         data = self.read(file_path)
         return data[:rows]
@@ -447,10 +468,11 @@ class JSONFileReader(BaseFileReader):
 # File Reader Registry
 # ============================================================================
 
+
 class FileReaderRegistry:
     """Registry for file readers."""
 
-    _readers: Dict[ImportFormat, BaseFileReader] = {}
+    _readers: dict[ImportFormat, BaseFileReader] = {}
 
     @classmethod
     def register(cls, format: ImportFormat, reader: BaseFileReader) -> None:
@@ -477,6 +499,7 @@ if PANDAS_AVAILABLE:
 # Validators
 # ============================================================================
 
+
 class RowValidator:
     """Validates import rows."""
 
@@ -484,7 +507,7 @@ class RowValidator:
         self.entity_type = entity_type
         self.required_fields = self._get_required_fields()
 
-    def _get_required_fields(self) -> List[str]:
+    def _get_required_fields(self) -> list[str]:
         """Get required fields for entity type."""
         if self.entity_type == "equations":
             return ["name", "formula"]
@@ -492,19 +515,21 @@ class RowValidator:
             return ["username", "email"]
         return []
 
-    def validate(self, row: Dict[str, Any], row_number: int) -> List[ValidationError]:
+    def validate(self, row: dict[str, Any], row_number: int) -> list[ValidationError]:
         """Validate a single row."""
         errors = []
 
         # Check required fields
         for field in self.required_fields:
             if field not in row or row[field] is None or row[field] == "":
-                errors.append(ValidationError(
-                    row_number=row_number,
-                    field=field,
-                    message=f"Required field '{field}' is missing or empty",
-                    value=row.get(field)
-                ))
+                errors.append(
+                    ValidationError(
+                        row_number=row_number,
+                        field=field,
+                        message=f"Required field '{field}' is missing or empty",
+                        value=row.get(field),
+                    )
+                )
 
         # Type validation
         if self.entity_type == "equations":
@@ -512,19 +537,21 @@ class RowValidator:
 
         return errors
 
-    def _validate_equation(self, row: Dict[str, Any], row_number: int) -> List[ValidationError]:
+    def _validate_equation(self, row: dict[str, Any], row_number: int) -> list[ValidationError]:
         """Validate equation-specific fields."""
         errors = []
 
         # Validate formula length
         formula = row.get("formula", "")
         if formula and len(str(formula)) > 10000:
-            errors.append(ValidationError(
-                row_number=row_number,
-                field="formula",
-                message="Formula exceeds maximum length of 10000 characters",
-                value=formula[:50] + "..."
-            ))
+            errors.append(
+                ValidationError(
+                    row_number=row_number,
+                    field="formula",
+                    message="Formula exceeds maximum length of 10000 characters",
+                    value=formula[:50] + "...",
+                )
+            )
 
         return errors
 
@@ -533,12 +560,13 @@ class RowValidator:
 # Import Manager
 # ============================================================================
 
+
 class ImportManager:
     """Main import manager."""
 
     def __init__(self):
         self.logger = get_logger("imports") if LOGGING_AVAILABLE else logger
-        self._jobs: Dict[str, ImportJob] = {}
+        self._jobs: dict[str, ImportJob] = {}
         self.storage_path = Path("./uploads")
         self.storage_path.mkdir(parents=True, exist_ok=True)
 
@@ -547,8 +575,8 @@ class ImportManager:
         file_path: str,
         format: ImportFormat,
         field_mapping: Optional[FieldMapping] = None,
-        rows: int = IMPORT_PREVIEW_ROWS
-    ) -> List[dict[str, Any]]:
+        rows: int = IMPORT_PREVIEW_ROWS,
+    ) -> list[dict[str, Any]]:
         """Preview import data before processing.
 
         Args:
@@ -577,7 +605,7 @@ class ImportManager:
         field_mapping: Optional[FieldMapping] = None,
         user_id: int = 0,
         duplicate_action: DuplicateAction = DuplicateAction.SKIP,
-        allow_update: bool = False
+        allow_update: bool = False,
     ) -> ImportJob:
         """Start async import job.
 
@@ -613,7 +641,7 @@ class ImportManager:
             user_id=user_id,
             created_at=datetime.now(),
             total_rows=total_rows,
-            preview_data=await self.preview_import(file_path, format, field_mapping)
+            preview_data=await self.preview_import(file_path, format, field_mapping),
         )
 
         self._jobs[job_id] = job
@@ -628,7 +656,7 @@ class ImportManager:
                 field_mapping.column_mapping if field_mapping else {},
                 user_id,
                 duplicate_action.value,
-                allow_update
+                allow_update,
             )
         else:
             # Process synchronously
@@ -638,10 +666,7 @@ class ImportManager:
         return job
 
     async def _process_import(
-        self,
-        job: ImportJob,
-        duplicate_action: DuplicateAction,
-        allow_update: bool
+        self, job: ImportJob, duplicate_action: DuplicateAction, allow_update: bool
     ) -> None:
         """Process import job.
 
@@ -659,7 +684,7 @@ class ImportManager:
 
             # Process in batches
             job.status = ImportStatus.PROCESSING
-            batch: List[dict[str, Any]] = []
+            batch: list[dict[str, Any]] = []
 
             for row_number, row in enumerate(reader.read_streaming(job.file_path), 1):
                 job.processed_rows = row_number
@@ -715,8 +740,8 @@ class ImportManager:
                         "format": job.format.value,
                         "total_rows": job.total_rows,
                         "success": job.success_count,
-                        "errors": job.error_count
-                    }
+                        "errors": job.error_count,
+                    },
                 )
 
             self.logger.info(
@@ -727,19 +752,17 @@ class ImportManager:
         except Exception as e:
             job.status = ImportStatus.FAILED
             job.completed_at = datetime.now()
-            job.errors.append(ValidationError(
-                row_number=0,
-                field=None,
-                message=f"Import failed: {str(e)}"
-            ))
+            job.errors.append(
+                ValidationError(row_number=0, field=None, message=f"Import failed: {str(e)}")
+            )
             self.logger.error(f"Import job {job.id} failed: {e}")
 
     async def _process_batch(
         self,
         job: ImportJob,
-        batch: List[dict[str, Any]],
+        batch: list[dict[str, Any]],
         duplicate_action: DuplicateAction,
-        allow_update: bool
+        allow_update: bool,
     ) -> None:
         """Process a batch of rows.
 
@@ -778,11 +801,7 @@ class ImportManager:
 
                     except Exception as e:
                         job.error_count += 1
-                        job.errors.append(ValidationError(
-                            row_number=0,
-                            field=None,
-                            message=str(e)
-                        ))
+                        job.errors.append(ValidationError(row_number=0, field=None, message=str(e)))
 
         except Exception as e:
             self.logger.error(f"Batch processing error: {e}")
@@ -792,7 +811,7 @@ class ImportManager:
         """Get import job by ID."""
         return self._jobs.get(job_id)
 
-    def get_user_jobs(self, user_id: int) -> List[ImportJob]:
+    def get_user_jobs(self, user_id: int) -> list[ImportJob]:
         """Get all jobs for a user."""
         return [job for job in self._jobs.values() if job.user_id == user_id]
 
@@ -810,6 +829,7 @@ class ImportManager:
 # ============================================================================
 
 if TASKS_AVAILABLE:
+
     @celery_app.task(bind=True, max_retries=3)
     def process_import_task(
         self,
@@ -817,11 +837,11 @@ if TASKS_AVAILABLE:
         format_value: str,
         entity_type: str,
         file_path: str,
-        column_mapping: Dict[str, str],
+        column_mapping: dict[str, str],
         user_id: int,
         duplicate_action_value: str,
-        allow_update: bool
-    ) -> Dict[str, Any]:
+        allow_update: bool,
+    ) -> dict[str, Any]:
         """Process import in background.
 
         Args:
@@ -867,7 +887,7 @@ if TASKS_AVAILABLE:
 # ============================================================================
 
 if FASTAPI_AVAILABLE:
-    from fastapi import APIRouter, Depends, Query, BackgroundTasks, UploadFile, File
+    from fastapi import APIRouter, BackgroundTasks, File, Query, UploadFile
 
     router = APIRouter(prefix="/api/v1/imports", tags=["Imports"])
 
@@ -876,7 +896,7 @@ if FASTAPI_AVAILABLE:
         file: UploadFile = File(...),
         format: ImportFormat = Query(...),
         mapping: str = Query(default="{}"),
-        rows: int = Query(default=10, ge=1, le=100)
+        rows: int = Query(default=10, ge=1, le=100),
     ):
         """Preview import data before processing."""
         # Save uploaded file
@@ -903,7 +923,7 @@ if FASTAPI_AVAILABLE:
         mapping: str = Query(default="{}"),
         duplicate_action: DuplicateAction = Query(default=DuplicateAction.SKIP),
         background_tasks: BackgroundTasks = None,
-        current_user = None
+        current_user=None,
     ):
         """Create new import job."""
         # Save file
@@ -924,14 +944,14 @@ if FASTAPI_AVAILABLE:
             entity_type=entity_type,
             field_mapping=field_mapping,
             user_id=1,  # Would use current_user.id
-            duplicate_action=duplicate_action
+            duplicate_action=duplicate_action,
         )
 
         return {
             "job_id": job.id,
             "status": job.status.value,
             "preview": job.preview_data,
-            "created_at": job.created_at.isoformat()
+            "created_at": job.created_at.isoformat(),
         }
 
     @router.get("/{job_id}")
@@ -958,6 +978,7 @@ if FASTAPI_AVAILABLE:
 # Example Usage
 # ============================================================================
 
+
 async def example_usage():
     """Example usage of import system."""
     print("AMOS Equation Import System")
@@ -981,10 +1002,7 @@ quadratic,x=(-b+sqrt(b^2-4ac))/2a,algebra"""
     # Preview
     manager = ImportManager()
     preview = await manager.preview_import(
-        file_path=file_path,
-        format=ImportFormat.CSV,
-        field_mapping=mapping,
-        rows=3
+        file_path=file_path, format=ImportFormat.CSV, field_mapping=mapping, rows=3
     )
 
     print("\nPreview:")
@@ -996,4 +1014,5 @@ quadratic,x=(-b+sqrt(b^2-4ac))/2a,algebra"""
 
 if __name__ == "__main__":
     import asyncio
+
     asyncio.run(example_usage())

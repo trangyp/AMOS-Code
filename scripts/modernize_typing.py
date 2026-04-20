@@ -6,7 +6,7 @@ Bulk replacement of deprecated typing imports with Python 3.10+ native syntax.
 
 Converts:
 - X  -> X
-- list[X] -> List[X]
+- list[X] -> list[X]
 - dict[X, Y] -> dict[X, Y]
 - set[X] -> set[X]
 - tuple[X, ...] -> tuple[X, ...]
@@ -109,7 +109,7 @@ def modernize_file(filepath: Path, dry_run: bool = False) -> tuple[int, list[str
                         new_imports.append(imp)
 
                 if new_imports:
-                    new_lines.append(f'from typing import {", ".join(new_imports)}')
+                    new_lines.append(f"from typing import {', '.join(new_imports)}")
             else:
                 new_lines.append(line)
 
@@ -166,9 +166,9 @@ def main():
     else:
         results = modernize_directory(args.path, args.dry_run)
 
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print(f"AMOS Typing Modernization {'(DRY RUN)' if args.dry_run else ''}")
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
         print(f"Files processed: {results['files_processed']}")
         print(f"Files {'would be ' if args.dry_run else ''}modified: {results['files_modified']}")
         print(f"Total changes: {results['total_changes']}")

@@ -15,13 +15,12 @@ The monitoring bridge closes the loop from detection → continuous validation.
 
 from __future__ import annotations
 
-
 import logging
 import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 logger = logging.getLogger(__name__)
 

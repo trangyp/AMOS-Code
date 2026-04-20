@@ -5,7 +5,7 @@ import json
 import sys
 import time
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 import requests
 
@@ -19,7 +19,7 @@ class EquationIntegrationTest:
 
     def __init__(self, base_url: str = "http://localhost:8000") -> None:
         self.base_url = base_url
-        self.results: List[dict[str, Any]] = []
+        self.results: list[dict[str, Any]] = []
         self.passed = 0
         self.failed = 0
 
@@ -195,7 +195,7 @@ class EquationIntegrationTest:
             self.log("E2E Workflow", "FAIL", str(e))
             return False
 
-    def run_all_tests(self) -> Dict[str, Any]:
+    def run_all_tests(self) -> dict[str, Any]:
         """Execute complete test suite."""
         print("\n" + "=" * 60)
         print("AMOS Equation System - Integration Test Suite")

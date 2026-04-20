@@ -9,8 +9,8 @@ import os
 import uuid
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from datetime import datetime
-from typing import Any, Dict, List
+from datetime import UTC, datetime
+from typing import Any
 
 import asyncpg
 import redis.asyncio as redis
@@ -20,6 +20,8 @@ from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.security import HTTPBearer
 from pydantic import BaseModel, Field
+
+UTC = UTC
 
 # ============================================
 # CONFIGURATION
@@ -55,12 +57,12 @@ class Database:
         if self.pool:
             await self.pool.close()
 
-    async def fetch_one(self, query: str, *args) -> Dict[str, Any]:
+    async def fetch_one(self, query: str, *args) -> dict[str, Any]:
         async with self.pool.acquire() as conn:
             row = await conn.fetchrow(query, *args)
             return dict(row) if row else None
 
-    async def fetch_many(self, query: str, *args) -> List[dict[str, Any]]:
+    async def fetch_many(self, query: str, *args) -> list[dict[str, Any]]:
         async with self.pool.acquire() as conn:
             rows = await conn.fetch(query, *args)
             return [dict(row) for row in rows]
@@ -258,8 +260,8 @@ class Agent(UUIDModel):
     name: str
     role: str
     description: str = None
-    permitted_tools: List[str] = Field(default_factory=list)
-    forbidden_paths: List[str] = Field(default_factory=list)
+    permitted_tools: list[str] = Field(default_factory=list)
+    forbidden_paths: list[str] = Field(default_factory=list)
     budget_tokens_per_day: int = None
     approval_threshold: str = "risky"
     status: str = "idle"
@@ -275,7 +277,7 @@ class AgentExecution(UUIDModel):
     goal: str
     observation: str = None
     plan: dict = None
-    steps_executed: List[dict] = None
+    steps_executed: list[dict] = None
     status: str = "observing"
     result: dict = None
     evidence_hash: str = None
@@ -345,7 +347,7 @@ class CreateIncidentRequest(BaseModel):
     title: str
     description: str = None
     severity: str
-    affected_service_ids: List[uuid.UUID] = Field(default_factory=list)
+    affected_service_ids: list[uuid.UUID] = Field(default_factory=list)
 
 
 class TriggerAgentRequest(BaseModel):
@@ -372,7 +374,7 @@ class Repository:
     """Data access layer"""
 
     @staticmethod
-    async def create_tenant(data: CreateTenantRequest) -> Dict[str, Any]:
+    async def create_tenant(data: CreateTenantRequest) -> dict[str, Any]:
         query = """
             INSERT INTO tenants (name, slug, plan, settings)
             VALUES ($1, $2, $3, $4)
@@ -381,11 +383,11 @@ class Repository:
         return await db.fetch_one(query, data.name, data.slug, "free", "{}")
 
     @staticmethod
-    async def get_tenant(id: uuid.UUID) -> Dict[str, Any]:
+    async def get_tenant(id: uuid.UUID) -> dict[str, Any]:
         return await db.fetch_one("SELECT * FROM tenants WHERE id = $1", id)
 
     @staticmethod
-    async def create_person(tenant_id: uuid.UUID, data: CreatePersonRequest) -> Dict[str, Any]:
+    async def create_person(tenant_id: uuid.UUID, data: CreatePersonRequest) -> dict[str, Any]:
         query = """
             INSERT INTO people (tenant_id, email, name, avatar_url, timezone, theme)
             VALUES ($1, $2, $3, $4, $5, $6)
@@ -396,13 +398,13 @@ class Repository:
         )
 
     @staticmethod
-    async def get_person(id: uuid.UUID) -> Dict[str, Any]:
+    async def get_person(id: uuid.UUID) -> dict[str, Any]:
         return await db.fetch_one("SELECT * FROM people WHERE id = $1", id)
 
     @staticmethod
     async def list_people(
         tenant_id: uuid.UUID, limit: int = 20, offset: int = 0
-    ) -> List[dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         return await db.fetch_many(
             "SELECT * FROM people WHERE tenant_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3",
             tenant_id,
@@ -413,7 +415,7 @@ class Repository:
     @staticmethod
     async def create_repository(
         tenant_id: uuid.UUID, data: ImportRepositoryRequest
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         # Extract name from URL
         name = data.url.split("/")[-1].replace(".git", "")
         full_name = data.url.split("github.com/")[-1].replace(".git", "")
@@ -429,13 +431,13 @@ class Repository:
         )
 
     @staticmethod
-    async def get_repository(id: uuid.UUID) -> Dict[str, Any]:
+    async def get_repository(id: uuid.UUID) -> dict[str, Any]:
         return await db.fetch_one("SELECT * FROM repositories WHERE id = $1", id)
 
     @staticmethod
     async def list_repositories(
         tenant_id: uuid.UUID, limit: int = 20, offset: int = 0
-    ) -> List[dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         return await db.fetch_many(
             "SELECT * FROM repositories WHERE tenant_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3",
             tenant_id,
@@ -444,7 +446,7 @@ class Repository:
         )
 
     @staticmethod
-    async def create_service(tenant_id: uuid.UUID, data: CreateServiceRequest) -> Dict[str, Any]:
+    async def create_service(tenant_id: uuid.UUID, data: CreateServiceRequest) -> dict[str, Any]:
         query = """
             INSERT INTO services
                 (tenant_id, team_id, repository_id, name, slug, description, service_type, open_issues, open_prs)
@@ -465,13 +467,13 @@ class Repository:
         )
 
     @staticmethod
-    async def get_service(id: uuid.UUID) -> Dict[str, Any]:
+    async def get_service(id: uuid.UUID) -> dict[str, Any]:
         return await db.fetch_one("SELECT * FROM services WHERE id = $1", id)
 
     @staticmethod
     async def list_services(
         tenant_id: uuid.UUID, limit: int = 20, offset: int = 0
-    ) -> List[dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         return await db.fetch_many(
             "SELECT * FROM services WHERE tenant_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3",
             tenant_id,
@@ -482,7 +484,7 @@ class Repository:
     @staticmethod
     async def create_environment(
         tenant_id: uuid.UUID, data: CreateEnvironmentRequest
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         query = """
             INSERT INTO environments
                 (tenant_id, name, slug, environment_type, region, status, require_approval)
@@ -501,13 +503,13 @@ class Repository:
         )
 
     @staticmethod
-    async def get_environment(id: uuid.UUID) -> Dict[str, Any]:
+    async def get_environment(id: uuid.UUID) -> dict[str, Any]:
         return await db.fetch_one("SELECT * FROM environments WHERE id = $1", id)
 
     @staticmethod
     async def create_deployment(
         tenant_id: uuid.UUID, deployed_by_id: uuid.UUID, data: DeployRequest
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         query = """
             INSERT INTO deployments
                 (tenant_id, service_id, environment_id, commit_sha, image, deployed_by_id,
@@ -529,11 +531,11 @@ class Repository:
         )
 
     @staticmethod
-    async def get_deployment(id: uuid.UUID) -> Dict[str, Any]:
+    async def get_deployment(id: uuid.UUID) -> dict[str, Any]:
         return await db.fetch_one("SELECT * FROM deployments WHERE id = $1", id)
 
     @staticmethod
-    async def create_incident(tenant_id: uuid.UUID, data: CreateIncidentRequest) -> Dict[str, Any]:
+    async def create_incident(tenant_id: uuid.UUID, data: CreateIncidentRequest) -> dict[str, Any]:
         query = """
             INSERT INTO incidents
                 (tenant_id, title, description, severity, status, started_at, detected_at,
@@ -556,7 +558,7 @@ class Repository:
         return incident
 
     @staticmethod
-    async def get_incident(id: uuid.UUID) -> Dict[str, Any]:
+    async def get_incident(id: uuid.UUID) -> dict[str, Any]:
         incident = await db.fetch_one("SELECT * FROM incidents WHERE id = $1", id)
         if incident:
             services = await db.fetch_many(
@@ -573,7 +575,7 @@ class Repository:
     @staticmethod
     async def list_incidents(
         tenant_id: uuid.UUID, limit: int = 20, offset: int = 0
-    ) -> List[dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         return await db.fetch_many(
             "SELECT * FROM incidents WHERE tenant_id = $1 ORDER BY started_at DESC LIMIT $2 OFFSET $3",
             tenant_id,
@@ -584,7 +586,7 @@ class Repository:
     @staticmethod
     async def list_alerts(
         tenant_id: uuid.UUID, limit: int = 20, offset: int = 0
-    ) -> List[dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         return await db.fetch_many(
             "SELECT * FROM alerts WHERE tenant_id = $1 ORDER BY first_fired_at DESC LIMIT $2 OFFSET $3",
             tenant_id,
@@ -593,7 +595,7 @@ class Repository:
         )
 
     @staticmethod
-    async def create_agent(tenant_id: uuid.UUID, data: Dict[str, Any]) -> Dict[str, Any]:
+    async def create_agent(tenant_id: uuid.UUID, data: dict[str, Any]) -> dict[str, Any]:
         query = """
             INSERT INTO agents
                 (tenant_id, name, role, description, permitted_tools, forbidden_paths,
@@ -616,13 +618,13 @@ class Repository:
         )
 
     @staticmethod
-    async def get_agent(id: uuid.UUID) -> Dict[str, Any]:
+    async def get_agent(id: uuid.UUID) -> dict[str, Any]:
         return await db.fetch_one("SELECT * FROM agents WHERE id = $1", id)
 
     @staticmethod
     async def list_agents(
         tenant_id: uuid.UUID, limit: int = 20, offset: int = 0
-    ) -> List[dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         return await db.fetch_many(
             "SELECT * FROM agents WHERE tenant_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3",
             tenant_id,
@@ -633,7 +635,7 @@ class Repository:
     @staticmethod
     async def create_agent_execution(
         tenant_id: uuid.UUID, data: TriggerAgentRequest, triggered_by_id: uuid.UUID
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         query = """
             INSERT INTO agent_executions
                 (tenant_id, agent_id, triggered_by_id, goal, status, tokens_used, rollback_available)
@@ -645,13 +647,13 @@ class Repository:
         )
 
     @staticmethod
-    async def get_agent_execution(id: uuid.UUID) -> Dict[str, Any]:
+    async def get_agent_execution(id: uuid.UUID) -> dict[str, Any]:
         return await db.fetch_one("SELECT * FROM agent_executions WHERE id = $1", id)
 
     @staticmethod
     async def create_repo_autopsy_job(
         tenant_id: uuid.UUID, repository_id: uuid.UUID
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         query = """
             INSERT INTO repo_autopsy_jobs (tenant_id, repository_id, status, total_issues, fixable_issues)
             VALUES ($1, $2, $3, $4, $5)
@@ -660,11 +662,11 @@ class Repository:
         return await db.fetch_one(query, tenant_id, repository_id, "pending", 0, 0)
 
     @staticmethod
-    async def get_repo_autopsy_job(id: uuid.UUID) -> Dict[str, Any]:
+    async def get_repo_autopsy_job(id: uuid.UUID) -> dict[str, Any]:
         return await db.fetch_one("SELECT * FROM repo_autopsy_jobs WHERE id = $1", id)
 
     @staticmethod
-    async def update_repo_autopsy_job(id: uuid.UUID, updates: Dict[str, Any]) -> Dict[str, Any]:
+    async def update_repo_autopsy_job(id: uuid.UUID, updates: dict[str, Any]) -> dict[str, Any]:
         # Build dynamic update query
         fields = []
         values = []
@@ -675,7 +677,7 @@ class Repository:
 
         query = f"""
             UPDATE repo_autopsy_jobs
-            SET {', '.join(fields)}, modified_at = NOW()
+            SET {", ".join(fields)}, modified_at = NOW()
             WHERE id = ${len(values)}
             RETURNING *
         """
@@ -693,7 +695,7 @@ class RepoAutopsyEngine:
     """Static analysis engine for repo debugging"""
 
     @staticmethod
-    async def analyze_repository(repository_id: uuid.UUID, tenant_id: uuid.UUID) -> Dict[str, Any]:
+    async def analyze_repository(repository_id: uuid.UUID, tenant_id: uuid.UUID) -> dict[str, Any]:
         """Run full repo autopsy analysis"""
         # Get repository
         repo_data = await repo.get_repository(repository_id)
@@ -709,7 +711,7 @@ class RepoAutopsyEngine:
         return job
 
     @staticmethod
-    async def _run_analysis(job_id: uuid.UUID, repo_data: Dict[str, Any]):
+    async def _run_analysis(job_id: uuid.UUID, repo_data: dict[str, Any]):
         """Background analysis task"""
         try:
             # Update status to running
@@ -805,7 +807,7 @@ class AgentRuntime:
         context: dict,
         triggered_by_id: uuid.UUID,
         tenant_id: uuid.UUID,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Trigger an AI agent to perform work"""
         # Get agent
         agent_data = await repo.get_agent(agent_id)
@@ -895,7 +897,7 @@ class CommandProcessor:
     @staticmethod
     async def execute_command(
         command: str, args: dict, tenant_id: uuid.UUID, user_id: uuid.UUID
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Execute a universal command"""
 
         handlers = {
@@ -914,7 +916,7 @@ class CommandProcessor:
     @staticmethod
     async def _handle_inspect(
         args: dict, tenant_id: uuid.UUID, user_id: uuid.UUID
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Handle /inspect command"""
         object_type = args.get("type")
         object_id = args.get("id")
@@ -941,7 +943,7 @@ class CommandProcessor:
         }
 
     @staticmethod
-    async def _handle_run(args: dict, tenant_id: uuid.UUID, user_id: uuid.UUID) -> Dict[str, Any]:
+    async def _handle_run(args: dict, tenant_id: uuid.UUID, user_id: uuid.UUID) -> dict[str, Any]:
         """Handle /run command"""
         test_type = args.get("type")
         target = args.get("target")
@@ -958,7 +960,7 @@ class CommandProcessor:
     @staticmethod
     async def _handle_explain(
         args: dict, tenant_id: uuid.UUID, user_id: uuid.UUID
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Handle /explain command"""
         target = args.get("target")
 
@@ -970,7 +972,7 @@ class CommandProcessor:
         }
 
     @staticmethod
-    async def _handle_patch(args: dict, tenant_id: uuid.UUID, user_id: uuid.UUID) -> Dict[str, Any]:
+    async def _handle_patch(args: dict, tenant_id: uuid.UUID, user_id: uuid.UUID) -> dict[str, Any]:
         """Handle /patch command"""
         issue_id = args.get("issue_id")
 
@@ -984,7 +986,7 @@ class CommandProcessor:
     @staticmethod
     async def _get_related_objects(
         object_type: str, object_id: str, tenant_id: uuid.UUID
-    ) -> Dict[str, list]:
+    ) -> dict[str, list]:
         """Get related objects from graph"""
         # Simplified - would query Neo4j in production
         return {"depends_on": [], "depended_by": [], "owned_by": [], "monitored_by": []}
@@ -1030,7 +1032,7 @@ app.add_middleware(
 # ============================================
 
 
-async def get_current_user(request: Request) -> Dict[str, Any]:
+async def get_current_user(request: Request) -> dict[str, Any]:
     """Extract current user from JWT (simplified for MVP)"""
     # In production: validate JWT, extract claims
     auth_header = request.headers.get("authorization")

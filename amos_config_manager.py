@@ -5,7 +5,7 @@ import json
 import os
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 
 @dataclass
@@ -15,7 +15,7 @@ class ComponentConfig:
     enabled: bool = True
     priority: int = 50
     timeout_ms: int = 5000
-    custom: Dict[str, Any] = field(default_factory=dict)
+    custom: dict[str, Any] = field(default_factory=dict)
 
 
 class AMOSConfigManager:
@@ -57,8 +57,8 @@ class AMOSConfigManager:
     def __init__(self, config_path: str = None):
         """Initialize configuration manager."""
         self.config_path = Path(config_path) if config_path else None
-        self.config: Dict[str, Any] = {}
-        self.component_configs: Dict[str, ComponentConfig] = {}
+        self.config: dict[str, Any] = {}
+        self.component_configs: dict[str, ComponentConfig] = {}
         self._load_config()
 
     def _load_config(self):
@@ -143,7 +143,7 @@ class AMOSConfigManager:
             with open(save_path, "w") as f:
                 json.dump(self.config, f, indent=2)
 
-    def get_all(self) -> Dict[str, Any]:
+    def get_all(self) -> dict[str, Any]:
         """Get complete configuration."""
         return self.config.copy()
 

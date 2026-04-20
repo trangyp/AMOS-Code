@@ -7,21 +7,20 @@ Live monitoring of agents spawned via Agent Fabric Kernel with:
 - Performance metrics
 """
 
-import asyncio
-import sys
-from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from __future__ import annotations
 
-UTC = timezone.utc
+import asyncio
+from dataclasses import dataclass, field
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Dict, List
+
+UTC = UTC
+from typing import Any
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 # Add repo root to path
 _REPO_ROOT = Path(__file__).parent.parent.parent.resolve()
-sys.path.insert(0, str(_REPO_ROOT))
-
 try:
     from amos_brain.agent_fabric_kernel import get_agent_fabric_kernel
     from amos_brain.facade import BrainClient
@@ -34,7 +33,7 @@ except ImportError:
 router = APIRouter(prefix="/agent-monitor", tags=["Agent Monitor"])
 
 # Active monitoring sessions
-_monitor_sessions: Dict[str, dict[str, Any]] = {}
+_monitor_sessions: dict[str, dict[str, Any]] = {}
 
 
 @dataclass
@@ -55,8 +54,8 @@ class AgentMonitor:
     """Real-time agent monitoring with brain integration."""
 
     def __init__(self):
-        self.subscribers: Dict[str, set[WebSocket]] = {}
-        self.metrics_history: Dict[str, list[AgentMetrics]] = {}
+        self.subscribers: dict[str, set[WebSocket]] = {}
+        self.metrics_history: dict[str, list[AgentMetrics]] = {}
         self._running = False
         self._task: asyncio.Task = None
 
@@ -288,7 +287,7 @@ async def agent_monitor_websocket(websocket: WebSocket, run_id: str):
 
 
 @router.get("/runs/active")
-async def get_active_runs() -> List[dict]:
+async def get_active_runs() -> list[dict]:
     """Get list of currently active agent runs."""
     if not _BRAIN_AVAILABLE:
         return []

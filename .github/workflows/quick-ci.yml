@@ -21,7 +21,7 @@ jobs:
           pip install ruff
 
       - name: Lint check
-        run: ruff check . --output-format=concise || true
+        run: ruff check . --output-format=concise
 
       - name: Success
         run: echo "✅ Quick CI passed"

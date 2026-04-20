@@ -17,11 +17,10 @@ Version: 1.0.0
 
 import sys
 from dataclasses import dataclass
-from datetime import datetime
-from pathlib import Path
-from typing import Any, Dict, List
+from datetime import UTC, datetime
+from typing import Any
 
-sys.path.insert(0, str(Path(__file__).parent))
+UTC = UTC
 
 
 @dataclass
@@ -34,16 +33,16 @@ class WorkflowResult:
     steps_total: int
     output: str
     execution_time_ms: int
-    resources_used: Dict[str, Any]
+    resources_used: dict[str, Any]
 
 
 class AMOSWorkflows:
     """Real-world workflow examples using complete AMOS ecosystem."""
 
     def __init__(self):
-        self.results: List[WorkflowResult] = []
+        self.results: list[WorkflowResult] = []
 
-    def run_all_workflows(self) -> List[WorkflowResult]:
+    def run_all_workflows(self) -> list[WorkflowResult]:
         """Execute all workflow examples."""
         print("\n" + "=" * 70)
         print("AMOS REAL-WORLD WORKFLOWS")

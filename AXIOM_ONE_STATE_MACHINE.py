@@ -1,10 +1,14 @@
+from __future__ import annotations
+
 """AXIOM ONE: Executable State Machine Implementation"""
 
 from collections.abc import AsyncIterator
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from enum import Enum
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any, Optional, Protocol
 
 
 class ObjectState(Enum):
@@ -28,7 +32,7 @@ class Actor:
     id: str
     type: str
     workspace_id: str
-    permissions: List[str] = field(default_factory=list)
+    permissions: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -44,8 +48,8 @@ class AxiomObject:
     state: ObjectState
     criticality: str
     security_class: str
-    relations: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    relations: list[str] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -77,7 +81,7 @@ class ExecutionReceipt:
     completed_at: datetime
     exit_code: int
     stdout: str = ""
-    artifacts: List[str] = field(default_factory=list)
+    artifacts: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -97,8 +101,8 @@ class KernelEngine(Protocol):
 
 class GraphEngine(Protocol):
     async def link(self, source: str, target: str, edge_type: str, actor: Actor) -> Edge: ...
-    async def traverse(self, from_id: str, edge_type: str, depth: int = 1) -> List[Edge]: ...
-    async def blast_radius(self, center_id: str, depth: int = 3) -> List[str]: ...
+    async def traverse(self, from_id: str, edge_type: str, depth: int = 1) -> list[Edge]: ...
+    async def blast_radius(self, center_id: str, depth: int = 3) -> list[str]: ...
 
 
 class ExecutionEngine(Protocol):
@@ -139,7 +143,7 @@ class AxiomStateMachine:
             pass
         return await self.execution.get_receipt(exec_id)
 
-    async def compute_impact(self, object_id: str) -> List[str]:
+    async def compute_impact(self, object_id: str) -> list[str]:
         """QUERY: Compute blast radius."""
         return await self.graph.blast_radius(object_id, depth=3)
 

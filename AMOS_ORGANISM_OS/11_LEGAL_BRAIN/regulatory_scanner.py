@@ -7,10 +7,12 @@ and tracks regulatory changes affecting AMOS operations.
 import json
 import uuid
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timedelta
+from datetime import UTC, datetime
+
+UTC = UTC, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class RegulationType(Enum):
@@ -55,14 +57,14 @@ class Regulation:
     description: str = ""
     effective_date: str = ""
     compliance_deadline: str = None
-    requirements: List[str] = field(default_factory=list)
+    requirements: list[str] = field(default_factory=list)
     impact_level: ImpactLevel = ImpactLevel.MEDIUM
     applicable: bool = True
     notes: str = ""
     source_url: str = ""
     last_updated: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "regulation_type": self.regulation_type.value,
@@ -77,13 +79,13 @@ class ComplianceAssessment:
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     regulation_id: str = ""
     compliance_level: ComplianceLevel = ComplianceLevel.NON_COMPLIANT
-    gaps: List[str] = field(default_factory=list)
-    actions_required: List[str] = field(default_factory=list)
+    gaps: list[str] = field(default_factory=list)
+    actions_required: list[str] = field(default_factory=list)
     assessed_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     assessed_by: str = ""
     next_review: str = ""
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "compliance_level": self.compliance_level.value,
@@ -97,14 +99,14 @@ class RegulatoryScanner:
     alerts on regulatory changes.
     """
 
-    def __init__(self, data_dir: Optional[Path] = None):
+    def __init__(self, data_dir: Path = None):
         if data_dir is None:
             data_dir = Path(__file__).parent / "data"
         self.data_dir = data_dir
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
-        self.regulations: List[Regulation] = []
-        self.assessments: List[ComplianceAssessment] = []
+        self.regulations: list[Regulation] = []
+        self.assessments: list[ComplianceAssessment] = []
 
         self._load_data()
 
@@ -216,7 +218,7 @@ class RegulatoryScanner:
         self.save()
         return regulation
 
-    def get_regulation(self, reg_id: str) -> Optional[Regulation]:
+    def get_regulation(self, reg_id: str) -> Regulation:
         """Get a regulation by ID."""
         for reg in self.regulations:
             if reg.id == reg_id:
@@ -227,9 +229,9 @@ class RegulatoryScanner:
         self,
         regulation_id: str,
         level: ComplianceLevel,
-        gaps: List[str],
-        actions: List[str],
-    ) -> Optional[ComplianceAssessment]:
+        gaps: list[str],
+        actions: list[str],
+    ) -> ComplianceAssessment:
         """Record a compliance assessment."""
         reg = self.get_regulation(regulation_id)
         if not reg:
@@ -249,7 +251,7 @@ class RegulatoryScanner:
         self.save()
         return assessment
 
-    def get_upcoming_deadlines(self, days: int = 30) -> List[dict[str, Any]]:
+    def get_upcoming_deadlines(self, days: int = 30) -> list[dict[str, Any]]:
         """Get regulations with upcoming compliance deadlines."""
         cutoff = (datetime.now(UTC) + timedelta(days=days)).isoformat()
 
@@ -267,7 +269,7 @@ class RegulatoryScanner:
 
         return sorted(upcoming, key=lambda x: x["days_until"])
 
-    def get_compliance_summary(self) -> Dict[str, Any]:
+    def get_compliance_summary(self) -> dict[str, Any]:
         """Get overall compliance summary."""
         by_level = {
             "compliant": 0,
@@ -304,8 +306,8 @@ class RegulatoryScanner:
     def get_applicable_regulations(
         self,
         jurisdiction: str = None,
-        reg_type: Optional[RegulationType] = None,
-    ) -> List[dict[str, Any]]:
+        reg_type: RegulationType = None,
+    ) -> list[dict[str, Any]]:
         """Get applicable regulations."""
         regs = [r for r in self.regulations if r.applicable]
 
@@ -317,7 +319,7 @@ class RegulatoryScanner:
 
         return [r.to_dict() for r in regs]
 
-    def check_action_compliance(self, action_description: str) -> Dict[str, Any]:
+    def check_action_compliance(self, action_description: str) -> dict[str, Any]:
         """Check if an action might violate regulations."""
         risks = []
 
@@ -348,10 +350,10 @@ class RegulatoryScanner:
 
 
 # Global instance
-_SCANNER: Optional[RegulatoryScanner] = None
+_SCANNER: RegulatoryScanner = None
 
 
-def get_regulatory_scanner(data_dir: Optional[Path] = None) -> RegulatoryScanner:
+def get_regulatory_scanner(data_dir: Path = None) -> RegulatoryScanner:
     """Get or create global regulatory scanner."""
     global _SCANNER
     if _SCANNER is None:

@@ -11,6 +11,8 @@ Implements 2025 OpenTelemetry patterns for AI agent observability:
 Component #63 - Observability Layer
 """
 
+from __future__ import annotations
+
 import asyncio
 import json
 import time
@@ -18,7 +20,7 @@ import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any, Optional, Protocol
 
 
 class SpanKind(Enum):
@@ -49,7 +51,7 @@ class SpanContext:
     sampled: bool = True
 
     @classmethod
-    def new(cls, parent: "SpanContext" = None) -> "SpanContext":
+    def new(cls, parent: SpanContext = None) -> SpanContext:
         """Create new span context, optionally with parent."""
         return cls(
             trace_id=parent.trace_id if parent else _generate_trace_id(),
@@ -64,7 +66,7 @@ class SpanContext:
         return f"00-{self.trace_id}-{self.span_id}-{flags}"
 
     @classmethod
-    def from_w3c_header(cls, header: str) -> "SpanContext":
+    def from_w3c_header(cls, header: str) -> SpanContext:
         """Parse from W3C Trace Context header."""
         try:
             parts = header.split("-")
@@ -85,8 +87,8 @@ class Span:
     context: SpanContext
     start_time: float
     end_time: float = None
-    attributes: Dict[str, Any] = field(default_factory=dict)
-    events: List[dict[str, Any]] = field(default_factory=list)
+    attributes: dict[str, Any] = field(default_factory=dict)
+    events: list[dict[str, Any]] = field(default_factory=list)
     status: SpanStatus = SpanStatus.UNSET
     status_message: str = ""
 
@@ -94,11 +96,11 @@ class Span:
 class TelemetryExporter(Protocol):
     """Protocol for telemetry exporters."""
 
-    async def export_spans(self, spans: List[Span]) -> bool:
+    async def export_spans(self, spans: list[Span]) -> bool:
         """Export spans to backend."""
         ...
 
-    async def export_metrics(self, metrics: Dict[str, Any]) -> bool:
+    async def export_metrics(self, metrics: dict[str, Any]) -> bool:
         """Export metrics to backend."""
         ...
 
@@ -108,10 +110,10 @@ class JaegerExporter:
 
     def __init__(self, endpoint: str = "http://localhost:14268/api/traces"):
         self.endpoint = endpoint
-        self._buffer: List[Span] = []
+        self._buffer: list[Span] = []
         self._max_buffer = 100
 
-    async def export_spans(self, spans: List[Span]) -> bool:
+    async def export_spans(self, spans: list[Span]) -> bool:
         """Export spans in Jaeger format."""
         self._buffer.extend(spans)
 
@@ -154,7 +156,7 @@ class JaegerExporter:
         print(f"[JaegerExporter] Flushed {len(self._buffer)} spans")
         self._buffer.clear()
 
-    async def export_metrics(self, metrics: Dict[str, Any]) -> bool:
+    async def export_metrics(self, metrics: dict[str, Any]) -> bool:
         """Export metrics."""
         return True
 
@@ -162,7 +164,7 @@ class JaegerExporter:
 class ConsoleExporter:
     """Simple console exporter for debugging."""
 
-    async def export_spans(self, spans: List[Span]) -> bool:
+    async def export_spans(self, spans: list[Span]) -> bool:
         """Print spans to console."""
         for span in spans:
             duration_ms = ((span.end_time or time.time()) - span.start_time) * 1000
@@ -175,7 +177,7 @@ class ConsoleExporter:
             )
         return True
 
-    async def export_metrics(self, metrics: Dict[str, Any]) -> bool:
+    async def export_metrics(self, metrics: dict[str, Any]) -> bool:
         """Print metrics to console."""
         print(f"[Metrics] {json.dumps(metrics, indent=2)}")
         return True
@@ -194,12 +196,12 @@ class AMOSTelemetryEngine:
 
     def __init__(self, exporter: Optional[TelemetryExporter] = None):
         self.exporter = exporter or ConsoleExporter()
-        self._active_spans: Dict[str, Span] = {}
-        self._finished_spans: List[Span] = []
+        self._active_spans: dict[str, Span] = {}
+        self._finished_spans: list[Span] = []
         self._samplerate = 1.0  # Sample 100% by default
         self._running = False
         self._export_task: asyncio.Task = None
-        self._metrics: Dict[str, Any] = {
+        self._metrics: dict[str, Any] = {
             "spans_created": 0,
             "spans_exported": 0,
             "traces_active": 0,
@@ -230,7 +232,7 @@ class AMOSTelemetryEngine:
         name: str,
         kind: SpanKind = SpanKind.INTERNAL,
         parent_context: Optional[SpanContext] = None,
-        attributes: Dict[str, Any] = None,
+        attributes: dict[str, Any] = None,
     ) -> Span:
         """Start a new span."""
         context = SpanContext.new(parent_context)
@@ -278,7 +280,7 @@ class AMOSTelemetryEngine:
         # Add to finished queue
         self._finished_spans.append(span)
 
-    def add_event(self, span: Span, name: str, attributes: Dict[str, Any] = None) -> None:
+    def add_event(self, span: Span, name: str, attributes: dict[str, Any] = None) -> None:
         """Add an event to a span."""
         span.events.append({"name": name, "timestamp": time.time(), **(attributes or {})})
 
@@ -286,11 +288,11 @@ class AMOSTelemetryEngine:
         """Set an attribute on a span."""
         span.attributes[key] = value
 
-    def inject_context(self, context: SpanContext, carrier: Dict[str, Any]) -> None:
+    def inject_context(self, context: SpanContext, carrier: dict[str, Any]) -> None:
         """Inject trace context into carrier (e.g., event bus message)."""
         carrier["traceparent"] = context.to_w3c_header()
 
-    def extract_context(self, carrier: Dict[str, Any]) -> Optional[SpanContext]:
+    def extract_context(self, carrier: dict[str, Any]) -> Optional[SpanContext]:
         """Extract trace context from carrier."""
         header = carrier.get("traceparent")
         if header:
@@ -325,7 +327,7 @@ class AMOSTelemetryEngine:
             # Re-queue failed spans
             self._finished_spans.extend(spans_to_export)
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """Get telemetry metrics."""
         return {
             **self._metrics,
@@ -333,9 +335,9 @@ class AMOSTelemetryEngine:
             "queued_spans": len(self._finished_spans),
         }
 
-    def get_trace_summary(self) -> Dict[str, Any]:
+    def get_trace_summary(self) -> dict[str, Any]:
         """Get summary of recent traces."""
-        traces: Dict[str, list[Span]] = {}
+        traces: dict[str, list[Span]] = {}
         for span in self._finished_spans[-100:]:
             trace_id = span.context.trace_id
             if trace_id not in traces:
@@ -371,7 +373,7 @@ def _generate_span_id() -> str:
 
 
 # Decorator for automatic span creation
-def traced(name: str = None, kind: SpanKind = SpanKind.INTERNAL, attributes: Dict[str, Any] = None):
+def traced(name: str = None, kind: SpanKind = SpanKind.INTERNAL, attributes: dict[str, Any] = None):
     """Decorator to automatically create spans for function calls."""
 
     def decorator(func: Callable) -> Callable:

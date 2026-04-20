@@ -14,19 +14,17 @@ Architecture: Neural-Symbolic Hybrid
 State-of-the-art: Inspired by LeanDojo, FVEL (NeurIPS 2024), Graph4Code
 """
 
+from __future__ import annotations
+
 import ast
 import hashlib
-import sys
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol
-
-# Add brain module to path
-sys.path.insert(0, str(Path(__file__).parent.parent / "01_BRAIN"))
+from typing import Any, Optional, Protocol
 
 try:
-    from cognitive_equation_layer import CognitiveEquationLayer
+    from AMOS_ORGANISM_OS.BRAIN.cognitive_equation_layer import CognitiveEquationLayer
 
     EQUATIONS_AVAILABLE = True
 except ImportError:
@@ -61,22 +59,22 @@ class VerificationResult:
     category: InvariantCategory
     status: VerificationStatus
     confidence: float  # 0.0 to 1.0
-    evidence: List[str] = field(default_factory=list)
-    violations: List[str] = field(default_factory=list)
-    suggested_fixes: List[str] = field(default_factory=list)
-    equation_refs: List[str] = field(default_factory=list)
+    evidence: list[str] = field(default_factory=list)
+    violations: list[str] = field(default_factory=list)
+    suggested_fixes: list[str] = field(default_factory=list)
+    equation_refs: list[str] = field(default_factory=list)
 
 
 class CodeAnalyzer(Protocol):
     """Protocol for code analysis."""
 
-    def analyze(self, code: str, language: str) -> Dict[str, Any]: ...
+    def analyze(self, code: str, language: str) -> dict[str, Any]: ...
 
 
 class PythonASTAnalyzer:
     """Python code analysis using AST."""
 
-    def analyze(self, code: str, language: str = "python") -> Dict[str, Any]:
+    def analyze(self, code: str, language: str = "python") -> dict[str, Any]:
         """Analyze Python code for patterns."""
         if language != "python":
             return {"error": "Only Python supported"}
@@ -137,10 +135,10 @@ class InvariantVerificationEngine:
     def __init__(self, organism_root: Optional[Path] = None):
         self.organism_root = organism_root or Path(__file__).parent.parent
         self.equation_layer: Optional[CognitiveEquationLayer] = None
-        self.analyzers: Dict[str, CodeAnalyzer] = {
+        self.analyzers: dict[str, CodeAnalyzer] = {
             "python": PythonASTAnalyzer(),
         }
-        self.verification_cache: Dict[str, VerificationResult] = {}
+        self.verification_cache: dict[str, VerificationResult] = {}
 
         if EQUATIONS_AVAILABLE:
             self.equation_layer = CognitiveEquationLayer(self.organism_root)
@@ -150,8 +148,8 @@ class InvariantVerificationEngine:
         self,
         code: str,
         language: str,
-        target_invariants: List[InvariantCategory] = None,
-    ) -> List[VerificationResult]:
+        target_invariants: list[InvariantCategory] = None,
+    ) -> list[VerificationResult]:
         """
         Verify code against formal invariants.
 
@@ -182,7 +180,7 @@ class InvariantVerificationEngine:
         code: str,
         language: str,
         category: InvariantCategory,
-        ast_analysis: Dict[str, Any],
+        ast_analysis: dict[str, Any],
     ) -> VerificationResult:
         """Verify specific invariant category."""
         cache_key = self._hash_code(code + category.value)
@@ -220,8 +218,8 @@ class InvariantVerificationEngine:
         self,
         code: str,
         language: str,
-        ast_analysis: Dict[str, Any],
-        equation_refs: List[str],
+        ast_analysis: dict[str, Any],
+        equation_refs: list[str],
     ) -> VerificationResult:
         """Check memory safety invariants."""
         violations = []
@@ -260,8 +258,8 @@ class InvariantVerificationEngine:
         self,
         code: str,
         language: str,
-        ast_analysis: Dict[str, Any],
-        equation_refs: List[str],
+        ast_analysis: dict[str, Any],
+        equation_refs: list[str],
     ) -> VerificationResult:
         """Check type safety invariants."""
         violations = []
@@ -291,8 +289,8 @@ class InvariantVerificationEngine:
         self,
         code: str,
         language: str,
-        ast_analysis: Dict[str, Any],
-        equation_refs: List[str],
+        ast_analysis: dict[str, Any],
+        equation_refs: list[str],
     ) -> VerificationResult:
         """Check correctness invariants."""
         violations = []
@@ -324,7 +322,7 @@ class InvariantVerificationEngine:
         """Generate cache key for code."""
         return hashlib.md5(code.encode()).hexdigest()[:16]
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get engine status."""
         return {
             "initialized": True,
@@ -332,7 +330,7 @@ class InvariantVerificationEngine:
             "cache_size": len(self.verification_cache),
         }
 
-    def get_verification_report(self, code: str, language: str) -> Dict[str, Any]:
+    def get_verification_report(self, code: str, language: str) -> dict[str, Any]:
         """Generate comprehensive verification report."""
         results = self.verify_code(code, language)
 

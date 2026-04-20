@@ -36,11 +36,12 @@ import asyncio
 import sys
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Optional
 
 
 class ContainerState(Enum):
@@ -80,7 +81,7 @@ class ContainerConfig:
     cpu_limit: str = "1.0"
 
     # Environment
-    environment: Dict[str, str] = field(default_factory=dict)
+    environment: dict[str, str] = field(default_factory=dict)
 
     # Deployment mode
     mode: str = "production"  # development, staging, production
@@ -110,8 +111,8 @@ class ContainerStatus:
     amos_equations: int = 0
 
     # Issues
-    errors: List[str] = field(default_factory=list)
-    logs: List[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
+    logs: list[str] = field(default_factory=list)
 
 
 class AMOSContainerOrchestrator:
@@ -262,7 +263,7 @@ class AMOSContainerOrchestrator:
         print("=" * 70)
         return True
 
-    async def check_container_health(self) -> Dict[str, Any]:
+    async def check_container_health(self) -> dict[str, Any]:
         """Check container and AMOS internal health."""
         # Check Docker health
         result = await self._run_command(
@@ -458,7 +459,7 @@ class AMOSContainerOrchestrator:
                 print(f"Monitor error: {e}")
                 await asyncio.sleep(5)
 
-    async def _run_command(self, cmd: List[str]) -> Tuple[int, str, str]:
+    async def _run_command(self, cmd: list[str]) -> tuple[int, str, str]:
         """Run shell command asynchronously."""
         proc = await asyncio.create_subprocess_exec(
             *cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE

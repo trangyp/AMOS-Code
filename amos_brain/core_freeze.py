@@ -6,10 +6,13 @@ Only core-protected agents can mutate core files.
 Normal agents are denied mutation access.
 """
 
+from __future__ import annotations
+
 import hashlib
 from dataclasses import dataclass
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 from pathlib import Path
 from threading import Lock
 from typing import Any

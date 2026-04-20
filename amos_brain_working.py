@@ -3,13 +3,8 @@
 AMOS Brain WORKING - Properly formats observations for SUCCESS results
 """
 
-import sys
-from pathlib import Path
-
-_AMOS_ROOT = Path(__file__).parent.resolve()
-sys.path.insert(0, str(_AMOS_ROOT / "clawspring" / "amos_brain"))
-
-from amos_kernel_runtime import AMOSKernelRuntime
+# Import from proper package (no sys.path hack needed)
+from clawspring.amos_brain.amos_kernel_runtime import AMOSKernelRuntime
 
 
 class WorkingBrain:

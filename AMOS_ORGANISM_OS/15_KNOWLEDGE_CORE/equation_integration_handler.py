@@ -12,18 +12,19 @@ Subsystem handler integrating ALL equation systems into the primary loop:
 Runs as part of 15_KNOWLEDGE_CORE in the AMOS Master Orchestrator.
 """
 
-import sys
-from pathlib import Path
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
 
-# Add paths for imports
-sys.path.insert(0, str(Path(__file__).parent.parent / "01_BRAIN"))
-sys.path.insert(0, str(Path(__file__).parent.parent / "03_IMMUNE"))
-sys.path.insert(0, str(Path(__file__).parent.parent / "06_MUSCLE"))
-sys.path.insert(0, str(Path(__file__).parent.parent))
+import sys
+from typing import Any, Optional
+
+# Import alias modules to set up paths
+import AMOS_ORGANISM_OS  # noqa: F401
+import BRAIN  # noqa: F401
+import IMMUNE  # noqa: F401
+import MUSCLE  # noqa: F401
 
 try:
-    from AMOS_MASTER_ORCHESTRATOR import CycleResult, SubsystemHandler
+    from AMOS_ORGANISM_OS.AMOS_MASTER_ORCHESTRATOR import CycleResult, SubsystemHandler
 
     ORCHESTRATOR_AVAILABLE = True
 except ImportError:
@@ -51,7 +52,7 @@ class EquationIntegrationHandler:
     Provides unified equation services to all AMOS subsystems.
     """
 
-    def __init__(self, code: str = "15_KNOWLEDGE_CORE", config: Dict[str, Any] = None):
+    def __init__(self, code: str = "15_KNOWLEDGE_CORE", config: dict[str, Any] = None):
         self.code = code
         self.config = config or {}
         self.equation_api: Optional[UnifiedEquationAPI] = None
@@ -69,7 +70,7 @@ class EquationIntegrationHandler:
         self._initialized = True
         return True
 
-    def process(self, context: Dict[str, Any]) -> Any:
+    def process(self, context: dict[str, Any]) -> Any:
         """
         Process cycle - provides equation services to other subsystems.
 
@@ -117,7 +118,7 @@ class EquationIntegrationHandler:
         self,
         domain: str = None,
         language: str = None,
-    ) -> List[dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Query equations across all sources."""
         if not self.equation_api:
             return []
@@ -128,14 +129,14 @@ class EquationIntegrationHandler:
         code: str,
         language: str,
         auto_fix: bool = False,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Full verification and remediation service."""
         if not self.equation_api:
             return {"error": "Equation API not available"}
 
         return self.equation_api.verify_code(code, language)
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get integration status."""
         if self.equation_api:
             return self.equation_api.get_dashboard_data()

@@ -2,25 +2,22 @@
 
 from __future__ import annotations
 
-
-
 import asyncio
 import json
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import List, Optional
 
 
 @dataclass
 class AMOSState:
     """Runtime state for AMOS cognitive execution."""
 
-    active_laws: List[str] = field(default_factory=lambda: ["L1", "L2", "L3", "L4", "L5", "L6"])
+    active_laws: list[str] = field(default_factory=lambda: ["L1", "L2", "L3", "L4", "L5", "L6"])
     reasoning_depth: int = 0
     perspective_checks: int = 0  # Rule of 2 tracking
-    quadrants_checked: List[str] = field(default_factory=list)  # Rule of 4 tracking
-    assumptions_made: List[str] = field(default_factory=list)
+    quadrants_checked: list[str] = field(default_factory=list)  # Rule of 4 tracking
+    assumptions_made: list[str] = field(default_factory=list)
     uncertainty_declared: bool = False
     gap_acknowledged: bool = False
 
@@ -60,6 +57,7 @@ class AMOSRuntime:
 
         Returns:
             AMOSRuntime instance (may use fallback if timeout)
+
         """
         if self._loaded:
             return self
@@ -209,7 +207,7 @@ class AMOSRuntime:
 
         return results
 
-    def _generate_dual_perspectives(self, task: str) -> List[dict]:
+    def _generate_dual_perspectives(self, task: str) -> list[dict]:
         """Generate two structurally opposed interpretations (Rule of 2)."""
         return [
             {
@@ -259,7 +257,7 @@ class AMOSRuntime:
             },
         }
 
-    def _extract_assumptions(self, task: str, context: dict) -> List[str]:
+    def _extract_assumptions(self, task: str, context: dict) -> list[str]:
         """Extract explicit assumptions from task and context."""
         assumptions = [
             "Task description is complete and accurate",
@@ -303,7 +301,7 @@ class AMOSRuntime:
             "creator": self.brain_root.get("creator", {}).get("name", "Trang Phan"),
         }
 
-    def get_law_summary(self) -> List[dict]:
+    def get_law_summary(self) -> list[dict]:
         """Get summary of all 6 global laws."""
         laws = []
         for law_id, law_data in self.global_laws.items():
@@ -328,6 +326,7 @@ def get_runtime() -> AMOSRuntime:
 
     Returns:
         AMOSRuntime instance
+
     """
     global _runtime_instance
     if _runtime_instance is None:
@@ -346,6 +345,7 @@ async def get_runtime_async(timeout_seconds: float = 5.0) -> AMOSRuntime:
 
     Returns:
         AMOSRuntime instance
+
     """
     global _runtime_instance
     if _runtime_instance is None:
@@ -365,7 +365,7 @@ def get_amos_identity() -> dict:
     return get_runtime().get_identity()
 
 
-def get_global_laws() -> List[dict]:
+def get_global_laws() -> list[dict]:
     """Get all 6 global laws."""
     return get_runtime().get_law_summary()
 

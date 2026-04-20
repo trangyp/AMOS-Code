@@ -8,16 +8,8 @@ to use brain for all operations.
 Usage: Import at the start of any Cascade session
 """
 
-import sys
-from pathlib import Path
-
-# Setup paths
-_AMOS_ROOT = Path(__file__).parent.resolve()
-sys.path.insert(0, str(_AMOS_ROOT))
-sys.path.insert(0, str(_AMOS_ROOT / "clawspring" / "amos_brain"))
-
-# Import brain
-from amos_kernel_runtime import AMOSKernelRuntime
+# Import brain from proper package
+from clawspring.amos_brain.amos_kernel_runtime import AMOSKernelRuntime
 
 # Global brain instance
 _kernel = None

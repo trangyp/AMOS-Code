@@ -16,12 +16,14 @@ Author: AMOS System
 Version: 1.0.0
 """
 
+from __future__ import annotations
+
 import json
 import os
 from enum import Enum
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Dict, List, Literal, Optional
+from typing import Any, Literal, Optional
 
 from pydantic import (
     AliasChoices,
@@ -104,9 +106,7 @@ class DatabaseSettings(BaseModel):
             return f"{self.driver.value}:///{self.name}"
 
         password = self.password.get_secret_value()
-        return (
-            f"{self.driver.value}://{self.user}:{password}" f"@{self.host}:{self.port}/{self.name}"
-        )
+        return f"{self.driver.value}://{self.user}:{password}@{self.host}:{self.port}/{self.name}"
 
     @field_validator("ssl_cert", "ssl_key", mode="before")
     @classmethod
@@ -175,22 +175,22 @@ class APISecuritySettings(BaseModel):
     )
 
     # CORS settings
-    cors_origins: List[str] = Field(
+    cors_origins: list[str] = Field(
         default_factory=lambda: ["http://localhost:3000", "http://localhost:8080"],
         description="Allowed CORS origins",
     )
     cors_allow_credentials: bool = Field(default=True, description="Allow CORS credentials")
-    cors_allow_methods: List[str] = Field(
+    cors_allow_methods: list[str] = Field(
         default_factory=lambda: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         description="Allowed CORS methods",
     )
-    cors_allow_headers: List[str] = Field(
+    cors_allow_headers: list[str] = Field(
         default_factory=lambda: ["*"], description="Allowed CORS headers"
     )
 
     @field_validator("cors_origins", mode="before")
     @classmethod
-    def parse_cors_origins(cls, v: Union[str, list[str]]) -> List[str]:
+    def parse_cors_origins(cls, v: str | list[str]) -> list[str]:
         """Parse CORS origins from string or list."""
         if isinstance(v, str):
             return [origin.strip() for origin in v.split(",")]
@@ -448,7 +448,7 @@ class AMOSConfig(BaseSettings):
     # Methods
     # ============================================================================
 
-    def get_config_summary(self) -> Dict[str, Any]:
+    def get_config_summary(self) -> dict[str, Any]:
         """
         Get configuration summary for logging/monitoring.
         Excludes sensitive values.
@@ -552,7 +552,7 @@ def get_config_for_env(env: Environment) -> AMOSConfig:
 # ============================================================================
 
 
-def validate_config(config: Optional[AMOSConfig] = None) -> List[str]:
+def validate_config(config: Optional[AMOSConfig] = None) -> list[str]:
     """
     Validate configuration and return list of issues.
 

@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any
 
 """AMOS Brain API - Production Cognitive API Endpoints
 
@@ -47,7 +47,7 @@ class ReviewCodeResponse(BaseModel):
 class BrainStatsResponse(BaseModel):
     total_queries: int
     success_rate: float
-    mode_usage: Dict[str, int]
+    mode_usage: dict[str, int]
     learning_updates: int
     error_memory_size: int
 
@@ -130,7 +130,7 @@ async def get_stats() -> BrainStatsResponse:
 
 
 @router.post("/think")
-async def think_endpoint(query: str, mode: str = "auto") -> Dict[str, Any]:
+async def think_endpoint(query: str, mode: str = "auto") -> dict[str, Any]:
     """Direct brain thinking endpoint.
 
     Args:

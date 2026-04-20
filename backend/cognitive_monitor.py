@@ -1,4 +1,6 @@
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
+
+from typing import Any, Optional
 
 """AMOS Real-Time Cognitive Monitor
 
@@ -11,17 +13,15 @@ Usage:
 """
 
 import asyncio
-import sys
 import time
 from dataclasses import asdict, dataclass
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from pathlib import Path
 
 # Paths
 _AMOS_ROOT = Path(__file__).parent.parent.resolve()
-sys.path.insert(0, str(_AMOS_ROOT))
-sys.path.insert(0, str(_AMOS_ROOT / "clawspring" / "amos_brain"))
-
 
 from amos_brain_working import think
 
@@ -35,8 +35,8 @@ class BrainStateSnapshot:
     legality: float
     sigma: float
     mode: str
-    active_entities: List[str]
-    active_relations: List[dict[str, Any]]
+    active_entities: list[str]
+    active_relations: list[dict[str, Any]]
     cycle_count: int
 
 
@@ -49,7 +49,7 @@ class CognitiveMetrics:
     avg_legality: float
     avg_sigma: float
     success_rate: float
-    mode_distribution: Dict[str, int]
+    mode_distribution: dict[str, int]
 
 
 class CognitiveMonitor:
@@ -62,8 +62,8 @@ class CognitiveMonitor:
 
     def __init__(self, history_size: int = 1000):
         self.history_size = history_size
-        self._snapshots: List[BrainStateSnapshot] = []
-        self._metrics_history: List[CognitiveMetrics] = []
+        self._snapshots: list[BrainStateSnapshot] = []
+        self._metrics_history: list[CognitiveMetrics] = []
         self._streaming = False
         self._cycle_count = 0
         self._start_time = time.time()
@@ -130,7 +130,7 @@ class CognitiveMonitor:
         success_count = sum(1 for s in recent if s.status == "SUCCESS")
 
         # Mode distribution
-        modes: Dict[str, int] = {}
+        modes: dict[str, int] = {}
         for s in recent:
             modes[s.mode] = modes.get(s.mode, 0) + 1
 
@@ -189,7 +189,7 @@ class CognitiveMonitor:
         """Stop active streaming."""
         self._streaming = False
 
-    def get_trend_analysis(self, minutes: int = 5) -> Dict[str, Any]:
+    def get_trend_analysis(self, minutes: int = 5) -> dict[str, Any]:
         """Analyze trends over specified period."""
         cutoff = time.time() - (minutes * 60)
 
@@ -227,7 +227,7 @@ class CognitiveMonitor:
             "overall_health": self._assess_health(relevant),
         }
 
-    def _count_mode_transitions(self, snapshots: List[BrainStateSnapshot]) -> int:
+    def _count_mode_transitions(self, snapshots: list[BrainStateSnapshot]) -> int:
         """Count number of mode transitions in snapshots."""
         if len(snapshots) < 2:
             return 0
@@ -239,7 +239,7 @@ class CognitiveMonitor:
 
         return transitions
 
-    def _assess_health(self, snapshots: List[BrainStateSnapshot]) -> str:
+    def _assess_health(self, snapshots: list[BrainStateSnapshot]) -> str:
         """Assess overall brain health."""
         if not snapshots:
             return "unknown"
@@ -257,7 +257,7 @@ class CognitiveMonitor:
         else:
             return "healthy"
 
-    def get_summary(self) -> Dict[str, Any]:
+    def get_summary(self) -> dict[str, Any]:
         """Get monitor summary."""
         uptime = time.time() - self._start_time
 

@@ -44,7 +44,7 @@ from collections.abc import AsyncGenerator, Callable
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 try:
     from fastapi import APIRouter, Response
@@ -80,7 +80,7 @@ class ComponentHealth:
     status: HealthStatus
     latency_ms: float
     error: str = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -91,7 +91,7 @@ class HealthReport:
     timestamp: float
     uptime_seconds: float
     version: str
-    components: List[ComponentHealth]
+    components: list[ComponentHealth]
 
 
 class HealthCheckService:
@@ -102,7 +102,7 @@ class HealthCheckService:
         self._startup_complete = False
         self._shutdown_requested = False
         self._shutdown_event = asyncio.Event()
-        self._component_checks: Dict[str, Callable[[], Any]] = {}
+        self._component_checks: dict[str, Callable[[], Any]] = {}
         self._version = "2.1.0"
 
     def register_component(
@@ -136,7 +136,7 @@ class HealthCheckService:
         """Get application uptime in seconds."""
         return time.time() - self._start_time
 
-    async def check_liveness(self) -> Tuple[dict[str, Any], int]:
+    async def check_liveness(self) -> tuple[dict[str, Any], int]:
         """Liveness probe - is the application running?
 
         Returns:
@@ -146,7 +146,7 @@ class HealthCheckService:
         # Unless we're completely stuck
         return {"status": HealthStatus.HEALTHY.value}, 200
 
-    async def check_readiness(self) -> Tuple[dict[str, Any], int]:
+    async def check_readiness(self) -> tuple[dict[str, Any], int]:
         """Readiness probe - is the application ready for traffic?
 
         Returns:
@@ -184,7 +184,7 @@ class HealthCheckService:
 
         return {"status": HealthStatus.HEALTHY.value}, 200
 
-    async def check_startup(self) -> Tuple[dict[str, Any], int]:
+    async def check_startup(self) -> tuple[dict[str, Any], int]:
         """Startup probe - has the application finished starting?
 
         Returns:
@@ -200,7 +200,7 @@ class HealthCheckService:
 
     async def check_deep(self) -> HealthReport:
         """Deep health check with all component statuses."""
-        components: List[ComponentHealth] = []
+        components: list[ComponentHealth] = []
         overall_status = HealthStatus.HEALTHY
 
         for name, check_func in self._component_checks.items():
@@ -401,7 +401,7 @@ if FASTAPI_AVAILABLE and APIRouter is not None:
     health_router = APIRouter(tags=["health"])
 
     @health_router.get("/live")
-    async def liveness_probe(response: Response) -> Dict[str, Any]:
+    async def liveness_probe(response: Response) -> dict[str, Any]:
         """Liveness probe for Kubernetes.
 
         Returns 200 if the application is running.
@@ -412,7 +412,7 @@ if FASTAPI_AVAILABLE and APIRouter is not None:
         return result
 
     @health_router.get("/ready")
-    async def readiness_probe(response: Response) -> Dict[str, Any]:
+    async def readiness_probe(response: Response) -> dict[str, Any]:
         """Readiness probe for Kubernetes.
 
         Returns 200 if ready to receive traffic, 503 if not.
@@ -423,7 +423,7 @@ if FASTAPI_AVAILABLE and APIRouter is not None:
         return result
 
     @health_router.get("/startup")
-    async def startup_probe(response: Response) -> Dict[str, Any]:
+    async def startup_probe(response: Response) -> dict[str, Any]:
         """Startup probe for Kubernetes.
 
         Used for slow-starting containers.
@@ -434,7 +434,7 @@ if FASTAPI_AVAILABLE and APIRouter is not None:
         return result
 
     @health_router.get("/deep")
-    async def deep_health_check() -> Dict[str, Any]:
+    async def deep_health_check() -> dict[str, Any]:
         """Deep health check with component details."""
         if TRACING_AVAILABLE:
             with create_span("health.deep_check") as span:

@@ -9,7 +9,7 @@ from pathlib import Path
 def fix_file(filepath: Path) -> bool:
     """Fix a single file. Returns True if fixed."""
     try:
-        with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
+        with open(filepath, encoding="utf-8", errors="ignore") as f:
             content = f.read()
     except Exception:
         return False
@@ -72,7 +72,7 @@ def main():
             continue
 
         try:
-            with open(py_file, "r", encoding="utf-8", errors="ignore") as f:
+            with open(py_file, encoding="utf-8", errors="ignore") as f:
                 ast.parse(f.read())
         except SyntaxError:
             if fix_file(py_file):

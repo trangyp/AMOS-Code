@@ -10,8 +10,10 @@ Owner: Trang Phan
 Version: 2.0.0
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 try:
     from .superbrain import get_super_brain
@@ -50,7 +52,7 @@ class UBIInput:
     description: str
     context: dict = field(default_factory=dict)
     time_horizon: str = "immediate"
-    constraints: List[str] = field(default_factory=list)
+    constraints: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -59,9 +61,9 @@ class UBIResult:
 
     domain: str
     analysis: dict
-    risk_flags: List[str]
-    design_levers: List[str]
-    safety_notices: List[str]
+    risk_flags: list[str]
+    design_levers: list[str]
+    safety_notices: list[str]
     gap_acknowledgment: str
 
 
@@ -180,7 +182,7 @@ class BEIEngine:
 class AMOSUBIEngine:
     """Unified Biological Intelligence super-engine."""
 
-    DOMAINS: Dict[str, Any] = {
+    DOMAINS: dict[str, Any] = {
         "NBI": NBIEngine,
         "NEI": NEIEngine,
         "SI": SIEngine,
@@ -189,7 +191,7 @@ class AMOSUBIEngine:
 
     def __init__(self):
         self.runtime = get_runtime() if RUNTIME_AVAILABLE else None
-        self._engines: Dict[str, Any] = {}
+        self._engines: dict[str, Any] = {}
         self._brain = None
         if SUPERBRAIN_AVAILABLE:
             try:
@@ -207,7 +209,7 @@ class AMOSUBIEngine:
 
     def calculate_ubi_math(
         self, budget: float, population: int, model: str = "equal"
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Calculate UBI using mathematical framework."""
         per_person = budget / population if population > 0 else 0
 
@@ -238,9 +240,9 @@ class AMOSUBIEngine:
     def analyze(
         self,
         description: str,
-        domains: Optional[List[str]] = None,
+        domains: list[str | None] = None,
         context: dict = None,
-    ) -> Dict[str, UBIResult]:
+    ) -> dict[str, UBIResult]:
         """Run UBI analysis across specified domains with SuperBrain governance."""
         # CANONICAL: Validate UBI analysis via SuperBrain
         if SUPERBRAIN_AVAILABLE and self._brain:
@@ -314,7 +316,7 @@ class AMOSUBIEngine:
 
         return results
 
-    def _extract_risks(self, analysis: dict) -> List[str]:
+    def _extract_risks(self, analysis: dict) -> list[str]:
         """Extract risk flags from analysis."""
         risks = []
         if analysis.get("cognitive_load_profile") == "high":
@@ -395,7 +397,7 @@ class AMOSUBIEngine:
 
 
 # Singleton
-_ubi_engine: Optional[AMOSUBIEngine] = None
+_ubi_engine: AMOSUBIEngine | None = None
 
 
 def get_ubi_engine() -> AMOSUBIEngine:
@@ -407,8 +409,8 @@ def get_ubi_engine() -> AMOSUBIEngine:
 
 
 def analyze_human_factors(
-    description: str, domains: Optional[List[str]] = None
-) -> Dict[str, UBIResult]:
+    description: str, domains: list[str | None] = None
+) -> dict[str, UBIResult]:
     """Quick human factors analysis with UBI alignment."""
     return get_ubi_engine().analyze(description, domains)
 

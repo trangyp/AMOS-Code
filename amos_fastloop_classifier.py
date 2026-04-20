@@ -1,4 +1,6 @@
-from typing import Any, Dict, List, Optional, Tuple
+from __future__ import annotations
+
+from typing import Any, Optional
 
 """
 AMOS FastLoop Interrupt Classifier
@@ -12,8 +14,10 @@ import hashlib
 import re
 import time
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
 from enum import Enum, auto
+
+UTC = UTC
 
 
 class InterruptClass(Enum):
@@ -35,7 +39,7 @@ class ClassificationResult:
     confidence: float  # 0.0 - 1.0
     latency_ms: float
     timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class InterruptClassifier:
@@ -76,9 +80,9 @@ class InterruptClassifier:
 
     def __init__(self, cache_size: int = 10000):
         """Initialize classifier with LRU cache."""
-        self._cache: Dict[str, ClassificationResult] = {}
+        self._cache: dict[str, ClassificationResult] = {}
         self._cache_size = cache_size
-        self._embedding_cache: Dict[str, InterruptClass] = {}
+        self._embedding_cache: dict[str, InterruptClass] = {}
         self._request_count = 0
         self._cache_hits = 0
 
@@ -88,7 +92,7 @@ class InterruptClassifier:
         normalized = request.lower().strip()
         return hashlib.sha256(normalized.encode()).hexdigest()[:16]
 
-    def _check_pattern(self, request: str) -> Tuple[InterruptClass, float]:
+    def _check_pattern(self, request: str) -> tuple[InterruptClass, float]:
         """
         Fast regex-based classification.
         Returns (class, confidence).
@@ -153,11 +157,11 @@ class InterruptClassifier:
 
         return result
 
-    def classify_batch(self, requests: List[str]) -> List[ClassificationResult]:
+    def classify_batch(self, requests: list[str]) -> list[ClassificationResult]:
         """Batch classification for efficiency."""
         return [self.classify(req) for req in requests]
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get classification statistics."""
         return {
             "total_requests": self._request_count,

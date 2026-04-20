@@ -13,14 +13,16 @@ DMC_AMOS = (RK, MC, TC, CC, VK, CK, RR)
 import json
 import re
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
 from enum import Enum, auto
+
+UTC = UTC
 from typing import Any
 
 # ============================================================================
 # SECTION 1: TYPE SYSTEM
 # ============================================================================
+
 
 class SemanticType(Enum):
     """Core semantic types for the meaning graph."""
@@ -39,6 +41,7 @@ class SemanticType(Enum):
     CONFLICT = "conflict"
     PROCESS = "process"
 
+
 class IntentType(Enum):
     """Root intent classification."""
 
@@ -49,6 +52,7 @@ class IntentType(Enum):
     EXECUTION = "execution"
     QUESTION = "question"
     MIXED = "mixed"
+
 
 class EdgeRelation(Enum):
     """Edge relations in the meaning graph."""
@@ -62,6 +66,7 @@ class EdgeRelation(Enum):
     ASKS_ABOUT = "asks_about"
     REQUIRES = "requires"
 
+
 class RenderMode(Enum):
     """Anti-rubbish rendering modes."""
 
@@ -72,6 +77,7 @@ class RenderMode(Enum):
     REFUSAL_PROJECTION = "refusal_projection"
     BOUNDED_TEXT_PROJECTION = "bounded_text_projection"
 
+
 class CommitMode(Enum):
     """Commit kernel modes."""
 
@@ -80,6 +86,7 @@ class CommitMode(Enum):
     CLARIFY = "clarify"
     DEFER = "defer"
     BLOCK = "block"
+
 
 class RubbishBugClass(Enum):
     """Error classes for rubbish detection."""
@@ -96,9 +103,11 @@ class RubbishBugClass(Enum):
         self.code = code
         self.definition = definition
 
+
 # ============================================================================
 # SECTION 2: DATA STRUCTURES
 # ============================================================================
+
 
 @dataclass
 class TypedNode:
@@ -108,8 +117,9 @@ class TypedNode:
     type: SemanticType
     value: Any
     confidence: float = 1.0
-    source_span: Optional[Tuple[int, int]] = None  # Position in input
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    source_span: Tuple[int, int] = None  # Position in input
+    metadata: dict[str, Any] = field(default_factory=dict)
+
 
 @dataclass
 class TypedEdge:
@@ -121,37 +131,41 @@ class TypedEdge:
     confidence: float = 1.0
     weight: float = 1.0
 
+
 @dataclass
 class RootIntent:
     """Root intent classification with confidence."""
 
     type: IntentType
     confidence: float
-    alternative_intents: List[Tuple[IntentType, float]] = field(default_factory=list)
+    alternative_intents: list[Tuple[IntentType, float]] = field(default_factory=list)
+
 
 @dataclass
 class TypedMeaningGraph:
     """The central typed representation - no downstream module consumes raw language after this."""
 
-    nodes: List[TypedNode] = field(default_factory=list)
-    edges: List[TypedEdge] = field(default_factory=list)
-    root_intent: Optional[RootIntent] = None
+    nodes: list[TypedNode] = field(default_factory=list)
+    edges: list[TypedEdge] = field(default_factory=list)
+    root_intent: RootIntent = None
     source_input: str = ""
-    compilation_timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    compilation_timestamp: str = field(
+        default_factory=lambda: datetime.now(timezone.utc).isoformat()
+    )
 
-    def get_nodes_by_type(self, node_type: SemanticType) -> List[TypedNode]:
+    def get_nodes_by_type(self, node_type: SemanticType) -> list[TypedNode]:
         """Get all nodes of a specific type."""
         return [n for n in self.nodes if n.type == node_type]
 
-    def get_outgoing_edges(self, node_id: str) -> List[TypedEdge]:
+    def get_outgoing_edges(self, node_id: str) -> list[TypedEdge]:
         """Get all edges originating from a node."""
         return [e for e in self.edges if e.source == node_id]
 
-    def get_incoming_edges(self, node_id: str) -> List[TypedEdge]:
+    def get_incoming_edges(self, node_id: str) -> list[TypedEdge]:
         """Get all edges targeting a node."""
         return [e for e in self.edges if e.target == node_id]
 
-    def get_conflicts(self) -> List[Tuple[TypedNode, TypedNode]]:
+    def get_conflicts(self) -> list[Tuple[TypedNode, TypedNode]]:
         """Get all conflicting node pairs."""
         conflicts = []
         conflict_edges = [e for e in self.edges if e.relation == EdgeRelation.CONFLICTS_WITH]
@@ -162,11 +176,11 @@ class TypedMeaningGraph:
                 conflicts.append((source, target))
         return conflicts
 
-    def get_ambiguities(self) -> List[TypedNode]:
+    def get_ambiguities(self) -> list[TypedNode]:
         """Get all ambiguity nodes."""
         return self.get_nodes_by_type(SemanticType.AMBIGUITY)
 
-    def get_unbound_requirements(self) -> List[TypedNode]:
+    def get_unbound_requirements(self) -> list[TypedNode]:
         """Get required entities/instructions with no binding."""
         unbound = []
         for node in self.nodes:
@@ -176,22 +190,25 @@ class TypedMeaningGraph:
                     unbound.append(node)
         return unbound
 
+
 @dataclass
 class TypeCheckResult:
     """Result of type checking."""
 
     type_safe: bool
-    errors: List[str] = field(default_factory=list)
-    violations: List[Tuple[TypedNode, str]] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
+    violations: list[Tuple[TypedNode, str]] = field(default_factory=list)
+
 
 @dataclass
 class ConstraintCheckResult:
     """Result of constraint checking."""
 
     preservation_score: float  # 0.0 to 1.0
-    missing_constraints: List[str] = field(default_factory=list)
-    preserved_constraints: List[str] = field(default_factory=list)
-    violations: List[str] = field(default_factory=list)
+    missing_constraints: list[str] = field(default_factory=list)
+    preserved_constraints: list[str] = field(default_factory=list)
+    violations: list[str] = field(default_factory=list)
+
 
 @dataclass
 class VerificationResult:
@@ -205,16 +222,18 @@ class VerificationResult:
     ambiguity_score: float  # 0.0 = no ambiguity, 1.0 = total ambiguity
     conflict_score: float  # 0.0 = no conflict, 1.0 = total conflict
     confidence: float
-    blocking_issues: List[str] = field(default_factory=list)
+    blocking_issues: list[str] = field(default_factory=list)
+
 
 @dataclass
 class CommitResult:
     """Result of commit kernel."""
 
     mode: CommitMode
-    machine_goal: Optional[MachineGoal] = None
+    machine_goal: MachineGoal = None
     reason: str = ""
     safe_to_proceed: bool = False
+
 
 @dataclass
 class MachineGoal:
@@ -222,12 +241,15 @@ class MachineGoal:
 
     goal_type: str  # respond|clarify|plan|design|execute|defer|block
     objective: str
-    constraints: List[str] = field(default_factory=list)
-    required_inputs: List[str] = field(default_factory=list)
-    success_criteria: List[str] = field(default_factory=list)
-    verification_status: Dict[str, Any] = field(default_factory=dict)
-    typed_meaning_graph: Optional[TypedMeaningGraph] = None
-    compilation_timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    constraints: list[str] = field(default_factory=list)
+    required_inputs: list[str] = field(default_factory=list)
+    success_criteria: list[str] = field(default_factory=list)
+    verification_status: dict[str, Any] = field(default_factory=dict)
+    typed_meaning_graph: TypedMeaningGraph = None
+    compilation_timestamp: str = field(
+        default_factory=lambda: datetime.now(timezone.utc).isoformat()
+    )
+
 
 @dataclass
 class AntiRubbishMetrics:
@@ -252,9 +274,11 @@ class AntiRubbishMetrics:
             * self.renderer_drift_rate
         )
 
+
 # ============================================================================
 # SECTION 3: READING KERNEL (RK)
 # ============================================================================
+
 
 class ReadingKernel:
     """Stable reading of input into structured representation."""
@@ -262,7 +286,7 @@ class ReadingKernel:
     def __init__(self):
         self.min_confidence_threshold = 0.3
 
-    def read(self, input_text: str) -> Dict[str, Any]:
+    def read(self, input_text: str) -> dict[str, Any]:
         """
         Perform stable read of input.
 
@@ -288,7 +312,7 @@ class ReadingKernel:
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
-    def _segment_input(self, text: str) -> List[Dict[str, Any]]:
+    def _segment_input(self, text: str) -> list[dict[str, Any]]:
         """Break input into meaningful segments."""
         # Simple segmentation based on sentence boundaries and delimiters
         sentences = re.split(r"(?<=[.!?])\s+|\n+", text)
@@ -359,7 +383,7 @@ class ReadingKernel:
             return 0.85
         return 0.6
 
-    def _extract_entities(self, text: str) -> List[Dict[str, Any]]:
+    def _extract_entities(self, text: str) -> list[dict[str, Any]]:
         """Extract named entities and concepts from text."""
         entities = []
 
@@ -393,7 +417,7 @@ class ReadingKernel:
 
         return entities
 
-    def _extract_relations(self, text: str, entities: List[dict]) -> List[dict]:
+    def _extract_relations(self, text: str, entities: list[dict]) -> list[dict]:
         """Extract relations between entities."""
         relations = []
 
@@ -414,9 +438,11 @@ class ReadingKernel:
 
         return relations
 
+
 # ============================================================================
 # SECTION 4: MEANING COMPILER (MC)
 # ============================================================================
+
 
 class MeaningCompiler:
     """
@@ -434,7 +460,7 @@ class MeaningCompiler:
     def __init__(self):
         self.node_counter = 0
 
-    def compile(self, stable_read: Dict[str, Any]) -> TypedMeaningGraph:
+    def compile(self, stable_read: dict[str, Any]) -> TypedMeaningGraph:
         """
         Compile stable read into typed meaning graph.
 
@@ -471,7 +497,7 @@ class MeaningCompiler:
         self.node_counter += 1
         return f"node_{self.node_counter:04d}"
 
-    def _segment_to_node(self, segment: dict, entities: List[dict]) -> Optional[TypedNode]:
+    def _segment_to_node(self, segment: dict, entities: list[dict]) -> TypedNode:
         """Convert a segment to a typed node."""
         seg_type = segment.get("type", "statement")
         text = segment.get("text", "")
@@ -508,7 +534,7 @@ class MeaningCompiler:
         """Check if entity appears in segment text."""
         return entity["text"] in segment_text
 
-    def _compile_root_intent(self, segments: List[dict]) -> RootIntent:
+    def _compile_root_intent(self, segments: list[dict]) -> RootIntent:
         """Determine root intent from segments."""
         if not segments:
             return RootIntent(type=IntentType.QUESTION, confidence=0.3)
@@ -534,7 +560,7 @@ class MeaningCompiler:
 
         return RootIntent(type=IntentType.REQUEST, confidence=0.5)
 
-    def _build_edges(self, nodes: List[TypedNode]) -> List[TypedEdge]:
+    def _build_edges(self, nodes: list[TypedNode]) -> list[TypedEdge]:
         """Build edges between related nodes."""
         edges = []
 
@@ -674,9 +700,11 @@ class MeaningCompiler:
 
         return len(intersection) / len(union)
 
+
 # ============================================================================
 # SECTION 5: TYPE CHECKER (TC)
 # ============================================================================
+
 
 class TypeChecker:
     """
@@ -828,9 +856,11 @@ class TypeChecker:
         # This would require tracking constraint priority - simplified version
         return [], []
 
+
 # ============================================================================
 # SECTION 6: CONSTRAINT CHECKER (CC)
 # ============================================================================
+
 
 class ConstraintChecker:
     """
@@ -848,10 +878,10 @@ class ConstraintChecker:
     """
 
     def __init__(self):
-        self.active_constraints: List[str] = []
+        self.active_constraints: list[str] = []
 
     def check(
-        self, graph: TypedMeaningGraph, required_constraints: Optional[list[str]] = None
+        self, graph: TypedMeaningGraph, required_constraints: list[str] = None
     ) -> ConstraintCheckResult:
         """
         Check constraint preservation.
@@ -918,8 +948,8 @@ class ConstraintChecker:
         return len(intersection) / len(union)
 
     def _check_inferred_violations(
-        self, graph: TypedMeaningGraph, required: List[str]
-    ) -> List[str]:
+        self, graph: TypedMeaningGraph, required: list[str]
+    ) -> list[str]:
         """Check if inferred content overrides explicit constraints."""
         violations = []
 
@@ -953,9 +983,11 @@ class ConstraintChecker:
 
         return t1_has_neg != t2_has_neg and self._similarity(text1, text2) > 0.5
 
+
 # ============================================================================
 # SECTION 7: VERIFICATION KERNEL (VK)
 # ============================================================================
+
 
 class VerificationKernel:
     """
@@ -987,8 +1019,8 @@ class VerificationKernel:
         graph: TypedMeaningGraph,
         type_result: TypeCheckResult,
         constraint_result: ConstraintCheckResult,
-        governance_state: Optional[Dict[str, Any]] = None,
-        epistemic_state: Optional[Dict[str, Any]] = None,
+        governance_state: dict[str, Any] = None,
+        epistemic_state: dict[str, Any] = None,
     ) -> VerificationResult:
         """
         Verify machine goal adequacy.
@@ -1091,9 +1123,11 @@ class VerificationKernel:
 
         return (avg_node_confidence + structural_score) / 2.0
 
+
 # ============================================================================
 # SECTION 8: COMMIT KERNEL (CK)
 # ============================================================================
+
 
 class CommitKernel:
     """
@@ -1112,7 +1146,7 @@ class CommitKernel:
         self,
         graph: TypedMeaningGraph,
         verification: VerificationResult,
-        governance_state: Optional[Dict[str, Any]] = None,
+        governance_state: dict[str, Any] = None,
     ) -> CommitResult:
         """
         Commit machine goal.
@@ -1291,9 +1325,11 @@ class CommitKernel:
             typed_meaning_graph=graph,
         )
 
+
 # ============================================================================
 # SECTION 9: RESTRICTED RENDERER (RR)
 # ============================================================================
+
 
 class RestrictedRenderer:
     """
@@ -1328,7 +1364,7 @@ class RestrictedRenderer:
         machine_goal: MachineGoal,
         render_mode: RenderMode = RenderMode.JSON_PROJECTION,
         drift_check: bool = True,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Render restricted output.
 
@@ -1501,7 +1537,7 @@ class RestrictedRenderer:
 
     def check_renderer_drift(
         self, rendered_output: Any, machine_goal: MachineGoal
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Check for drift between verified structure and rendered text.
 
@@ -1555,7 +1591,7 @@ class RestrictedRenderer:
 
         return claims
 
-    def _extract_claims(self, text: str) -> List[str]:
+    def _extract_claims(self, text: str) -> list[str]:
         """Extract claims from rendered text."""
         # Simple sentence extraction
         sentences = re.split(r"[.!?]+", text)
@@ -1569,9 +1605,11 @@ class RestrictedRenderer:
                 return True
         return False
 
+
 # ============================================================================
 # SECTION 10: ANTI-RUBBISH STATE MACHINE
 # ============================================================================
+
 
 class AntiRubbishStateMachine:
     """
@@ -1596,7 +1634,7 @@ class AntiRubbishStateMachine:
 
     def __init__(self):
         self.state = self.State.RAW_INPUT
-        self.history: List[tuple[str, str]] = []  # (state, reason)
+        self.history: list[tuple[str, str]] = []  # (state, reason)
 
     def transition(self, to_state: State, reason: str = "") -> bool:
         """Attempt state transition."""
@@ -1640,9 +1678,11 @@ class AntiRubbishStateMachine:
         """Check if processing is blocked."""
         return self.state == self.State.BLOCK
 
+
 # ============================================================================
 # SECTION 11: DETERMINISTIC MEANING COMPILER - MAIN ORCHESTRATOR
 # ============================================================================
+
 
 class DeterministicMeaningCompiler:
     """
@@ -1678,10 +1718,10 @@ class DeterministicMeaningCompiler:
     def process(
         self,
         input_text: str,
-        required_constraints: Optional[List[str]] = None,
-        governance_state: Optional[Dict[str, Any]] = None,
+        required_constraints: list[str] = None,
+        governance_state: dict[str, Any] = None,
         render_mode: RenderMode = RenderMode.JSON_PROJECTION,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Process input through the full deterministic meaning compiler pipeline.
 
@@ -1868,15 +1908,17 @@ class DeterministicMeaningCompiler:
         """Get current anti-rubbish metrics."""
         return self.metrics
 
+
 # ============================================================================
 # SECTION 12: CONVENIENCE FUNCTIONS
 # ============================================================================
 
+
 def compile_input(
     input_text: str,
-    required_constraints: Optional[list[str]] = None,
+    required_constraints: list[str] = None,
     render_mode: RenderMode = RenderMode.JSON_PROJECTION,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Convenience function to process input through the deterministic meaning compiler.
 
@@ -1887,11 +1929,12 @@ def compile_input(
     compiler = DeterministicMeaningCompiler()
     return compiler.process(input_text, required_constraints, render_mode=render_mode)
 
+
 def compile_with_clarification(
     input_text: str,
-    clarification_response: Optional[str] = None,
-    previous_context: Optional[Dict[str, Any]] = None,
-) -> Dict[str, Any]:
+    clarification_response: str = None,
+    previous_context: dict[str, Any] = None,
+) -> dict[str, Any]:
     """
     Compile with support for multi-turn clarification.
 
@@ -1922,6 +1965,7 @@ def compile_with_clarification(
         result["required_constraints"] = required_constraints or []
 
     return result
+
 
 # ============================================================================
 # SECTION 13: EXPORTS

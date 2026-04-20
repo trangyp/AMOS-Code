@@ -9,31 +9,30 @@ Provides analytics capabilities:
 - Learning progress analytics
 """
 
+from __future__ import annotations
 
 import asyncio
 import sys
 from collections import defaultdict
 from collections.abc import AsyncIterator
-from datetime import datetime, timezone
-
-UTC = timezone.utc, timedelta
+from datetime import datetime, timezone, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from fastapi import APIRouter, Query
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
+UTC = timezone.utc
+
 # Setup paths
 AMOS_ROOT = Path(__file__).parent.parent.parent.resolve()
 for p in [AMOS_ROOT, AMOS_ROOT / "amos_brain"]:
     if str(p) not in sys.path:
-        sys.path.insert(0, str(p))
 
 # Import brain components
 try:
-
     from cognitive_engine import get_cognitive_engine
 
     from memory import BrainMemory
@@ -72,7 +71,7 @@ class MetricPoint(BaseModel):
     timestamp: datetime
     value: float
     metric_name: str
-    labels: Dict[str, str] = Field(default_factory=dict)
+    labels: dict[str, str] = Field(default_factory=dict)
 
 
 class MetricSeries(BaseModel):
@@ -81,7 +80,7 @@ class MetricSeries(BaseModel):
     metric_name: str
     metric_type: MetricType
     unit: str
-    data_points: List[MetricPoint]
+    data_points: list[MetricPoint]
     aggregation: str = "avg"
     min_value: float = 0.0
     max_value: float = 0.0
@@ -105,8 +104,8 @@ class MemoryMetrics(BaseModel):
 
     total_entries: int
     memory_usage_mb: float
-    entries_by_type: Dict[str, int]
-    oldest_entry: Optional[datetime] = None
+    entries_by_type:dict[str, int]
+    oldest_entry: Optional[datetime] =None
     newest_entry: Optional[datetime] = None
     retention_rate: float
     access_frequency: float
@@ -130,7 +129,7 @@ class LearningMetrics(BaseModel):
     completed_jobs: int
     failed_jobs: int
     avg_training_time_hours: float
-    model_accuracy_trend: List[float]
+    model_accuracy_trend: list[float]
     convergence_rate: float
 
 
@@ -143,7 +142,7 @@ class AnalyticsDashboard(BaseModel):
     decision: DecisionMetrics
     learning: LearningMetrics
     system_health: str
-    alerts: List[dict[str, Any]]
+    alerts: list[dict[str, Any]]
 
 
 class AnalyticsEngine:
@@ -152,7 +151,7 @@ class AnalyticsEngine:
     def __init__(self) -> None:
         self._cognitive_engine = None
         self._memory = None
-        self._metrics_cache: Dict[str, list[MetricPoint]] = defaultdict(list)
+        self._metrics_cache: dict[str, list[MetricPoint]] = defaultdict(list)
         self._lock = asyncio.Lock()
 
     async def _get_cognitive_engine(self) -> Any:
@@ -198,7 +197,7 @@ class AnalyticsEngine:
         memory = await self._get_memory()
 
         entries = 0
-        entries_by_type: Dict[str, int] = {}
+        entries_by_type: dict[str, int] = {}
         oldest = None
         newest = None
 
@@ -273,7 +272,7 @@ class AnalyticsEngine:
             health = "critical"
 
         # Generate alerts
-        alerts: List[dict[str, Any]] = []
+        alerts: list[dict[str, Any]] = []
         if cognitive.cognitive_load > 0.8:
             alerts.append(
                 {
@@ -305,7 +304,7 @@ class AnalyticsEngine:
 
     async def get_metric_series(
         self, metric_type: MetricType, time_range: TimeRange
-    ) -> List[MetricSeries]:
+    ) -> list[MetricSeries]:
         """Get metric time series."""
         # Calculate number of points based on time range
         points_map = {
@@ -319,7 +318,7 @@ class AnalyticsEngine:
 
         # Generate time series
         now = datetime.now(UTC)
-        series_list: List[MetricSeries] = []
+        series_list: list[MetricSeries] = []
 
         if metric_type == MetricType.COGNITIVE:
             # Response time series
@@ -378,10 +377,10 @@ class AnalyticsEngine:
 
         return series_list
 
-    async def get_top_queries(self, limit: int = 10) -> List[dict[str, Any]]:
+    async def get_top_queries(self, limit: int = 10) -> list[dict[str, Any]]:
         """Get most frequent queries."""
         memory = await self._get_memory()
-        queries: Dict[str, int] = {}
+        queries: dict[str, int] = {}
 
         if memory and hasattr(memory, "_local_cache"):
             for entry in memory._local_cache.values():
@@ -397,7 +396,7 @@ class AnalyticsEngine:
             for i, (q, c) in enumerate(sorted_queries[:limit])
         ]
 
-    async def get_performance_trends(self, days: int = 7) -> Dict[str, Any]:
+    async def get_performance_trends(self, days: int = 7) -> dict[str, Any]:
         """Get performance trends over time."""
         trends = {
             "period_days": days,
@@ -423,7 +422,7 @@ class AnalyticsEngine:
             await asyncio.sleep(5.0)
 
 
-# Global engine
+#Global engine
 _analytics_engine: Optional[AnalyticsEngine] = None
 
 
@@ -473,21 +472,21 @@ async def get_learning_metrics() -> LearningMetrics:
 @router.get("/series/{metric_type}", response_model=list[MetricSeries])
 async def get_metric_series(
     metric_type: MetricType, time_range: TimeRange = Query(default=TimeRange.DAY)
-) -> List[MetricSeries]:
+) -> list[MetricSeries]:
     """Get metric time series."""
     engine = get_analytics_engine()
     return await engine.get_metric_series(metric_type, time_range)
 
 
 @router.get("/top-queries")
-async def get_top_queries(limit: int = Query(default=10, ge=1, le=100)) -> List[dict[str, Any]]:
+async def get_top_queries(limit: int = Query(default=10, ge=1, le=100)) -> list[dict[str, Any]]:
     """Get most frequent queries."""
     engine = get_analytics_engine()
     return await engine.get_top_queries(limit)
 
 
 @router.get("/trends")
-async def get_performance_trends(days: int = Query(default=7, ge=1, le=90)) -> Dict[str, Any]:
+async def get_performance_trends(days: int = Query(default=7, ge=1, le=90)) -> dict[str, Any]:
     """Get performance trends over time."""
     engine = get_analytics_engine()
     return await engine.get_performance_trends(days)
@@ -506,7 +505,7 @@ async def stream_analytics() -> StreamingResponse:
 
 
 @router.get("/health")
-async def health_check() -> Dict[str, Any]:
+async def health_check() -> dict[str, Any]:
     """Health check for analytics engine."""
     engine = get_analytics_engine()
     dashboard = await engine.get_dashboard()

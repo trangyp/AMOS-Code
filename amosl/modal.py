@@ -11,7 +11,7 @@ import math
 from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum, auto
-from typing import Any, Dict, List
+from typing import Any
 
 
 class TruthValue(Enum):
@@ -34,7 +34,7 @@ class StratifiedTruth:
     context: str = None
     lower_bound: float = None
     upper_bound: float = None
-    metadata: Dict[str, Any] = None
+    metadata: dict[str, Any] = None
 
     def __post_init__(self):
         if self.metadata is None:
@@ -78,11 +78,11 @@ class ModalLogic:
     """Modal logic operations for AMOSL."""
 
     def __init__(self):
-        self.futures: List[Callable[[], StratifiedTruth]] = []
-        self.observations: Dict[str, Any] = {}
+        self.futures: list[Callable[[], StratifiedTruth]] = []
+        self.observations: dict[str, Any] = {}
 
     def necessity(
-        self, predicate: Callable[[Any], StratifiedTruth], domain: List[Any]
+        self, predicate: Callable[[Any], StratifiedTruth], domain: list[Any]
     ) -> StratifiedTruth:
         """□P(x) := P(x) holds in all admissible futures.
 
@@ -108,7 +108,7 @@ class ModalLogic:
         return StratifiedTruth(TruthValue.PROBABILISTIC, probability=avg_confidence)
 
     def possibility(
-        self, predicate: Callable[[Any], StratifiedTruth], domain: List[Any]
+        self, predicate: Callable[[Any], StratifiedTruth], domain: list[Any]
     ) -> StratifiedTruth:
         """◇P(x) := exists admissible future where P holds.
 
@@ -250,7 +250,7 @@ class AdmissibilityLogic:
 
     def __init__(self, modal_logic: ModalLogic):
         self.modal = modal_logic
-        self.constraints: List[Callable[[Any], StratifiedTruth]] = []
+        self.constraints: list[Callable[[Any], StratifiedTruth]] = []
 
     def add_constraint(self, constraint: Callable[[Any], StratifiedTruth]):
         """Add hard constraint."""
@@ -274,7 +274,7 @@ class AdmissibilityLogic:
 
         return combined
 
-    def necessity_of_commitment(self, state: Any, future_states: List[Any]) -> StratifiedTruth:
+    def necessity_of_commitment(self, state: Any, future_states: list[Any]) -> StratifiedTruth:
         """Check necessity of Commit(x') → Valid(x') = 1.
 
         □(Commit → Valid)
@@ -292,7 +292,7 @@ class AdmissibilityLogic:
 
         return self.modal.necessity(implies_valid, future_states)
 
-    def possibility_of_explanation(self, ledger: List[Any], outcome: Any) -> StratifiedTruth:
+    def possibility_of_explanation(self, ledger: list[Any], outcome: Any) -> StratifiedTruth:
         """Check possibility of Explain(L) = Outcome.
 
         ◇(Explain(L) = Outcome)

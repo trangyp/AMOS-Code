@@ -7,19 +7,16 @@ Uses amos_brain_working.think() to:
 - Learn from healing outcomes
 """
 
-import sys
-from datetime import datetime, timezone
-
-UTC = timezone.utc
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
+
+UTC = UTC
 
 from fastapi import APIRouter
 from pydantic import BaseModel
 
 _AMOS_ROOT = Path(__file__).parent.parent.parent.resolve()
-sys.path.insert(0, str(_AMOS_ROOT / "clawspring" / "amos_brain"))
-
 from amos_brain_working import think as brain_think
 
 router = APIRouter(prefix="/brain-auto-heal", tags=["brain-auto-heal"])
@@ -31,7 +28,7 @@ class AutoHealRequest(BaseModel):
     file_path: str
     code: str
     issue_type: str = "auto_detect"
-    context: Dict[str, Any] = {}
+    context: dict[str, Any] = {}
 
 
 class HealPrescription(BaseModel):
@@ -55,7 +52,7 @@ class AutoHealResult(BaseModel):
     brain_status: str
     brain_confidence: float
     issues_found: int
-    prescriptions: List[HealPrescription]
+    prescriptions: list[HealPrescription]
     applied_fixes: int
     healing_report: str
 
@@ -137,7 +134,7 @@ Generate healing prescriptions:
 
 
 @router.post("/apply-heal")
-async def apply_heal(heal_id: str, prescription_id: str) -> Dict[str, Any]:
+async def apply_heal(heal_id: str, prescription_id: str) -> dict[str, Any]:
     """Apply a specific healing prescription."""
     # REAL BRAIN USAGE - Validate fix before applying
     validate_input = f"Validate healing prescription {prescription_id} for safety"
@@ -160,7 +157,7 @@ async def apply_heal(heal_id: str, prescription_id: str) -> Dict[str, Any]:
 
 
 @router.get("/healing-history/{file_path:path}")
-async def healing_history(file_path: str) -> Dict[str, Any]:
+async def healing_history(file_path: str) -> dict[str, Any]:
     """Get healing history for a file using brain memory."""
     # REAL BRAIN USAGE - Query healing patterns
     memory_input = f"Query healing history for {file_path}"
@@ -178,7 +175,7 @@ async def healing_history(file_path: str) -> Dict[str, Any]:
 
 
 @router.get("/brain-heal-status")
-async def brain_heal_status() -> Dict[str, Any]:
+async def brain_heal_status() -> dict[str, Any]:
     """Get brain auto-heal system status."""
     # REAL BRAIN USAGE - System health check
     health_result = brain_think("Auto-heal system health check", {"check": True})

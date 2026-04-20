@@ -95,16 +95,18 @@ Author: AMOS AutoML Team
 Version: 25.0.0
 """
 
+from __future__ import annotations
 
 import random
 import time
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Optional
 
 
 class OptimizationStrategy(Enum):
     """Hyperparameter optimization strategies."""
+
     RANDOM = auto()
     GRID = auto()
     BAYESIAN = auto()
@@ -114,16 +116,18 @@ class OptimizationStrategy(Enum):
 
 class LearningMode(Enum):
     """Modes for continuous learning."""
-    BATCH = auto()      # Traditional batch retraining
-    ONLINE = auto()     # Incremental online updates
+
+    BATCH = auto()  # Traditional batch retraining
+    ONLINE = auto()  # Incremental online updates
     CONTINUAL = auto()  # Continual learning with replay buffer
-    META = auto()       # Meta-learning (MAML-style)
+    META = auto()  # Meta-learning (MAML-style)
 
 
 class DriftType(Enum):
     """Types of performance drift."""
-    CONCEPT_DRIFT = auto()      # Underlying concept changed
-    DATA_DRIFT = auto()         # Input distribution changed
+
+    CONCEPT_DRIFT = auto()  # Underlying concept changed
+    DATA_DRIFT = auto()  # Input distribution changed
     PERFORMANCE_DRIFT = auto()  # Model performance degraded
     NO_DRIFT = auto()
 
@@ -131,8 +135,9 @@ class DriftType(Enum):
 @dataclass
 class HyperparameterConfig:
     """Configuration for hyperparameter optimization."""
+
     config_id: str
-    parameters: Dict[str, Any]
+    parameters: dict[str, Any]
     performance_score: float = 0.0
     compute_cost: float = 0.0
     latency_ms: float = 0.0
@@ -143,8 +148,9 @@ class HyperparameterConfig:
 @dataclass
 class ArchitectureCandidate:
     """Neural architecture candidate for NAS."""
+
     arch_id: str
-    architecture: Dict[str, Any]
+    architecture: dict[str, Any]
     num_parameters: int = 0
     fLOPs: float = 0.0
     accuracy: float = 0.0
@@ -155,23 +161,25 @@ class ArchitectureCandidate:
 @dataclass
 class LearningEpisode:
     """Single learning episode for online/meta-learning."""
+
     episode_id: str
     timestamp: float
     equation_type: str
-    inputs: Dict[str, Any]
-    outputs: Dict[str, Any]
+    inputs: dict[str, Any]
+    outputs: dict[str, Any]
     feedback_score: float  # 0.0 to 1.0
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
 class ABTestVariant:
     """A/B test variant configuration."""
+
     variant_id: str
     name: str
-    configuration: Dict[str, Any]
+    configuration: dict[str, Any]
     traffic_percentage: float = 0.5
-    metrics: Dict[str, float] = field(default_factory=dict)
+    metrics: dict[str, float] = field(default_factory=dict)
 
 
 class AMOSContinuousLearning:
@@ -185,34 +193,30 @@ class AMOSContinuousLearning:
     - Statistical A/B testing
     """
 
-    def __init__(
-        self,
-        optimization_budget: int = 1000,
-        drift_threshold: float = 0.1
-    ):
+    def __init__(self, optimization_budget: int = 1000, drift_threshold: float = 0.1):
         self.optimization_budget = optimization_budget
         self.drift_threshold = drift_threshold
 
         # Hyperparameter optimization state
-        self.hp_candidates: List[HyperparameterConfig] = []
+        self.hp_candidates: list[HyperparameterConfig] = []
         self.best_hp_config: Optional[HyperparameterConfig] = None
 
         # NAS state
-        self.architecture_candidates: List[ArchitectureCandidate] = []
-        self.pareto_frontier: List[ArchitectureCandidate] = []
+        self.architecture_candidates: list[ArchitectureCandidate] = []
+        self.pareto_frontier: list[ArchitectureCandidate] = []
 
         # Online learning state
-        self.learning_episodes: List[LearningEpisode] = []
-        self.experience_buffer: List[LearningEpisode] = []
-        self.drift_history: List[dict[str, Any]] = []
+        self.learning_episodes: list[LearningEpisode] = []
+        self.experience_buffer: list[LearningEpisode] = []
+        self.drift_history: list[dict[str, Any]] = []
 
         # A/B testing state
-        self.active_tests: Dict[str, list[ABTestVariant]] = {}
-        self.test_results: Dict[str, dict[str, Any]] = {}
+        self.active_tests: dict[str, list[ABTestVariant]] = {}
+        self.test_results: dict[str, dict[str, Any]] = {}
 
         # Meta-learning state
-        self.meta_model: Dict[str, Any] = {}
-        self.adaptation_history: List[dict[str, Any]] = []
+        self.meta_model: dict[str, Any] = {}
+        self.adaptation_history: list[dict[str, Any]] = []
 
         # Statistics
         self.total_optimizations: int = 0
@@ -222,11 +226,11 @@ class AMOSContinuousLearning:
     def optimize_hyperparameters(
         self,
         model: str,
-        search_space: Dict[str, list[Any]],
+        search_space: dict[str, list[Any]],
         strategy: OptimizationStrategy = OptimizationStrategy.BAYESIAN,
         max_iterations: int = 50,
-        objectives: List[str] = ["accuracy"]
-    ) -> Dict[str, Any]:
+        objectives: list[str] = ["accuracy"],
+    ) -> dict[str, Any]:
         """
         Optimize hyperparameters using specified strategy.
 
@@ -264,32 +268,22 @@ class AMOSContinuousLearning:
             "performance": best.performance_score,
             "strategy": strategy.name,
             "iterations": len(candidates),
-            "exploration_efficiency": best.performance_score / max_iterations
+            "exploration_efficiency": best.performance_score / max_iterations,
         }
 
     def _random_search(
-        self,
-        search_space: Dict[str, list[Any]],
-        n_iter: int
-    ) -> List[HyperparameterConfig]:
+        self, search_space: dict[str, list[Any]], n_iter: int
+    ) -> list[HyperparameterConfig]:
         """Random search for hyperparameters."""
         candidates = []
         for i in range(n_iter):
-            params = {
-                key: random.choice(values)
-                for key, values in search_space.items()
-            }
-            candidates.append(HyperparameterConfig(
-                config_id=f"random_{i}",
-                parameters=params
-            ))
+            params = {key: random.choice(values) for key, values in search_space.items()}
+            candidates.append(HyperparameterConfig(config_id=f"random_{i}", parameters=params))
         return candidates
 
     def _grid_search(
-        self,
-        search_space: Dict[str, list[Any]],
-        max_iter: int
-    ) -> List[HyperparameterConfig]:
+        self, search_space: dict[str, list[Any]], max_iter: int
+    ) -> list[HyperparameterConfig]:
         """Grid search (sampled if space is too large)."""
 
         keys = list(search_space.keys())
@@ -304,17 +298,12 @@ class AMOSContinuousLearning:
         candidates = []
         for i, combo in enumerate(all_combinations[:max_iter]):
             params = dict(zip(keys, combo))
-            candidates.append(HyperparameterConfig(
-                config_id=f"grid_{i}",
-                parameters=params
-            ))
+            candidates.append(HyperparameterConfig(config_id=f"grid_{i}", parameters=params))
         return candidates
 
     def _bayesian_optimization(
-        self,
-        search_space: Dict[str, list[Any]],
-        n_iter: int
-    ) -> List[HyperparameterConfig]:
+        self, search_space: dict[str, list[Any]], n_iter: int
+    ) -> list[HyperparameterConfig]:
         """
         Bayesian optimization with Gaussian Process surrogate.
 
@@ -325,14 +314,8 @@ class AMOSContinuousLearning:
 
         # Initial random sample
         for i in range(min(5, n_iter)):
-            params = {
-                key: random.choice(values)
-                for key, values in search_space.items()
-            }
-            candidate = HyperparameterConfig(
-                config_id=f"bayes_{i}",
-                parameters=params
-            )
+            params = {key: random.choice(values) for key, values in search_space.items()}
+            candidate = HyperparameterConfig(config_id=f"bayes_{i}", parameters=params)
             # Evaluate
             score = self._simulate_evaluation(params)
             candidate.performance_score = score
@@ -350,10 +333,7 @@ class AMOSContinuousLearning:
             # Perturb best configuration
             params = self._perturb_config(best_so_far[0], search_space)
 
-            candidate = HyperparameterConfig(
-                config_id=f"bayes_{i}",
-                parameters=params
-            )
+            candidate = HyperparameterConfig(config_id=f"bayes_{i}", parameters=params)
             score = self._simulate_evaluation(params)
             candidate.performance_score = score
             observed_scores.append((params, score))
@@ -362,10 +342,8 @@ class AMOSContinuousLearning:
         return candidates
 
     def _evolutionary_search(
-        self,
-        search_space: Dict[str, list[Any]],
-        n_iter: int
-    ) -> List[HyperparameterConfig]:
+        self, search_space: dict[str, list[Any]], n_iter: int
+    ) -> list[HyperparameterConfig]:
         """Evolutionary algorithm for HPO."""
         population_size = 10
         mutation_rate = 0.3
@@ -374,7 +352,7 @@ class AMOSContinuousLearning:
         population = [
             HyperparameterConfig(
                 config_id=f"evo_init_{i}",
-                parameters={k: random.choice(v) for k, v in search_space.items()}
+                parameters={k: random.choice(v) for k, v in search_space.items()},
             )
             for i in range(population_size)
         ]
@@ -386,14 +364,12 @@ class AMOSContinuousLearning:
             # Evaluate population
             for individual in population:
                 if not individual.evaluated:
-                    individual.performance_score = self._simulate_evaluation(
-                        individual.parameters
-                    )
+                    individual.performance_score = self._simulate_evaluation(individual.parameters)
                     individual.evaluated = True
 
             # Selection (tournament)
             sorted_pop = sorted(population, key=lambda x: x.performance_score, reverse=True)
-            survivors = sorted_pop[:population_size // 2]
+            survivors = sorted_pop[: population_size // 2]
 
             # Crossover and mutation
             offspring = []
@@ -407,8 +383,7 @@ class AMOSContinuousLearning:
                     child_params = self._mutate(child_params, search_space)
 
                 child = HyperparameterConfig(
-                    config_id=f"evo_gen{generation}_{len(offspring)}",
-                    parameters=child_params
+                    config_id=f"evo_gen{generation}_{len(offspring)}", parameters=child_params
                 )
                 offspring.append(child)
 
@@ -418,10 +393,8 @@ class AMOSContinuousLearning:
         return all_candidates
 
     def _hyperband_search(
-        self,
-        search_space: Dict[str, list[Any]],
-        max_iter: int
-    ) -> List[HyperparameterConfig]:
+        self, search_space: dict[str, list[Any]], max_iter: int
+    ) -> list[HyperparameterConfig]:
         """
         Hyperband early-stopping-based optimization.
 
@@ -436,21 +409,21 @@ class AMOSContinuousLearning:
         s_max = int(random.random() * 3) + 1  # Number of brackets
 
         for s in range(s_max):
-            n_configs = int(R / (eta ** s) / (s + 1))
-            n_resources = (eta ** s)
+            n_configs = int(R / (eta**s) / (s + 1))
+            n_resources = eta**s
 
             # Sample configurations
             bracket_candidates = [
                 HyperparameterConfig(
                     config_id=f"hyper_{s}_{i}",
-                    parameters={k: random.choice(v) for k, v in search_space.items()}
+                    parameters={k: random.choice(v) for k, v in search_space.items()},
                 )
                 for i in range(n_configs)
             ]
 
             # Successive halving
             for i in range(s + 1):
-                n_keep = max(1, int(n_configs / (eta ** i)))
+                n_keep = max(1, int(n_configs / (eta**i)))
 
                 # Evaluate with increasing resources
                 for c in bracket_candidates[:n_keep]:
@@ -466,58 +439,40 @@ class AMOSContinuousLearning:
 
         return candidates
 
-    def _simulate_evaluation(
-        self,
-        params: Dict[str, Any],
-        resource_multiplier: int = 1
-    ) -> float:
+    def _simulate_evaluation(self, params: dict[str, Any], resource_multiplier: int = 1) -> float:
         """Simulate configuration evaluation."""
         # Simulate performance based on parameter configuration
         base_score = random.uniform(0.7, 0.95)
 
         # Add noise based on resource allocation (more resources = less noise)
-        noise = random.gauss(0, 0.05 / (resource_multiplier ** 0.5))
+        noise = random.gauss(0, 0.05 / (resource_multiplier**0.5))
 
         return max(0.0, min(1.0, base_score + noise))
 
     def _perturb_config(
-        self,
-        config: Dict[str, Any],
-        search_space: Dict[str, list[Any]]
-    ) -> Dict[str, Any]:
+        self, config: dict[str, Any], search_space: dict[str, list[Any]]
+    ) -> dict[str, Any]:
         """Perturb configuration for local search."""
         perturbed = config.copy()
         key_to_perturb = random.choice(list(config.keys()))
         perturbed[key_to_perturb] = random.choice(search_space[key_to_perturb])
         return perturbed
 
-    def _crossover(
-        self,
-        parent1: Dict[str, Any],
-        parent2: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def _crossover(self, parent1: dict[str, Any], parent2: dict[str, Any]) -> dict[str, Any]:
         """Crossover between two parent configurations."""
         child = {}
         for key in parent1:
             child[key] = parent1[key] if random.random() < 0.5 else parent2[key]
         return child
 
-    def _mutate(
-        self,
-        config: Dict[str, Any],
-        search_space: Dict[str, list[Any]]
-    ) -> Dict[str, Any]:
+    def _mutate(self, config: dict[str, Any], search_space: dict[str, list[Any]]) -> dict[str, Any]:
         """Mutate configuration."""
         mutated = config.copy()
         key_to_mutate = random.choice(list(config.keys()))
         mutated[key_to_mutate] = random.choice(search_space[key_to_mutate])
         return mutated
 
-    def _evaluate_config(
-        self,
-        config: HyperparameterConfig,
-        objectives: List[str]
-    ) -> float:
+    def _evaluate_config(self, config: HyperparameterConfig, objectives: list[str]) -> float:
         """Evaluate configuration on multiple objectives."""
         # Multi-objective evaluation
         scores = []
@@ -537,10 +492,10 @@ class AMOSContinuousLearning:
     def neural_architecture_search(
         self,
         task: str,
-        constraints: Dict[str, float],
+        constraints: dict[str, float],
         population_size: int = 20,
-        generations: int = 10
-    ) -> Dict[str, Any]:
+        generations: int = 10,
+    ) -> dict[str, Any]:
         """
         Multi-objective neural architecture search.
 
@@ -549,10 +504,7 @@ class AMOSContinuousLearning:
         print(f"Starting NAS for {task} with constraints {constraints}")
 
         # Initialize population
-        population = [
-            self._random_architecture(f"arch_gen0_{i}")
-            for i in range(population_size)
-        ]
+        population = [self._random_architecture(f"arch_gen0_{i}") for i in range(population_size)]
 
         all_candidates = population.copy()
 
@@ -566,15 +518,13 @@ class AMOSContinuousLearning:
             pareto = self._find_pareto_frontier(population)
 
             # Selection and reproduction
-            offspring = self._architecture_crossover_mutation(
-                population, population_size // 2
-            )
+            offspring = self._architecture_crossover_mutation(population, population_size // 2)
 
             # Evaluate offspring
             for arch in offspring:
                 self._evaluate_architecture(arch, constraints)
 
-            population = population[:population_size // 2] + offspring
+            population = population[: population_size // 2] + offspring
             all_candidates.extend(offspring)
 
         # Final Pareto frontier
@@ -589,7 +539,7 @@ class AMOSContinuousLearning:
             "accuracy": best.accuracy if best else 0.0,
             "parameters": best.num_parameters if best else 0,
             "latency_ms": best.latency_ms if best else 0.0,
-            "pareto_size": len(self.pareto_frontier)
+            "pareto_size": len(self.pareto_frontier),
         }
 
     def _random_architecture(self, arch_id: str) -> ArchitectureCandidate:
@@ -600,14 +550,12 @@ class AMOSContinuousLearning:
                 "num_layers": random.randint(2, 12),
                 "hidden_dim": random.choice([64, 128, 256, 512]),
                 "activation": random.choice(["relu", "gelu", "swish"]),
-                "dropout": random.uniform(0.0, 0.5)
-            }
+                "dropout": random.uniform(0.0, 0.5),
+            },
         )
 
     def _evaluate_architecture(
-        self,
-        arch: ArchitectureCandidate,
-        constraints: Dict[str, float]
+        self, arch: ArchitectureCandidate, constraints: dict[str, float]
     ) -> None:
         """Evaluate architecture against constraints."""
         # Simulate evaluation
@@ -625,15 +573,13 @@ class AMOSContinuousLearning:
         arch.accuracy = max(0.5, min(0.99, arch.accuracy))
 
         # Check constraints
-        arch.pareto_optimal = (
-            arch.num_parameters <= constraints.get("max_params", float('inf'))
-            and arch.latency_ms <= constraints.get("max_latency_ms", float('inf'))
-        )
+        arch.pareto_optimal = arch.num_parameters <= constraints.get(
+            "max_params", float("inf")
+        ) and arch.latency_ms <= constraints.get("max_latency_ms", float("inf"))
 
     def _find_pareto_frontier(
-        self,
-        candidates: List[ArchitectureCandidate]
-    ) -> List[ArchitectureCandidate]:
+        self, candidates: list[ArchitectureCandidate]
+    ) -> list[ArchitectureCandidate]:
         """Find Pareto-optimal architectures."""
         pareto = []
         for candidate in candidates:
@@ -642,12 +588,16 @@ class AMOSContinuousLearning:
                 if other == candidate:
                     continue
                 # Check if other dominates candidate
-                if (other.accuracy >= candidate.accuracy and
-                    other.latency_ms <= candidate.latency_ms and
-                    other.num_parameters <= candidate.num_parameters and
-                    (other.accuracy > candidate.accuracy or
-                     other.latency_ms < candidate.latency_ms or
-                     other.num_parameters < candidate.num_parameters)):
+                if (
+                    other.accuracy >= candidate.accuracy
+                    and other.latency_ms <= candidate.latency_ms
+                    and other.num_parameters <= candidate.num_parameters
+                    and (
+                        other.accuracy > candidate.accuracy
+                        or other.latency_ms < candidate.latency_ms
+                        or other.num_parameters < candidate.num_parameters
+                    )
+                ):
                     dominated = True
                     break
             if not dominated:
@@ -655,10 +605,8 @@ class AMOSContinuousLearning:
         return pareto
 
     def _architecture_crossover_mutation(
-        self,
-        parents: List[ArchitectureCandidate],
-        n_offspring: int
-    ) -> List[ArchitectureCandidate]:
+        self, parents: list[ArchitectureCandidate], n_offspring: int
+    ) -> list[ArchitectureCandidate]:
         """Generate offspring architectures."""
         offspring = []
         for i in range(n_offspring):
@@ -666,8 +614,8 @@ class AMOSContinuousLearning:
 
             child_arch = {
                 key: p1.architecture.get(key, p2.architecture.get(key))
-                if random.random() < 0.5 else
-                p2.architecture.get(key, p1.architecture.get(key))
+                if random.random() < 0.5
+                else p2.architecture.get(key, p1.architecture.get(key))
                 for key in set(p1.architecture.keys()) | set(p2.architecture.keys())
             }
 
@@ -679,17 +627,14 @@ class AMOSContinuousLearning:
                 elif key == "hidden_dim":
                     child_arch[key] = random.choice([64, 128, 256, 512])
 
-            offspring.append(ArchitectureCandidate(
-                arch_id=f"offspring_{i}",
-                architecture=child_arch
-            ))
+            offspring.append(
+                ArchitectureCandidate(arch_id=f"offspring_{i}", architecture=child_arch)
+            )
 
         return offspring
 
     def _select_best_architecture(
-        self,
-        pareto: List[ArchitectureCandidate],
-        constraints: Dict[str, float]
+        self, pareto: list[ArchitectureCandidate], constraints: dict[str, float]
     ) -> Optional[ArchitectureCandidate]:
         """Select best architecture from Pareto frontier."""
         if not pareto:
@@ -709,10 +654,10 @@ class AMOSContinuousLearning:
     def feedback_loop(
         self,
         equation: str,
-        execution_result: Dict[str, Any],
+        execution_result: dict[str, Any],
         user_rating: float,
-        metadata: Dict[str, Any]  = None
-    ) -> Dict[str, Any]:
+        metadata: dict[str, Any] = None,
+    ) -> dict[str, Any]:
         """
         Online learning from execution feedback.
 
@@ -725,7 +670,7 @@ class AMOSContinuousLearning:
             inputs=execution_result.get("inputs", {}),
             outputs=execution_result.get("outputs", {}),
             feedback_score=user_rating,
-            metadata=metadata or {}
+            metadata=metadata or {},
         )
 
         self.learning_episodes.append(episode)
@@ -740,17 +685,17 @@ class AMOSContinuousLearning:
                 "episode_recorded": True,
                 "online_update_performed": True,
                 "update_metrics": update_result,
-                "total_episodes": self.total_episodes
+                "total_episodes": self.total_episodes,
             }
 
         return {
             "episode_recorded": True,
             "online_update_performed": False,
             "buffer_size": len(self.experience_buffer),
-            "total_episodes": self.total_episodes
+            "total_episodes": self.total_episodes,
         }
 
-    def _online_update(self) -> Dict[str, Any]:
+    def _online_update(self) -> dict[str, Any]:
         """Perform online learning update."""
         # Calculate statistics from buffer
         scores = [ep.feedback_score for ep in self.experience_buffer]
@@ -763,14 +708,12 @@ class AMOSContinuousLearning:
             "episodes_processed": len(self.experience_buffer),
             "average_feedback": avg_score,
             "model_improvement": improvement,
-            "update_time_ms": random.uniform(10, 100)
+            "update_time_ms": random.uniform(10, 100),
         }
 
     def detect_drift(
-        self,
-        recent_performance: List[float],
-        baseline_performance: List[float]
-    ) -> Dict[str, Any]:
+        self, recent_performance: list[float], baseline_performance: list[float]
+    ) -> dict[str, Any]:
         """
         Detect performance drift using statistical tests.
 
@@ -806,18 +749,14 @@ class AMOSContinuousLearning:
             "drift_score": drift_score,
             "recent_mean": recent_mean,
             "baseline_mean": baseline_mean,
-            "recommended_action": "retrain" if drift_detected else "monitor"
+            "recommended_action": "retrain" if drift_detected else "monitor",
         }
 
         self.drift_history.append(drift_record)
 
         return drift_record
 
-    def meta_learn(
-        self,
-        task_distribution: List[str],
-        adaptation_steps: int = 5
-    ) -> Dict[str, Any]:
+    def meta_learn(self, task_distribution: list[str], adaptation_steps: int = 5) -> dict[str, Any]:
         """
         Meta-learning (MAML-style) for rapid task adaptation.
 
@@ -846,21 +785,17 @@ class AMOSContinuousLearning:
         self.meta_model = {
             "initialization": "meta_optimized",
             "adaptation_lr": 0.01,
-            "meta_epochs": 10
+            "meta_epochs": 10,
         }
 
         return {
             "meta_loss_final": meta_losses[-1] if meta_losses else 0.0,
             "meta_loss_initial": meta_losses[0] if meta_losses else 0.0,
             "adaptation_capability": "few_shot",
-            "tasks_learned": len(task_distribution)
+            "tasks_learned": len(task_distribution),
         }
 
-    def adapt_to_new_task(
-        self,
-        task_data: List[dict[str, Any]],
-        steps: int = 5
-    ) -> Dict[str, Any]:
+    def adapt_to_new_task(self, task_data: list[dict[str, Any]], steps: int = 5) -> dict[str, Any]:
         """
         Rapid adaptation to new task using meta-learned initialization.
 
@@ -884,14 +819,14 @@ class AMOSContinuousLearning:
             "initial_performance": initial_performance,
             "final_performance": current_performance,
             "improvement": current_performance - initial_performance,
-            "adaptation_time_ms": steps * 20
+            "adaptation_time_ms": steps * 20,
         }
 
         self.adaptation_history.append(adaptation_record)
 
         return adaptation_record
 
-    def get_learning_stats(self) -> Dict[str, Any]:
+    def get_learning_stats(self) -> dict[str, Any]:
         """Get comprehensive learning statistics."""
         return {
             "total_optimizations": self.total_optimizations,
@@ -902,16 +837,14 @@ class AMOSContinuousLearning:
             "experience_buffer_size": len(self.experience_buffer),
             "adaptation_count": len(self.adaptation_history),
             "meta_learning_ready": bool(self.meta_model),
-            "drift_history_length": len(self.drift_history)
+            "drift_history_length": len(self.drift_history),
         }
 
 
 def main():
     """CLI demo for continuous learning."""
 
-    parser = argparse.ArgumentParser(
-        description="AMOS Continuous Learning & AutoML (Phase 25)"
-    )
+    parser = argparse.ArgumentParser(description="AMOS Continuous Learning & AutoML (Phase 25)")
     parser.add_argument("--demo", action="store_true", help="Run demonstration")
 
     args = parser.parse_args()
@@ -932,13 +865,13 @@ def main():
             "learning_rate": [0.001, 0.01, 0.1],
             "batch_size": [16, 32, 64],
             "dropout": [0.1, 0.3, 0.5],
-            "activation": ["relu", "gelu"]
+            "activation": ["relu", "gelu"],
         }
 
         strategies = [
             OptimizationStrategy.RANDOM,
             OptimizationStrategy.BAYESIAN,
-            OptimizationStrategy.EVOLUTIONARY
+            OptimizationStrategy.EVOLUTIONARY,
         ]
 
         for strategy in strategies:
@@ -948,7 +881,7 @@ def main():
                 search_space=search_space,
                 strategy=strategy,
                 max_iterations=20,
-                objectives=["accuracy", "latency"]
+                objectives=["accuracy", "latency"],
             )
             print(f"   Best performance: {result['performance']:.2%}")
             print(f"   Exploration efficiency: {result['exploration_efficiency']:.3f}")
@@ -961,7 +894,7 @@ def main():
             task="equation_embedding",
             constraints={"max_params": 1e6, "max_latency_ms": 50},
             population_size=15,
-            generations=5
+            generations=5,
         )
 
         print(f"   Best architecture accuracy: {nas_result['accuracy']:.2%}")
@@ -978,7 +911,7 @@ def main():
                 equation=f"equation_{i % 5}",
                 execution_result={"latency_ms": random.uniform(10, 100)},
                 user_rating=random.uniform(0.7, 1.0),
-                metadata={"complexity": random.choice(["low", "medium", "high"])}
+                metadata={"complexity": random.choice(["low", "medium", "high"])},
             )
 
         print(f"   Total episodes: {result['total_episodes']}")

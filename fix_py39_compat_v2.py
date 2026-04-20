@@ -2,14 +2,13 @@
 """Fix Python 3.9 compatibility issues in AMOS codebase."""
 
 import re
-import sys
 from pathlib import Path
 
 
 def fix_file(filepath):
     """Fix Python 3.9 compatibility issues in a single file."""
     try:
-        with open(filepath, "r") as f:
+        with open(filepath) as f:
             content = f.read()
             original_content = content
     except Exception as e:
@@ -39,14 +38,14 @@ def fix_file(filepath):
             content = "\n".join(lines)
             changes.append("Added from __future__ import annotations")
 
-    # Fix datetime.UTC import
-    if "from datetime import UTC" in content or "from datetime import UTC, datetime" in content:
+    # Fix timezone.utc import
+    if "from datetime import UTC" in content or "from datetime import datetime" in content:
         content = re.sub(
             r"from datetime import (?:UTC, )?datetime(?:, UTC)?",
             "from datetime import datetime, timezone\nUTC = timezone.utc",
-            content
+            content,
         )
-        changes.append("Fixed datetime.UTC import")
+        changes.append("Fixed timezone.utc import")
 
     # Fix timezone.utc = timezone.utc
     if "timezone.utc = timezone.utc" in content:
@@ -102,7 +101,7 @@ def main():
             else:
                 no_changes += 1
 
-    print(f"\n=== Summary ===")
+    print("\n=== Summary ===")
     print(f"Fixed: {fixed} files")
     print(f"No changes: {no_changes} files")
     if errors:

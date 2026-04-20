@@ -7,10 +7,15 @@ Provides a simplified interface to the AMOS Brain for:
 - Cross-domain reasoning
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+
 UTC = timezone.utc
-from typing import Any, Dict, List, Optional
+
+UTC = timezone.utc
+from typing import Any
 
 # Try to import brain components
 try:
@@ -35,7 +40,7 @@ class CognitiveTask:
     id: str
     task_type: str
     description: str
-    context: Dict[str, Any] = field(default_factory=dict)
+    context: dict[str, Any] = field(default_factory=dict)
     priority: int = 5
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
@@ -48,7 +53,7 @@ class CognitiveResult:
     status: str
     response: str
     confidence: float
-    recommendations: List[dict[str, Any]]
+    recommendations: list[dict[str, Any]]
     processing_time_ms: float
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
@@ -60,15 +65,14 @@ class BrainThinkResponse:
     content: str
     confidence: float
     law_compliant: bool
-    violations: List[str]
+    violations: list[str]
     reasoning: str
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
     success: bool = True  # For compatibility with BrainResponse interface
 
 
 class BrainClient:
-    """
-    Facade for AMOS Brain - Unified interface for Axiom One.
+    """Facade for AMOS Brain - Unified interface for Axiom One.
 
     Usage:
         client = BrainClient()
@@ -77,7 +81,7 @@ class BrainClient:
     """
 
     def __init__(self):
-        self._brain: Optional[IntegratedBrainAPI] = None
+        self._brain: IntegratedBrainAPI | None = None
         self._initialized = False
         self._task_count = 0
 
@@ -101,10 +105,9 @@ class BrainClient:
         return _BRAIN_AVAILABLE and self._initialized
 
     def think(
-        self, query: str, domain: str = "software", context: Dict[str, Any] = None
+        self, query: str, domain: str = "software", context: dict[str, Any] = None
     ) -> BrainThinkResponse:
-        """
-        Process a thought through the brain - synchronous interface for axiom_one_brain_bridge.
+        """Process a thought through the brain - synchronous interface for axiom_one_brain_bridge.
 
         Uses amos_brain_working.think as the primary brain implementation.
 
@@ -115,6 +118,7 @@ class BrainClient:
 
         Returns:
             BrainThinkResponse with content, confidence, law_compliance, etc.
+
         """
         try:
             # Try the working brain first (most reliable)
@@ -148,7 +152,7 @@ class BrainClient:
             )
 
     async def think_async(
-        self, query: str, domain: str = "software", context: Dict[str, Any] = None
+        self, query: str, domain: str = "software", context: dict[str, Any] = None
     ) -> BrainThinkResponse:
         """Async version of think() method."""
         await self.initialize()
@@ -191,10 +195,9 @@ class BrainClient:
     async def analyze_repo_issue(
         self,
         issue_description: str,
-        context: Dict[str, Any] = None,
+        context: dict[str, Any] = None,
     ) -> CognitiveResult:
-        """
-        Analyze a repository issue using brain cognitive capabilities.
+        """Analyze a repository issue using brain cognitive capabilities.
 
         Args:
             issue_description: Description of the issue
@@ -202,6 +205,7 @@ class BrainClient:
 
         Returns:
             CognitiveResult with analysis and recommendations
+
         """
         if not self._brain:
             return self._fallback_result("Brain not initialized")
@@ -244,11 +248,10 @@ Provide:
     async def suggest_fix_strategy(
         self,
         issue_type: str,
-        affected_files: List[str],
-        repo_context: Dict[str, Any] = None,
+        affected_files: list[str],
+        repo_context: dict[str, Any] = None,
     ) -> CognitiveResult:
-        """
-        Suggest a fix strategy for an issue type.
+        """Suggest a fix strategy for an issue type.
 
         Args:
             issue_type: Type of issue (packaging, imports, tests, etc.)
@@ -257,6 +260,7 @@ Provide:
 
         Returns:
             CognitiveResult with fix strategy
+
         """
         if not self._brain:
             return self._fallback_result("Brain not initialized")
@@ -267,7 +271,7 @@ Provide:
         query = f"""Suggest fix strategy for this repository issue:
 
 Issue Type: {issue_type}
-Affected Files: {', '.join(affected_files)}
+Affected Files: {", ".join(affected_files)}
 
 Provide:
 1. Recommended fix approach
@@ -296,10 +300,9 @@ Provide:
     async def evaluate_impact(
         self,
         change_description: str,
-        affected_domains: List[str],
+        affected_domains: list[str],
     ) -> CognitiveResult:
-        """
-        Evaluate cross-domain impact of a change.
+        """Evaluate cross-domain impact of a change.
 
         Args:
             change_description: Description of the proposed change
@@ -307,6 +310,7 @@ Provide:
 
         Returns:
             CognitiveResult with impact analysis
+
         """
         if not self._brain:
             return self._fallback_result("Brain not initialized")
@@ -317,7 +321,7 @@ Provide:
         query = f"""Evaluate cross-domain impact of this change:
 
 Change: {change_description}
-Affected Domains: {', '.join(affected_domains)}
+Affected Domains: {", ".join(affected_domains)}
 
 Provide:
 1. Impact severity per domain
@@ -345,11 +349,10 @@ Provide:
     async def plan_agent_execution(
         self,
         goal: str,
-        available_tools: List[str],
-        constraints: Dict[str, Any] = None,
+        available_tools: list[str],
+        constraints: dict[str, Any] = None,
     ) -> CognitiveResult:
-        """
-        Plan an agent execution strategy.
+        """Plan an agent execution strategy.
 
         Args:
             goal: The agent's goal
@@ -358,6 +361,7 @@ Provide:
 
         Returns:
             CognitiveResult with execution plan
+
         """
         if not self._brain:
             return self._fallback_result("Brain not initialized")
@@ -368,7 +372,7 @@ Provide:
         query = f"""Plan agent execution for this goal:
 
 Goal: {goal}
-Available Tools: {', '.join(available_tools)}
+Available Tools: {", ".join(available_tools)}
 
 Provide:
 1. Step-by-step execution plan
@@ -394,7 +398,7 @@ Provide:
         except Exception as e:
             return self._fallback_result(str(e))
 
-    def _format_context(self, context: Dict[str, Any]) -> str:
+    def _format_context(self, context: dict[str, Any]) -> str:
         """Format context for brain query."""
         if not context:
             return "No additional context"
@@ -407,7 +411,7 @@ Provide:
                 lines.append(f"- {key}: {value}")
         return "\n".join(lines)
 
-    def _extract_recommendations(self, brain_response: Any) -> List[dict[str, Any]]:
+    def _extract_recommendations(self, brain_response: Any) -> list[dict[str, Any]]:
         """Extract recommendations from brain response."""
         recommendations = []
 
@@ -442,7 +446,7 @@ Provide:
 
 
 # Singleton instance
-_brain_client_instance: Optional[BrainClient] = None
+_brain_client_instance: BrainClient | None = None
 
 
 def get_brain_client() -> BrainClient:

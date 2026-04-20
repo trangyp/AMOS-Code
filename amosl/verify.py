@@ -15,7 +15,7 @@ Verification operations:
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 
 class VerificationLevel(Enum):
@@ -34,24 +34,24 @@ class VerificationResult:
     passed: bool
     message: str
     level: VerificationLevel
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: dict[str, Any] = field(default_factory=dict)
 
 
 class VerificationEngine:
     """Multi-layer verification for AMOSL programs and states."""
 
     def __init__(self):
-        self.type_rules: Dict[str, Callable] = {}
-        self.contract_checks: Dict[str, Callable] = {}
-        self.constraint_checks: Dict[str, Callable] = {}
-        self.results: List[VerificationResult] = []
+        self.type_rules: dict[str, Callable] = {}
+        self.contract_checks: dict[str, Callable] = {}
+        self.constraint_checks: dict[str, Callable] = {}
+        self.results: list[VerificationResult] = []
 
     # ========================================================================
     # Type Verification: Γ ⊢ e:τ
     # ========================================================================
 
     def verify_type(
-        self, expr: str, context: Dict[str, str], expected_type: str
+        self, expr: str, context: dict[str, str], expected_type: str
     ) -> VerificationResult:
         """Verify Γ ⊢ e:τ."""
         if expr in context:
@@ -79,7 +79,7 @@ class VerificationEngine:
             level=VerificationLevel.CRITICAL,
         )
 
-    def verify_program_types(self, program: dict) -> List[VerificationResult]:
+    def verify_program_types(self, program: dict) -> list[VerificationResult]:
         """Verify all type bindings in program."""
         results = []
         context = program.get("context", {})
@@ -127,7 +127,7 @@ class VerificationEngine:
     # Constraint Verification: Valid(Σ) = ∧_i C_i(Σ)
     # ========================================================================
 
-    def verify_constraints(self, state: Any) -> List[VerificationResult]:
+    def verify_constraints(self, state: Any) -> list[VerificationResult]:
         """Verify all constraints on state: Valid(Σ) = ∧_i C_i(Σ)."""
         results = []
 
@@ -172,28 +172,28 @@ class VerificationEngine:
         )
 
     # Invariant check implementations
-    def _check_semantic_encoding(self, state: Any) -> Tuple[bool, str]:
+    def _check_semantic_encoding(self, state: Any) -> tuple[bool, str]:
         return True, "Syntax = Enc(Semantics)"
 
-    def _check_lawful_transition(self, state: Any) -> Tuple[bool, str]:
+    def _check_lawful_transition(self, state: Any) -> tuple[bool, str]:
         return True, "Commit(X') iff Valid(X') = 1"
 
-    def _check_effect_explicit(self, state: Any) -> Tuple[bool, str]:
+    def _check_effect_explicit(self, state: Any) -> tuple[bool, str]:
         return True, "f: τ1 → τ2; !; ε"
 
-    def _check_observation_perturbs(self, state: Any) -> Tuple[bool, str]:
+    def _check_observation_perturbs(self, state: Any) -> tuple[bool, str]:
         return True, "M: X → (X̂, Q, Π, X')"
 
-    def _check_no_hidden_bridge(self, state: Any) -> Tuple[bool, str]:
+    def _check_no_hidden_bridge(self, state: Any) -> tuple[bool, str]:
         return True, "Xi → Xj ⇒ ∃ B_ij"
 
-    def _check_uncertainty_propagates(self, state: Any) -> Tuple[bool, str]:
+    def _check_uncertainty_propagates(self, state: Any) -> tuple[bool, str]:
         return True, "U(out) = P(U(in), ...)"
 
-    def _check_traceability(self, state: Any) -> Tuple[bool, str]:
+    def _check_traceability(self, state: Any) -> tuple[bool, str]:
         return True, "Outcome ⇒ Explain(L)"
 
-    def _check_adaptation_bounded(self, state: Any) -> Tuple[bool, str]:
+    def _check_adaptation_bounded(self, state: Any) -> tuple[bool, str]:
         return True, "Adapt(X) s.t. Λ(X') = ⊤"
 
     # ========================================================================
@@ -297,7 +297,7 @@ class VerificationEngine:
     # Full Verification
     # ========================================================================
 
-    def verify_all(self, program: dict, state: Any) -> Dict[str, Any]:
+    def verify_all(self, program: dict, state: Any) -> dict[str, Any]:
         """Run complete verification stack."""
         all_results = []
 

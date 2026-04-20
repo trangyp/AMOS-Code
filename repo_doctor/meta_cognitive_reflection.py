@@ -20,6 +20,7 @@ Mathematical Foundation:
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+
 UTC = timezone.utc
 from enum import Enum
 from pathlib import Path
@@ -53,11 +54,11 @@ class DecisionRecord:
     decision_id: str
     timestamp: str
     decision_type: str
-    context: Dict[str, Any]
-    outcome: Dict[str, Any]
+    context: dict[str, Any]
+    outcome: dict[str, Any]
     confidence: float
     success: bool
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -82,12 +83,12 @@ class MetaInsight:
     reflection_type: ReflectionType
     severity: InsightSeverity
     insight: str
-    evidence: List[str]
+    evidence: list[str]
     recommendation: str
     confidence: float
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "insight_id": self.insight_id,
@@ -112,7 +113,7 @@ class AdaptedParameter:
     last_update: str
     update_history: list[dict[str, Any]] = field(default_factory=list)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "name": self.name,
@@ -133,13 +134,13 @@ class ReflectionResult:
 
     reflection_id: str
     timestamp: str
-    insights: List[MetaInsight]
-    adapted_parameters: List[AdaptedParameter]
+    insights: list[MetaInsight]
+    adapted_parameters: list[AdaptedParameter]
     failure_patterns_detected: int
     learning_applied: bool
     playbook_generated: bool
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "reflection_id": self.reflection_id,
@@ -163,13 +164,13 @@ class MetaCognitiveReflectionEngine:
     - Generate self-improvement playbooks
     """
 
-    def __init__(self, repo_path: str | Path):
+    def __init__(self, repo_path: Union[str, Path]):
         self.repo_path = Path(repo_path)
-        self.decision_history: List[DecisionRecord] = []
-        self.failure_patterns: Dict[str, FailurePattern] = {}
-        self.parameters: Dict[str, AdaptedParameter] = {}
-        self.insights: List[MetaInsight] = []
-        self.reflections: List[ReflectionResult] = []
+        self.decision_history: list[DecisionRecord] = []
+        self.failure_patterns: dict[str, FailurePattern] = {}
+        self.parameters: dict[str, AdaptedParameter] = {}
+        self.insights: list[MetaInsight] = []
+        self.reflections: list[ReflectionResult] = []
 
         # Default parameters for adaptation
         self._initialize_parameters()
@@ -197,8 +198,8 @@ class MetaCognitiveReflectionEngine:
     def record_decision(
         self,
         decision_type: str,
-        context: Dict[str, Any],
-        outcome: Dict[str, Any],
+        context: dict[str, Any],
+        outcome: dict[str, Any],
         confidence: float,
         success: bool,
     ) -> DecisionRecord:
@@ -237,10 +238,10 @@ class MetaCognitiveReflectionEngine:
     def record_failure(
         self,
         failure_type: str,
-        context: Dict[str, Any],
+        context: dict[str, Any],
         action_taken: str,
         consequence: str,
-    ) -> Optional[FailurePattern]:
+    ) -> FailurePattern:
         """
         Record a failure for pattern detection.
 
@@ -284,13 +285,13 @@ class MetaCognitiveReflectionEngine:
 
         return self.failure_patterns.get(signature)
 
-    def _extract_signature(self, failure_type: str, context: Dict[str, Any]) -> str:
+    def _extract_signature(self, failure_type: str, context: dict[str, Any]) -> str:
         """Extract failure signature from context."""
         keys = sorted(context.keys())[:3]
         values = [str(context[k])[:20] for k in keys if k in context]
         return f"{failure_type}:{':'.join(values)}"
 
-    def should_avoid(self, context: Dict[str, Any], action: str) -> Tuple[bool, str]:
+    def should_avoid(self, context: dict[str, Any], action: str) -> Tuple[bool, str]:
         """
         Check if an action should be avoided based on past failures.
 
@@ -320,7 +321,7 @@ class MetaCognitiveReflectionEngine:
         overlap = len(parts1 & parts2)
         return overlap >= 2
 
-    def adapt_parameter(self, name: str, performance_delta: float) -> Optional[AdaptedParameter]:
+    def adapt_parameter(self, name: str, performance_delta: float) -> AdaptedParameter:
         """
         Adapt a parameter based on performance feedback.
 
@@ -377,8 +378,8 @@ class MetaCognitiveReflectionEngine:
         reflection_id = f"refl_{len(self.reflections)}"
         timestamp = datetime.now(timezone.utc).isoformat()
 
-        insights: List[MetaInsight] = []
-        adapted_params: List[AdaptedParameter] = []
+        insights: list[MetaInsight] = []
+        adapted_params: list[AdaptedParameter] = []
 
         # 1. Analyze decision patterns
         decision_insights = self._analyze_decision_patterns()
@@ -447,7 +448,7 @@ class MetaCognitiveReflectionEngine:
         self.reflections.append(result)
         return result
 
-    def _analyze_decision_patterns(self) -> List[MetaInsight]:
+    def _analyze_decision_patterns(self) -> list[MetaInsight]:
         """Analyze patterns in decision history."""
         insights = []
 
@@ -455,7 +456,7 @@ class MetaCognitiveReflectionEngine:
             return insights
 
         # Analyze decision type distribution
-        type_counts: Dict[str, int] = defaultdict(int)
+        type_counts: dict[str, int] = defaultdict(int)
         for decision in self.decision_history:
             type_counts[decision.decision_type] += 1
 
@@ -500,7 +501,7 @@ class MetaCognitiveReflectionEngine:
 
         return insights
 
-    def _analyze_performance(self) -> List[MetaInsight]:
+    def _analyze_performance(self) -> list[MetaInsight]:
         """Analyze performance trends."""
         insights = []
 
@@ -550,7 +551,7 @@ class MetaCognitiveReflectionEngine:
 
         return insights
 
-    def _generate_playbook(self, insights: List[MetaInsight]) -> bool:
+    def _generate_playbook(self, insights: list[MetaInsight]) -> bool:
         """Generate self-improvement playbook."""
         if not insights:
             return False
@@ -647,7 +648,7 @@ Based on: {len(self.decision_history)} decisions, {len(self.failure_patterns)} f
         except Exception:
             return False
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get comprehensive meta-cognitive status."""
         if not self.decision_history:
             return {
@@ -673,7 +674,7 @@ Based on: {len(self.decision_history)} decisions, {len(self.failure_patterns)} f
             },
         }
 
-    def get_improvement_suggestions(self) -> List[str]:
+    def get_improvement_suggestions(self) -> list[str]:
         """Get improvement suggestions."""
         suggestions = []
 

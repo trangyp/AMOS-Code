@@ -14,13 +14,15 @@ Owner: Trang Phan
 Version: 2.0.0
 """
 
+from __future__ import annotations
+
 import hashlib
 import json
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+from typing import Any
 
-UTC = timezone.utc
-from typing import Any, Dict, List
+UTC = UTC
 
 # Redis integration
 try:
@@ -47,12 +49,12 @@ class FeatureFlag:
     name: str
     enabled: bool = False
     rollout_percentage: float = 0.0  # 0-100
-    allowed_roles: List[str] = field(default_factory=list)
-    allowed_systems: List[str] = field(default_factory=list)
+    allowed_roles: list[str] = field(default_factory=list)
+    allowed_systems: list[str] = field(default_factory=list)
     requires_governance: bool = True
     created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     updated_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -61,8 +63,8 @@ class SystemConfig:
 
     system_name: str
     version: str = "2.0.0"
-    features: Dict[str, FeatureFlag] = field(default_factory=dict)
-    settings: Dict[str, Any] = field(default_factory=dict)
+    features: dict[str, FeatureFlag] = field(default_factory=dict)
+    settings: dict[str, Any] = field(default_factory=dict)
     last_updated: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
 
@@ -70,7 +72,7 @@ class ConfigurationManager:
     """Central configuration manager with SuperBrain governance."""
 
     # Default feature flags for 12 systems
-    DEFAULT_FLAGS: Dict[str, FeatureFlag] = {
+    DEFAULT_FLAGS: dict[str, FeatureFlag] = {
         # Governance features
         "superbrain_actiongate": FeatureFlag(
             name="superbrain_actiongate",
@@ -178,7 +180,7 @@ class ConfigurationManager:
     def __init__(self, redis_url: str = None):
         self.redis_url = redis_url or "redis://localhost:6379/0"
         self._redis: redis.Redis = None
-        self._local_cache: Dict[str, Any] = {}
+        self._local_cache: dict[str, Any] = {}
         self._brain = None
 
         if REDIS_AVAILABLE:
@@ -310,7 +312,7 @@ class ConfigurationManager:
 
         return True
 
-    def get_all_flags(self, user_role: str = "readonly") -> Dict[str, dict[str, Any]]:
+    def get_all_flags(self, user_role: str = "readonly") -> dict[str, dict[str, Any]]:
         """Get all feature flags visible to role."""
         visible = {}
 

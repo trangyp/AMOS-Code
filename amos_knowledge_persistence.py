@@ -28,7 +28,7 @@ import json
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 sys.path.insert(0, str(Path(__file__).parent / "clawspring"))
 sys.path.insert(0, str(Path(__file__).parent))
@@ -168,7 +168,7 @@ class KnowledgePersistence:
             print(f"✗ Restore failed: {e}")
             return False
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get persistence status."""
         status = {
             "cache_exists": self.CACHE_FILE.exists(),

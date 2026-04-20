@@ -10,8 +10,12 @@ Following FastAPI best practices 2024:
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
-from typing import Any
+from datetime import UTC, datetime
+
+UTC = UTC
+
+
+from typing import Any, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field, field_serializer
@@ -20,7 +24,6 @@ from pydantic import BaseModel, Field, field_serializer
 from amos_brain_task_automation import (
     AutomationResult,
     BrainTaskAutomator,
-    automate_task,
 )
 
 router = APIRouter(prefix="/brain-automation", tags=["brain-automation"])
@@ -38,7 +41,7 @@ class AutomationStepSchema(BaseModel):
     description: str
     action_type: str
     status: str
-    error_message: str | None = None
+    error_message: Optional[str] = None
 
     model_config = {"from_attributes": True}
 
@@ -78,7 +81,7 @@ class AutomationResponse(BaseModel):
     def serialize_timestamp(self, value: datetime) -> str:
         """Serialize datetime to ISO format with timezone."""
         if value.tzinfo is None:
-            value = value.replace(tzinfo=timezone.utc)
+            value = value.replace(tzinfo=UTC)
         return value.isoformat()
 
     model_config = {"from_attributes": True}
@@ -198,7 +201,7 @@ async def automate_batch_endpoint(
                     final_output=f"Error: {e}",
                     success=False,
                     execution_time_ms=0.0,
-                    timestamp=datetime.now(timezone.utc),
+                    timestamp=datetime.now(UTC),
                 )
             )
 
@@ -244,7 +247,7 @@ async def brain_automation_health() -> dict[str, Any]:
             "status": "healthy",
             "operational": test_result.success,
             "brain_connected": True,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
     except Exception as e:
         return {
@@ -252,7 +255,7 @@ async def brain_automation_health() -> dict[str, Any]:
             "operational": False,
             "brain_connected": False,
             "error": str(e),
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
 
@@ -279,7 +282,7 @@ def _convert_to_response(result: AutomationResult) -> AutomationResponse:
         final_output=result.final_output,
         success=result.success,
         execution_time_ms=result.execution_time_ms,
-        timestamp=datetime.now(timezone.utc),
+        timestamp=datetime.now(UTC),
     )
 
 

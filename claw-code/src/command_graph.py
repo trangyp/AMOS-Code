@@ -2,16 +2,15 @@ from dataclasses import dataclass
 
 from .commands import get_commands
 from .models import PortingModule
-from typing import Tuple
 
 
 @dataclass(frozen=True)
 class CommandGraph:
-    builtins: Tuple[PortingModule, ...]
-    plugin_like: Tuple[PortingModule, ...]
-    skill_like: Tuple[PortingModule, ...]
+    builtins: tuple[PortingModule, ...]
+    plugin_like: tuple[PortingModule, ...]
+    skill_like: tuple[PortingModule, ...]
 
-    def flattened(self) -> Tuple[PortingModule, ...]:
+    def flattened(self) -> tuple[PortingModule, ...]:
         return self.builtins + self.plugin_like + self.skill_like
 
     def as_markdown(self) -> str:

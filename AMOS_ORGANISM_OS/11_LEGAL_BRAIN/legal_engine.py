@@ -12,9 +12,11 @@ Version: 1.0.0
 import json
 import re
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 
 @dataclass
@@ -48,8 +50,8 @@ class RiskAssessment:
     id: str
     target: str
     risk_level: str  # low, medium, high, critical
-    risk_factors: List[str]
-    mitigations: List[str]
+    risk_factors: list[str]
+    mitigations: list[str]
     assessed_at: str
 
 
@@ -64,9 +66,9 @@ class LegalEngine:
         self.data_dir = self.legal_dir / "data"
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
-        self.rules: List[ComplianceRule] = []
-        self.checks: List[ComplianceCheck] = []
-        self.risk_assessments: List[RiskAssessment] = []
+        self.rules: list[ComplianceRule] = []
+        self.checks: list[ComplianceCheck] = []
+        self.risk_assessments: list[RiskAssessment] = []
 
         self._load_operator_profile()
         self._load_rules()
@@ -217,9 +219,9 @@ class LegalEngine:
         with open(state_file, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2)
 
-    def check_compliance(self, content: str, context: str = "general") -> List[ComplianceCheck]:
+    def check_compliance(self, content: str, context: str = "general") -> list[ComplianceCheck]:
         """Check content against all compliance rules."""
-        results: List[ComplianceCheck] = []
+        results: list[ComplianceCheck] = []
 
         for rule in self.rules:
             if not rule.enabled:
@@ -260,11 +262,11 @@ class LegalEngine:
         return True
 
     def assess_risk(
-        self, target: str, action_type: str, parameters: Dict[str, Any]
+        self, target: str, action_type: str, parameters: dict[str, Any]
     ) -> RiskAssessment:
         """Assess risk of an action."""
-        risk_factors: List[str] = []
-        mitigations: List[str] = []
+        risk_factors: list[str] = []
+        mitigations: list[str] = []
 
         # Assess based on action type
         if action_type == "code_generation":
@@ -310,7 +312,7 @@ class LegalEngine:
 
         return assessment
 
-    def validate_governance(self, action: str, params: dict) -> Dict[str, Any]:
+    def validate_governance(self, action: str, params: dict) -> dict[str, Any]:
         """Validate action against operator governance rules."""
         profile = self.operator_profile
         is_dict = isinstance(profile, dict)
@@ -340,7 +342,7 @@ class LegalEngine:
             "reasoning_preference": reasoning_style,
         }
 
-    def generate_compliance_report(self) -> Dict[str, Any]:
+    def generate_compliance_report(self) -> dict[str, Any]:
         """Generate compliance status report."""
         # Get recent checks
         recent_checks = self.checks[-50:]
@@ -349,7 +351,7 @@ class LegalEngine:
         failed = len(recent_checks) - passed
 
         # Group by severity
-        by_severity: Dict[str, int] = {}
+        by_severity: dict[str, int] = {}
         for check in recent_checks:
             if not check.passed:
                 sev = check.severity
@@ -366,7 +368,7 @@ class LegalEngine:
             "total_risk_assessments": len(self.risk_assessments),
         }
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get legal engine status."""
         return {
             "status": "operational",

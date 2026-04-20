@@ -7,17 +7,14 @@ Uses amos_brain_working.think() for cognitive processing of:
 - Performance optimization suggestions
 """
 
-import sys
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 from fastapi import APIRouter
 from pydantic import BaseModel
 
 # Add brain path
 _AMOS_ROOT = Path(__file__).parent.parent.parent.resolve()
-sys.path.insert(0, str(_AMOS_ROOT / "clawspring" / "amos_brain"))
-
 from amos_brain_working import think as brain_think
 
 router = APIRouter(prefix="/brain-cognitive", tags=["brain-cognitive"])
@@ -28,7 +25,7 @@ class CodeAnalysisRequest(BaseModel):
 
     code: str
     language: str = "python"
-    context: Dict[str, Any] = {}
+    context: dict[str, Any] = {}
 
 
 class CognitiveAnalysisResponse(BaseModel):
@@ -39,7 +36,7 @@ class CognitiveAnalysisResponse(BaseModel):
     legality: float
     mode: str
     analysis: str
-    recommendations: List[str]
+    recommendations: list[str]
     risk_level: str
 
 
@@ -47,8 +44,8 @@ class ArchitectureDecisionRequest(BaseModel):
     """Request for architecture decision support."""
 
     decision: str
-    options: List[str]
-    constraints: Dict[str, Any] = {}
+    options: list[str]
+    constraints: dict[str, Any] = {}
 
 
 class SecurityScanRequest(BaseModel):
@@ -118,10 +115,10 @@ Provide analysis of:
 
 
 @router.post("/architecture-decision")
-async def architecture_decision(request: ArchitectureDecisionRequest) -> Dict[str, Any]:
+async def architecture_decision(request: ArchitectureDecisionRequest) -> dict[str, Any]:
     """Get brain-powered architecture decision support."""
     # REAL BRAIN USAGE
-    options_text = "\n".join([f"{i+1}. {opt}" for i, opt in enumerate(request.options)])
+    options_text = "\n".join([f"{i + 1}. {opt}" for i, opt in enumerate(request.options)])
 
     brain_input = f"""Architecture Decision Required:
 
@@ -154,12 +151,12 @@ Recommend the best option with justification."""
 
 
 @router.post("/security-scan")
-async def security_scan(request: SecurityScanRequest) -> Dict[str, Any]:
+async def security_scan(request: SecurityScanRequest) -> dict[str, Any]:
     """Scan code for security vulnerabilities using brain."""
     # REAL BRAIN USAGE
     brain_input = f"""Security vulnerability scan for {request.language} code:
 
-File: {request.file_path or 'unknown'}
+File: {request.file_path or "unknown"}
 
 Code:
 ```{request.language}
@@ -202,7 +199,7 @@ Rate severity: Critical, High, Medium, Low"""
 
 
 @router.get("/brain-health")
-async def brain_health() -> Dict[str, Any]:
+async def brain_health() -> dict[str, Any]:
     """Check brain cognitive engine health."""
     # REAL BRAIN USAGE - Health check
     result = brain_think("Brain health check diagnostic", {"check": True})

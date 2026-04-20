@@ -17,37 +17,32 @@ Owner: Trang
 Version: 2.0.0 - Permanent Brain Activation
 """
 
-
 import asyncio
 import atexit
 import hashlib
 import os
-import sys
 import threading
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 from functools import wraps
-from pathlib import Path
-from typing import Any, ClassVar, Dict, Optional
+from typing import Any, ClassVar
 
-# AMOS imports - Add clawspring to path for proper imports
-_AMOS_ROOT = Path(__file__).parent.resolve()
-sys.path.insert(0, str(_AMOS_ROOT))
-sys.path.insert(0, str(_AMOS_ROOT / "AMOS_ORGANISM_OS"))
-sys.path.insert(0, str(_AMOS_ROOT / "clawspring"))
+# Import alias modules to set up paths
+import AMOS_ORGANISM_OS  # noqa: F401
+import clawspring  # noqa: F401
 
-# Import from clawspring amos_brain modules
+# Import from clawspring amos_brain modules (proper package - no path hack needed)
+# AMOS_ORGANISM_OS and clawspring are proper packages via pyproject.toml
+
+# Import cognitive bridge from proper package
 try:
-    pass  # Import attempted via path setup above
-except ImportError:
-    # Fallback: try direct import with adjusted path
-    sys.path.insert(0, str(_AMOS_ROOT / "clawspring" / "amos_brain"))
-
-# Import cognitive bridge
-try:
-    from amos_cognitive_bridge import AMOSCognitiveBridge, CognitiveResponse
+    from clawspring.amos_brain.amos_cognitive_bridge import (
+        AMOSCognitiveBridge,
+        CognitiveResponse,
+    )
 except ImportError:
     AMOSCognitiveBridge = None
     CognitiveResponse = None
@@ -56,17 +51,20 @@ except ImportError:
 @dataclass
 class BrainSession:
     """Active brain session for Cascade."""
-    session_id: str = field(default_factory=lambda: hashlib.sha256(
-        f"{datetime.now(timezone.utc).isoformat()}{os.urandom(8)}".encode()
-    ).hexdigest()[:16])
+
+    session_id: str = field(
+        default_factory=lambda: hashlib.sha256(
+            f"{datetime.now(timezone.utc).isoformat()}{os.urandom(8)}".encode()
+        ).hexdigest()[:16]
+    )
     start_time: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    kernel_runtime: Optional[AMOSKernelRuntime] = None
-    cognitive_bridge: Optional[AMOSCognitiveBridge] = None
-    state_graph: Optional[StateGraph] = None
+    kernel_runtime: AMOSKernelRuntime = None
+    cognitive_bridge: AMOSCognitiveBridge = None
+    state_graph: StateGraph = None
     active: bool = True
     request_count: int = 0
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "session_id": self.session_id,
             "start_time": self.start_time.isoformat(),
@@ -92,7 +90,7 @@ class AMOSCascadeBrain:
         result = await brain.think("Analyze this code", context={"file": "main.py"})
     """
 
-    _instance: Optional[AMOSCascadeBrain] = None
+    _instance: AMOSCascadeBrain = None
     _lock: ClassVar[threading.Lock] = threading.Lock()
     _initialized: bool = False
 
@@ -108,9 +106,9 @@ class AMOSCascadeBrain:
             return
 
         self._setup_complete = False
-        self._current_session: Optional[BrainSession] = None
-        self._kernel: Optional[AMOSKernelRuntime] = None
-        self._bridge: Optional[AMOSCognitiveBridge] = None
+        self._current_session: BrainSession = None
+        self._kernel: AMOSKernelRuntime = None
+        self._bridge: AMOSCognitiveBridge = None
         self._auto_init: bool = True
         self._init_lock = asyncio.Lock()
 
@@ -187,9 +185,9 @@ class AMOSCascadeBrain:
     async def think(
         self,
         intent: str,
-        context: Dict[str, Any]  = None,
-        goal: str  = None,
-    ) -> Dict[str, Any]:
+        context: dict[str, Any] = None,
+        goal: str = None,
+    ) -> dict[str, Any]:
         """
         Process a cognitive request through the AMOS brain.
 
@@ -251,7 +249,7 @@ class AMOSCascadeBrain:
     async def execute_tool(
         self,
         tool_name: str,
-        arguments: Dict[str, Any],
+        arguments: dict[str, Any],
     ) -> CognitiveResponse:
         """
         Execute a tool through the cognitive bridge.
@@ -274,7 +272,7 @@ class AMOSCascadeBrain:
 
         return await self._bridge.process_tool_call(tool_name, arguments)
 
-    def get_session_info(self) -> Dict[str, Any]:
+    def get_session_info(self) -> dict[str, Any]:
         """Get current session information."""
         if not self._current_session:
             return {"active": False, "initialized": self._setup_complete}
@@ -292,6 +290,7 @@ class AMOSCascadeBrain:
 # Decorator for Automatic Brain Usage
 # ============================================================================
 
+
 def with_brain(func: Callable) -> Callable:
     """
     Decorator that ensures brain is active for any function.
@@ -303,12 +302,14 @@ def with_brain(func: Callable) -> Callable:
             brain = AMOSCascadeBrain.get_instance()
             result = await brain.think("...")
     """
+
     @wraps(func)
     async def wrapper(*args, **kwargs):
         brain = AMOSCascadeBrain.get_instance()
         if not brain._setup_complete:
             await brain.initialize()
         return await func(*args, **kwargs)
+
     return wrapper
 
 
@@ -316,7 +317,8 @@ def with_brain(func: Callable) -> Callable:
 # Global Brain Instance - Auto-created on import
 # ============================================================================
 
-_cascade_brain: Optional[AMOSCascadeBrain] = None
+_cascade_brain: AMOSCascadeBrain = None
+
 
 async def get_brain() -> AMOSCascadeBrain:
     """Get the global Cascade brain instance, initializing if needed."""
@@ -335,6 +337,7 @@ def get_brain_sync() -> AMOSCascadeBrain:
 # ============================================================================
 # Auto-activation on module load
 # ============================================================================
+
 
 async def _auto_activate():
     """Auto-activate brain when module is imported."""
@@ -359,9 +362,7 @@ if __name__ == "__main__":
         print("\n🧠 Testing brain activation...")
 
         result = await brain.think(
-            "Test cognitive processing",
-            context={"test": True},
-            goal="validate_system"
+            "Test cognitive processing", context={"test": True}, goal="validate_system"
         )
 
         print(f"\nResult: {result.get('status', 'unknown')}")

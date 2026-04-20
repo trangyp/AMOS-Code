@@ -51,9 +51,11 @@ import random
 import ssl
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import UTC, datetime
+
+UTC = UTC, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import aiohttp
 import structlog
@@ -144,11 +146,11 @@ class ServiceEndpoint:
     host: str
     port: int
     protocol: str = "http"
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
     health_status: ServiceStatus = ServiceStatus.UNKNOWN
     last_heartbeat: datetime = None
     weight: int = 1
-    tags: List[str] = field(default_factory=list)
+    tags: list[str] = field(default_factory=list)
 
     @property
     def address(self) -> str:
@@ -165,8 +167,8 @@ class ServiceRoute:
     weight: int = 100
     retry_attempts: int = 3
     timeout_ms: int = 30000
-    headers: Dict[str, str] = field(default_factory=dict)
-    tags: List[str] = field(default_factory=list)
+    headers: dict[str, str] = field(default_factory=dict)
+    tags: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -187,7 +189,7 @@ class TraceContext:
     span_id: str
     parent_span_id: str = None
     sampled: bool = True
-    baggage: Dict[str, str] = field(default_factory=dict)
+    baggage: dict[str, str] = field(default_factory=dict)
 
 
 # ============================================
@@ -202,8 +204,8 @@ class ServiceRegistry:
 
     def __init__(self, redis_url: str = SERVICE_REGISTRY_URL):
         self.redis_url = redis_url
-        self._redis: Optional[Any] = None
-        self._local_cache: Dict[str, list[ServiceEndpoint]] = {}
+        self._redis: Any = None
+        self._local_cache: dict[str, list[ServiceEndpoint]] = {}
 
     async def initialize(self) -> None:
         """Initialize Redis connection."""
@@ -290,8 +292,8 @@ class ServiceRegistry:
             return False
 
     async def discover(
-        self, service_name: str, healthy_only: bool = True, tags: List[str] = None
-    ) -> List[ServiceEndpoint]:
+        self, service_name: str, healthy_only: bool = True, tags: list[str] = None
+    ) -> list[ServiceEndpoint]:
         """
         Discover service endpoints.
 
@@ -303,7 +305,7 @@ class ServiceRegistry:
         Returns:
             List of matching service endpoints
         """
-        endpoints: List[ServiceEndpoint] = []
+        endpoints: list[ServiceEndpoint] = []
 
         try:
             if self._redis:
@@ -337,7 +339,7 @@ class ServiceRegistry:
 
         return endpoints
 
-    def _parse_endpoint(self, key: str, data: Dict[str, str]) -> ServiceEndpoint:
+    def _parse_endpoint(self, key: str, data: dict[str, str]) -> ServiceEndpoint:
         """Parse Redis data into ServiceEndpoint."""
         parts = key.split(":")
         service_name = parts[2] if len(parts) > 2 else "unknown"
@@ -392,9 +394,9 @@ class MTLSManager:
 
     def __init__(self, cert_dir: str = "/etc/amos/certs"):
         self.cert_dir = cert_dir
-        self._private_key: Optional[Any] = None
-        self._certificate: Optional[Any] = None
-        self._ca_cert: Optional[Any] = None
+        self._private_key: Any = None
+        self._certificate: Any = None
+        self._ca_cert: Any = None
         self._cert_expiry: datetime = None
 
     async def initialize(self) -> bool:
@@ -535,7 +537,7 @@ class CircuitBreaker:
     Circuit breaker pattern for fault tolerance.
     """
 
-    def __init__(self, name: str, config: Optional[CircuitBreakerConfig] = None):
+    def __init__(self, name: str, config: CircuitBreakerConfig = None):
         self.name = name
         self.config = config or CircuitBreakerConfig()
         self.state = CircuitState.CLOSED
@@ -628,9 +630,9 @@ class LoadBalancer:
     def __init__(self, strategy: LoadBalancerStrategy = LoadBalancerStrategy.ROUND_ROBIN):
         self.strategy = strategy
         self._round_robin_index = 0
-        self._connection_counts: Dict[str, int] = {}
+        self._connection_counts: dict[str, int] = {}
 
-    def select(self, endpoints: List[ServiceEndpoint]) -> Optional[ServiceEndpoint]:
+    def select(self, endpoints: list[ServiceEndpoint]) -> ServiceEndpoint:
         """
         Select an endpoint using configured strategy.
 
@@ -658,17 +660,17 @@ class LoadBalancer:
 
         return healthy_endpoints[0]
 
-    def _round_robin(self, endpoints: List[ServiceEndpoint]) -> ServiceEndpoint:
+    def _round_robin(self, endpoints: list[ServiceEndpoint]) -> ServiceEndpoint:
         """Round-robin selection."""
         idx = self._round_robin_index % len(endpoints)
         self._round_robin_index = (self._round_robin_index + 1) % len(endpoints)
         return endpoints[idx]
 
-    def _least_connections(self, endpoints: List[ServiceEndpoint]) -> ServiceEndpoint:
+    def _least_connections(self, endpoints: list[ServiceEndpoint]) -> ServiceEndpoint:
         """Select endpoint with least connections."""
         return min(endpoints, key=lambda e: self._connection_counts.get(e.instance_id, 0))
 
-    def _weighted(self, endpoints: List[ServiceEndpoint]) -> ServiceEndpoint:
+    def _weighted(self, endpoints: list[ServiceEndpoint]) -> ServiceEndpoint:
         """Weighted random selection."""
         total_weight = sum(e.weight for e in endpoints)
         r = random.uniform(0, total_weight)
@@ -699,8 +701,8 @@ class TracingManager:
 
     def __init__(self, service_name: str = "amos-service"):
         self.service_name = service_name
-        self._tracer: Optional[Any] = None
-        self._provider: Optional[Any] = None
+        self._tracer: Any = None
+        self._provider: Any = None
 
     async def initialize(self) -> bool:
         """Initialize OpenTelemetry tracing."""
@@ -733,8 +735,8 @@ class TracingManager:
     def start_span(
         self,
         name: str,
-        parent_context: Optional[TraceContext] = None,
-        attributes: Dict[str, Any] = None,
+        parent_context: TraceContext = None,
+        attributes: dict[str, Any] = None,
     ) -> Any:
         """
         Start a new trace span.
@@ -750,7 +752,7 @@ class TracingManager:
         if not self._tracer:
             return None
 
-        kwargs: Dict[str, Any] = {}
+        kwargs: dict[str, Any] = {}
         if attributes:
             kwargs["attributes"] = attributes
 
@@ -781,11 +783,11 @@ class TracingManager:
         )
 
     def inject_trace_context(
-        self, headers: Dict[str, str], context: TraceContext
-    ) -> Dict[str, str]:
+        self, headers: dict[str, str], context: TraceContext
+    ) -> dict[str, str]:
         """Inject trace context into HTTP headers (W3C format)."""
         headers["traceparent"] = (
-            f"00-{context.trace_id}-{context.span_id}-" f"{'01' if context.sampled else '00'}"
+            f"00-{context.trace_id}-{context.span_id}-{'01' if context.sampled else '00'}"
         )
 
         if context.baggage:
@@ -794,7 +796,7 @@ class TracingManager:
 
         return headers
 
-    def extract_trace_context(self, headers: Dict[str, str]) -> Optional[TraceContext]:
+    def extract_trace_context(self, headers: dict[str, str]) -> TraceContext:
         """Extract trace context from HTTP headers (W3C format)."""
         traceparent = headers.get("traceparent")
         if not traceparent:
@@ -828,14 +830,14 @@ class ServiceMeshClient:
     def __init__(
         self,
         registry: ServiceRegistry,
-        mtls: Optional[MTLSManager] = None,
-        tracer: Optional[TracingManager] = None,
+        mtls: MTLSManager = None,
+        tracer: TracingManager = None,
     ):
         self.registry = registry
         self.mtls = mtls
         self.tracer = tracer
         self.load_balancer = LoadBalancer(LoadBalancerStrategy.LEAST_CONNECTIONS)
-        self.circuit_breakers: Dict[str, CircuitBreaker] = {}
+        self.circuit_breakers: dict[str, CircuitBreaker] = {}
         self._session: aiohttp.ClientSession = None
 
     async def initialize(self) -> None:
@@ -855,11 +857,11 @@ class ServiceMeshClient:
         target_service: str,
         method: str,
         path: str,
-        headers: Dict[str, str] = None,
-        json_data: Dict[str, Any] = None,
-        trace_context: Optional[TraceContext] = None,
+        headers: dict[str, str] = None,
+        json_data: dict[str, Any] = None,
+        trace_context: TraceContext = None,
         retry_attempts: int = 3,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Make HTTP request to target service with mesh features.
 
@@ -973,7 +975,7 @@ class AMOSServiceMesh:
         self.registry = ServiceRegistry(registry_url)
         self.mtls = MTLSManager() if MTLS_ENABLED else None
         self.tracer = TracingManager(service_name)
-        self.client: Optional[ServiceMeshClient] = None
+        self.client: ServiceMeshClient = None
 
         # State
         self._initialized = False
@@ -1079,9 +1081,9 @@ class AMOSServiceMesh:
         target_service: str,
         method: str,
         path: str,
-        json_data: Dict[str, Any] = None,
-        headers: Dict[str, str] = None,
-    ) -> Dict[str, Any]:
+        json_data: dict[str, Any] = None,
+        headers: dict[str, str] = None,
+    ) -> dict[str, Any]:
         """
         Call another service through the mesh.
 

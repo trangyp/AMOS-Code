@@ -1,4 +1,6 @@
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
+
+from typing import Any, Optional
 
 """AMOS Search & Discovery API - Hybrid BM25 + Vector + RRF Search
 
@@ -27,8 +29,8 @@ class DocumentIndexRequest(BaseModel):
     title: str = Field(..., description="Document title")
     content: str = Field(..., description="Document content")
     doc_type: str = Field(default="general", description="Document type")
-    metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
-    vector: Optional[list[float]] = Field(None, description="Optional vector embedding")
+    metadata: dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
+    vector: list[Optional[float]] = Field(None, description="Optional vector embedding")
 
 
 class SearchRequest(BaseModel):
@@ -51,7 +53,7 @@ class SearchResultResponse(BaseModel):
     vector_score: float
     hybrid_score: float
     rank: int
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
 
 
 class SearchResponse(BaseModel):
@@ -60,7 +62,7 @@ class SearchResponse(BaseModel):
     query: str
     mode: str
     total_results: int
-    results: List[SearchResultResponse]
+    results: list[SearchResultResponse]
     search_time_ms: float
 
 
@@ -68,7 +70,7 @@ class IndexStatsResponse(BaseModel):
     """Index statistics."""
 
     total_documents: int
-    by_type: Dict[str, int]
+    by_type: dict[str, int]
     avg_doc_length: float
     vocabulary_size: int
 
@@ -83,7 +85,7 @@ def get_search_service() -> SearchService:
 @router.post("/index", status_code=status.HTTP_201_CREATED)
 async def index_document_endpoint(
     request: DocumentIndexRequest, service: SearchService = Depends(get_search_service)
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Index a new document for search.
 
     Creates searchable document with optional vector embedding.

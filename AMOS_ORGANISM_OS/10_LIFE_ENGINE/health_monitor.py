@@ -7,10 +7,12 @@ wellness indicators for the organism.
 import json
 import uuid
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timedelta
+from datetime import UTC, datetime
+
+UTC = UTC, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class HealthStatus(Enum):
@@ -46,7 +48,7 @@ class HealthMetric:
     source: str = ""
     notes: str = ""
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "metric_type": self.metric_type.value,
@@ -65,7 +67,7 @@ class HealthAlert:
     acknowledged: bool = False
     resolved: bool = False
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
@@ -82,8 +84,8 @@ class HealthMonitor:
         self.data_dir = data_dir
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
-        self.metrics: List[HealthMetric] = []
-        self.alerts: List[HealthAlert] = []
+        self.metrics: list[HealthMetric] = []
+        self.alerts: list[HealthAlert] = []
 
         self._load_data()
 
@@ -176,7 +178,7 @@ class HealthMonitor:
         self,
         metric_type: Optional[MetricType] = None,
         hours: int = 24,
-    ) -> List[dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Get recent metrics."""
         cutoff = (datetime.now(UTC) - timedelta(hours=hours)).isoformat()
 
@@ -186,7 +188,7 @@ class HealthMonitor:
 
         return [m.to_dict() for m in metrics]
 
-    def get_health_summary(self, hours: int = 24) -> Dict[str, Any]:
+    def get_health_summary(self, hours: int = 24) -> dict[str, Any]:
         """Get health summary for a period."""
         recent = self.get_recent_metrics(hours=hours)
 
@@ -229,7 +231,7 @@ class HealthMonitor:
         else:
             return HealthStatus.GOOD.value
 
-    def get_active_alerts(self) -> List[dict[str, Any]]:
+    def get_active_alerts(self) -> list[dict[str, Any]]:
         """Get active (unresolved) alerts."""
         active = [a for a in self.alerts if not a.resolved]
         return sorted(
@@ -256,7 +258,7 @@ class HealthMonitor:
                 return True
         return False
 
-    def get_recommendations(self) -> List[str]:
+    def get_recommendations(self) -> list[str]:
         """Get health recommendations based on current state."""
         recs = []
         summary = self.get_health_summary()

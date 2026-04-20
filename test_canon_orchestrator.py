@@ -11,9 +11,9 @@ from amos_brain.canon_orchestrator import canon_orchestrate
 
 def test_orchestrator_execution():
     """Test full Canon-orchestrated task execution."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST: Canon Orchestrator Execution")
-    print("="*60)
+    print("=" * 60)
 
     tasks = [
         ("How should we design brain cognitive architecture?", "cognitive"),
@@ -40,22 +40,19 @@ def test_orchestrator_execution():
         print(f"  Patterns learned: {canon_ctx.get('patterns_learned', 0)}")
 
         # Show reasoning path
-        print(f"  Reasoning steps:")
+        print("  Reasoning steps:")
         for step in result.reasoning_path[:3]:
             print(f"    - {step}")
 
 
 def test_orchestrator_with_reasoning():
     """Test orchestrator with decision reasoning."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST: Canon Orchestrator with Reasoning")
-    print("="*60)
+    print("=" * 60)
 
     # Task with "should" triggers reasoning
-    result = canon_orchestrate(
-        "What should we use for task automation?",
-        domain="domains"
-    )
+    result = canon_orchestrate("What should we use for task automation?", domain="domains")
 
     print(f"\n  Task triggered reasoning: {'should' in result.task_id}")
     print(f"  Success: {result.success}")
@@ -70,22 +67,23 @@ def test_orchestrator_with_reasoning():
 
 def main():
     """Run all Canon Orchestrator tests."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("AMOS CANON ORCHESTRATOR - REAL DATA TEST")
-    print("="*60)
+    print("=" * 60)
 
     try:
         test_orchestrator_execution()
         test_orchestrator_with_reasoning()
 
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("✅ ALL CANON ORCHESTRATOR TESTS PASSED")
-        print("="*60)
+        print("=" * 60)
         return 0
 
     except Exception as e:
         print(f"\n❌ TEST FAILED: {e}")
         import traceback
+
         traceback.print_exc()
         return 1
 

@@ -1,0 +1,103 @@
+# AMOS Tool Lattice - Architecture Enforcement Kernel
+# Import Linter Configuration for 5-Layer Kernel Architecture
+# Docs: https://import-linter.readthedocs.io/en/latest/contract_types/layers/
+#
+# This enforces the AMOS architectural contract:
+# - Layer 5 (Numeric) → No internal dependencies
+# - Layer 4 (Schema) → Can use Layer 5
+# - Layer 3 (Code-Agent) → Can use Layers 4, 5
+# - Layer 2 (Repo-Enforcement) → Can use Layers 3, 4, 5
+# - Layer 1 (Profiling) → Can use all layers
+
+[importlinter]
+root_package = amos_brain
+include_external_packages = false
+
+# ============================================================================
+# CONTRACT 1: AMOS Five-Kernel Architecture
+# Enforces the tool lattice layering
+# ============================================================================
+
+[[importlinter.contracts]]
+name = "AMOS Five-Kernel Architecture"
+type = layers
+containers = [
+    "amos_brain.numeric_kernel",
+    "amos_brain.schema_kernel",
+    "amos_brain.code_agent_kernel",
+    "amos_brain.repo_enforcement_kernel",
+    "amos_brain.profiling_kernel",
+]
+# Layer order: bottom (independent) to top (dependent)
+# numeric → schema → code_agent → repo_enforcement → profiling
+layers = [
+    "amos_brain.numeric_kernel",
+    "amos_brain.schema_kernel",
+    "amos_brain.code_agent_kernel",
+    "amos_brain.repo_enforcement_kernel",
+    "amos_brain.profiling_kernel",
+]
+exhaustive = true
+exhaustive_ignores = [
+    "amos_brain.api",
+    "amos_brain.cli",
+    "amos_brain.tests",
+]
+
+# ============================================================================
+# CONTRACT 2: AMOS Core Dependencies
+# Enforces that core never depends on optional layers
+# ============================================================================
+
+[[importlinter.contracts]]
+name = "AMOS Core Isolation"
+type = forbidden
+source_modules = [
+    "amos_brain.core",
+    "amos_brain.kernel",
+]
+forbidden_modules = [
+    "amos_brain.ml",
+    "amos_brain.ui",
+    "amos_brain.experimental",
+]
+
+# ============================================================================
+# CONTRACT 3: Numeric Kernel Independence
+# The numeric kernel (NumPy/Polars/Numba/JAX) must not import higher layers
+# ============================================================================
+
+[[importlinter.contracts]]
+name = "Numeric Kernel Independence"
+type = independence
+modules = [
+    "amos_brain.numeric_kernel",
+]
+
+# ============================================================================
+# CONTRACT 4: Schema Kernel Authority
+# Schema kernel (Pydantic models) can be used by all but depends only on numeric
+# ============================================================================
+
+[[importlinter.contracts]]
+name = "Schema Kernel Authority"
+type = layers
+containers = ["amos_brain"]
+layers = [
+    "amos_brain.numeric_kernel",
+    "amos_brain.schema_kernel",
+]
+exhaustive = false
+
+# ============================================================================
+# IGNORE PATTERNS
+# Patterns that are exempt from architectural enforcement
+# ============================================================================
+
+[importlinter.ignore_imports]
+# Test files can import anything
+amos_brain.tests.* = "**"
+# CLI entry points can import across layers
+amos_brain.cli.* = "**"
+# API routes can import across layers for handlers
+amos_brain.api.routes.* = "**"

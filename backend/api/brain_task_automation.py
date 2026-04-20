@@ -7,25 +7,25 @@ Provides intelligent task automation using AMOS cognitive architecture:
 - Self-monitoring and optimization
 """
 
+from __future__ import annotations
 
 import asyncio
 import sys
 from collections.abc import Callable
 from datetime import datetime, timezone
-
-UTC = timezone.utc
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException
 from pydantic import BaseModel, Field
+
+UTC = timezone.utc
 
 # Setup paths
 AMOS_ROOT = Path(__file__).parent.parent.parent.resolve()
 for p in [AMOS_ROOT, AMOS_ROOT / "clawspring", AMOS_ROOT / "clawspring" / "amos_brain"]:
     if str(p) not in sys.path:
-        sys.path.insert(0, str(p))
 
 router = APIRouter(prefix="/api/v1/brain/automation", tags=["Brain Task Automation"])
 
@@ -55,22 +55,22 @@ class AutomationTask(BaseModel):
 
     id: str = Field(..., description="Unique task ID")
     goal: str = Field(..., description="High-level goal to achieve")
-    context: Dict[str, Any] = Field(default_factory=dict, description="Task context")
+    context: dict[str, Any] = Field(default_factory=dict, description="Task context")
     priority: TaskPriority = TaskPriority.NORMAL
     timeout_seconds: int = Field(default=300, ge=1, le=3600)
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     status: TaskStatus = TaskStatus.PENDING
-    subtasks: List[dict[str, Any]] = Field(default_factory=list)
-    result: Dict[str, Any] = None
-    error: Optional[str] = None
-    completed_at: Optional[datetime] = None
+    subtasks: list[dict[str, Any]] = Field(default_factory=list)
+    result: dict[str, Any] =None
+    error: str  =None
+    completed_at: datetime  = None
 
 
 class TaskCreateRequest(BaseModel):
     """Request to create automation task."""
 
     goal: str = Field(..., min_length=1, max_length=1000)
-    context: Dict[str, Any] = Field(default_factory=dict)
+    context: dict[str, Any] = Field(default_factory=dict)
     priority: TaskPriority = TaskPriority.NORMAL
     timeout_seconds: int = Field(default=300, ge=1, le=3600)
 
@@ -80,17 +80,17 @@ class TaskPlanResponse(BaseModel):
 
     task_id: str
     goal: str
-    steps: List[dict[str, Any]]
+    steps: list[dict[str, Any]]
     estimated_duration: float
-    risk_assessment: Dict[str, Any]
+    risk_assessment: dict[str, Any]
 
 
 class TaskExecutionEngine:
     """Real task execution engine using AMOS brain."""
 
     def __init__(self) -> None:
-        self.tasks: Dict[str, AutomationTask] = {}
-        self.execution_history: List[dict[str, Any]] = []
+        self.tasks: dict[str, AutomationTask] = {}
+        self.execution_history: list[dict[str, Any]] = []
         self._lock = asyncio.Lock()
 
     async def create_task(self, request: TaskCreateRequest) -> AutomationTask:
@@ -110,7 +110,7 @@ class TaskExecutionEngine:
 
         return task
 
-    async def decompose_goal(self, task: AutomationTask) -> List[dict[str, Any]]:
+    async def decompose_goal(self, task: AutomationTask) -> list[dict[str, Any]]:
         """Decompose goal into subtasks using cognitive analysis."""
         # Use brain for intelligent decomposition
         try:
@@ -152,7 +152,7 @@ class TaskExecutionEngine:
             # Fallback to rule-based decomposition
             return self._rule_based_decomposition(task)
 
-    def _rule_based_decomposition(self, task: AutomationTask) -> List[dict[str, Any]]:
+    def _rule_based_decomposition(self, task: AutomationTask) -> list[dict[str, Any]]:
         """Fallback rule-based goal decomposition."""
         goal_lower = task.goal.lower()
 
@@ -319,13 +319,13 @@ class TaskExecutionEngine:
         return task
 
     async def _execute_subtask(
-        self, task: AutomationTask, subtask: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, task: AutomationTask, subtask: dict[str, Any]
+    ) -> dict[str, Any]:
         """Execute a single subtask."""
         action = subtask.get("action", "process")
 
         # Action handlers
-        handlers: Dict[str, Callable] = {
+        handlers: dict[str, Callable] = {
             "validate": self._handle_validate,
             "build": self._handle_build,
             "test": self._handle_test,
@@ -351,8 +351,8 @@ class TaskExecutionEngine:
             return {"status": "failed", "action": action, "error": str(e)}
 
     async def _attempt_recovery(
-        self, task: AutomationTask, subtask: Dict[str, Any], failure: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, task: AutomationTask, subtask: dict[str, Any], failure: dict[str, Any]
+    ) -> dict[str, Any]:
         """Attempt to recover from subtask failure."""
         # Use brain for recovery strategy
         try:
@@ -397,23 +397,23 @@ class TaskExecutionEngine:
 
     # Action handlers
     async def _handle_validate(
-        self, task: AutomationTask, subtask: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, task: AutomationTask, subtask: dict[str, Any]
+    ) -> dict[str, Any]:
         """Validate preconditions."""
         await asyncio.sleep(0.5)  # Simulate work
         return {"validated": True, "checks_passed": 5}
 
-    async def _handle_build(self, task: AutomationTask, subtask: Dict[str, Any]) -> Dict[str, Any]:
+    async def _handle_build(self, task: AutomationTask, subtask: dict[str, Any]) -> dict[str, Any]:
         """Build artifacts."""
         await asyncio.sleep(1.0)
         return {"built": True, "artifacts": 3, "duration_ms": 1000}
 
-    async def _handle_test(self, task: AutomationTask, subtask: Dict[str, Any]) -> Dict[str, Any]:
+    async def _handle_test(self, task: AutomationTask, subtask: dict[str, Any]) -> dict[str, Any]:
         """Run tests."""
         await asyncio.sleep(1.5)
         return {"tests_passed": 42, "tests_failed": 0, "coverage": 87.5}
 
-    async def _handle_deploy(self, task: AutomationTask, subtask: Dict[str, Any]) -> Dict[str, Any]:
+    async def _handle_deploy(self, task: AutomationTask, subtask: dict[str, Any]) -> dict[str, Any]:
         """Deploy to target."""
         await asyncio.sleep(0.8)
         return {
@@ -422,89 +422,89 @@ class TaskExecutionEngine:
             "version": "1.0.0",
         }
 
-    async def _handle_verify(self, task: AutomationTask, subtask: Dict[str, Any]) -> Dict[str, Any]:
+    async def _handle_verify(self, task: AutomationTask, subtask: dict[str, Any]) -> dict[str, Any]:
         """Verify deployment."""
         await asyncio.sleep(0.5)
         return {"verified": True, "health_checks": 4, "all_passed": True}
 
     async def _handle_collect(
-        self, task: AutomationTask, subtask: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, task: AutomationTask, subtask: dict[str, Any]
+    ) -> dict[str, Any]:
         """Collect data."""
         await asyncio.sleep(0.8)
         return {"records_collected": 1000, "sources": 3}
 
     async def _handle_process(
-        self, task: AutomationTask, subtask: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, task: AutomationTask, subtask: dict[str, Any]
+    ) -> dict[str, Any]:
         """Process data."""
         await asyncio.sleep(1.0)
         return {"processed": True, "transformations": 5, "output_size": 500}
 
     async def _handle_analyze(
-        self, task: AutomationTask, subtask: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, task: AutomationTask, subtask: dict[str, Any]
+    ) -> dict[str, Any]:
         """Analyze data."""
         await asyncio.sleep(1.2)
         return {"insights_found": 7, "patterns": ["trend_a", "anomaly_b"], "confidence": 0.92}
 
-    async def _handle_report(self, task: AutomationTask, subtask: Dict[str, Any]) -> Dict[str, Any]:
+    async def _handle_report(self, task: AutomationTask, subtask: dict[str, Any]) -> dict[str, Any]:
         """Generate report."""
         await asyncio.sleep(0.6)
         return {"report_generated": True, "pages": 12, "format": "html"}
 
     async def _handle_diagnose(
-        self, task: AutomationTask, subtask: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, task: AutomationTask, subtask: dict[str, Any]
+    ) -> dict[str, Any]:
         """Diagnose issue."""
         await asyncio.sleep(0.8)
         return {"issues_found": 2, "severity": "medium", "root_cause": "config_drift"}
 
-    async def _handle_repair(self, task: AutomationTask, subtask: Dict[str, Any]) -> Dict[str, Any]:
+    async def _handle_repair(self, task: AutomationTask, subtask: dict[str, Any]) -> dict[str, Any]:
         """Apply repair."""
         await asyncio.sleep(1.0)
         return {"repaired": True, "fixes_applied": 2, "validation_passed": True}
 
     async def _handle_prepare(
-        self, task: AutomationTask, subtask: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, task: AutomationTask, subtask: dict[str, Any]
+    ) -> dict[str, Any]:
         """Prepare environment."""
         await asyncio.sleep(0.5)
         return {"prepared": True, "resources_allocated": 4}
 
     async def _handle_execute(
-        self, task: AutomationTask, subtask: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, task: AutomationTask, subtask: dict[str, Any]
+    ) -> dict[str, Any]:
         """Execute main work."""
         await asyncio.sleep(1.5)
         return {"executed": True, "operations": 10, "success_rate": 1.0}
 
     async def _handle_finalize(
-        self, task: AutomationTask, subtask: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, task: AutomationTask, subtask: dict[str, Any]
+    ) -> dict[str, Any]:
         """Finalize task."""
         await asyncio.sleep(0.3)
         return {"finalized": True, "cleanup_done": True}
 
     async def _handle_generic(
-        self, task: AutomationTask, subtask: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, task: AutomationTask, subtask: dict[str, Any]
+    ) -> dict[str, Any]:
         """Generic action handler."""
         await asyncio.sleep(0.5)
         return {"completed": True, "action": subtask.get("action")}
 
-    def get_task(self, task_id: str) -> Optional[AutomationTask]:
+    def get_task(self, task_id: str) -> AutomationTask :
         """Get task by ID."""
         return self.tasks.get(task_id)
 
-    def list_tasks(self, status: Optional[TaskStatus] = None) -> List[AutomationTask]:
+    def list_tasks(self, status: TaskStatus  = None) -> list[AutomationTask]:
         """List tasks, optionally filtered by status."""
         tasks = list(self.tasks.values())
         if status:
             tasks = [t for t in tasks if t.status == status]
         return sorted(tasks, key=lambda t: t.created_at, reverse=True)
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get execution statistics."""
         total = len(self.tasks)
         completed = len([t for t in self.tasks.values() if t.status == TaskStatus.COMPLETED])
@@ -523,8 +523,8 @@ class TaskExecutionEngine:
         }
 
 
-# Global engine instance
-_engine: Optional[TaskExecutionEngine] = None
+#Global engine instance
+_engine: TaskExecutionEngine  = None
 
 
 def get_engine() -> TaskExecutionEngine:
@@ -547,7 +547,7 @@ async def create_task(request: TaskCreateRequest) -> AutomationTask:
 
 
 @router.post("/tasks/{task_id}/execute")
-async def execute_task(task_id: str, background_tasks: BackgroundTasks) -> Dict[str, Any]:
+async def execute_task(task_id: str, background_tasks: BackgroundTasks) -> dict[str, Any]:
     """Execute automation task.
 
     This will decompose the goal into subtasks and execute them.
@@ -585,14 +585,14 @@ async def get_task(task_id: str) -> AutomationTask:
 
 
 @router.get("/tasks")
-async def list_tasks(status: Optional[TaskStatus] = None) -> List[AutomationTask]:
+async def list_tasks(status: TaskStatus  = None) -> list[AutomationTask]:
     """List all automation tasks, optionally filtered by status."""
     engine = get_engine()
     return engine.list_tasks(status)
 
 
 @router.get("/stats")
-async def get_stats() -> Dict[str, Any]:
+async def get_stats() -> dict[str, Any]:
     """Get task execution statistics."""
     engine = get_engine()
     return engine.get_stats()
@@ -626,7 +626,7 @@ async def get_task_plan(task_id: str) -> TaskPlanResponse:
 
 
 @router.get("/health")
-async def health_check() -> Dict[str, Any]:
+async def health_check() -> dict[str, Any]:
     """Health check for brain task automation."""
     engine = get_engine()
     stats = engine.get_stats()

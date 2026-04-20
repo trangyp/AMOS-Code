@@ -20,7 +20,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Protocol
+from typing import Any, Protocol
 
 
 class IngestionMode(Enum):
@@ -62,10 +62,10 @@ class DataSchema:
     schema_id: str
     name: str
     version: str
-    fields: List[dict[str, Any]]  # name, type, nullable, constraints
+    fields: list[dict[str, Any]]  # name, type, nullable, constraints
     created_at: float = field(default_factory=time.time)
 
-    def validate_record(self, record: Dict[str, Any]) -> List[str]:
+    def validate_record(self, record: dict[str, Any]) -> list[str]:
         """Validate a record against this schema."""
         errors = []
 
@@ -109,7 +109,7 @@ class DataSource:
     source_id: str
     name: str
     source_type: str  # file, database, api, kafka, s3
-    connection_config: Dict[str, Any]
+    connection_config: dict[str, Any]
     schema_id: str = None
     ingestion_mode: IngestionMode = IngestionMode.BATCH
     schedule: str = None  # Cron expression for batch
@@ -125,7 +125,7 @@ class DataQualityRule:
     name: str
     check_type: QualityCheck
     field: str = None
-    parameters: Dict[str, Any] = field(default_factory=dict)
+    parameters: dict[str, Any] = field(default_factory=dict)
     severity: str = "error"  # error, warning
 
 
@@ -140,8 +140,8 @@ class IngestionJob:
     end_time: float = None
     records_processed: int = 0
     records_failed: int = 0
-    errors: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    errors: list[str] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -159,7 +159,7 @@ class DataLineage:
 class Transformation(Protocol):
     """Protocol for data transformations."""
 
-    async def transform(self, data: List[dict[str, Any]]) -> List[dict[str, Any]]:
+    async def transform(self, data: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """Transform data batch."""
         ...
 
@@ -168,7 +168,7 @@ class DataTransformer:
     """Built-in data transformations."""
 
     @staticmethod
-    async def normalize(data: List[dict[str, Any]]) -> List[dict[str, Any]]:
+    async def normalize(data: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """Normalize string fields (strip, lowercase)."""
         result = []
         for record in data:
@@ -182,12 +182,12 @@ class DataTransformer:
         return result
 
     @staticmethod
-    async def filter_fields(data: List[dict[str, Any]], fields: List[str]) -> List[dict[str, Any]]:
+    async def filter_fields(data: list[dict[str, Any]], fields: list[str]) -> list[dict[str, Any]]:
         """Keep only specified fields."""
         return [{k: v for k, v in record.items() if k in fields} for record in data]
 
     @staticmethod
-    async def add_timestamp(data: List[dict[str, Any]]) -> List[dict[str, Any]]:
+    async def add_timestamp(data: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """Add ingestion timestamp."""
         ts = datetime.now().isoformat()
         for record in data:
@@ -215,18 +215,18 @@ class AMOSDataPipeline:
     """
 
     def __init__(self):
-        self.schemas: Dict[str, DataSchema] = {}
-        self.sources: Dict[str, DataSource] = {}
-        self.quality_rules: Dict[str, DataQualityRule] = {}
-        self.jobs: Dict[str, IngestionJob] = {}
-        self.lineage: List[DataLineage] = []
+        self.schemas: dict[str, DataSchema] = {}
+        self.sources: dict[str, DataSource] = {}
+        self.quality_rules: dict[str, DataQualityRule] = {}
+        self.jobs: dict[str, IngestionJob] = {}
+        self.lineage: list[DataLineage] = []
 
         # Storage
-        self.data_store: Dict[str, list[dict[str, Any]]] = {}
+        self.data_store: dict[str, list[dict[str, Any]]] = {}
         self.max_records_per_source = 10000
 
         # Metrics
-        self.ingestion_stats: Dict[str, dict[str, Any]] = {}
+        self.ingestion_stats: dict[str, dict[str, Any]] = {}
 
     async def initialize(self) -> None:
         """Initialize data pipeline."""
@@ -235,7 +235,7 @@ class AMOSDataPipeline:
         print(f"  - Data sources: {len(self.sources)}")
         print(f"  - Quality rules: {len(self.quality_rules)}")
 
-    def register_schema(self, name: str, version: str, fields: List[dict[str, Any]]) -> DataSchema:
+    def register_schema(self, name: str, version: str, fields: list[dict[str, Any]]) -> DataSchema:
         """Register a data schema."""
         schema_id = f"schema_{name.lower().replace(' ', '_')}_v{version}"
 
@@ -249,7 +249,7 @@ class AMOSDataPipeline:
         self,
         name: str,
         source_type: str,
-        connection_config: Dict[str, Any],
+        connection_config: dict[str, Any],
         schema_id: str = None,
         ingestion_mode: IngestionMode = IngestionMode.BATCH,
         schedule: str = None,
@@ -276,7 +276,7 @@ class AMOSDataPipeline:
         name: str,
         check_type: QualityCheck,
         field: str = None,
-        parameters: Dict[str, Any] = None,
+        parameters: dict[str, Any] = None,
         severity: str = "error",
     ) -> DataQualityRule:
         """Add a data quality validation rule."""
@@ -296,7 +296,7 @@ class AMOSDataPipeline:
         return rule
 
     async def ingest_batch(
-        self, source_id: str, data: List[dict[str, Any]], transformations: List[Callable] = None
+        self, source_id: str, data: list[dict[str, Any]], transformations: list[Callable] = None
     ) -> IngestionJob:
         """Ingest a batch of data."""
         job_id = f"job_{uuid.uuid4().hex[:12]}"
@@ -369,7 +369,7 @@ class AMOSDataPipeline:
         )
         return job
 
-    def _run_quality_checks(self, record: Dict[str, Any]) -> List[str]:
+    def _run_quality_checks(self, record: dict[str, Any]) -> list[str]:
         """Run quality checks on a record."""
         errors = []
 
@@ -392,8 +392,8 @@ class AMOSDataPipeline:
         return errors
 
     def query_data(
-        self, source_id: str, filters: Dict[str, Any] = None, limit: int = 100
-    ) -> List[dict[str, Any]]:
+        self, source_id: str, filters: dict[str, Any] = None, limit: int = 100
+    ) -> list[dict[str, Any]]:
         """Query ingested data with filters."""
         if source_id not in self.data_store:
             return []
@@ -410,7 +410,7 @@ class AMOSDataPipeline:
 
         return data[-limit:]  # Return most recent
 
-    def get_source_stats(self, source_id: str) -> Dict[str, Any]:
+    def get_source_stats(self, source_id: str) -> dict[str, Any]:
         """Get ingestion statistics for a source."""
         if source_id not in self.sources:
             return None
@@ -428,7 +428,7 @@ class AMOSDataPipeline:
             "current_storage": len(self.data_store.get(source_id, [])),
         }
 
-    def get_pipeline_summary(self) -> Dict[str, Any]:
+    def get_pipeline_summary(self) -> dict[str, Any]:
         """Get pipeline summary statistics."""
         total_records = sum(len(data) for data in self.data_store.values())
 

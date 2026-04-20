@@ -10,7 +10,6 @@ from dataclasses import dataclass
 from enum import Enum
 
 import numpy as np
-from typing import List, Tuple
 
 # ============================================================================
 # CROSS-DOMAIN MATHEMATICAL PATTERNS
@@ -37,7 +36,7 @@ class Equation:
     pattern: MathematicalPattern
     formula: str
     implementation: Callable
-    invariants: List[str]
+    invariants: list[str]
     parameters: dict
 
 
@@ -58,7 +57,7 @@ def softmax(x: np.ndarray, axis: int = -1) -> np.ndarray:
 
 def scaled_dot_product_attention(
     Q: np.ndarray, K: np.ndarray, V: np.ndarray, mask: np.ndarray = None
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray]:
     """
     Transformer Attention: Attention(Q,K,V) = softmax(QK^T/√d_k)V
     Pattern: Information Flow
@@ -77,8 +76,8 @@ def scaled_dot_product_attention(
 
 
 def backpropagation_gradient(
-    loss_gradient: np.ndarray, activations: List[np.ndarray], weights: List[np.ndarray]
-) -> List[np.ndarray]:
+    loss_gradient: np.ndarray, activations: list[np.ndarray], weights: list[np.ndarray]
+) -> list[np.ndarray]:
     """
     Backpropagation Chain Rule: ∂E/∂w = ∂E/∂o · ∂o/∂net · ∂net/∂w
     Pattern: Convex Optimization
@@ -115,7 +114,7 @@ def littles_law(arrival_rate: float, avg_service_time: float) -> float:
 
 
 def utilization_bound_rm_scheduling(
-    tasks: List[tuple[float, float]],  # (execution_time, period)
+    tasks: list[tuple[float, float]],  # (execution_time, period)
 ) -> bool:
     """
     Rate Monotonic Schedulability: Σ(C_i/P_i) ≤ n(2^(1/n) - 1)
@@ -181,8 +180,8 @@ def mutual_information(
 
 
 def elliptic_curve_point_addition(
-    P: Tuple[int, int], Q: Tuple[int, int], a: int, p: int
-) -> Tuple[int, int]:
+    P: tuple[int, int], Q: tuple[int, int], a: int, p: int
+) -> tuple[int, int]:
     """
     ECC Point Addition: R = P + Q
     Curve: y² = x³ + ax + b (mod p)
@@ -238,7 +237,7 @@ def sir_model_step(
     beta: float,  # Infection rate
     gamma: float,  # Recovery rate
     dt: float,  # Time step
-) -> Tuple[float, float, float]:
+) -> tuple[float, float, float]:
     """
     SIR Model:
     dS/dt = -βSI/N
@@ -277,17 +276,17 @@ class EquationRegistry:
     """
 
     def __init__(self):
-        self.equations: List[Equation] = []
+        self.equations: list[Equation] = []
         self.pattern_index: dict = {pattern: [] for pattern in MathematicalPattern}
 
     def register(self, eq: Equation):
         self.equations.append(eq)
         self.pattern_index[eq.pattern].append(eq)
 
-    def get_by_pattern(self, pattern: MathematicalPattern) -> List[Equation]:
+    def get_by_pattern(self, pattern: MathematicalPattern) -> list[Equation]:
         return self.pattern_index[pattern]
 
-    def find_isomorphisms(self) -> List[tuple[str, str, str]]:
+    def find_isomorphisms(self) -> list[tuple[str, str, str]]:
         """
         Find equations that share the same mathematical structure
         Returns: [(eq1_name, eq2_name, pattern_description)]

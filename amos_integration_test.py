@@ -4,7 +4,7 @@
 import sys
 import time
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 
 @dataclass
@@ -15,19 +15,19 @@ class TestResult:
     passed: bool
     duration_ms: int
     error: str = ""
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: dict[str, Any] = field(default_factory=dict)
 
 
 class AMOSIntegrationTestSuite:
     """Comprehensive test suite for AMOS ecosystem."""
 
     def __init__(self):
-        self.results: List[TestResult] = []
+        self.results: list[TestResult] = []
         self.tests_run = 0
         self.tests_passed = 0
         self.tests_failed = 0
 
-    def run_all_tests(self) -> Dict[str, Any]:
+    def run_all_tests(self) -> dict[str, Any]:
         """Execute complete integration test suite."""
         print("\n" + "=" * 70)
         print("AMOS INTEGRATION TEST SUITE")
@@ -126,7 +126,7 @@ class AMOSIntegrationTestSuite:
         self._run_test("Error_Handling", self._test_error_handling)
 
     # Individual test implementations
-    def _test_ledger(self) -> Tuple[bool, str, dict]:
+    def _test_ledger(self) -> tuple[bool, str, dict]:
         """Test ledger initialization and operation."""
         try:
             from amosl_ledger import EntryType, StateLedger
@@ -141,7 +141,7 @@ class AMOSIntegrationTestSuite:
         except Exception as e:
             return False, str(e), {}
 
-    def _test_verification(self) -> Tuple[bool, str, dict]:
+    def _test_verification(self) -> tuple[bool, str, dict]:
         """Test verification engine."""
         try:
             from amosl_ledger import StateLedger
@@ -167,7 +167,7 @@ class AMOSIntegrationTestSuite:
         except Exception as e:
             return False, str(e), {}
 
-    def _test_bridge(self) -> Tuple[bool, str, dict]:
+    def _test_bridge(self) -> tuple[bool, str, dict]:
         """Test bridge executor."""
         try:
             from amosl_bridge import BridgeExecutor
@@ -182,7 +182,7 @@ class AMOSIntegrationTestSuite:
         except Exception as e:
             return False, str(e), {}
 
-    def _test_evolution(self) -> Tuple[bool, str, dict]:
+    def _test_evolution(self) -> tuple[bool, str, dict]:
         """Test evolution operator."""
         try:
             from amosl_evolution import EvolutionOperator
@@ -193,7 +193,7 @@ class AMOSIntegrationTestSuite:
         except Exception as e:
             return False, str(e), {}
 
-    def _test_runtime_integration(self) -> Tuple[bool, str, dict]:
+    def _test_runtime_integration(self) -> tuple[bool, str, dict]:
         """Test all runtime components work together."""
         try:
             from amosl_bridge import BridgeExecutor
@@ -210,7 +210,7 @@ class AMOSIntegrationTestSuite:
         except Exception as e:
             return False, str(e), {}
 
-    def _test_feature_activation(self) -> Tuple[bool, str, dict]:
+    def _test_feature_activation(self) -> tuple[bool, str, dict]:
         """Test feature activation system."""
         try:
             from amos_feature_activation import FeatureActivationSystem
@@ -220,7 +220,7 @@ class AMOSIntegrationTestSuite:
         except Exception as e:
             return False, str(e), {}
 
-    def _test_primary_handler(self) -> Tuple[bool, str, dict]:
+    def _test_primary_handler(self) -> tuple[bool, str, dict]:
         """Test primary feature handler."""
         try:
             from amos_primary_feature_handler import PrimaryFeatureHandler
@@ -230,7 +230,7 @@ class AMOSIntegrationTestSuite:
         except Exception as e:
             return False, str(e), {}
 
-    def _test_knowledge_loader(self) -> Tuple[bool, str, dict]:
+    def _test_knowledge_loader(self) -> tuple[bool, str, dict]:
         """Test knowledge loader."""
         try:
             from amos_knowledge_loader import KnowledgeLoader
@@ -240,7 +240,7 @@ class AMOSIntegrationTestSuite:
         except Exception as e:
             return False, str(e), {}
 
-    def _test_engine_activator(self) -> Tuple[bool, str, dict]:
+    def _test_engine_activator(self) -> tuple[bool, str, dict]:
         """Test engine activator."""
         try:
             from amos_engine_activator import EngineActivator
@@ -250,7 +250,7 @@ class AMOSIntegrationTestSuite:
         except Exception as e:
             return False, str(e), {}
 
-    def _test_cognitive_router(self) -> Tuple[bool, str, dict]:
+    def _test_cognitive_router(self) -> tuple[bool, str, dict]:
         """Test cognitive router."""
         try:
             from amos_cognitive_router import CognitiveRouter
@@ -261,7 +261,7 @@ class AMOSIntegrationTestSuite:
         except Exception as e:
             return False, str(e), {}
 
-    def _test_orchestrator_init(self) -> Tuple[bool, str, dict]:
+    def _test_orchestrator_init(self) -> tuple[bool, str, dict]:
         """Test master orchestrator initialization."""
         try:
             from amos_master_cognitive_orchestrator import MasterCognitiveOrchestrator
@@ -272,7 +272,7 @@ class AMOSIntegrationTestSuite:
         except Exception as e:
             return False, str(e), {}
 
-    def _test_task_processing(self) -> Tuple[bool, str, dict]:
+    def _test_task_processing(self) -> tuple[bool, str, dict]:
         """Test task processing through router."""
         try:
             from amos_cognitive_router import CognitiveRouter
@@ -283,7 +283,7 @@ class AMOSIntegrationTestSuite:
         except Exception as e:
             return False, str(e), {}
 
-    def _test_batch_processing(self) -> Tuple[bool, str, dict]:
+    def _test_batch_processing(self) -> tuple[bool, str, dict]:
         """Test batch processing."""
         try:
             from amos_cognitive_router import CognitiveRouter
@@ -295,7 +295,7 @@ class AMOSIntegrationTestSuite:
         except Exception as e:
             return False, str(e), {}
 
-    def _test_query_system(self) -> Tuple[bool, str, dict]:
+    def _test_query_system(self) -> tuple[bool, str, dict]:
         """Test query system."""
         try:
             from amos_knowledge_loader import KnowledgeLoader
@@ -307,7 +307,7 @@ class AMOSIntegrationTestSuite:
         except Exception as e:
             return False, str(e), {}
 
-    def _test_full_pipeline(self) -> Tuple[bool, str, dict]:
+    def _test_full_pipeline(self) -> tuple[bool, str, dict]:
         """Test complete pipeline: Router → Engine."""
         try:
             from amos_cognitive_router import CognitiveRouter
@@ -324,7 +324,7 @@ class AMOSIntegrationTestSuite:
         except Exception as e:
             return False, str(e), {}
 
-    def _test_multi_engine(self) -> Tuple[bool, str, dict]:
+    def _test_multi_engine(self) -> tuple[bool, str, dict]:
         """Test multiple engines can be routed."""
         try:
             from amos_cognitive_router import CognitiveRouter
@@ -342,7 +342,7 @@ class AMOSIntegrationTestSuite:
         except Exception as e:
             return False, str(e), {}
 
-    def _test_knowledge_engine(self) -> Tuple[bool, str, dict]:
+    def _test_knowledge_engine(self) -> tuple[bool, str, dict]:
         """Test knowledge and engine integration."""
         try:
             from amos_cognitive_router import CognitiveRouter
@@ -361,7 +361,7 @@ class AMOSIntegrationTestSuite:
         except Exception as e:
             return False, str(e), {}
 
-    def _test_error_handling(self) -> Tuple[bool, str, dict]:
+    def _test_error_handling(self) -> tuple[bool, str, dict]:
         """Test error handling."""
         try:
             from amos_cognitive_router import CognitiveRouter
@@ -411,7 +411,7 @@ class AMOSIntegrationTestSuite:
             self.tests_failed += 1
             print(f"  ✗ FAIL {name} ({duration}ms) - Exception: {str(e)[:40]}...")
 
-    def _generate_report(self) -> Dict[str, Any]:
+    def _generate_report(self) -> dict[str, Any]:
         """Generate test report."""
         total_duration = sum(r.duration_ms for r in self.results)
 

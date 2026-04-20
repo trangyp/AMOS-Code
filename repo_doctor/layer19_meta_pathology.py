@@ -1,4 +1,5 @@
-"""Phase 6: Meta-System Pathology Engine (Layer 19).
+"""
+Phase 6: Meta-System Pathology Engine (Layer 19).
 
 The upper-envelope architectural defect detection engine covering:
 - Reference-frame, timescale, phase-transition failures
@@ -24,8 +25,8 @@ class MetaPathologyResult:
     dimension: MetaPathologyDimension
     satisfied: bool
     severity: str
-    evidence: List[str] = field(default_factory=list)
-    affected_surfaces: List[str] = field(default_factory=list)
+    evidence: list[str] = field(default_factory=list)
+    affected_surfaces: list[str] = field(default_factory=list)
 
 
 class MetaPathologyEngine:
@@ -55,7 +56,7 @@ class MetaPathologyEngine:
     def __init__(self):
         self.engine_id = f"meta_pathology_{id(self):x}"
 
-    def assess_reference_frames(self, frames: List[dict]) -> MetaPathologyResult:
+    def assess_reference_frames(self, frames: list[dict]) -> MetaPathologyResult:
         """I_reference: Critical claims tagged to explicit reference frames."""
         issues = []
         for claim in frames:
@@ -73,7 +74,7 @@ class MetaPathologyEngine:
             affected_surfaces=[c.get("source") for c in frames if not c.get("frame_tag")],
         )
 
-    def assess_frame_translations(self, translations: List[dict]) -> MetaPathologyResult:
+    def assess_frame_translations(self, translations: list[dict]) -> MetaPathologyResult:
         """I_translation: Frame translations explicit, bounded, semantics-preserving."""
         issues = []
         for t in translations:
@@ -93,7 +94,7 @@ class MetaPathologyEngine:
             affected_surfaces=[t.get("source") for t in translations if not t.get("explicit")],
         )
 
-    def assess_timescales(self, surfaces: List[dict]) -> MetaPathologyResult:
+    def assess_timescales(self, surfaces: list[dict]) -> MetaPathologyResult:
         """I_timescale: Critical surfaces have declared, compatible timescales."""
         issues = []
         for s in surfaces:
@@ -113,7 +114,7 @@ class MetaPathologyEngine:
             ],
         )
 
-    def assess_temporal_debt(self, artifacts: List[dict]) -> MetaPathologyResult:
+    def assess_temporal_debt(self, artifacts: list[dict]) -> MetaPathologyResult:
         """I_temporal_debt: Temporary artifacts have retirement >= activation timescale."""
         issues = []
         for a in artifacts:
@@ -133,7 +134,7 @@ class MetaPathologyEngine:
             ],
         )
 
-    def assess_phase_transitions(self, thresholds: List[dict]) -> MetaPathologyResult:
+    def assess_phase_transitions(self, thresholds: list[dict]) -> MetaPathologyResult:
         """I_phase: Architectural thresholds explicitly modeled and bounded."""
         issues = []
         for t in thresholds:
@@ -153,7 +154,7 @@ class MetaPathologyEngine:
             ],
         )
 
-    def assess_metastability(self, regions: List[dict]) -> MetaPathologyResult:
+    def assess_metastability(self, regions: list[dict]) -> MetaPathologyResult:
         """I_metastable: Metastable regions identified and bounded."""
         issues = []
         for r in regions:
@@ -173,7 +174,7 @@ class MetaPathologyEngine:
             ],
         )
 
-    def assess_adapter_semantics(self, adapters: List[dict]) -> MetaPathologyResult:
+    def assess_adapter_semantics(self, adapters: list[dict]) -> MetaPathologyResult:
         """I_adapter: Adapters declare semantics preservation."""
         issues = []
         for a in adapters:
@@ -193,7 +194,7 @@ class MetaPathologyEngine:
             ],
         )
 
-    def assess_authority_laundering(self, wrappers: List[dict]) -> MetaPathologyResult:
+    def assess_authority_laundering(self, wrappers: list[dict]) -> MetaPathologyResult:
         """I_authority: No silent authority strengthening through adapters."""
         issues = []
         for w in wrappers:
@@ -218,7 +219,7 @@ class MetaPathologyEngine:
             ],
         )
 
-    def assess_semantic_forks(self, terms: List[dict]) -> MetaPathologyResult:
+    def assess_semantic_forks(self, terms: list[dict]) -> MetaPathologyResult:
         """I_semantic_fork: Critical terms not diverging across domains."""
         issues = []
         for t in terms:
@@ -239,7 +240,7 @@ class MetaPathologyEngine:
             ],
         )
 
-    def assess_compatibility_theater(self, claims: List[dict]) -> MetaPathologyResult:
+    def assess_compatibility_theater(self, claims: list[dict]) -> MetaPathologyResult:
         """I_compatibility: Compatibility claims tied to semantic obligations."""
         issues = []
         for c in claims:
@@ -259,7 +260,7 @@ class MetaPathologyEngine:
             ],
         )
 
-    def assess_entropy_export(self, surfaces: List[dict]) -> MetaPathologyResult:
+    def assess_entropy_export(self, surfaces: list[dict]) -> MetaPathologyResult:
         """I_entropy_export: No hidden complexity pushed to protected surfaces."""
         issues = []
         for s in surfaces:
@@ -279,7 +280,7 @@ class MetaPathologyEngine:
             ],
         )
 
-    def assess_debt_visibility(self, workarounds: List[dict]) -> MetaPathologyResult:
+    def assess_debt_visibility(self, workarounds: list[dict]) -> MetaPathologyResult:
         """I_debt: All workarounds observable, attributable, measured."""
         issues = []
         for w in workarounds:
@@ -299,7 +300,7 @@ class MetaPathologyEngine:
             affected_surfaces=[w.get("source") for w in workarounds if not w.get("observable")],
         )
 
-    def assess_commons_governance(self, resources: List[dict]) -> MetaPathologyResult:
+    def assess_commons_governance(self, resources: list[dict]) -> MetaPathologyResult:
         """I_commons: Shared resources have explicit governance."""
         issues = []
         for r in resources:
@@ -326,7 +327,7 @@ class MetaPathologyEngine:
             ],
         )
 
-    def assess_institutional_capture(self, authorities: List[dict]) -> MetaPathologyResult:
+    def assess_institutional_capture(self, authorities: list[dict]) -> MetaPathologyResult:
         """I_capture: Authority not drifting from constitutional allocation."""
         issues = []
         for a in authorities:
@@ -349,7 +350,7 @@ class MetaPathologyEngine:
             ],
         )
 
-    def assess_constitutional_drift(self, changes: List[dict]) -> MetaPathologyResult:
+    def assess_constitutional_drift(self, changes: list[dict]) -> MetaPathologyResult:
         """I_constitutional: Architectural law changes versioned and enforced."""
         issues = []
         for c in changes:
@@ -369,7 +370,7 @@ class MetaPathologyEngine:
             affected_surfaces=[c.get("source") for c in changes if not c.get("versioned")],
         )
 
-    def assess_proof_transport(self, proofs: List[dict]) -> MetaPathologyResult:
+    def assess_proof_transport(self, proofs: list[dict]) -> MetaPathologyResult:
         """I_proof_transport: Guarantees preserve assumptions across boundaries."""
         issues = []
         for p in proofs:
@@ -389,7 +390,7 @@ class MetaPathologyEngine:
             ],
         )
 
-    def assess_cross_model_coherence(self, contradictions: List[dict]) -> MetaPathologyResult:
+    def assess_cross_model_coherence(self, contradictions: list[dict]) -> MetaPathologyResult:
         """I_cross_model: Models mutually satisfiable."""
         issues = []
         for c in contradictions:
@@ -407,7 +408,7 @@ class MetaPathologyEngine:
             ],
         )
 
-    def assess_topological_holes(self, defects: List[dict]) -> MetaPathologyResult:
+    def assess_topological_holes(self, defects: list[dict]) -> MetaPathologyResult:
         """I_topology: Complete paths from detection to remediation."""
         issues = []
         for d in defects:
@@ -428,7 +429,7 @@ class MetaPathologyEngine:
         )
 
     def assess_world_model_alignment(
-        self, assumptions: List[dict], lag_bound: float
+        self, assumptions: list[dict], lag_bound: float
     ) -> MetaPathologyResult:
         """I_world_model: World assumptions within bounded lag."""
         issues = []
@@ -447,7 +448,7 @@ class MetaPathologyEngine:
             affected_surfaces=[a.get("source") for a in assumptions if not a.get("observed")],
         )
 
-    def assess_triple_drift(self, workflows: List[dict]) -> MetaPathologyResult:
+    def assess_triple_drift(self, workflows: list[dict]) -> MetaPathologyResult:
         """I_triple_drift: Implementation, model, world drift all bounded."""
         issues = []
         for w in workflows:
@@ -537,7 +538,7 @@ class MetaPathologyEngine:
         }
 
     def compute_state_vector_amplitudes(
-        self, results: List[MetaPathologyResult]
+        self, results: list[MetaPathologyResult]
     ) -> dict[str, float]:
         """Map meta-pathology results to state vector amplitudes."""
         amplitudes = {}
@@ -560,8 +561,8 @@ class MetaPathologyEngine:
         return amplitudes
 
     def get_critical_surfaces(
-        self, results: List[MetaPathologyResult], threshold: float = 0.5
-    ) -> List[str]:
+        self, results: list[MetaPathologyResult], threshold: float = 0.5
+    ) -> list[str]:
         """Get surfaces with critical pathology."""
         critical = []
         for r in results:

@@ -9,11 +9,7 @@ import sys
 import time
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, List
-
-sys.path.insert(0, ".")
-sys.path.insert(0, "clawspring")
-sys.path.insert(0, "clawspring/amos_brain")
+from typing import Any
 
 
 @dataclass
@@ -31,11 +27,11 @@ class IntegrationTestSuite:
     """Comprehensive test suite for AMOS v2.8."""
 
     def __init__(self):
-        self.results: List[TestResult] = []
+        self.results: list[TestResult] = []
         self.start_time: float = 0
         self.end_time: float = 0
 
-    def run_all_tests(self) -> Dict[str, Any]:
+    def run_all_tests(self) -> dict[str, Any]:
         """Execute complete test suite."""
         print("=" * 70)
         print("AMOS ECOSYSTEM v2.8 - INTEGRATION TEST SUITE")
@@ -424,7 +420,7 @@ class IntegrationTestSuite:
     # REPORT GENERATION
     # ─────────────────────────────────────────────────────────────────
 
-    def _generate_report(self) -> Dict[str, Any]:
+    def _generate_report(self) -> dict[str, Any]:
         """Generate test report."""
         total = len(self.results)
         passed = sum(1 for r in self.results if r.passed)

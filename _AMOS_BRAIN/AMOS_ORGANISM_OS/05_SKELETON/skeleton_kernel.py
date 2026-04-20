@@ -13,7 +13,9 @@ import json
 import logging
 import re
 from dataclasses import asdict, dataclass
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from enum import Enum
 from pathlib import Path
 from typing import Any
@@ -80,9 +82,9 @@ class ValidationResult:
     """Result of constraint validation."""
 
     valid: bool
-    violations: List[str]
-    warnings: List[str]
-    checked_rules: List[str]
+    violations: list[str]
+    warnings: list[str]
+    checked_rules: list[str]
 
 
 class SkeletonKernel:
@@ -101,7 +103,7 @@ class SkeletonKernel:
         self.logs_path.mkdir(parents=True, exist_ok=True)
 
         # Rule registry
-        self.rules: Dict[str, Rule] = {}
+        self.rules: dict[str, Rule] = {}
 
         # Permission registry
         self.permissions: dict[str, list[Permission]] = {}
@@ -215,7 +217,7 @@ class SkeletonKernel:
             json.dump({k: asdict(v) for k, v in self.rules.items()}, f, indent=2)
 
     def validate_operation(
-        self, operation: str, context: Dict[str, Any], target_rules: list[str] = None
+        self, operation: str, context: dict[str, Any], target_rules: list[str] = None
     ) -> ValidationResult:
         """Validate an operation against applicable rules.
 
@@ -265,7 +267,7 @@ class SkeletonKernel:
             checked_rules=checked,
         )
 
-    def _rule_applies(self, rule: Rule, operation: str, context: Dict[str, Any]) -> bool:
+    def _rule_applies(self, rule: Rule, operation: str, context: dict[str, Any]) -> bool:
         """Determine if a rule applies to an operation."""
         target = rule.target.lower()
 
@@ -288,7 +290,7 @@ class SkeletonKernel:
 
         return False
 
-    def _check_constraint(self, rule: Rule, context: Dict[str, Any]) -> bool:
+    def _check_constraint(self, rule: Rule, context: dict[str, Any]) -> bool:
         """Check if a specific constraint is satisfied."""
         constraint_type = rule.constraint_type
 
@@ -341,7 +343,7 @@ class SkeletonKernel:
 
         return False
 
-    def get_hierarchy(self, subsystem: str) -> Dict[str, Any]:
+    def get_hierarchy(self, subsystem: str) -> dict[str, Any]:
         """Get hierarchy information for a subsystem."""
         # Find parent
         parent = None
@@ -394,7 +396,7 @@ class SkeletonKernel:
 
         return due
 
-    def get_state(self) -> Dict[str, Any]:
+    def get_state(self) -> dict[str, Any]:
         """Get current skeleton state."""
         return {
             "rules_count": len(self.rules),

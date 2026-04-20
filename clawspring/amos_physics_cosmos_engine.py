@@ -1,12 +1,15 @@
 """AMOS Physics Cosmos Engine - Fundamental physics and cosmological analysis."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class PhysicsDomain(Enum):
     """Physics domain types."""
+
     CLASSICAL = "classical_dynamics"
     ELECTROMAGNETISM = "electromagnetism"
     QUANTUM = "quantum"
@@ -31,9 +34,9 @@ class ClassicalDynamicsKernel:
     SCOPE = ["newtonian_mechanics", "rigid_bodies", "fluids"]
 
     def __init__(self):
-        self.findings: List[PhysicsFinding] = []
+        self.findings: list[PhysicsFinding] = []
 
-    def analyze(self, scenario: str) -> List[PhysicsFinding]:
+    def analyze(self, scenario: str) -> list[PhysicsFinding]:
         """Analyze classical dynamics aspects."""
         findings = []
         scenario_lower = scenario.lower()
@@ -58,7 +61,7 @@ class ClassicalDynamicsKernel:
         self.findings = findings
         return findings
 
-    def get_primitives(self) -> List[str]:
+    def get_primitives(self) -> list[str]:
         return self.PRIMITIVES
 
 
@@ -69,9 +72,9 @@ class ElectromagnetismKernel:
     SCOPE = ["maxwell_equations", "circuits", "em_waves"]
 
     def __init__(self):
-        self.findings: List[PhysicsFinding] = []
+        self.findings: list[PhysicsFinding] = []
 
-    def analyze(self, scenario: str) -> List[PhysicsFinding]:
+    def analyze(self, scenario: str) -> list[PhysicsFinding]:
         """Analyze electromagnetic aspects."""
         findings = []
         scenario_lower = scenario.lower()
@@ -96,7 +99,7 @@ class ElectromagnetismKernel:
         self.findings = findings
         return findings
 
-    def get_primitives(self) -> List[str]:
+    def get_primitives(self) -> list[str]:
         return self.PRIMITIVES
 
 
@@ -107,9 +110,9 @@ class QuantumKernel:
     SCOPE = ["wavefunctions", "operators", "measurement", "many_body"]
 
     def __init__(self):
-        self.findings: List[PhysicsFinding] = []
+        self.findings: list[PhysicsFinding] = []
 
-    def analyze(self, scenario: str) -> List[PhysicsFinding]:
+    def analyze(self, scenario: str) -> list[PhysicsFinding]:
         """Analyze quantum aspects."""
         findings = []
         scenario_lower = scenario.lower()
@@ -133,7 +136,7 @@ class QuantumKernel:
         self.findings = findings
         return findings
 
-    def get_primitives(self) -> List[str]:
+    def get_primitives(self) -> list[str]:
         return self.PRIMITIVES
 
 
@@ -144,9 +147,9 @@ class StatisticalPhysicsKernel:
     SCOPE = ["thermodynamics", "stat_mech", "information_theory"]
 
     def __init__(self):
-        self.findings: List[PhysicsFinding] = []
+        self.findings: list[PhysicsFinding] = []
 
-    def analyze(self, scenario: str) -> List[PhysicsFinding]:
+    def analyze(self, scenario: str) -> list[PhysicsFinding]:
         """Analyze statistical physics aspects."""
         findings = []
         scenario_lower = scenario.lower()
@@ -170,7 +173,7 @@ class StatisticalPhysicsKernel:
         self.findings = findings
         return findings
 
-    def get_primitives(self) -> List[str]:
+    def get_primitives(self) -> list[str]:
         return self.PRIMITIVES
 
 
@@ -181,9 +184,9 @@ class CosmologyKernel:
     SCOPE = ["gravity_models", "cosmic_structure", "relativistic_spacetime"]
 
     def __init__(self):
-        self.findings: List[PhysicsFinding] = []
+        self.findings: list[PhysicsFinding] = []
 
-    def analyze(self, scenario: str) -> List[PhysicsFinding]:
+    def analyze(self, scenario: str) -> list[PhysicsFinding]:
         """Analyze cosmological aspects."""
         findings = []
         scenario_lower = scenario.lower()
@@ -208,7 +211,7 @@ class CosmologyKernel:
         self.findings = findings
         return findings
 
-    def get_primitives(self) -> List[str]:
+    def get_primitives(self) -> list[str]:
         return self.PRIMITIVES
 
 
@@ -225,9 +228,7 @@ class PhysicsCosmosEngine:
         self.statistical_kernel = StatisticalPhysicsKernel()
         self.cosmology_kernel = CosmologyKernel()
 
-    def analyze(
-        self, description: str, domains: Optional[List[str]] = None
-    ) -> Dict[str, Any]:
+    def analyze(self, description: str, domains: list[str | None] = None) -> dict[str, Any]:
         """Run physics cosmos analysis."""
         domains = domains or [
             "classical",
@@ -236,7 +237,7 @@ class PhysicsCosmosEngine:
             "statistical",
             "cosmology",
         ]
-        results: Dict[str, Any] = {}
+        results: dict[str, Any] = {}
         if "classical" in domains:
             results["classical"] = self._analyze_classical(description)
         if "electromagnetism" in domains:
@@ -255,8 +256,7 @@ class PhysicsCosmosEngine:
             "query": description[:100],
             "findings_count": len(findings),
             "findings": [
-                {"concept": f.concept, "application": f.application}
-                for f in findings[:3]
+                {"concept": f.concept, "application": f.application} for f in findings[:3]
             ],
             "primitives": self.classical_kernel.get_primitives(),
         }
@@ -267,8 +267,7 @@ class PhysicsCosmosEngine:
             "query": description[:100],
             "findings_count": len(findings),
             "findings": [
-                {"concept": f.concept, "application": f.application}
-                for f in findings[:3]
+                {"concept": f.concept, "application": f.application} for f in findings[:3]
             ],
             "primitives": self.em_kernel.get_primitives(),
         }
@@ -279,8 +278,7 @@ class PhysicsCosmosEngine:
             "query": description[:100],
             "findings_count": len(findings),
             "findings": [
-                {"concept": f.concept, "application": f.application}
-                for f in findings[:3]
+                {"concept": f.concept, "application": f.application} for f in findings[:3]
             ],
             "primitives": self.quantum_kernel.get_primitives(),
         }
@@ -291,8 +289,7 @@ class PhysicsCosmosEngine:
             "query": description[:100],
             "findings_count": len(findings),
             "findings": [
-                {"concept": f.concept, "application": f.application}
-                for f in findings[:3]
+                {"concept": f.concept, "application": f.application} for f in findings[:3]
             ],
             "primitives": self.statistical_kernel.get_primitives(),
         }
@@ -303,8 +300,7 @@ class PhysicsCosmosEngine:
             "query": description[:100],
             "findings_count": len(findings),
             "findings": [
-                {"concept": f.concept, "application": f.application}
-                for f in findings[:3]
+                {"concept": f.concept, "application": f.application} for f in findings[:3]
             ],
             "primitives": self.cosmology_kernel.get_primitives(),
         }
@@ -337,29 +333,31 @@ class PhysicsCosmosEngine:
                         lines.append(f"  - {finding['concept']}: {finding['application']}")
                 if "primitives" in data:
                     lines.append(f"- **Primitives**: {', '.join(data['primitives'][:3])}...")
-        lines.extend([
-            "",
-            "## Engines Available",
-            "- System Modelling: Maps real systems to equations",
-            "- Multiscale Simulation: Links microscopic and macroscopic",
-            "- Technology Translation: Physics to engineering patterns",
-            "",
-            "## Gaps and Limitations",
-            "- Numerical solutions not computed",
-            "- Equation solving is descriptive only",
-            "- Multiscale coupling not implemented",
-            "- Speculative cosmology marked as hypothetical",
-            "",
-            "## Safety Disclaimer",
-            "Does not claim new physical laws as proven. Speculative content marked "
-            "as hypothetical. Never provides fabrication instructions for weapons "
-            "or unsafe experiments. Not a substitute for professional physicists.",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Engines Available",
+                "- System Modelling: Maps real systems to equations",
+                "- Multiscale Simulation: Links microscopic and macroscopic",
+                "- Technology Translation: Physics to engineering patterns",
+                "",
+                "## Gaps and Limitations",
+                "- Numerical solutions not computed",
+                "- Equation solving is descriptive only",
+                "- Multiscale coupling not implemented",
+                "- Speculative cosmology marked as hypothetical",
+                "",
+                "## Safety Disclaimer",
+                "Does not claim new physical laws as proven. Speculative content marked "
+                "as hypothetical. Never provides fabrication instructions for weapons "
+                "or unsafe experiments. Not a substitute for professional physicists.",
+            ]
+        )
         return "\n".join(lines)
 
 
 # Singleton instance
-_physics_cosmos_engine: Optional[PhysicsCosmosEngine] = None
+_physics_cosmos_engine: PhysicsCosmosEngine | None = None
 
 
 def get_physics_cosmos_engine() -> PhysicsCosmosEngine:

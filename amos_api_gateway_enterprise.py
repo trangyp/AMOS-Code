@@ -23,6 +23,8 @@ Version: 2.0.0
 Phase: 21
 """
 
+from __future__ import annotations
+
 import hashlib
 import os
 import re
@@ -30,10 +32,11 @@ import time
 from collections import defaultdict
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timezone, timedelta
-UTC = timezone.utc
+from datetime import UTC, datetime, timedelta, timezone
+
+UTC = UTC
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple, TypeVar
+from typing import Any, Optional, TypeVar
 
 # FastAPI imports
 try:
@@ -166,8 +169,8 @@ class TransformationRule:
     """Request/response transformation rule."""
 
     path_pattern: str
-    header_additions: Dict[str, str] = field(default_factory=dict)
-    header_removals: List[str] = field(default_factory=list)
+    header_additions: dict[str, str] = field(default_factory=dict)
+    header_removals: list[str] = field(default_factory=list)
     body_transform: Callable[[Any], Any] = None
 
 
@@ -175,7 +178,7 @@ class TransformationRule:
 # Tier Configurations
 # ============================================
 
-TIER_CONFIGS: Dict[Tier, RateLimitConfig] = {
+TIER_CONFIGS: dict[Tier, RateLimitConfig] = {
     Tier.FREE: RateLimitConfig(
         requests_per_window=100,
         window_seconds=3600,
@@ -215,7 +218,7 @@ class RateLimiter:
 
     def __init__(self):
         self._redis: Optional[Any] = None
-        self._local_cache: Dict[str, dict] = {}
+        self._local_cache: dict[str, dict] = {}
 
     async def initialize(self) -> None:
         """Initialize Redis connection."""
@@ -228,7 +231,7 @@ class RateLimiter:
 
     async def is_allowed(
         self, key: str, config: RateLimitConfig, tenant_id: str = None
-    ) -> Tuple[bool, dict[str, Any]]:
+    ) -> tuple[bool, dict[str, Any]]:
         """
         Check if request is allowed under rate limit.
 
@@ -244,7 +247,7 @@ class RateLimiter:
 
     async def _sliding_window_check(
         self, key: str, config: RateLimitConfig, tenant_id: str = None
-    ) -> Tuple[bool, dict[str, Any]]:
+    ) -> tuple[bool, dict[str, Any]]:
         """Sliding window rate limiting."""
         prefix = f"ratelimit:sw:{tenant_id}:{key}" if tenant_id else f"ratelimit:sw:{key}"
         now = time.time()
@@ -283,7 +286,7 @@ class RateLimiter:
 
     async def _token_bucket_check(
         self, key: str, config: RateLimitConfig, tenant_id: str = None
-    ) -> Tuple[bool, dict[str, Any]]:
+    ) -> tuple[bool, dict[str, Any]]:
         """Token bucket rate limiting."""
         prefix = f"ratelimit:tb:{tenant_id}:{key}" if tenant_id else f"ratelimit:tb:{key}"
 
@@ -328,7 +331,7 @@ class RateLimiter:
 
     async def _fixed_window_check(
         self, key: str, config: RateLimitConfig, tenant_id: str = None
-    ) -> Tuple[bool, dict[str, Any]]:
+    ) -> tuple[bool, dict[str, Any]]:
         """Fixed window rate limiting."""
         now = int(time.time())
         window = now // config.window_seconds
@@ -372,12 +375,12 @@ class APIKeyManager:
     """
 
     def __init__(self):
-        self._keys: Dict[str, ApiKey] = {}
-        self._key_hash_map: Dict[str, str] = {}  # hash -> key_id
+        self._keys: dict[str, ApiKey] = {}
+        self._key_hash_map: dict[str, str] = {}  # hash -> key_id
 
     def generate_key(
         self, tenant_id: str, tier: Tier, name: str, expires_days: int = None
-    ) -> Tuple[str, ApiKey]:
+    ) -> tuple[str, ApiKey]:
         """
         Generate new API key.
 
@@ -442,7 +445,7 @@ class APIKeyManager:
             return True
         return False
 
-    def rotate_key(self, key_id: str) -> Tuple[str, ApiKey]:
+    def rotate_key(self, key_id: str) -> tuple[str, ApiKey]:
         """Rotate API key (generate new, keep old briefly)."""
         old_key = self._keys.get(key_id)
         if not old_key:
@@ -458,7 +461,7 @@ class APIKeyManager:
 
         return plain_key, new_key
 
-    def get_key_stats(self, key_id: str) -> Dict[str, Any]:
+    def get_key_stats(self, key_id: str) -> dict[str, Any]:
         """Get API key statistics."""
         key = self._keys.get(key_id)
         if not key:
@@ -488,8 +491,8 @@ class APIGatewayAnalytics:
     """
 
     def __init__(self):
-        self._analytics: List[RequestAnalytics] = []
-        self._daily_stats: Dict[str, dict] = defaultdict(
+        self._analytics: list[RequestAnalytics] = []
+        self._daily_stats: dict[str, dict] = defaultdict(
             lambda: {
                 "total_requests": 0,
                 "successful": 0,
@@ -525,7 +528,7 @@ class APIGatewayAnalytics:
         if entry.tenant_id:
             stats["tenants"][entry.tenant_id] += 1
 
-    def get_dashboard_stats(self, days: int = 7) -> Dict[str, Any]:
+    def get_dashboard_stats(self, days: int = 7) -> dict[str, Any]:
         """Get analytics dashboard data."""
         dates = []
         today = datetime.now(timezone.utc)
@@ -540,7 +543,7 @@ class APIGatewayAnalytics:
             dates.append({"date": date_key, **stats})
 
         # Top paths
-        all_paths: Dict[str, int] = defaultdict(int)
+        all_paths: dict[str, int] = defaultdict(int)
         for stats in self._daily_stats.values():
             for path, count in stats["paths"].items():
                 all_paths[path] += count
@@ -578,7 +581,7 @@ if FASTAPI_AVAILABLE:
             self.rate_limiter = rate_limiter or RateLimiter()
             self.key_manager = key_manager or APIKeyManager()
             self.analytics = analytics or APIGatewayAnalytics()
-            self.transformation_rules: List[TransformationRule] = []
+            self.transformation_rules: list[TransformationRule] = []
 
         async def dispatch(self, request: Request, call_next) -> Response:
             start_time = time.time()
@@ -707,7 +710,7 @@ if FASTAPI_AVAILABLE:
     @router.get("/stats")
     async def get_gateway_stats(
         analytics: APIGatewayAnalytics = Depends(lambda: APIGatewayAnalytics()), days: int = 7
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Get API gateway analytics."""
         return analytics.get_dashboard_stats(days)
 
@@ -718,7 +721,7 @@ if FASTAPI_AVAILABLE:
         name: str = "API Key",
         expires_days: int = None,
         key_manager: APIKeyManager = Depends(lambda: APIKeyManager()),
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate new API key."""
         plain_key, api_key = key_manager.generate_key(
             tenant_id=tenant_id, tier=tier, name=name, expires_days=expires_days
@@ -734,7 +737,7 @@ if FASTAPI_AVAILABLE:
     @router.post("/keys/{key_id}/revoke")
     async def revoke_api_key(
         key_id: str, key_manager: APIKeyManager = Depends(lambda: APIKeyManager())
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Revoke an API key."""
         success = key_manager.revoke_key(key_id)
         return {"revoked": success, "key_id": key_id}
@@ -742,7 +745,7 @@ if FASTAPI_AVAILABLE:
     @router.get("/keys/{key_id}/stats")
     async def get_key_stats(
         key_id: str, key_manager: APIKeyManager = Depends(lambda: APIKeyManager())
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Get API key statistics."""
         return key_manager.get_key_stats(key_id)
 
@@ -784,7 +787,7 @@ if __name__ == "__main__":
     print("\n📊 Rate Limit Tiers:")
     for tier, config in TIER_CONFIGS.items():
         print(
-            f"   {tier.value:12} - {config.requests_per_window:,} req/{config.window_seconds//3600}h ({config.strategy.value})"
+            f"   {tier.value:12} - {config.requests_per_window:,} req/{config.window_seconds // 3600}h ({config.strategy.value})"
         )
 
     print("\n🔧 Features:")

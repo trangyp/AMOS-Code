@@ -21,7 +21,6 @@ from .real_learning_engine import (
     learn_from_task,
 )
 from .reasoning import RuleOfFour, RuleOfTwo
-from typing import Optional
 
 
 @dataclass
@@ -102,7 +101,7 @@ class BrainTaskProcessor:
             self._router = KernelRouter(self.brain)
         return self._router
 
-    def process(self, task: str, context: dict  = None) -> TaskResult:
+    def process(self, task: str, context: dict = None) -> TaskResult:
         """Process a task through the AMOS brain with Real Learning.
 
         Args:
@@ -374,7 +373,7 @@ class BrainTaskProcessor:
         }
 
 
-def process_task(task: str, context: dict  = None) -> TaskResult:
+def process_task(task: str, context: dict = None) -> TaskResult:
     """Convenience function to process a single task."""
     processor = BrainTaskProcessor()
     return processor.process(task, context)

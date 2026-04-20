@@ -1,12 +1,15 @@
 """AMOS Species Interaction Core Engine - HIE, UMPL, UST, UIE, UEL."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 
 class InteractionGoal(Enum):
     """Primary interaction goals per HIE spec."""
+
     EXPLAIN = "explain"
     SOLVE_TASK = "solve_task"
     STABILISE_NERVOUS_SYSTEM = "stabilise_nervous_system"
@@ -19,6 +22,7 @@ class InteractionGoal(Enum):
 
 class PerceptionPrimitive(Enum):
     """UMPL perception primitives."""
+
     INTENSITY = "intensity"
     VALENCE = "valence"
     AROUSAL = "arousal"
@@ -31,7 +35,7 @@ class StateLayer:
 
     level: int
     name: str
-    state: Dict[str, Any]
+    state: dict[str, Any]
 
 
 class HumanInteractionEngine:
@@ -60,7 +64,7 @@ class HumanInteractionEngine:
     ]
 
     def __init__(self):
-        self.state_layers: Dict[int, StateLayer] = {
+        self.state_layers: dict[int, StateLayer] = {
             1: StateLayer(1, "surface_text", {}),
             2: StateLayer(2, "emotional_state", {}),
             3: StateLayer(3, "nervous_system_state", {}),
@@ -93,7 +97,7 @@ class HumanInteractionEngine:
         overload = ns_state.get("overload", 0.0)
         return max(0.0, 1.0 - (threat + overload) / 2)
 
-    def check_safety_constraints(self, action: str) -> Tuple[bool, str]:
+    def check_safety_constraints(self, action: str) -> tuple[bool, str]:
         """Check if action violates safety constraints."""
         for violation in self.NEVER_RULES:
             if violation in action.lower():
@@ -122,17 +126,29 @@ class UniverseMultimodalPerceptionLayer:
     """UMPL - Universe Multimodal Perception Layer."""
 
     def __init__(self):
-        self.primitives: Dict[str, dict] = {
+        self.primitives: dict[str, dict] = {
             "intensity": {"scale": (0.0, 1.0), "value": 0.5},
             "valence": {"scale": (-1.0, 1.0), "value": 0.0},
             "arousal": {"scale": (0.0, 1.0), "value": 0.5},
             "clarity": {"scale": (0.0, 1.0), "value": 0.7},
         }
         self.modalities = {
-            "text": {"enabled": True, "features": ["tokens", "syntax", "semantic_roles", "sentiment", "urgency_markers"]},
-            "audio": {"enabled": False, "features": ["prosody", "volume", "tempo", "pitch_variation"]},
-            "visual": {"enabled": False, "features": ["face_expression", "gaze_direction", "posture", "gesture"]},
-            "biosignals": {"enabled": False, "features": ["heart_rate", "breathing_rate", "skin_conductance"]},
+            "text": {
+                "enabled": True,
+                "features": ["tokens", "syntax", "semantic_roles", "sentiment", "urgency_markers"],
+            },
+            "audio": {
+                "enabled": False,
+                "features": ["prosody", "volume", "tempo", "pitch_variation"],
+            },
+            "visual": {
+                "enabled": False,
+                "features": ["face_expression", "gaze_direction", "posture", "gesture"],
+            },
+            "biosignals": {
+                "enabled": False,
+                "features": ["heart_rate", "breathing_rate", "skin_conductance"],
+            },
         }
         self.global_state = {
             "threat_index_global": 0.0,
@@ -141,11 +157,15 @@ class UniverseMultimodalPerceptionLayer:
             "engagement_index_global": 0.5,
         }
 
-    def perceive_text(self, text: str) -> Dict[str, Any]:
+    def perceive_text(self, text: str) -> dict[str, Any]:
         """Process text input."""
         urgency_markers = ["urgent", "emergency", "critical", "now", "immediately"]
         urgency_count = sum(1 for marker in urgency_markers if marker in text.lower())
-        sentiment = "positive" if any(w in text.lower() for w in ["good", "great", "excellent"]) else "neutral"
+        sentiment = (
+            "positive"
+            if any(w in text.lower() for w in ["good", "great", "excellent"])
+            else "neutral"
+        )
         if any(w in text.lower() for w in ["bad", "terrible", "awful"]):
             sentiment = "negative"
         return {
@@ -192,13 +212,13 @@ class UniverseStructureTree:
     def __init__(self):
         self.nodes = {node: {"parent": "ROOT", "children": []} for node in self.TOP_LEVEL_NODES}
 
-    def get_node_path(self, node_name: str) -> List[str]:
+    def get_node_path(self, node_name: str) -> list[str]:
         """Get canonical path to node."""
         if node_name in self.nodes:
             return ["ROOT", node_name]
         return []
 
-    def classify_query(self, query: str) -> List[str]:
+    def classify_query(self, query: str) -> list[str]:
         """Classify query into UST nodes."""
         keywords = {
             "physics": "Physics_and_Quantum",
@@ -235,15 +255,15 @@ class UniverseInteractionEngine:
     ]
 
     def __init__(self):
-        self.intent_vectors: List[dict] = []
-        self.policies: List[str] = []
-        self.interaction_profiles: Dict[str, dict] = {
+        self.intent_vectors: list[dict] = []
+        self.policies: list[str] = []
+        self.interaction_profiles: dict[str, dict] = {
             "human": {"style": "respectful_direct", "safety_priority": "high"},
             "ai_agent": {"style": "collaborative", "safety_priority": "medium"},
             "system": {"style": "formal", "safety_priority": "low"},
         }
 
-    def map_intent(self, goal: str, context: dict) -> Dict[str, float]:
+    def map_intent(self, goal: str, context: dict) -> dict[str, float]:
         """Map goal and context to intent vector."""
         return {
             "helpfulness": 0.9,
@@ -252,7 +272,7 @@ class UniverseInteractionEngine:
             "efficiency": 0.7,
         }
 
-    def apply_policy(self, action: str, entity_type: str = "human") -> Tuple[bool, str]:
+    def apply_policy(self, action: str, entity_type: str = "human") -> tuple[bool, str]:
         """Apply policy and rule constraints."""
         profile = self.interaction_profiles.get(entity_type, {})
         safety_priority = profile.get("safety_priority", "high")
@@ -274,7 +294,9 @@ class UniversalExpressionLayer:
     def __init__(self):
         self.channels = ["language", "paralinguistic", "digital"]
 
-    def generate_output(self, content: str, channel: str = "language", constraints: Optional[List[str]] = None) -> Dict[str, Any]:
+    def generate_output(
+        self, content: str, channel: str = "language", constraints: list[str | None] = None
+    ) -> dict[str, Any]:
         """Generate output through specified channel."""
         constraints = constraints or self.LANGUAGE_CONSTRAINTS
         if channel == "language":
@@ -312,10 +334,10 @@ class SpeciesInteractionCoreEngine:
         self.uie = UniverseInteractionEngine()
         self.uel = UniversalExpressionLayer()
 
-    def analyze(self, input_text: str, context: Dict[str, Any]  = None) -> Dict[str, Any]:
+    def analyze(self, input_text: str, context: dict[str, Any] = None) -> dict[str, Any]:
         """Run species interaction analysis."""
         context = context or {}
-        results: Dict[str, Any] = {
+        results: dict[str, Any] = {
             "input": input_text[:100],
             "hie_analysis": {},
             "umpl_analysis": {},
@@ -329,7 +351,16 @@ class SpeciesInteractionCoreEngine:
         sentiment = text_perception["sentiment"]
         # Update HIE state layers
         self.hie.update_state(1, {"text": input_text, "urgency": urgency})
-        self.hie.update_state(2, {"valence": 1.0 if sentiment == "positive" else -1.0 if sentiment == "negative" else 0.0})
+        self.hie.update_state(
+            2,
+            {
+                "valence": 1.0
+                if sentiment == "positive"
+                else -1.0
+                if sentiment == "negative"
+                else 0.0
+            },
+        )
         self.hie.update_state(3, {"threat_level": urgency * 0.5, "overload": 0.0})
         stability = self.hie.get_nervous_system_stability()
         # Update UMPL global state
@@ -340,7 +371,9 @@ class SpeciesInteractionCoreEngine:
         intent_vector = self.uie.map_intent("help", context)
         policy_check = self.uie.apply_policy("provide_assistance")
         # Select goal and strategy
-        goal = InteractionGoal.EXPLAIN if urgency < 0.5 else InteractionGoal.STABILISE_NERVOUS_SYSTEM
+        goal = (
+            InteractionGoal.EXPLAIN if urgency < 0.5 else InteractionGoal.STABILISE_NERVOUS_SYSTEM
+        )
         strategy = self.hie.select_strategy(goal, stability)
         safety_check = self.hie.check_safety_constraints(input_text)
         # UEL: Generate output plan
@@ -386,109 +419,135 @@ class SpeciesInteractionCoreEngine:
             "## Human Interaction Engine (HIE)",
         ]
         hie = results.get("hie_analysis", {})
-        lines.extend([
-            f"- **Nervous System Stability**: {hie.get('stability_index', 0):.2f}",
-            f"- **Selected Goal**: {hie.get('selected_goal', 'N/A')}",
-            f"- **Strategy**: {hie.get('strategy', 'N/A')}",
-            f"- **Safety Check**: {hie.get('safety_check', False)}",
-        ])
-        lines.extend([
-            "",
-            "## Core Principles",
-        ])
+        lines.extend(
+            [
+                f"- **Nervous System Stability**: {hie.get('stability_index', 0):.2f}",
+                f"- **Selected Goal**: {hie.get('selected_goal', 'N/A')}",
+                f"- **Strategy**: {hie.get('strategy', 'N/A')}",
+                f"- **Safety Check**: {hie.get('safety_check', False)}",
+            ]
+        )
+        lines.extend(
+            [
+                "",
+                "## Core Principles",
+            ]
+        )
         for principle in self.hie.CORE_PRINCIPLES[:3]:
             lines.append(f"- {principle}")
-        lines.extend([
-            "",
-            "## Safety Constraints",
-            "**NEVER:**",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Safety Constraints",
+                "**NEVER:**",
+            ]
+        )
         for rule in self.hie.NEVER_RULES:
             lines.append(f"- {rule}")
-        lines.extend([
-            "",
-            "**ALWAYS:**",
-        ])
+        lines.extend(
+            [
+                "",
+                "**ALWAYS:**",
+            ]
+        )
         for rule in self.hie.ALWAYS_RULES:
             lines.append(f"- {rule}")
         umpl = results.get("umpl_analysis", {})
         perception = umpl.get("perception", {})
-        lines.extend([
-            "",
-            "## Multimodal Perception (UMPL)",
-            f"- **Urgency**: {perception.get('urgency', 0):.2f}",
-            f"- **Sentiment**: {perception.get('sentiment', 'N/A')}",
-            f"- **Text Length**: {perception.get('length', 0)} tokens",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Multimodal Perception (UMPL)",
+                f"- **Urgency**: {perception.get('urgency', 0):.2f}",
+                f"- **Sentiment**: {perception.get('sentiment', 'N/A')}",
+                f"- **Text Length**: {perception.get('length', 0)} tokens",
+            ]
+        )
         global_state = umpl.get("global_state", {})
-        lines.extend([
-            "",
-            "### Global State",
-            f"- **Threat Index**: {global_state.get('threat_index_global', 0):.2f}",
-            f"- **Stability Index**: {global_state.get('stability_index_global', 0):.2f}",
-            f"- **Engagement Index**: {global_state.get('engagement_index_global', 0):.2f}",
-        ])
+        lines.extend(
+            [
+                "",
+                "### Global State",
+                f"- **Threat Index**: {global_state.get('threat_index_global', 0):.2f}",
+                f"- **Stability Index**: {global_state.get('stability_index_global', 0):.2f}",
+                f"- **Engagement Index**: {global_state.get('engagement_index_global', 0):.2f}",
+            ]
+        )
         ust = results.get("ust_analysis", {})
-        lines.extend([
-            "",
-            "## Universe Structure Tree (UST)",
-            f"- **Matched Nodes**: {', '.join(ust.get('matched_nodes', [])[:3])}",
-            f"- **Total Available Nodes**: {ust.get('total_nodes', 0)}",
-        ])
-        lines.extend([
-            "",
-            "### Top-Level Nodes",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Universe Structure Tree (UST)",
+                f"- **Matched Nodes**: {', '.join(ust.get('matched_nodes', [])[:3])}",
+                f"- **Total Available Nodes**: {ust.get('total_nodes', 0)}",
+            ]
+        )
+        lines.extend(
+            [
+                "",
+                "### Top-Level Nodes",
+            ]
+        )
         for node in self.ust.TOP_LEVEL_NODES[:5]:
             lines.append(f"- {node}")
         uie = results.get("uie_analysis", {})
         intent = uie.get("intent_vector", {})
-        lines.extend([
-            "",
-            "## Universe Interaction Engine (UIE)",
-            f"- **Helpfulness Intent**: {intent.get('helpfulness', 0):.2f}",
-            f"- **Safety Constraint**: {intent.get('safety_constraint', 0):.2f}",
-            f"- **Clarity Intent**: {intent.get('clarity', 0):.2f}",
-        ])
-        lines.extend([
-            "",
-            "## Behavioural Principles",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Universe Interaction Engine (UIE)",
+                f"- **Helpfulness Intent**: {intent.get('helpfulness', 0):.2f}",
+                f"- **Safety Constraint**: {intent.get('safety_constraint', 0):.2f}",
+                f"- **Clarity Intent**: {intent.get('clarity', 0):.2f}",
+            ]
+        )
+        lines.extend(
+            [
+                "",
+                "## Behavioural Principles",
+            ]
+        )
         for principle in self.uie.BEHAVIOURAL_PRINCIPLES:
             lines.append(f"- {principle}")
         uel = results.get("uel_analysis", {})
-        lines.extend([
-            "",
-            "## Universal Expression Layer (UEL)",
-            f"- **Channel**: {uel.get('channel', 'N/A')}",
-            f"- **Constraints Applied**: {len(uel.get('constraints_applied', []))}",
-        ])
-        lines.extend([
-            "",
-            "## Processing Pipeline",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Universal Expression Layer (UEL)",
+                f"- **Channel**: {uel.get('channel', 'N/A')}",
+                f"- **Constraints Applied**: {len(uel.get('constraints_applied', []))}",
+            ]
+        )
+        lines.extend(
+            [
+                "",
+                "## Processing Pipeline",
+            ]
+        )
         for i, stage in enumerate(self.hie.pipeline, 1):
             lines.append(f"{i}. {stage}")
-        lines.extend([
-            "",
-            "## Safety and Constraints",
-            "- HIE state layers track nervous system stability",
-            "- UMPL monitors threat and overload indices",
-            "- UIE respects agency within safety bounds",
-            "- UEL maintains consistency with logic kernel",
-            "- All outputs pass through safety and ethics filters",
-            "",
-            "## Limitations",
-            "- Audio/visual/biosignal modalities not enabled",
-            "- Simplified perception primitives",
-            "- UST classification based on keyword matching",
-            "- No real-time nervous system monitoring",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Safety and Constraints",
+                "- HIE state layers track nervous system stability",
+                "- UMPL monitors threat and overload indices",
+                "- UIE respects agency within safety bounds",
+                "- UEL maintains consistency with logic kernel",
+                "- All outputs pass through safety and ethics filters",
+                "",
+                "## Limitations",
+                "- Audio/visual/biosignal modalities not enabled",
+                "- Simplified perception primitives",
+                "- UST classification based on keyword matching",
+                "- No real-time nervous system monitoring",
+            ]
+        )
         return "\n".join(lines)
 
 
 # Singleton instance
-_species_core: Optional[SpeciesInteractionCoreEngine] = None
+_species_core: SpeciesInteractionCoreEngine | None = None
 
 
 def get_species_interaction_core_engine() -> SpeciesInteractionCoreEngine:

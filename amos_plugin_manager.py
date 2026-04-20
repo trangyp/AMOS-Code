@@ -7,7 +7,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 @dataclass
@@ -19,7 +19,7 @@ class PluginInfo:
     author: str
     description: str
     entry_point: str
-    hooks: List[str] = field(default_factory=list)
+    hooks: list[str] = field(default_factory=list)
     enabled: bool = True
     loaded_at: str = field(default_factory=lambda: datetime.now().isoformat())
 
@@ -30,7 +30,7 @@ class PluginHook:
 
     name: str
     description: str
-    callbacks: List[Callable] = field(default_factory=list)
+    callbacks: list[Callable] = field(default_factory=list)
 
 
 class AMOSPluginManager:
@@ -65,14 +65,14 @@ class AMOSPluginManager:
         self.plugin_dir = Path(plugin_dir)
         self.plugin_dir.mkdir(exist_ok=True)
 
-        self.plugins: Dict[str, PluginInfo] = {}
-        self.hooks: Dict[str, PluginHook] = {
+        self.plugins: dict[str, PluginInfo] = {}
+        self.hooks: dict[str, PluginHook] = {
             name: PluginHook(name=name, description=desc)
             for name, desc in self.STANDARD_HOOKS.items()
         }
         self.loaded_count = 0
 
-    def discover_plugins(self) -> List[Path]:
+    def discover_plugins(self) -> list[Path]:
         """Discover available plugins in plugin directory."""
         plugins = []
         for file_path in self.plugin_dir.glob("*.py"):
@@ -146,7 +146,7 @@ class AMOSPluginManager:
 
         return True
 
-    def execute_hook(self, hook_name: str, *args, **kwargs) -> List[Any]:
+    def execute_hook(self, hook_name: str, *args, **kwargs) -> list[Any]:
         """Execute all callbacks for a hook."""
         results = []
 
@@ -167,7 +167,7 @@ class AMOSPluginManager:
         """Get information about a plugin."""
         return self.plugins.get(plugin_name)
 
-    def list_plugins(self) -> List[PluginInfo]:
+    def list_plugins(self) -> list[PluginInfo]:
         """List all loaded plugins."""
         return list(self.plugins.values())
 
@@ -190,6 +190,7 @@ class AMOSPluginManager:
         template = f'''"""
 {plugin_name} Plugin for AMOS Ecosystem
 """
+from __future__ import annotations
 
 # Plugin metadata
 PLUGIN_NAME = "{plugin_name}"
@@ -215,7 +216,7 @@ def on_system_startup():
 '''
         return template
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get plugin manager statistics."""
         return {
             "total_plugins": len(self.plugins),

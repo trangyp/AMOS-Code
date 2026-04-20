@@ -10,8 +10,6 @@ Version: 2.1.0
 from __future__ import annotations
 
 from typing import Any
-import sys
-from pathlib import Path
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
@@ -19,9 +17,6 @@ from pydantic import BaseModel, Field
 from backend.auth import User, get_current_user
 
 # Brain integration
-AMOS_ROOT = Path(__file__).parent.parent.parent.resolve()
-sys.path.insert(0, str(AMOS_ROOT / "clawspring" / "amos_brain"))
-
 try:
     from amos_kernel_runtime import AMOSKernelRuntime  # noqa: E402
 
@@ -46,7 +41,7 @@ class WorkflowCreateRequest(BaseModel):
 
     workflow_type: str = Field(..., description="Type of workflow to execute")
     input_data: dict[str, Any] = Field(default_factory=dict, description="Initial workflow input")
-    correlation_id: Optional[str] = Field(None, description="External correlation ID")
+    correlation_id: str = Field(None, description="External correlation ID")
 
 
 class WorkflowResponse(BaseModel):
@@ -63,7 +58,7 @@ class WorkflowResponse(BaseModel):
     failed_activities: int
     compensating_activities: int
     result: dict[str, Any] = None
-    error: Optional[str] = None
+    error: str = None
 
 
 class ActivityResponse(BaseModel):
@@ -72,10 +67,10 @@ class ActivityResponse(BaseModel):
     activity_id: str
     name: str
     status: str
-    started_at: Optional[float] = None
-    completed_at: Optional[float] = None
+    started_at: float = None
+    completed_at: float = None
     retry_count: int
-    error: Optional[str] = None
+    error: str = None
     result_preview: dict[str, Any] = None
 
 
@@ -225,7 +220,7 @@ async def compensate_workflow(
 
 @router.get("/", response_model=WorkflowListResponse)
 async def list_workflows(
-    status_filter: Optional[WorkflowStatus] = None,
+    status_filter: WorkflowStatus = None,
     limit: int = 100,
     service: WorkflowService = Depends(get_workflow_service),
 ) -> WorkflowListResponse:

@@ -24,10 +24,10 @@ def get_project_root() -> Path:
 
 def setup_python_path():
     """Add necessary paths to Python path."""
-    root = get_project_root()
-    sys.path.insert(0, str(root))
-    sys.path.insert(0, str(root / "clawspring"))
-    sys.path.insert(0, str(root / "clawspring" / "amos_brain"))
+    # Import alias modules to set up paths
+    import amos_brain  # noqa: F401
+    import AMOS_ORGANISM_OS  # noqa: F401
+    import clawspring  # noqa: F401
 
 
 def check_dependencies() -> bool:
@@ -92,14 +92,13 @@ def start_dashboard(host: str, port: int, reload: bool = False):
 
     # Use uvicorn to run the FastAPI app
     try:
-        import uvicorn
-
-        # Add the directory to path for the import
-        sys.path.insert(0, str(server_dir))
-        sys.path.insert(0, str(server_dir.parent))
-
         # Import and run
         import importlib.util
+
+        import uvicorn
+
+        # Import alias modules for path setup
+        import AMOS_ORGANISM_OS  # noqa: F401
 
         spec = importlib.util.spec_from_file_location("math_dashboard_server", server_path)
         module = importlib.util.module_from_spec(spec)

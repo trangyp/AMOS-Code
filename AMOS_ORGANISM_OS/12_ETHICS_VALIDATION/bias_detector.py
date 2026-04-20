@@ -7,10 +7,12 @@ Owner: Trang
 Version: 1.0.0
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class BiasType(Enum):
@@ -40,9 +42,9 @@ class BiasFinding:
     bias_type: BiasType
     description: str
     severity: BiasSeverity
-    affected_groups: List[str]
+    affected_groups: list[str]
     confidence: float  # 0.0 to 1.0
-    evidence: Dict[str, Any]
+    evidence: dict[str, Any]
 
 
 @dataclass
@@ -55,8 +57,8 @@ class BiasReport:
     high_count: int
     medium_count: int
     low_count: int
-    findings: List[BiasFinding]
-    recommendations: List[str]
+    findings: list[BiasFinding]
+    recommendations: list[str]
 
 
 @dataclass
@@ -77,9 +79,9 @@ class BiasDetector:
     of bias and provides mitigation strategies.
     """
 
-    def __init__(self, sensitive_attributes: List[str] = None):
-        self.findings: List[BiasFinding] = []
-        self.mitigations: List[MitigationAction] = []
+    def __init__(self, sensitive_attributes: list[str] = None):
+        self.findings: list[BiasFinding] = []
+        self.mitigations: list[MitigationAction] = []
         self.sensitive_attributes = sensitive_attributes or [
             "gender",
             "race",
@@ -90,7 +92,7 @@ class BiasDetector:
             "socioeconomic",
         ]
 
-    def analyze_data(self, data: Dict[str, Any], context: str = "general") -> BiasReport:
+    def analyze_data(self, data: dict[str, Any], context: str = "general") -> BiasReport:
         """Analyze data for bias."""
         findings = []
 
@@ -112,7 +114,7 @@ class BiasDetector:
         self.findings.extend(findings)
         return self._generate_report(findings)
 
-    def _check_representation_bias(self, data: Dict[str, Any]) -> Optional[BiasFinding]:
+    def _check_representation_bias(self, data: dict[str, Any]) -> Optional[BiasFinding]:
         """Check for representation bias in data distribution."""
         # Check if sensitive attributes are under-represented
         for attr in self.sensitive_attributes:
@@ -129,7 +131,7 @@ class BiasDetector:
                     )
         return None
 
-    def _check_selection_bias(self, data: Dict[str, Any]) -> Optional[BiasFinding]:
+    def _check_selection_bias(self, data: dict[str, Any]) -> Optional[BiasFinding]:
         """Check for selection bias in data collection."""
         # Check for missing data patterns that might indicate selection bias
         missing_count = sum(1 for v in data.values() if v is None or v == "")
@@ -137,7 +139,7 @@ class BiasDetector:
         if total_count > 0 and missing_count / total_count > 0.3:  # >30% missing
             return BiasFinding(
                 bias_type=BiasType.SELECTION_BIAS,
-                description=f"High missing data rate: {missing_count}/{total_count} ({missing_count/total_count:.1%})",
+                description=f"High missing data rate: {missing_count}/{total_count} ({missing_count / total_count:.1%})",
                 severity=BiasSeverity.HIGH,
                 affected_groups=["data_collection"],
                 confidence=0.6,
@@ -145,7 +147,7 @@ class BiasDetector:
             )
         return None
 
-    def _check_measurement_bias(self, data: Dict[str, Any]) -> Optional[BiasFinding]:
+    def _check_measurement_bias(self, data: dict[str, Any]) -> Optional[BiasFinding]:
         """Check for measurement bias in data values."""
         # Check for extreme outliers that might indicate measurement issues
         numeric_values = [v for v in data.values() if isinstance(v, (int, float))]
@@ -170,7 +172,7 @@ class BiasDetector:
                 pass
         return None
 
-    def _generate_report(self, findings: List[BiasFinding]) -> BiasReport:
+    def _generate_report(self, findings: list[BiasFinding]) -> BiasReport:
         """Generate a bias report."""
         critical = sum(1 for f in findings if f.severity == BiasSeverity.CRITICAL)
         high = sum(1 for f in findings if f.severity == BiasSeverity.HIGH)
@@ -190,7 +192,7 @@ class BiasDetector:
             recommendations=recommendations,
         )
 
-    def _generate_recommendations(self, findings: List[BiasFinding]) -> List[str]:
+    def _generate_recommendations(self, findings: list[BiasFinding]) -> list[str]:
         """Generate mitigation recommendations."""
         recommendations = []
 
@@ -217,11 +219,11 @@ class BiasDetector:
         self.mitigations.append(action)
         return action
 
-    def get_findings_by_type(self, bias_type: BiasType) -> List[BiasFinding]:
+    def get_findings_by_type(self, bias_type: BiasType) -> list[BiasFinding]:
         """Get findings by bias type."""
         return [f for f in self.findings if f.bias_type == bias_type]
 
-    def get_high_severity_findings(self) -> List[BiasFinding]:
+    def get_high_severity_findings(self) -> list[BiasFinding]:
         """Get high and critical severity findings."""
         return [
             f for f in self.findings if f.severity in [BiasSeverity.HIGH, BiasSeverity.CRITICAL]

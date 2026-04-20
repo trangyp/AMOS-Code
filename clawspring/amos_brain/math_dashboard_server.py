@@ -8,9 +8,10 @@ Provides REST API endpoints for dashboard visualization of:
 """
 
 from datetime import datetime, timezone
+
 UTC = timezone.utc
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -59,7 +60,7 @@ app.add_middleware(
 
 
 @app.get("/api/math/stats")
-async def get_math_stats() -> Dict[str, Any]:
+async def get_math_stats() -> dict[str, Any]:
     """Get mathematical framework engine statistics."""
     if not MATH_ENGINE_AVAILABLE:
         raise HTTPException(status_code=503, detail="Math engine not available")
@@ -76,7 +77,7 @@ async def get_math_stats() -> Dict[str, Any]:
 
 
 @app.get("/api/math/domains")
-async def get_math_domains() -> Dict[str, Any]:
+async def get_math_domains() -> dict[str, Any]:
     """Get available mathematical domains and their equations."""
     if not MATH_ENGINE_AVAILABLE:
         raise HTTPException(status_code=503, detail="Math engine not available")
@@ -100,7 +101,7 @@ async def get_math_domains() -> Dict[str, Any]:
 
 
 @app.post("/api/math/analyze")
-async def analyze_task(task: Dict[str, str]) -> Dict[str, Any]:
+async def analyze_task(task: dict[str, str]) -> dict[str, Any]:
     """Analyze a task using mathematical framework."""
     if not MATH_ENGINE_AVAILABLE:
         raise HTTPException(status_code=503, detail="Math engine not available")
@@ -131,7 +132,7 @@ async def analyze_task(task: Dict[str, str]) -> Dict[str, Any]:
 
 
 @app.get("/api/validation/history")
-async def get_validation_history(limit: int = 10) -> Dict[str, Any]:
+async def get_validation_history(limit: int = 10) -> dict[str, Any]:
     """Get recent validation results."""
     if not VALIDATION_ENGINE_AVAILABLE:
         raise HTTPException(status_code=503, detail="Validation engine not available")
@@ -164,7 +165,7 @@ async def get_validation_history(limit: int = 10) -> Dict[str, Any]:
 
 
 @app.post("/api/validation/ui")
-async def validate_ui(params: Dict[str, Any]) -> Dict[str, Any]:
+async def validate_ui(params: dict[str, Any]) -> dict[str, Any]:
     """Validate UI design parameters."""
     if not VALIDATION_ENGINE_AVAILABLE:
         raise HTTPException(status_code=503, detail="Validation engine not available")
@@ -197,7 +198,7 @@ async def validate_ui(params: Dict[str, Any]) -> Dict[str, Any]:
 
 
 @app.get("/api/audit/recent")
-async def get_recent_audit(limit: int = 20) -> Dict[str, Any]:
+async def get_recent_audit(limit: int = 20) -> dict[str, Any]:
     """Get recent audit entries."""
     if not AUDIT_LOGGER_AVAILABLE:
         raise HTTPException(status_code=503, detail="Audit logger not available")
@@ -224,7 +225,7 @@ async def get_recent_audit(limit: int = 20) -> Dict[str, Any]:
 
 
 @app.get("/api/audit/statistics")
-async def get_audit_statistics() -> Dict[str, Any]:
+async def get_audit_statistics() -> dict[str, Any]:
     """Get audit statistics."""
     if not AUDIT_LOGGER_AVAILABLE:
         raise HTTPException(status_code=503, detail="Audit logger not available")
@@ -239,7 +240,7 @@ async def get_audit_statistics() -> Dict[str, Any]:
 
 
 @app.get("/api/telemetry/dashboard")
-async def get_telemetry_dashboard() -> Dict[str, Any]:
+async def get_telemetry_dashboard() -> dict[str, Any]:
     """Get telemetry dashboard data."""
     if not TELEMETRY_AVAILABLE:
         raise HTTPException(status_code=503, detail="Telemetry not available")
@@ -252,7 +253,7 @@ async def get_telemetry_dashboard() -> Dict[str, Any]:
 
 
 @app.get("/api/health")
-async def health_check() -> Dict[str, Any]:
+async def health_check() -> dict[str, Any]:
     """Health check for all math framework components."""
     components = {
         "mathematical_framework_engine": MATH_ENGINE_AVAILABLE,
@@ -272,7 +273,7 @@ async def health_check() -> Dict[str, Any]:
 
 
 @app.get("/api/dashboard/summary")
-async def get_dashboard_summary() -> Dict[str, Any]:
+async def get_dashboard_summary() -> dict[str, Any]:
     """Get comprehensive dashboard summary."""
     summary = {"timestamp": datetime.now(timezone.utc).isoformat(), "status": "operational"}
 

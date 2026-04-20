@@ -18,11 +18,15 @@ Usage:
     report = validator.validate_system(amos_instance)
 """
 
+from __future__ import annotations
+
 import json
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+
+UTC = UTC
+from typing import Any, Optional
 
 from amos_energy import BranchEnergyBudget
 from amos_memory import MemoryEntry
@@ -50,7 +54,7 @@ class AxiomCheck:
     level: ValidationLevel
     passed: bool
     message: str
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -59,8 +63,8 @@ class ValidationReport:
 
     timestamp: datetime
     target: str
-    checks: List[AxiomCheck]
-    summary: Dict[str, int] = field(default_factory=dict)
+    checks: list[AxiomCheck]
+    summary: dict[str, int] = field(default_factory=dict)
 
     def __post_init__(self):
         if not self.summary:
@@ -116,7 +120,7 @@ class AxiomValidator:
 
     def __init__(self, strict: bool = False):
         self.strict = strict
-        self.violations: List[AxiomCheck] = []
+        self.violations: list[AxiomCheck] = []
 
     # ========================================================================
     # AXIOM 1: Substrate Partition
@@ -332,7 +336,7 @@ class AxiomValidator:
     # AXIOM 9: Constraint
     # ========================================================================
 
-    def check_axiom_9_constraints(self, state: State, constraints: List[Any]) -> AxiomCheck:
+    def check_axiom_9_constraints(self, state: State, constraints: list[Any]) -> AxiomCheck:
         """Axiom 9: Valid(x) ↔ ∀α ∈ Hard, c_α(x) = ⊤
 
         State satisfies all hard constraints.
@@ -382,7 +386,7 @@ class AxiomValidator:
     # AXIOM 10 & 21: Commit and Multi-Regime Admissibility (Z*)
     # ========================================================================
 
-    def check_axiom_10_commit(self, state: State, checks: Dict[str, bool]) -> AxiomCheck:
+    def check_axiom_10_commit(self, state: State, checks: dict[str, bool]) -> AxiomCheck:
         """Axiom 10: Commits(x*) ↔ Valid(x*) ∧ Verified(x*) ∧ Feasible(x*)
 
         Axiom 21: Z* = Z_type ∩ Z_logic ∩ Z_physical ∩ ...

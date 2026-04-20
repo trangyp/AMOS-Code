@@ -8,13 +8,10 @@ Enables formal reasoning about code using mathematical invariants.
 
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional
-
-# Import equation bridge
-sys.path.insert(0, str(Path(__file__).parent))
+from typing import Any, Optional
 
 try:
-    from equation_knowledge_bridge import (
+    from AMOS_ORGANISM_OS.BRAIN.equation_knowledge_bridge import (
         EquationKnowledgeGraph,
         EquationParser,
         EquationReasoningEngine,
@@ -27,7 +24,7 @@ except ImportError:
     EQUATIONS_AVAILABLE = False
 
 try:
-    from brain_os import BrainOS, Thought, ThoughtType
+    from AMOS_ORGANISM_OS.BRAIN.brain_os import BrainOS, Thought, ThoughtType
 
     BRAIN_AVAILABLE = True
 except ImportError:
@@ -78,7 +75,7 @@ class CognitiveEquationLayer:
 
         return False
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get layer status."""
         return {
             "initialized": self._initialized,
@@ -89,7 +86,7 @@ class CognitiveEquationLayer:
             ),
         }
 
-    def suggest_for_code(self, code_snippet: str, language: str = None) -> List[dict[str, Any]]:
+    def suggest_for_code(self, code_snippet: str, language: str = None) -> list[dict[str, Any]]:
         """Suggest relevant equations for code."""
         if not self._initialized or not self.reasoning_engine:
             return []
@@ -97,7 +94,7 @@ class CognitiveEquationLayer:
         suggestions = self.reasoning_engine.suggest_equations_for_context(code_snippet, language)
         return [eq.to_dict() for eq in suggestions]
 
-    def verify_invariant(self, code_context: str, invariant_type: str) -> Dict[str, Any]:
+    def verify_invariant(self, code_context: str, invariant_type: str) -> dict[str, Any]:
         """Verify code against an invariant type."""
         if not self._initialized or not self.knowledge_graph:
             return {"valid": False, "error": "Not initialized"}

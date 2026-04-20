@@ -19,7 +19,7 @@ import json
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 # Add paths
 sys.path.insert(0, str(Path(__file__).parent / "clawspring"))
@@ -41,7 +41,7 @@ class AMOSObserver:
             self.integration = get_amos_integration()
         return self.integration
 
-    def show_status(self) -> Dict[str, Any]:
+    def show_status(self) -> dict[str, Any]:
         """Show comprehensive brain status."""
         integration = self._load_brain()
         status = integration.get_status()
@@ -59,7 +59,7 @@ class AMOSObserver:
 
         return status
 
-    def show_engines(self) -> List[dict]:
+    def show_engines(self) -> list[dict]:
         """Show all cognitive engines."""
         integration = self._load_brain()
 
@@ -83,7 +83,7 @@ class AMOSObserver:
         print(f"\nTotal: {len(engines)} engines")
         return engines
 
-    def show_laws(self) -> Dict[str, Any]:
+    def show_laws(self) -> dict[str, Any]:
         """Show global laws and compliance."""
         integration = self._load_brain()
 
@@ -105,7 +105,7 @@ class AMOSObserver:
 
         return laws_info
 
-    def trace_thought(self, problem: str) -> Dict[str, Any]:
+    def trace_thought(self, problem: str) -> dict[str, Any]:
         """Trace AMOS reasoning on a problem."""
         integration = self._load_brain()
 

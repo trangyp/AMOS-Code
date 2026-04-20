@@ -1,4 +1,6 @@
-from typing import Any, Dict, List
+from __future__ import annotations
+
+from typing import Any, Optional
 
 """Direct Brain Kernel API - Direct integration with AMOS Kernel Runtime.
 
@@ -12,24 +14,17 @@ This is the real production implementation using clawspring.amos_brain.
 """
 
 import asyncio
-import sys
 import time
-from datetime import datetime, timezone
-
-UTC = timezone.utc
-from pathlib import Path
+from datetime import UTC, datetime
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
-# Add clawspring to path
-AMOS_ROOT = Path(__file__).parent.parent.parent.resolve()
-if str(AMOS_ROOT) not in sys.path:
-    sys.path.insert(0, str(AMOS_ROOT))
-if str(AMOS_ROOT / "clawspring") not in sys.path:
-    sys.path.insert(0, str(AMOS_ROOT / "clawspring"))
-if str(AMOS_ROOT / "clawspring" / "amos_brain") not in sys.path:
-    sys.path.insert(0, str(AMOS_ROOT / "clawspring" / "amos_brain"))
+UTC = UTC
+
+# Import alias modules to set up paths
+import clawspring  # noqa: F401
+import clawspring.amos_brain  # noqa: F401
 
 # Import kernel runtime
 BRAIN_AVAILABLE = False
@@ -64,10 +59,10 @@ router = APIRouter(prefix="/api/v1/brain-kernel", tags=["Brain Kernel Direct"])
 class KernelCycleRequest(BaseModel):
     """Request for AMOS kernel cognitive cycle."""
 
-    observation: Dict[str, Any] = Field(
+    observation: dict[str, Any] = Field(
         default_factory=dict, description="Current state observation"
     )
-    goal: Dict[str, Any] = Field(default_factory=dict, description="Target goal specification")
+    goal: dict[str, Any] = Field(default_factory=dict, description="Target goal specification")
     timeout_ms: int = Field(default=5000, ge=100, le=60000, description="Timeout in milliseconds")
 
 
@@ -81,15 +76,15 @@ class KernelCycleResponse(BaseModel):
     selected_branch: Optional[str]
     latency_ms: float
     timestamp: str
-    details: Dict[str, Any]
+    details: dict[str, Any]
 
 
 class StateGraphRequest(BaseModel):
     """Request to create/analyze state graph."""
 
-    vertices: List[str] = Field(default_factory=list)
-    edges: List[dict[str, Any]] = Field(default_factory=list)
-    state_vars: Dict[str, float] = Field(default_factory=dict)
+    vertices: list[str] = Field(default_factory=list)
+    edges: list[dict[str, Any]] = Field(default_factory=list)
+    state_vars: dict[str, float] = Field(default_factory=dict)
 
 
 class StateGraphResponse(BaseModel):
@@ -109,8 +104,8 @@ class StateGraphResponse(BaseModel):
 class LegalityRequest(BaseModel):
     """Request for legality assessment."""
 
-    state_data: Dict[str, Any]
-    invariants: List[str] = Field(default_factory=list)
+    state_data: dict[str, Any]
+    invariants: list[str] = Field(default_factory=list)
 
 
 class LegalityResponse(BaseModel):
@@ -119,7 +114,7 @@ class LegalityResponse(BaseModel):
     is_legal: bool
     legality_score: float
     drift_coefficient: float
-    violations: List[dict[str, Any]]
+    violations: list[dict[str, Any]]
     mode: str
 
 
@@ -291,7 +286,7 @@ async def check_legality(request: LegalityRequest) -> LegalityResponse:
 
 
 @router.get("/docs")
-async def get_kernel_docs() -> Dict[str, Any]:
+async def get_kernel_docs() -> dict[str, Any]:
     """Get AMOS kernel documentation."""
     return {
         "name": "AMOS Kernel Runtime API",

@@ -7,14 +7,25 @@ Integrates exhaustive equation research into AMOS Knowledge Core.
 Connects EXHAUSTIVE_EQUATIONS_INVARIANTS_ALL_LANGUAGES.md to the ecosystem.
 """
 
+from __future__ import annotations
+
+import importlib.util
 import json
-import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
-# Add brain module to path
-sys.path.insert(0, str(Path(__file__).parent.parent / "01_BRAIN"))
+# Load brain module using importlib
+_brain_path = Path(__file__).parent.parent / "01_BRAIN" / "equation_knowledge_bridge.py"
+_spec = importlib.util.spec_from_file_location("_eq_bridge", _brain_path)
+_eq_mod = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_eq_mod)
 
+EquationKnowledgeGraph = _eq_mod.EquationKnowledgeGraph
+EquationParser = _eq_mod.EquationParser
+EquationReasoningEngine = _eq_mod.EquationReasoningEngine
+build_equation_knowledge_base = _eq_mod.build_equation_knowledge_base
+
+# For compatibility with existing try/except blocks
 try:
     from equation_knowledge_bridge import (
         EquationKnowledgeGraph,
@@ -59,7 +70,7 @@ class EquationKnowledgeIntegration:
             print(f"[WARN] Equation document not found: {doc_path}")
             return False
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get integration status."""
         return {
             "initialized": self._initialized,
@@ -70,7 +81,7 @@ class EquationKnowledgeIntegration:
             else 0,
         }
 
-    def query_equations(self, category: str = None, language: str = None) -> List[dict]:
+    def query_equations(self, category: str = None, language: str = None) -> list[dict]:
         """Query equations by category or language."""
         if not self.knowledge_graph:
             return []

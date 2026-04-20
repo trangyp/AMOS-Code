@@ -4,11 +4,6 @@ import sys
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import List, Tuple
-
-# Add paths
-sys.path.insert(0, str(Path(__file__).parent))
-sys.path.insert(0, str(Path(__file__).parent.parent))
 
 
 @dataclass
@@ -25,7 +20,7 @@ class SystemValidator:
     """Validates all 15 AMOS ecosystem components."""
 
     def __init__(self):
-        self.results: List[ValidationResult] = []
+        self.results: list[ValidationResult] = []
         self.cognitive_modules = [
             "amos_cognitive_router.py",
             "engine_executor.py",
@@ -48,7 +43,7 @@ class SystemValidator:
             "master_orchestrator.py",
         ]
 
-    def validate_all(self) -> List[ValidationResult]:
+    def validate_all(self) -> list[ValidationResult]:
         """Run full system validation."""
         self.results = []
 
@@ -319,7 +314,7 @@ class SystemValidator:
         print(f"{'=' * 70}")
 
 
-def validate_system() -> Tuple[bool, dict]:
+def validate_system() -> tuple[bool, dict]:
     """Run full validation and return results."""
     validator = SystemValidator()
     validator.validate_all()

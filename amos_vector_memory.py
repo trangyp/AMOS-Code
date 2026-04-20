@@ -49,14 +49,9 @@ Author: Trang Phan
 Version: 1.0.0
 """
 
-import sys
 import time
 import uuid
 from dataclasses import dataclass, field
-from pathlib import Path
-from typing import List
-
-sys.path.insert(0, str(Path(__file__).parent))
 
 # Try to import optional dependencies
 try:
@@ -81,7 +76,7 @@ class VectorMemoryEntry:
 
     id: str
     content: str
-    embedding: List[float] = field(default_factory=list)
+    embedding: list[float] = field(default_factory=list)
     memory_type: str = "semantic"  # episodic, semantic, procedural
     metadata: dict = field(default_factory=dict)
     timestamp: float = field(default_factory=time.time)
@@ -115,7 +110,7 @@ class EmbeddingService:
             print(f"[Embedding] Failed to load model: {e}")
             return False
 
-    def embed(self, text: str) -> List[float]:
+    def embed(self, text: str) -> list[float]:
         """Generate embedding for text."""
         if not self._initialized or not self._model:
             return None
@@ -127,7 +122,7 @@ class EmbeddingService:
             print(f"[Embedding] Failed to embed text: {e}")
             return None
 
-    def embed_batch(self, texts: List[str]) -> List[list[float]]:
+    def embed_batch(self, texts: list[str]) -> list[list[float]]:
         """Generate embeddings for multiple texts."""
         if not self._initialized or not self._model:
             return None
@@ -231,7 +226,7 @@ class AMOSVectorMemory:
 
     def search(
         self, query: str, k: int = 5, memory_type: str = None, filters: dict = None
-    ) -> List[VectorMemoryEntry]:
+    ) -> list[VectorMemoryEntry]:
         """Semantic search across memories."""
         if not self._initialized:
             return []

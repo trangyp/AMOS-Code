@@ -1,8 +1,7 @@
 from .task import PortingTask
-from typing import List
 
 
-def default_tasks() -> List[PortingTask]:
+def default_tasks() -> list[PortingTask]:
     return [
         PortingTask(
             "root-module-parity", "Mirror the root module surface of the archived snapshot"

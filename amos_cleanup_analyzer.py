@@ -20,7 +20,6 @@ import sys
 from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, List, Optional
 
 
 @dataclass
@@ -41,10 +40,10 @@ class FileAnalysis:
 
     path: Path
     lines: int
-    imports: List[str]
-    functions: List[str]
-    classes: List[str]
-    issues: List[CleanupIssue] = field(default_factory=list)
+    imports: list[str]
+    functions: list[str]
+    classes: list[str]
+    issues: list[CleanupIssue] = field(default_factory=list)
 
 
 class AMOSCleanupAnalyzer:
@@ -59,11 +58,11 @@ class AMOSCleanupAnalyzer:
 
     def __init__(self, root_dir: Optional[Path] = None):
         self.root = root_dir or Path(__file__).parent
-        self.issues: List[CleanupIssue] = []
-        self.file_analyses: List[FileAnalysis] = []
-        self.duplicate_groups: List[list[Path]] = []
+        self.issues: list[CleanupIssue] = []
+        self.file_analyses: list[FileAnalysis] = []
+        self.duplicate_groups: list[list[Path]] = []
 
-    def analyze(self) -> Dict[str, any]:
+    def analyze(self) -> dict[str, any]:
         """Run complete ecosystem analysis."""
         print("=" * 70)
         print("  🔍 AMOS CLEANUP ANALYZER - Round 13")
@@ -272,7 +271,7 @@ class AMOSCleanupAnalyzer:
                     )
                 )
 
-    def _generate_report(self) -> Dict[str, any]:
+    def _generate_report(self) -> dict[str, any]:
         """Generate comprehensive cleanup report."""
         print("\n" + "=" * 70)
         print("  📊 CLEANUP ANALYSIS REPORT")

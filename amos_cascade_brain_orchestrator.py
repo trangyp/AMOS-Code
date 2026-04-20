@@ -14,10 +14,14 @@ Owner: Trang
 Version: 1.0.0
 """
 
+from __future__ import annotations
+
 import asyncio
 from dataclasses import dataclass, field
-from datetime import datetime
-from typing import Any, Dict, List, Optional
+from datetime import UTC, datetime
+
+UTC = UTC
+from typing import Any, Optional
 
 # Import AMOS components
 from amos_cascade_brain_integration import AMOSCascadeBrain, get_brain
@@ -35,9 +39,9 @@ class OrchestratorStatus:
     sota_loaded: bool = False
     start_time: datetime = field(default_factory=lambda: datetime.now(UTC))
     last_check: datetime = field(default_factory=lambda: datetime.now(UTC))
-    errors: List[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "initialized": self.initialized,
             "brain_active": self.brain_active,
@@ -177,8 +181,8 @@ class AMOSCascadeBrainOrchestrator:
     async def think(
         self,
         intent: str,
-        context: Dict[str, Any] = None,
-    ) -> Dict[str, Any]:
+        context: dict[str, Any] = None,
+    ) -> dict[str, Any]:
         """
         Process cognitive request through AMOS brain.
 
@@ -199,37 +203,37 @@ class AMOSCascadeBrainOrchestrator:
 
         return await self._brain.think(intent, context)
 
-    async def execute_tool(self, tool_name: str, arguments: Dict[str, Any]) -> Any:
+    async def execute_tool(self, tool_name: str, arguments: dict[str, Any]) -> Any:
         """Execute a tool through the brain."""
         if not self._brain:
             return {"error": "Brain not initialized"}
 
         return await self._brain.execute_tool(tool_name, arguments)
 
-    def get_github_repos(self) -> List[Any]:
+    def get_github_repos(self) -> list[Any]:
         """Get all connected GitHub repositories."""
         if not self._github:
             return []
         return self._github.get_all_repos()
 
-    def get_bci_protocols(self) -> List[Any]:
+    def get_bci_protocols(self) -> list[Any]:
         """Get all BCI protocols from SOTA research."""
         if not self._sota:
             return []
         return self._sota.get_bci_protocols()
 
-    def get_research_recommendations(self) -> List[dict[str, Any]]:
+    def get_research_recommendations(self) -> list[dict[str, Any]]:
         """Get SOTA research recommendations for AMOS."""
         if not self._sota:
             return []
         return self._sota.recommend_for_amos()
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get orchestrator status."""
         self._status.last_check = datetime.now(UTC)
         return self._status.to_dict()
 
-    async def full_sync(self) -> Dict[str, Any]:
+    async def full_sync(self) -> dict[str, Any]:
         """Perform full system synchronization."""
         results = {
             "brain_synced": False,

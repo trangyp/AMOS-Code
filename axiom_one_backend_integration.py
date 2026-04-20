@@ -8,12 +8,7 @@ Integrates Axiom One components into FastAPI backend:
 - WebSocket command center
 """
 
-import sys
-from pathlib import Path
-
-AMOS_ROOT = Path(__file__).parent.resolve()
-sys.path.insert(0, str(AMOS_ROOT))
-
+# Axiom One imports (same package - no path hack needed)
 from axiom_one_code_generator import (
     APIGenerator,
     ClassGenerator,
@@ -22,7 +17,6 @@ from axiom_one_code_generator import (
     TestGenerator,
 )
 from axiom_one_completion import CompletionEngine
-from typing import List
 
 # Canon integration for domain-aware code generation
 try:
@@ -48,7 +42,7 @@ class RealCodeIntelligence:
 
     async def complete_code(
         self, code_prefix: str, language: str = "python", domain: str = "general"
-    ) -> List[dict]:
+    ) -> list[dict]:
         """Real code completion using AST analysis with Canon context."""
         # Enrich with Canon context if available
         canon_context = {}

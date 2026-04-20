@@ -14,9 +14,12 @@ Date: 2026-04-16
 Version: 1.0.0
 """
 
+from __future__ import annotations
+
 import ast
 import builtins
-from typing import Any, Callable, Dict, List, Optional
+from collections.abc import Callable
+from typing import Any
 
 
 class SafeExecutionError(Exception):
@@ -179,7 +182,7 @@ class SafeExecutionFramework:
 
     def __init__(self):
         """Initialize the safe execution framework."""
-        self._function_registry: Dict[str, Callable] = {}
+        self._function_registry: dict[str, Callable] = {}
         self._setup_safe_builtins()
 
     def _setup_safe_builtins(self) -> None:
@@ -239,8 +242,8 @@ class SafeExecutionFramework:
             raise SafeExecutionError(f"Safe evaluation failed: {e}")
 
     def safe_exec(
-        self, code: str, local_vars: Optional[Dict] = None, allowed_functions: List[str] = None
-    ) -> Dict[str, Any]:
+        self, code: str, local_vars: dict | None = None, allowed_functions: list[str] = None
+    ) -> dict[str, Any]:
         """
         Execute code in a restricted sandbox environment.
 
@@ -366,7 +369,7 @@ class SafeExecutionFramework:
         func = self._function_registry[func_name]
         return func(*args, **kwargs)
 
-    def create_dispatcher(self, functions: Dict[str, Callable]) -> Callable:
+    def create_dispatcher(self, functions: dict[str, Callable]) -> Callable:
         """
         Create a function dispatcher for multiple functions.
 
@@ -416,8 +419,8 @@ def safe_eval(expression: str, fallback: Any = None) -> Any:
 
 
 def safe_exec(
-    code: str, local_vars: Optional[Dict] = None, allowed_functions: List[str] = None
-) -> Dict[str, Any]:
+    code: str, local_vars: dict | None = None, allowed_functions: list[str] = None
+) -> dict[str, Any]:
     """
     Convenience function for safe execution.
 

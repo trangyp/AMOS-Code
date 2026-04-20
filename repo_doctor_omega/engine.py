@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """Repo Doctor Ω∞∞∞ - Core Engine.
 
 Main orchestration engine that coordinates substrate integration
@@ -123,7 +125,7 @@ class RepoDoctorEngine:
 
         return observables
 
-    def compute_drift(self, since: str = "HEAD~10") -> Dict[str, Any]:
+    def compute_drift(self, since: str = "HEAD~10") -> dict[str, Any]:
         """Compute temporal drift from reference point.
 
         Args:
@@ -141,7 +143,7 @@ class RepoDoctorEngine:
             "per_basis": {},
         }
 
-    def compute_repair_plan(self) -> Dict[str, Any]:
+    def compute_repair_plan(self) -> dict[str, Any]:
         """Compute minimum restoring repair set.
 
         Uses optimization to find best repair order.
@@ -198,7 +200,7 @@ class RepoDoctorEngine:
             "estimated_time": len(steps) * 30,  # Minutes
         }
 
-    def get_report(self) -> Dict[str, Any]:
+    def get_report(self) -> dict[str, Any]:
         """Generate comprehensive diagnosis report."""
         state = self.compute_state()
         invariants = self.evaluate_invariants()

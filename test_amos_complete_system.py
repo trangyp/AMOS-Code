@@ -15,7 +15,6 @@ Run: python test_amos_complete_system.py
 import asyncio
 import sys
 from datetime import datetime
-from typing import List
 
 # Test configuration
 VERBOSE = True
@@ -41,7 +40,7 @@ class AMOSCompleteSystemTest:
     """Comprehensive system integration test."""
 
     def __init__(self):
-        self.results: List[TestResult] = []
+        self.results: list[TestResult] = []
         self.start_time = None
 
     def run_all_tests(self) -> bool:

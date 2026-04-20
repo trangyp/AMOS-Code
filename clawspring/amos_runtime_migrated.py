@@ -11,19 +11,9 @@ which provides:
 - Cookbook workflows
 """
 
-
-import sys
-from pathlib import Path
-
-# Add parent dir to path for standalone amos_brain
-_parent_dir = Path(__file__).parent.parent
-if str(_parent_dir) not in sys.path:
-    sys.path.insert(0, str(_parent_dir))
-
-# Import from standalone package
-
+# Import from standalone amos_brain package
+# Note: amos_brain must be installed: pip install -e .
 from amos_brain import AMOSBrainIntegration, get_amos_integration
-from typing import List, Optional
 
 
 def get_runtime() -> AMOSBrainIntegration:
@@ -44,6 +34,7 @@ def analyze_task(task: str, context: dict = None) -> dict:
 
     Returns:
         Analysis result with Rule of 2, Rule of 4, and recommendations
+
     """
     amos = get_amos_integration()
 
@@ -92,7 +83,7 @@ class AMOSRuntime:
             "creator": "Trang Phan",
         }
 
-    def get_law_summary(self) -> List[dict]:
+    def get_law_summary(self) -> list[dict]:
         """Get global laws summary."""
         return [
             {"id": "L1", "name": "Law of Law", "priority": 1},

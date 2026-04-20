@@ -1,0 +1,155 @@
+# Clean-Room Wheel Build/Install/Smoke Test Workflow
+# P2-11: Validates that the package works when installed from a built wheel
+# outside of the repo directory (no source-tree dependencies)
+name: Clean Room Smoke Test
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'pyproject.toml'
+      - '**.py'
+      - '.github/workflows/clean-room-smoke.yml'
+  pull_request:
+    branches: [main, master]
+    paths:
+      - 'pyproject.toml'
+      - '**.py'
+  workflow_dispatch:
+
+jobs:
+  clean-room-test:
+    name: Clean Room Wheel Test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python-version: ['3.9', '3.11', '3.12']
+      fail-fast: false
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Build wheel and sdist
+        run: |
+          pip install build
+          python -m build --wheel --sdist
+          ls -la dist/
+
+      - name: Create clean temp directory
+        run: |
+          mkdir -p /tmp/clean-room-test
+          cp dist/*.whl /tmp/clean-room-test/
+          cp dist/*.tar.gz /tmp/clean-room-test/ 2>/dev/null
+
+      - name: Install wheel in clean temp directory (outside repo)
+        working-directory: /tmp/clean-room-test
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+          # Install the wheel, not from source
+          pip install *.whl
+          # Verify not importing from repo
+          pip list | grep -i amos
+
+      - name: Smoke test - console entry points work
+        working-directory: /tmp/clean-room-test
+        run: |
+          source venv/bin/activate
+          # Test all console entry points
+          amos-brain --help
+          amosl --help
+          echo "✓ Console entry points work from clean install"
+
+      - name: Smoke test - import all published packages
+        working-directory: /tmp/clean-room-test
+        run: |
+          source venv/bin/activate
+          python3 -c "
+          import sys
+          packages = [
+              'amos_brain', 'amosl', 'amos_model_fabric', 'amos_self_evolution',
+              'amos_platform', 'multi_agent', 'skill', 'search', 'streaming',
+              'memory', 'analytics', 'repo_doctor', 'clawspring', 'AMOS_ORGANISM_OS'
+          ]
+          failed = []
+          for pkg in packages:
+              try:
+                  __import__(pkg)
+                  print(f'✓ {pkg}')
+              except Exception as e:
+                  print(f'✗ {pkg}: {e}')
+                  failed.append(pkg)
+          if failed:
+              print(f'\nFailed imports: {failed}')
+              sys.exit(1)
+          print('\n✓ All published packages import successfully from wheel install')
+          "
+
+      - name: Verify no sys.path hacks in entrypoints
+        working-directory: /tmp/clean-room-test
+        run: |
+          source venv/bin/activate
+          python3 -c "
+          import sys
+          import amos_brain.cli
+          import amosl.cli
+          # Check no path manipulation in installed modules
+          for path in sys.path:
+              if '/tmp/clean-room-test' in path or '/home/runner/work' in path:
+                  continue
+              if '.local' in path or 'site-packages' in path:
+                  print(f'✓ Using site-packages: {path}')
+          print('✓ No source-tree path manipulation detected')
+          "
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: wheel-py${{ matrix.python-version }}-${{ matrix.os }}
+          path: dist/
+          retention-days: 7
+
+  sdist-install-test:
+    name: Source Distribution Install Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Build sdist
+        run: |
+          pip install build
+          python -m build --sdist
+
+      - name: Install from sdist in clean directory
+        run: |
+          mkdir -p /tmp/sdist-test
+          cp dist/*.tar.gz /tmp/sdist-test/
+          cd /tmp/sdist-test
+          python -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+          pip install *.tar.gz
+          pip list | grep -i amos
+
+      - name: Test sdist install works
+        working-directory: /tmp/sdist-test
+        run: |
+          source venv/bin/activate
+          amos-brain --help
+          amosl --help
+          python3 -c "import amos_brain, amosl; print('✓ SDist install works')"

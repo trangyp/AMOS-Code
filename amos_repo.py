@@ -18,12 +18,14 @@ Placement law:
 Zone(x) = argmax_z [RoleFit(x,z) + DependencyFit(x,z) - Drift(x,z)]
 """
 
+from __future__ import annotations
+
 import ast
 import os
 from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 @dataclass
@@ -38,8 +40,8 @@ class CodeEntity:
     content: str = ""
 
     # Metadata
-    dependencies: List[str] = field(default_factory=list)
-    dependents: List[str] = field(default_factory=list)
+    dependencies: list[str] = field(default_factory=list)
+    dependents: list[str] = field(default_factory=list)
     complexity: int = 0
     docstring: str = ""
 
@@ -62,10 +64,10 @@ class CodeParser:
 
     def __init__(self, root_path: str):
         self.root_path = Path(root_path)
-        self.entities: Dict[str, CodeEntity] = {}
-        self.dependencies: List[DependencyEdge] = []
+        self.entities: dict[str, CodeEntity] = {}
+        self.dependencies: list[DependencyEdge] = []
 
-    def parse_repository(self) -> Dict[str, CodeEntity]:
+    def parse_repository(self) -> dict[str, CodeEntity]:
         """Parse entire repository."""
         for py_file in self.root_path.rglob("*.py"):
             if "__pycache__" in str(py_file):
@@ -295,7 +297,7 @@ class ZoneClassifier:
 
         return "unknown"
 
-    def classify_all(self, entities: Dict[str, CodeEntity]) -> Dict[str, CodeEntity]:
+    def classify_all(self, entities: dict[str, CodeEntity]) -> dict[str, CodeEntity]:
         """Classify all entities."""
         for entity in entities.values():
             entity.zone = self.classify(entity)
@@ -305,11 +307,11 @@ class ZoneClassifier:
 class RepoAnalyzer:
     """Analyze repository health and structure."""
 
-    def __init__(self, entities: Dict[str, CodeEntity], dependencies: List[DependencyEdge]):
+    def __init__(self, entities: dict[str, CodeEntity], dependencies: list[DependencyEdge]):
         self.entities = entities
         self.dependencies = dependencies
 
-    def compute_metrics(self) -> Dict[str, Any]:
+    def compute_metrics(self) -> dict[str, Any]:
         """Compute repository metrics."""
         metrics = {
             "total_entities": len(self.entities),
@@ -341,7 +343,7 @@ class RepoAnalyzer:
 
         return dict(metrics)
 
-    def find_cycles(self) -> List[list[str]]:
+    def find_cycles(self) -> list[list[str]]:
         """Find circular dependencies."""
         # Build adjacency list
         graph = defaultdict(set)
@@ -376,7 +378,7 @@ class RepoAnalyzer:
 
         return cycles
 
-    def detect_anomalies(self) -> List[dict]:
+    def detect_anomalies(self) -> list[dict]:
         """Detect anomalies in the codebase."""
         anomalies = []
 
@@ -485,7 +487,7 @@ class AMOSRepoIntelligence:
         self.classifier = ZoneClassifier()
         self.analyzer: Optional[RepoAnalyzer] = None
 
-    def analyze(self) -> Dict[str, Any]:
+    def analyze(self) -> dict[str, Any]:
         """Complete repository analysis."""
         print(f"Analyzing repository: {self.repo_path}")
 
@@ -523,7 +525,7 @@ class AMOSRepoIntelligence:
                 return entity
         return None
 
-    def find_similar(self, entity_name: str) -> List[CodeEntity]:
+    def find_similar(self, entity_name: str) -> list[CodeEntity]:
         """Find entities similar to given one."""
         target = self.get_entity(entity_name)
         if not target:

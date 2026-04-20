@@ -16,8 +16,10 @@ Usage:
     batch_result = kernel.execute_batch("softmax", batch_inputs)
 """
 
+from __future__ import annotations
 
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from collections.abc import Callable
+from typing import Any, Optional
 
 import numpy as np
 
@@ -25,20 +27,30 @@ import numpy as np
 try:
     import jax
     import jax.numpy as jnp
-    from jax import grad, jit, vmap, value_and_grad
+    from jax import grad, jit, value_and_grad, vmap
+
     JAX_AVAILABLE = True
 except ImportError:
     JAX_AVAILABLE = False
+
     # Create dummy module
     class DummyJNP:
         @staticmethod
-        def array(x): return np.array(x)
+        def array(x):
+            return np.array(x)
+
         @staticmethod
-        def exp(x): return np.exp(x)
+        def exp(x):
+            return np.exp(x)
+
         @staticmethod
-        def sum(x, **kwargs): return np.sum(x, **kwargs)
+        def sum(x, **kwargs):
+            return np.sum(x, **kwargs)
+
         @staticmethod
-        def max(x, **kwargs): return np.max(x, **kwargs)
+        def max(x, **kwargs):
+            return np.max(x, **kwargs)
+
     jnp = DummyJNP()
     jax = None
     grad = lambda f: f
@@ -72,15 +84,16 @@ class JAXEquationKernel(ExtendedEquationKernel):
     def __init__(self) -> None:
         """Initialize JAX kernel with JIT-compiled implementations."""
         super().__init__()
-        self._jax_implementations: Dict[str, Callable] = {}
-        self._jit_implementations: Dict[str, Callable] = {}
-        self._grad_implementations: Dict[str, Callable] = {}
+        self._jax_implementations: dict[str, Callable] = {}
+        self._jit_implementations: dict[str, Callable] = {}
+        self._grad_implementations: dict[str, Callable] = {}
 
         if JAX_AVAILABLE:
             self._setup_jax_implementations()
 
     def _setup_jax_implementations(self) -> None:
         """Create JAX versions of key ML equations."""
+
         # JIT-compiled softmax
         @jit
         def jax_softmax(x: jnp.ndarray) -> jnp.ndarray:
@@ -133,12 +146,7 @@ class JAXEquationKernel(ExtendedEquationKernel):
         """Check if JAX is available and functional."""
         return JAX_AVAILABLE
 
-    def execute(
-        self,
-        name: str,
-        parameters: Dict[str, Any],
-        use_jit: bool = True
-    ) -> Any:
+    def execute(self, name: str, parameters: dict[str, Any], use_jit: bool = True) -> Any:
         """Execute equation with optional JIT acceleration.
 
         Args:
@@ -169,13 +177,11 @@ class JAXEquationKernel(ExtendedEquationKernel):
                     return super().execute(name, parameters)
 
                 from amos_equation_kernel import EquationResult
+
                 metadata = self._metadata.get(name)
                 if metadata:
                     return EquationResult(
-                        value=result,
-                        metadata=metadata,
-                        invariants_valid=True,
-                        errors=[]
+                        value=result, metadata=metadata, invariants_valid=True, errors=[]
                     )
             except Exception:
                 # Fall back to parent on error
@@ -183,12 +189,7 @@ class JAXEquationKernel(ExtendedEquationKernel):
 
         return super().execute(name, parameters)
 
-    def compute_gradient(
-        self,
-        name: str,
-        *args: Any,
-        **kwargs: Any
-    ) -> Tuple[Any, Any] :
+    def compute_gradient(self, name: str, *args: Any, **kwargs: Any) -> tuple[Any, Any]:
         """Compute value and gradient for an equation.
 
         Args:
@@ -217,11 +218,8 @@ class JAXEquationKernel(ExtendedEquationKernel):
         return None
 
     def execute_batch(
-        self,
-        name: str,
-        batch_params: List[dict[str, Any]],
-        batch_key: str = "x"
-    ) -> List[Any]:
+        self, name: str, batch_params: list[dict[str, Any]], batch_key: str = "x"
+    ) -> list[Any]:
         """Execute equation on a batch of inputs using vmap.
 
         Args:
@@ -257,11 +255,7 @@ class JAXEquationKernel(ExtendedEquationKernel):
             # Fall back to sequential
             return [self.execute(name, params).value for params in batch_params]
 
-    def create_train_step(
-        self,
-        loss_name: str,
-        learning_rate: float = 0.01
-    ) -> Optional[Callable]:
+    def create_train_step(self, loss_name: str, learning_rate: float = 0.01) -> Optional[Callable]:
         """Create a JIT-compiled training step function.
 
         Args:
@@ -279,20 +273,15 @@ class JAXEquationKernel(ExtendedEquationKernel):
 
         @jit
         def train_step(params: jnp.ndarray, x: jnp.ndarray, y: jnp.ndarray):
-            loss, grads = value_and_grad(
-                self._jax_implementations[loss_name]
-            )(params, x, y)
+            loss, grads = value_and_grad(self._jax_implementations[loss_name])(params, x, y)
             new_params = params - learning_rate * grads
             return new_params, loss
 
         return train_step
 
     def benchmark(
-        self,
-        name: str,
-        parameters: Dict[str, Any],
-        iterations: int = 100
-    ) -> Dict[str, float]:
+        self, name: str, parameters: dict[str, Any], iterations: int = 100
+    ) -> dict[str, float]:
         """Benchmark equation execution performance.
 
         Args:

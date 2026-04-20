@@ -27,12 +27,16 @@ The absolute equation at all scales:
     x_{t+1} = Commit_Z* ∘ R ∘ V ∘ M ∘ B ∘ A ∘ D (x_t, u_t, w_t, μ_t, θ_t)
 """
 
+from __future__ import annotations
+
 import json
 import time
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from enum import Enum
-from typing import Any, List, Optional, Tuple
+from typing import Any, Optional
 
 # ============================================================================
 # ZOOM LEVELS — Layer Selection
@@ -129,7 +133,7 @@ class Layer8Interface:
             return None
         return self.amos_infinite.evolve(state, action, world)
 
-    def check_admissibility(self, state: Any) -> Tuple[bool, list[str]]:
+    def check_admissibility(self, state: Any) -> tuple[bool, list[str]]:
         """Check if state is in Z* (total admissible space)."""
         if not self.initialized or not self.amos_infinite:
             return False, ["layer_8_not_available"]
@@ -185,7 +189,7 @@ class Layer7Interface:
 
         self.initialized = any([self.omega, self.validator, self.coherence])
 
-    def validate_axioms(self, state: Any) -> Tuple[bool, list[str]]:
+    def validate_axioms(self, state: Any) -> tuple[bool, list[str]]:
         """Validate state against 32 Ω axioms."""
         if not self.validator:
             return False, ["validator_not_available"]
@@ -324,7 +328,7 @@ class AMOSUnifiedInfinite:
         self.layer7 = Layer7Interface()
         self.operational = LayerOperationalInterface()
 
-        self.history: List[UnifiedResult] = []
+        self.history: list[UnifiedResult] = []
 
         print("\n" + "=" * 70)
         print("  AMOS Unified Infinite — 8-Layer Integration")

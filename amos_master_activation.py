@@ -14,7 +14,7 @@ import sys
 import time
 import traceback
 from pathlib import Path
-from typing import Any, Dict, Tuple
+from typing import Any
 
 # Add project paths
 PROJECT_ROOT = Path(__file__).parent
@@ -34,7 +34,7 @@ def print_banner():
     """)
 
 
-def check_component(name: str, import_path: str, class_name: str = None) -> Tuple[bool, Any]:
+def check_component(name: str, import_path: str, class_name: str = None) -> tuple[bool, Any]:
     """Check if a component is available."""
     try:
         module = __import__(import_path, fromlist=[class_name] if class_name else [])
@@ -45,7 +45,7 @@ def check_component(name: str, import_path: str, class_name: str = None) -> Tupl
         return False, str(e)
 
 
-def activate_57_component_core() -> Dict[str, Any]:
+def activate_57_component_core() -> dict[str, Any]:
     """Activate the 57-component cognitive core."""
     print("\n🔬 [1/4] Activating 57-Component Cognitive Core...")
     print("-" * 60)
@@ -108,7 +108,7 @@ def activate_57_component_core() -> Dict[str, Any]:
     return result
 
 
-def activate_ubi_engine() -> Dict[str, Any]:
+def activate_ubi_engine() -> dict[str, Any]:
     """Activate Unified Biological Intelligence."""
     print("\n🧠 [2/4] Activating Unified Biological Intelligence...")
     print("-" * 60)
@@ -156,7 +156,7 @@ def activate_ubi_engine() -> Dict[str, Any]:
     return result
 
 
-def activate_repo_doctor() -> Dict[str, Any]:
+def activate_repo_doctor() -> dict[str, Any]:
     """Activate Repo Doctor Omega."""
     print("\n🔍 [3/4] Activating Repo Doctor Omega...")
     print("-" * 60)
@@ -213,7 +213,7 @@ def activate_repo_doctor() -> Dict[str, Any]:
     return result
 
 
-def activate_self_evolution() -> Dict[str, Any]:
+def activate_self_evolution() -> dict[str, Any]:
     """Activate Self-Evolution Engine."""
     print("\n🔄 [4/4] Activating Self-Evolution Engine...")
     print("-" * 60)
@@ -259,7 +259,7 @@ def activate_self_evolution() -> Dict[str, Any]:
     return result
 
 
-def compute_unified_status(components: Dict[str, Any]) -> Dict[str, Any]:
+def compute_unified_status(components: dict[str, Any]) -> dict[str, Any]:
     """Compute unified system status."""
     print("\n📊 Computing Unified System Status...")
     print("-" * 60)
@@ -304,20 +304,20 @@ def compute_unified_status(components: Dict[str, Any]) -> Dict[str, Any]:
     return status
 
 
-def generate_report(components: Dict[str, Any], status: Dict[str, Any]) -> str:
+def generate_report(components: dict[str, Any], status: dict[str, Any]) -> str:
     """Generate comprehensive activation report."""
     report = f"""
-{'=' * 70}
+{"=" * 70}
 AMOS MASTER ACTIVATION REPORT
-{'=' * 70}
+{"=" * 70}
 
-Timestamp: {time.strftime('%Y-%m-%d %H:%M:%S')}
+Timestamp: {time.strftime("%Y-%m-%d %H:%M:%S")}
 
 SYSTEM STATUS
 -------------
-Overall Grade: {status['overall_grade']}
-Biosocial Harmony: {status['biosocial_harmony']}
-Components Active: {status['components_available']}/{status['components_total']}
+Overall Grade: {status["overall_grade"]}
+Biosocial Harmony: {status["biosocial_harmony"]}
+Components Active: {status["components_available"]}/{status["components_total"]}
 
 COMPONENT BREAKDOWN
 -------------------
@@ -350,7 +350,7 @@ RECOMMENDATIONS
 
     report += f"""
 
-{'=' * 70}
+{"=" * 70}
 """
 
     return report

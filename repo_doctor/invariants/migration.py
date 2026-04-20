@@ -35,8 +35,8 @@ class MigrationStep:
     file_path: Path
     has_upgrade: bool = False
     has_downgrade: bool = False
-    dependencies: List[str] = field(default_factory=list)
-    schema_changes: List[str] = field(default_factory=list)
+    dependencies: list[str] = field(default_factory=list)
+    schema_changes: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -45,9 +45,9 @@ class MigrationChain:
 
     head: str = None
     base: str = None
-    steps: Dict[str, MigrationStep] = field(default_factory=dict)
+    steps: dict[str, MigrationStep] = field(default_factory=dict)
     branches: list[list[str]] = field(default_factory=list)
-    merge_points: List[str] = field(default_factory=list)
+    merge_points: list[str] = field(default_factory=list)
 
 
 class MigrationInvariant(Invariant):
@@ -66,7 +66,7 @@ class MigrationInvariant(Invariant):
         super().__init__("I_migration", InvariantSeverity.ERROR)
         self.migration_dirs = ["migrations", "alembic/versions", "db/migrations"]
 
-    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
+    def check(self, repo_path: str, context: dict[str, Any] = None) -> InvariantResult:
         """Check migration chain integrity."""
         context = context or {}
         repo = Path(repo_path)
@@ -133,7 +133,7 @@ class MigrationInvariant(Invariant):
             },
         )
 
-    def _find_migration_dir(self, repo: Path) -> Optional[Path]:
+    def _find_migration_dir(self, repo: Path) -> Path:
         """Find the migrations directory."""
         for subdir in self.migration_dirs:
             path = repo / subdir
@@ -184,7 +184,7 @@ class MigrationInvariant(Invariant):
 
         return chain
 
-    def _parse_migration_file(self, file_path: Path) -> Optional[MigrationStep]:
+    def _parse_migration_file(self, file_path: Path) -> MigrationStep:
         """Parse a single migration file."""
         content = file_path.read_text()
 
@@ -225,7 +225,7 @@ class MigrationInvariant(Invariant):
             schema_changes=schema_changes,
         )
 
-    def _check_branch_integrity(self, chain: MigrationChain) -> List[dict]:
+    def _check_branch_integrity(self, chain: MigrationChain) -> list[dict]:
         """Check for problematic branching."""
         issues = []
 
@@ -248,7 +248,7 @@ class MigrationInvariant(Invariant):
 
         return issues
 
-    def _check_rollback_validity(self, chain: MigrationChain) -> List[dict]:
+    def _check_rollback_validity(self, chain: MigrationChain) -> list[dict]:
         """Check that migrations can be rolled back."""
         issues = []
 
@@ -280,7 +280,7 @@ class MigrationInvariant(Invariant):
 
     def _check_schema_compatibility(
         self, repo: Path, chain: MigrationChain, context: dict
-    ) -> List[dict]:
+    ) -> list[dict]:
         """Check that code matches migrated schema."""
         issues = []
 
@@ -303,7 +303,7 @@ class MigrationInvariant(Invariant):
 
         return issues
 
-    def _check_migration_order(self, chain: MigrationChain) -> List[dict]:
+    def _check_migration_order(self, chain: MigrationChain) -> list[dict]:
         """Check migration dependency order."""
         issues = []
 

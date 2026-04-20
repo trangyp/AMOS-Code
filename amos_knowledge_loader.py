@@ -10,15 +10,18 @@ Owner: Trang Phan
 Version: 2.0.0
 """
 
+from __future__ import annotations
+
 import json
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+
+UTC = UTC
+from typing import Any, Optional
 
 # SuperBrain integration
 try:
-
     from amos_brain import get_super_brain
 
     SUPERBRAIN_AVAILABLE = True
@@ -33,7 +36,7 @@ class LoadedKnowledge:
     name: str
     category: str
     source_path: str
-    content: Dict[str, Any] = field(default_factory=dict)
+    content: dict[str, Any] = field(default_factory=dict)
     load_time: str = ""
     size_bytes: int = 0
     access_count: int = 0
@@ -44,8 +47,8 @@ class KnowledgeLoader:
 
     def __init__(self, brain_root: Optional[Path] = None):
         self.brain_root = brain_root or Path(__file__).parent / "_AMOS_BRAIN"
-        self.knowledge_cache: Dict[str, LoadedKnowledge] = {}
-        self.category_index: Dict[str, list[str]] = {}
+        self.knowledge_cache: dict[str, LoadedKnowledge] = {}
+        self.category_index: dict[str, list[str]] = {}
         self.total_loaded = 0
         self.total_size_mb = 0.0
         self._brain = None
@@ -95,7 +98,7 @@ class KnowledgeLoader:
         except Exception:
             pass
 
-    def load_all(self) -> Dict[str, Any]:
+    def load_all(self) -> dict[str, Any]:
         """Load all 1,500+ knowledge files with SuperBrain governance."""
         print("[KNOWLEDGE_LOADER] Loading ecosystem knowledge...")
         print(f"  Source: {self.brain_root}")
@@ -269,7 +272,7 @@ class KnowledgeLoader:
                 self.category_index[cat] = []
             self.category_index[cat].append(key)
 
-    def get_knowledge(self, category: str, name: str = None) -> List[LoadedKnowledge]:
+    def get_knowledge(self, category: str, name: str = None) -> list[LoadedKnowledge]:
         """Get knowledge by category."""
         results = []
 
@@ -289,7 +292,7 @@ class KnowledgeLoader:
 
         return results
 
-    def query_knowledge(self, query: str, top_n: int = 10) -> List[LoadedKnowledge]:
+    def query_knowledge(self, query: str, top_n: int = 10) -> list[LoadedKnowledge]:
         """Query loaded knowledge by content match."""
         query_lower = query.lower()
         scored_results = []
@@ -324,7 +327,7 @@ class KnowledgeLoader:
         scored_results.sort(key=lambda x: x[0], reverse=True)
         return [k for _, k in scored_results[:top_n]]
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get loader statistics."""
         most_accessed = sorted(
             self.knowledge_cache.values(), key=lambda k: k.access_count, reverse=True

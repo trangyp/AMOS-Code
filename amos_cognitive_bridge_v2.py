@@ -17,23 +17,19 @@ Version: 2.0.0
 
 from __future__ import annotations
 
-
-
 import asyncio
 import json
-import sys
 import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
+
+UTC = UTC
 
 # Add paths for imports
 _AMOS_ROOT = Path(__file__).parent.resolve()
-sys.path.insert(0, str(_AMOS_ROOT))
-sys.path.insert(0, str(_AMOS_ROOT / "AMOS_ORGANISM_OS"))
-sys.path.insert(0, str(_AMOS_ROOT / "clawspring"))
 
 # Organism import
 from AMOS_ORGANISM_OS.organism import AmosOrganism
@@ -45,7 +41,7 @@ class CognitiveRequest:
 
     request_id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     tool_name: str = ""
-    arguments: Dict[str, Any] = field(default_factory=dict)
+    arguments: dict[str, Any] = field(default_factory=dict)
     timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     source: str = "mcp"
 
@@ -56,7 +52,7 @@ class CognitiveResponse:
 
     request_id: str = ""
     success: bool = False
-    result: Dict[str, Any] = field(default_factory=dict)
+    result: dict[str, Any] = field(default_factory=dict)
     execution_time_ms: float = 0.0
     timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
@@ -103,9 +99,9 @@ class AMOSCognitiveBridge:
             return
         self._initialized = False
         self._organism: Optional[AmosOrganism] = None
-        self._tool_registry: Dict[str, SubsystemTool] = {}
-        self._request_history: List[CognitiveRequest] = []
-        self._response_history: List[CognitiveResponse] = []
+        self._tool_registry: dict[str, SubsystemTool] = {}
+        self._request_history: list[CognitiveRequest] = []
+        self._response_history: list[CognitiveResponse] = []
 
     async def initialize(self) -> bool:
         """Initialize the cognitive bridge."""
@@ -225,7 +221,7 @@ class AMOSCognitiveBridge:
         )
 
     async def process_tool_call(
-        self, tool_name: str, arguments: Dict[str, Any]
+        self, tool_name: str, arguments: dict[str, Any]
     ) -> CognitiveResponse:
         """Process an MCP tool call through the organism subsystem.
 
@@ -286,7 +282,7 @@ class AMOSCognitiveBridge:
             )
 
     async def _execute_via_organism(
-        self, tool_def: SubsystemTool, arguments: Dict[str, Any]
+        self, tool_def: SubsystemTool, arguments: dict[str, Any]
     ) -> dict:
         """Execute tool via organism subsystem."""
         if not self._organism:
@@ -335,7 +331,7 @@ class AMOSCognitiveBridge:
         """Compute elapsed milliseconds."""
         return (datetime.now(UTC) - start).total_seconds() * 1000
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get bridge statistics."""
         return {
             "initialized": self._initialized,

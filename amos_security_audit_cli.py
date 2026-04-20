@@ -26,10 +26,10 @@ import json
 import re
 import sys
 from dataclasses import asdict, dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 
 class Severity(Enum):
@@ -62,10 +62,10 @@ class ScanResult:
 
     timestamp: str
     total_files: int = 0
-    issues: List[SecurityIssue] = field(default_factory=list)
-    summary: Dict[str, int] = field(default_factory=dict)
+    issues: list[SecurityIssue] = field(default_factory=list)
+    summary: dict[str, int] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for JSON serialization."""
         return {
             "timestamp": self.timestamp,
@@ -139,7 +139,7 @@ class SecurityScanner:
                 return False
         return file_path.suffix == ".py"
 
-    def scan_file(self, file_path: Path) -> List[SecurityIssue]:
+    def scan_file(self, file_path: Path) -> list[SecurityIssue]:
         """Scan a single file for security issues."""
         issues = []
 

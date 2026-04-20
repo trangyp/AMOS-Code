@@ -4,9 +4,9 @@ import hashlib
 import os
 import subprocess
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Set
+from typing import Any
 
 UTC = timezone.utc
 
@@ -29,10 +29,10 @@ class ScanResult:
 
     timestamp: str
     files_scanned: int
-    changes: List[FileChange]
-    new_files: List[str]
-    modified_files: List[str]
-    deleted_files: List[str]
+    changes: list[FileChange]
+    new_files: list[str]
+    modified_files: list[str]
+    deleted_files: list[str]
 
 
 class EnvironmentScanner:
@@ -45,10 +45,10 @@ class EnvironmentScanner:
     - Git status integration
     """
 
-    def __init__(self, watch_paths: List[str] = None):
+    def __init__(self, watch_paths: list[str] = None):
         self._watch_paths = watch_paths or ["."]
-        self._file_hashes: Dict[str, str] = {}
-        self._file_sizes: Dict[str, int] = {}
+        self._file_hashes: dict[str, str] = {}
+        self._file_sizes: dict[str, int] = {}
         self._last_scan: str = None
         self._ignore_patterns = [
             ".git",
@@ -85,7 +85,7 @@ class EnvironmentScanner:
         new_files = []
         modified_files = []
         deleted_files = []
-        current_files: Set[str] = set()
+        current_files: set[str] = set()
 
         # Walk directory
         files_scanned = 0
@@ -159,7 +159,7 @@ class EnvironmentScanner:
             deleted_files=deleted_files,
         )
 
-    def get_git_status(self) -> Dict[str, Any]:
+    def get_git_status(self) -> dict[str, Any]:
         """Get git repository status."""
         try:
             result = subprocess.run(
@@ -210,13 +210,13 @@ class EnvironmentScanner:
         except Exception:
             return "unknown"
 
-    def get_directory_summary(self, path: str = ".") -> Dict[str, Any]:
+    def get_directory_summary(self, path: str = ".") -> dict[str, Any]:
         """Get summary of directory contents."""
         try:
             total_files = 0
             total_dirs = 0
             total_size = 0
-            extensions: Dict[str, int] = {}
+            extensions: dict[str, int] = {}
 
             for root, dirs, files in os.walk(path):
                 if self._should_ignore(root):
@@ -249,7 +249,7 @@ class EnvironmentScanner:
         except Exception as e:
             return {"error": str(e)}
 
-    def status(self) -> Dict[str, Any]:
+    def status(self) -> dict[str, Any]:
         """Get scanner status."""
         return {
             "watch_paths": self._watch_paths,

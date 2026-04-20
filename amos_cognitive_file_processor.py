@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 """AMOS Cognitive File Processor - Production Implementation
 
@@ -23,7 +23,9 @@ import json
 import time
 from collections.abc import AsyncIterator, Callable
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from enum import Enum, auto
 
 # Core AMOS imports - real integration
@@ -71,13 +73,13 @@ class CognitiveChunk:
     segment_id: str
     content: str
     content_type: ContentType
-    stable_read: Dict[str, Any] = None
+    stable_read: dict[str, Any] = None
     confidence: float = 0.0
     read_type: Optional[str] = None
     primary_signal: Optional[str] = None
     noise_score: float = 0.0
     processing_time_ms: float = 0.0
-    position: Dict[str, Any] = field(default_factory=dict)
+    position: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -87,17 +89,17 @@ class CognitiveDocument:
     doc_id: str
     source_path: Optional[str]
     state: ProcessingState
-    chunks: List[CognitiveChunk] = field(default_factory=list)
-    cognitive_summary: Dict[str, Any] = field(default_factory=dict)
+    chunks: list[CognitiveChunk] = field(default_factory=list)
+    cognitive_summary: dict[str, Any] = field(default_factory=dict)
     total_segments: int = 0
     processed_chunks: int = 0
     failed_chunks: int = 0
     total_processing_time_ms: float = 0.0
     brain_enhanced: bool = False
-    errors: List[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
     created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Serialize to dictionary."""
         return {
             "doc_id": self.doc_id,
@@ -168,7 +170,7 @@ class CognitiveFileProcessor:
         self,
         content: bytes | str,
         source: Optional[str] = None,
-        context: Dict[str, Any] = None,
+        context: dict[str, Any] = None,
     ) -> CognitiveDocument:
         """Process file through full cognitive pipeline.
 
@@ -253,7 +255,7 @@ class CognitiveFileProcessor:
         doc_id: str,
         segment_id: str,
         segment: DocSegment,
-        context: Dict[str, Any],
+        context: dict[str, Any],
         index: int,
         total: int,
     ) -> CognitiveChunk:
@@ -305,8 +307,8 @@ class CognitiveFileProcessor:
             return chunk
 
     async def _generate_brain_summary(
-        self, chunks: List[CognitiveChunk], doc: ParsedDocument
-    ) -> Dict[str, Any]:
+        self, chunks: list[CognitiveChunk], doc: ParsedDocument
+    ) -> dict[str, Any]:
         """Generate cognitive summary using brain."""
         brain = await self._get_brain()
         if not brain:
@@ -362,7 +364,7 @@ class CognitiveFileProcessor:
         self,
         content_stream: AsyncIterator[bytes],
         source: Optional[str] = None,
-        context: Dict[str, Any] = None,
+        context: dict[str, Any] = None,
     ) -> AsyncIterator[CognitiveChunk]:
         """Stream process file content in real-time.
 
@@ -373,7 +375,7 @@ class CognitiveFileProcessor:
         doc_id = f"stream-{int(time.time())}"
 
         # Accumulate stream content
-        chunks: List[bytes] = []
+        chunks: list[bytes] = []
         async for chunk in content_stream:
             chunks.append(chunk)
 
@@ -415,7 +417,7 @@ async def get_cognitive_processor(
 async def process_file_cognitively(
     content: bytes | str,
     source: Optional[str] = None,
-    context: Dict[str, Any] = None,
+    context: dict[str, Any] = None,
     max_concurrent: int = 5,
     enable_brain: bool = True,
 ) -> CognitiveDocument:

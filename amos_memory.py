@@ -17,11 +17,13 @@ Consolidation:
 Mem_{t+1}^{long} = Mem_t^{long} + Compress(Mem_t^{short}, relevance, repetition, outcome)
 """
 
+from __future__ import annotations
+
 import hashlib
 import json
 from dataclasses import dataclass, field
-from datetime import datetime
-from typing import Any, Dict, List, Optional
+from datetime import UTC, datetime
+from typing import Any, Optional
 
 
 @dataclass
@@ -42,8 +44,8 @@ class MemoryEntry:
 
     # Context
     source: str = "unknown"
-    tags: List[str] = field(default_factory=list)
-    associations: List[str] = field(default_factory=list)
+    tags: list[str] = field(default_factory=list)
+    associations: list[str] = field(default_factory=list)
 
     # Outcome tracking (for learning)
     outcome: str = None
@@ -57,7 +59,7 @@ class WorkingMemory:
 
     def __init__(self, capacity: int = 7):
         self.capacity = capacity
-        self.entries: List[MemoryEntry] = []
+        self.entries: list[MemoryEntry] = []
         self.focus: str = None
 
     def add(self, content: Any, source: str = "workspace") -> MemoryEntry:
@@ -134,8 +136,8 @@ class EpisodicMemory:
     """
 
     def __init__(self):
-        self.episodes: Dict[str, MemoryEntry] = {}
-        self.episode_chains: List[list[str]] = []  # Linked episodes
+        self.episodes: dict[str, MemoryEntry] = {}
+        self.episode_chains: list[list[str]] = []  # Linked episodes
 
     def record_episode(self, event: str, context: dict, outcome: str = None) -> MemoryEntry:
         """Record a specific episode/event."""
@@ -158,7 +160,7 @@ class EpisodicMemory:
         time_str = context.get("time", datetime.now(UTC).isoformat())
         return f"At {time_str}: {event}"
 
-    def find_similar_episodes(self, query: str, n: int = 3) -> List[MemoryEntry]:
+    def find_similar_episodes(self, query: str, n: int = 3) -> list[MemoryEntry]:
         """Find episodes similar to query."""
         scored = []
         for entry in self.episodes.values():
@@ -179,7 +181,7 @@ class EpisodicMemory:
         overlap = len(query_words & content_words)
         return overlap / len(query_words)
 
-    def chain_episodes(self, episode_ids: List[str]):
+    def chain_episodes(self, episode_ids: list[str]):
         """Create temporal chain of episodes."""
         self.episode_chains.append(episode_ids)
 
@@ -190,7 +192,7 @@ class EpisodicMemory:
         outcome = data.get("outcome")
         return self.record_episode(event, context, outcome)
 
-    def retrieve_recent(self, n: int = 5) -> List[MemoryEntry]:
+    def retrieve_recent(self, n: int = 5) -> list[MemoryEntry]:
         """Retrieve the n most recent episodes."""
         sorted_episodes = sorted(self.episodes.values(), key=lambda e: e.timestamp, reverse=True)
         return sorted_episodes[:n]
@@ -202,8 +204,8 @@ class SemanticMemory:
     """
 
     def __init__(self):
-        self.concepts: Dict[str, dict] = {}  # Concept graph
-        self.relations: List[tuple] = []  # (source, relation, target)
+        self.concepts: dict[str, dict] = {}  # Concept graph
+        self.relations: list[tuple] = []  # (source, relation, target)
 
     def add_concept(self, concept: str, properties: dict, category: str = "general"):
         """Add a concept to semantic memory."""
@@ -228,7 +230,7 @@ class SemanticMemory:
         """Query concept from semantic memory."""
         return self.concepts.get(concept)
 
-    def infer(self, concept: str, relation: str) -> List[str]:
+    def infer(self, concept: str, relation: str) -> list[str]:
         """Infer related concepts via relation."""
         results = []
         for s, r, t in self.relations:
@@ -236,7 +238,7 @@ class SemanticMemory:
                 results.append(t)
         return results
 
-    def get_related(self, concept: str, depth: int = 1) -> List[str]:
+    def get_related(self, concept: str, depth: int = 1) -> list[str]:
         """Get all related concepts up to depth."""
         if depth == 0 or concept not in self.concepts:
             return []
@@ -256,10 +258,10 @@ class ProceduralMemory:
     """
 
     def __init__(self):
-        self.procedures: Dict[str, dict] = {}
-        self.skill_levels: Dict[str, float] = {}  # 0.0 to 1.0
+        self.procedures: dict[str, dict] = {}
+        self.skill_levels: dict[str, float] = {}  # 0.0 to 1.0
 
-    def learn_procedure(self, name: str, steps: List[str], preconditions: List[str] = None):
+    def learn_procedure(self, name: str, steps: list[str], preconditions: list[str] = None):
         """Learn a new procedure."""
         self.procedures[name] = {
             "steps": steps,
@@ -315,10 +317,10 @@ class SelfMemory:
             "created": datetime.now(UTC).isoformat(),
             "purpose": "Self-modeling, future-generating organism",
         }
-        self.autobiography: List[MemoryEntry] = []
-        self.capabilities: Dict[str, float] = {}
-        self.values: List[str] = []
-        self.drift_history: List[dict] = []
+        self.autobiography: list[MemoryEntry] = []
+        self.capabilities: dict[str, float] = {}
+        self.values: list[str] = []
+        self.drift_history: list[dict] = []
 
     def record_self_event(self, event_type: str, description: str, significance: float = 0.5):
         """Record autobiographical event."""
@@ -385,7 +387,7 @@ class AMOSMemory:
         self.procedural = ProceduralMemory()
         self.self = SelfMemory()
 
-    def retrieve(self, query: str, memory_type: str = None, n: int = 3) -> List[MemoryEntry]:
+    def retrieve(self, query: str, memory_type: str = None, n: int = 3) -> list[MemoryEntry]:
         """Retrieve(q) = argmax_m [Similarity(q,m) · Relevance(m) · Freshness(m)]"""
         candidates = []
 

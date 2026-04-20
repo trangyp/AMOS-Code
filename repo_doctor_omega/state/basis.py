@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """Repository state vector formalism.
 
 Defines the 12-dimensional integrity space basis vectors
@@ -157,8 +159,8 @@ class RepositoryState:
 
     timestamp: float
     amplitudes: dict[BasisVector, Amplitude] = field(default_factory=dict)
-    observables: List[ObservableRef] = field(default_factory=list)
-    mixed_state_hypotheses: List[RepositoryState] = field(default_factory=list)
+    observables: list[ObservableRef] = field(default_factory=list)
+    mixed_state_hypotheses: list[RepositoryState] = field(default_factory=list)
 
     def __post_init__(self):
         # Initialize all basis vectors if not present
@@ -207,7 +209,7 @@ class RepositoryState:
             total += delta**2
         return math.sqrt(total)
 
-    def collapsed_subsystems(self, threshold: float = 0.5) -> List[BasisVector]:
+    def collapsed_subsystems(self, threshold: float = 0.5) -> list[BasisVector]:
         """Return list of degraded subsystems below threshold."""
         return [basis for basis in BasisVector if self.get_amplitude(basis) < threshold]
 
@@ -340,4 +342,4 @@ class ObservableRef:
     observable_id: str
     kind: str
     severity: float
-    basis_affected: List[BasisVector]
+    basis_affected: list[BasisVector]

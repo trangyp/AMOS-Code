@@ -39,6 +39,8 @@ Author: AMOS Architecture Team
 Version: 22.0.0-A2A-PROTOCOL
 """
 
+from __future__ import annotations
+
 import asyncio
 import json
 import uuid
@@ -46,7 +48,7 @@ from collections.abc import AsyncIterator
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 try:
     from fastapi import BackgroundTasks, FastAPI, HTTPException, Request
@@ -98,17 +100,17 @@ class AgentSkill:
     id: str
     name: str
     description: str
-    tags: List[str] = field(default_factory=list)
-    examples: List[str] = field(default_factory=list)
-    input_modes: List[str] = field(default_factory=lambda: ["text"])
-    output_modes: List[str] = field(default_factory=lambda: ["text"])
+    tags: list[str] = field(default_factory=list)
+    examples: list[str] = field(default_factory=list)
+    input_modes: list[str] = field(default_factory=lambda: ["text"])
+    output_modes: list[str] = field(default_factory=lambda: ["text"])
 
 
 @dataclass
 class AgentAuthentication:
     """Agent authentication scheme."""
 
-    schemes: List[str] = field(default_factory=lambda: ["none"])
+    schemes: list[str] = field(default_factory=lambda: ["none"])
     credentials: str = None
 
 
@@ -121,12 +123,12 @@ class AgentCard:
     url: str
     version: str = "1.0.0"
     authentication: AgentAuthentication = field(default_factory=AgentAuthentication)
-    default_input_modes: List[str] = field(default_factory=lambda: ["text"])
-    default_output_modes: List[str] = field(default_factory=lambda: ["text"])
-    capabilities: Dict[str, bool] = field(default_factory=dict)
-    skills: List[AgentSkill] = field(default_factory=list)
+    default_input_modes: list[str] = field(default_factory=lambda: ["text"])
+    default_output_modes: list[str] = field(default_factory=lambda: ["text"])
+    capabilities: dict[str, bool] = field(default_factory=dict)
+    skills: list[AgentSkill] = field(default_factory=list)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "name": self.name,
             "description": self.description,
@@ -164,7 +166,7 @@ class DataPart:
     """Structured data message part."""
 
     type: str = "data"
-    data: Dict[str, Any] = field(default_factory=dict)
+    data: dict[str, Any] = field(default_factory=dict)
 
 
 Part = TextPart | FilePart | DataPart
@@ -175,8 +177,8 @@ class Message:
     """A2A Message."""
 
     role: str
-    parts: List[Part] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    parts: list[Part] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -187,9 +189,9 @@ class Task:
     session_id: str
     state: str
     message: Optional[Message] = None
-    artifacts: List[Part] = field(default_factory=list)
-    history: List[Message] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    artifacts: list[Part] = field(default_factory=list)
+    history: list[Message] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
     created_at: str = field(default_factory=lambda: datetime.now().isoformat())
     updated_at: str = field(default_factory=lambda: datetime.now().isoformat())
 
@@ -208,7 +210,7 @@ class A2AAgent:
 
     def __init__(self, agent_card: AgentCard) -> None:
         self.agent_card = agent_card
-        self.tasks: Dict[str, Task] = {}
+        self.tasks: dict[str, Task] = {}
 
     async def handle_task(self, task: Task) -> Task:
         """Handle incoming task. Override in subclass."""
@@ -216,7 +218,7 @@ class A2AAgent:
         task.updated_at = datetime.now().isoformat()
         return task
 
-    def get_agent_card(self) -> Dict[str, Any]:
+    def get_agent_card(self) -> dict[str, Any]:
         """Return agent card for discovery."""
         return self.agent_card.to_dict()
 
@@ -385,9 +387,9 @@ if HTTPX_AVAILABLE:
         def __init__(self, agent_url: str) -> None:
             self.agent_url = agent_url
             self.client = httpx.AsyncClient()
-            self._agent_card: Dict[str, Any] = None
+            self._agent_card: dict[str, Any] = None
 
-        async def discover(self) -> Dict[str, Any]:
+        async def discover(self) -> dict[str, Any]:
             """Fetch agent card."""
             response = await self.client.get(f"{self.agent_url}/.well-known/agent.json")
             self._agent_card = response.json()
@@ -397,9 +399,9 @@ if HTTPX_AVAILABLE:
             self,
             message: str,
             session_id: str = None,
-        ) -> Dict[str, Any]:
+        ) -> dict[str, Any]:
             """Send task to agent."""
-            payload: Dict[str, Any] = {
+            payload: dict[str, Any] = {
                 "message": {
                     "role": "user",
                     "parts": [{"type": "text", "text": message}],

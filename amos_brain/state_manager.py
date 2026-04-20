@@ -1,14 +1,15 @@
 """AMOS Brain Cognitive State Manager - Persistent reasoning memory."""
 
+from __future__ import annotations
+
 import json
 import logging
 import uuid
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import datetime
 from functools import lru_cache
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -21,8 +22,8 @@ class ReasoningStep:
     timestamp: str
     description: str
     perspective: str
-    law_compliance: Dict[str, bool]
-    kernel_activations: List[str]
+    law_compliance: dict[str, bool]
+    kernel_activations: list[str]
     input_context: dict
     output_result: str
     confidence: str
@@ -37,10 +38,10 @@ class WorkflowSession:
     updated_at: str
     goal: str
     domain: str
-    reasoning_chain: List[ReasoningStep] = field(default_factory=list)
-    law_violations: List[dict] = field(default_factory=list)
-    kernel_history: List[str] = field(default_factory=list)
-    quadrant_coverage: Dict[str, int] = field(default_factory=dict)
+    reasoning_chain: list[ReasoningStep] = field(default_factory=list)
+    law_violations: list[dict] = field(default_factory=list)
+    kernel_history: list[str] = field(default_factory=list)
+    quadrant_coverage: dict[str, int] = field(default_factory=dict)
     metadata: dict = field(default_factory=dict)
 
     def add_step(self, step: ReasoningStep):
@@ -78,12 +79,10 @@ class CognitiveStateManager:
         self.storage_path = storage_path or Path.home() / ".amos_brain" / "sessions"
         self.storage_path.mkdir(parents=True, exist_ok=True)
 
-        self._active_sessions: Dict[str, WorkflowSession] = {}
+        self._active_sessions: dict[str, WorkflowSession] = {}
         self._current_session: Optional[WorkflowSession] = None
 
-    def start_session(
-        self, goal: str, domain: str = "general", metadata: dict  = None
-    ) -> str:
+    def start_session(self, goal: str, domain: str = "general", metadata: dict = None) -> str:
         """Start a new reasoning workflow session.
 
         Args:
@@ -115,12 +114,12 @@ class CognitiveStateManager:
         self,
         description: str,
         perspective: str,
-        law_compliance: Dict[str, bool],
-        kernel_activations: List[str],
+        law_compliance: dict[str, bool],
+        kernel_activations: list[str],
         input_context: dict,
         output_result: str,
         confidence: str,
-        session_id: str  = None,
+        session_id: str = None,
     ) -> str:
         """Record a reasoning step in the current or specified session.
 
@@ -163,7 +162,7 @@ class CognitiveStateManager:
 
         return step_id
 
-    def get_session_context(self, session_id: str  = None) -> dict:
+    def get_session_context(self, session_id: str = None) -> dict:
         """Get the accumulated context from a session.
 
         Returns:
@@ -200,7 +199,7 @@ class CognitiveStateManager:
             ),
         }
 
-    def replay_reasoning(self, session_id: str  = None, format_type: str = "text") -> str:
+    def replay_reasoning(self, session_id: str = None, format_type: str = "text") -> str:
         """Replay the reasoning chain for analysis or audit.
 
         Args:
@@ -249,7 +248,7 @@ class CognitiveStateManager:
 
         return "\n".join(lines)
 
-    def analyze_compliance_trend(self, session_id: str  = None) -> dict:
+    def analyze_compliance_trend(self, session_id: str = None) -> dict:
         """Analyze law compliance trend across the reasoning chain.
 
         Returns:
@@ -284,7 +283,7 @@ class CognitiveStateManager:
 
         return trends
 
-    def save_session(self, session_id: str  = None) -> Path:
+    def save_session(self, session_id: str = None) -> Path:
         """Persist a session to storage.
 
         Returns:
@@ -322,7 +321,7 @@ class CognitiveStateManager:
         self._active_sessions[session_id] = session
         return session
 
-    def list_sessions(self) -> List[dict]:
+    def list_sessions(self) -> list[dict]:
         """List all stored sessions."""
         sessions = []
 
@@ -344,7 +343,7 @@ class CognitiveStateManager:
 
         return sorted(sessions, key=lambda x: x["created"], reverse=True)
 
-    def close_session(self, session_id: str  = None) -> Path:
+    def close_session(self, session_id: str = None) -> Path:
         """Close and save a session."""
         session = self._get_session(session_id)
         if not session:
@@ -361,7 +360,7 @@ class CognitiveStateManager:
 
         return filepath
 
-    def _get_session(self, session_id: str ) -> Optional[WorkflowSession]:
+    def _get_session(self, session_id: str) -> Optional[WorkflowSession]:
         """Get a session by ID or current session."""
         if session_id:
             session = self._active_sessions.get(session_id)

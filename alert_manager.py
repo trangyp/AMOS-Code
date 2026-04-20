@@ -3,7 +3,7 @@
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any
 
 
 @dataclass
@@ -15,15 +15,15 @@ class Alert:
     message: str
     source: str
     timestamp: datetime
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
 
 
 class AlertManager:
     """Manager for system alerts."""
 
     def __init__(self):
-        self.alerts: List[Alert] = []
-        self.handlers: List[Callable] = []
+        self.alerts: list[Alert] = []
+        self.handlers: list[Callable] = []
 
     def add_handler(self, handler: Callable) -> None:
         """Add alert handler."""
@@ -34,7 +34,7 @@ class AlertManager:
         level: str,
         message: str,
         source: str = "system",
-        metadata: Dict[str, Any] = None,
+        metadata: dict[str, Any] = None,
     ) -> Alert:
         """Create new alert."""
         alert = Alert(
@@ -48,7 +48,7 @@ class AlertManager:
         self.alerts.append(alert)
         return alert
 
-    def get_alerts(self, level: str = None) -> List[Alert]:
+    def get_alerts(self, level: str = None) -> list[Alert]:
         """Get alerts, optionally filtered by level."""
         if level:
             return [a for a in self.alerts if a.level == level]

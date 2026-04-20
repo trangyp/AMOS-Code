@@ -14,12 +14,16 @@ Usage:
     status = monitor.get_subsystem_status()
 """
 
+from __future__ import annotations
+
 import asyncio
 import time
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from amos_async_safety import CircuitBreaker, get_safety_manager
 from amos_unified_equation_registry import get_unified_registry
@@ -42,8 +46,8 @@ class SubsystemHealth:
     status: HealthStatus
     latency_ms: float
     last_check: str
-    details: Dict[str, Any] = field(default_factory=dict)
-    errors: List[str] = field(default_factory=list)
+    details: dict[str, Any] = field(default_factory=dict)
+    errors: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -53,11 +57,11 @@ class BrainHealthReport:
     timestamp: str
     overall_status: HealthStatus
     health_score: float  # 0.0 - 1.0
-    subsystems: List[SubsystemHealth]
-    circuit_breaker_states: Dict[str, str]
-    equation_registry_stats: Dict[str, Any]
-    architectural_violations: List[str]
-    recommendations: List[str]
+    subsystems: list[SubsystemHealth]
+    circuit_breaker_states: dict[str, str]
+    equation_registry_stats: dict[str, Any]
+    architectural_violations: list[str]
+    recommendations: list[str]
 
 
 class BrainHealthMonitor:
@@ -71,10 +75,10 @@ class BrainHealthMonitor:
     - Automated recovery recommendations
     """
 
-    _instance: Optional["BrainHealthMonitor"] = None
+    _instance: BrainHealthMonitor | None = None
     _lock = asyncio.Lock()
 
-    def __new__(cls) -> "BrainHealthMonitor":
+    def __new__(cls) -> BrainHealthMonitor:
         if cls._instance is None:
             cls._instance = super().__new__(cls)
         return cls._instance
@@ -85,10 +89,10 @@ class BrainHealthMonitor:
         self._initialized = True
 
         self._safety_manager = get_safety_manager()
-        self._circuit_breakers: Dict[str, CircuitBreaker] = {}
-        self._health_history: List[BrainHealthReport] = []
+        self._circuit_breakers: dict[str, CircuitBreaker] = {}
+        self._health_history: list[BrainHealthReport] = []
         self._max_history = 100
-        self._subsystem_checks: Dict[str, callable] = {}
+        self._subsystem_checks: dict[str, callable] = {}
         self._last_check: datetime = None
 
     async def initialize(self) -> bool:
@@ -279,7 +283,7 @@ class BrainHealthMonitor:
             errors=errors,
         )
 
-    def _calculate_health_score(self, subsystems: List[SubsystemHealth]) -> float:
+    def _calculate_health_score(self, subsystems: list[SubsystemHealth]) -> float:
         """Calculate overall health score from 0.0 to 1.0."""
         if not subsystems:
             return 0.0
@@ -296,7 +300,7 @@ class BrainHealthMonitor:
         return total_score / len(subsystems)
 
     def _determine_overall_status(
-        self, score: float, subsystems: List[SubsystemHealth]
+        self, score: float, subsystems: list[SubsystemHealth]
     ) -> HealthStatus:
         """Determine overall health status."""
         # If any critical, overall is critical
@@ -313,7 +317,7 @@ class BrainHealthMonitor:
 
         return HealthStatus.HEALTHY
 
-    async def _check_architectural_invariants(self) -> List[str]:
+    async def _check_architectural_invariants(self) -> list[str]:
         """Check for L1-L6 architectural violations."""
         violations = []
 
@@ -332,8 +336,8 @@ class BrainHealthMonitor:
         return violations
 
     def _generate_recommendations(
-        self, subsystems: List[SubsystemHealth], violations: List[str]
-    ) -> List[str]:
+        self, subsystems: list[SubsystemHealth], violations: list[str]
+    ) -> list[str]:
         """Generate recovery recommendations."""
         recommendations = []
 
@@ -353,11 +357,11 @@ class BrainHealthMonitor:
 
         return recommendations
 
-    def get_health_history(self, limit: int = 10) -> List[BrainHealthReport]:
+    def get_health_history(self, limit: int = 10) -> list[BrainHealthReport]:
         """Get recent health check history."""
         return self._health_history[-limit:]
 
-    def get_subsystem_status(self) -> Dict[str, Any]:
+    def get_subsystem_status(self) -> dict[str, Any]:
         """Get current subsystem status."""
         if not self._health_history:
             return {}

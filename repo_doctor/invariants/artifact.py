@@ -51,12 +51,12 @@ class ArtifactInvariant(Invariant):
     def __init__(self):
         super().__init__("I_artifact", InvariantSeverity.ERROR)
 
-    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
+    def check(self, repo_path: str, context: dict[str, Any] = None) -> InvariantResult:
         """Check artifact chain integrity."""
         context = context or {}
         repo = Path(repo_path)
 
-        gaps: List[ArtifactGap] = []
+        gaps: list[ArtifactGap] = []
 
         # Check for build artifacts
         gaps.extend(self._check_build_artifacts(repo))
@@ -103,9 +103,9 @@ class ArtifactInvariant(Invariant):
             },
         )
 
-    def _check_build_artifacts(self, repo: Path) -> List[ArtifactGap]:
+    def _check_build_artifacts(self, repo: Path) -> list[ArtifactGap]:
         """Check for built wheel/sdist artifacts."""
-        gaps: List[ArtifactGap] = []
+        gaps: list[ArtifactGap] = []
 
         dist_dir = repo / "dist"
         if not dist_dir.exists():
@@ -151,9 +151,9 @@ class ArtifactInvariant(Invariant):
 
         return gaps
 
-    def _check_wheel_contents(self, wheel_path: Path) -> List[ArtifactGap]:
+    def _check_wheel_contents(self, wheel_path: Path) -> list[ArtifactGap]:
         """Check wheel contents for completeness."""
-        gaps: List[ArtifactGap] = []
+        gaps: list[ArtifactGap] = []
 
         try:
             with zipfile.ZipFile(wheel_path, "r") as whl:
@@ -199,9 +199,9 @@ class ArtifactInvariant(Invariant):
 
         return gaps
 
-    def _check_package_config(self, repo: Path) -> List[ArtifactGap]:
+    def _check_package_config(self, repo: Path) -> list[ArtifactGap]:
         """Check pyproject.toml/setup.py configuration."""
-        gaps: List[ArtifactGap] = []
+        gaps: list[ArtifactGap] = []
 
         pyproject = repo / "pyproject.toml"
         setup_py = repo / "setup.py"
@@ -246,9 +246,9 @@ class ArtifactInvariant(Invariant):
 
         return gaps
 
-    def _check_entry_points(self, repo: Path) -> List[ArtifactGap]:
+    def _check_entry_points(self, repo: Path) -> list[ArtifactGap]:
         """Check console_scripts entry points."""
-        gaps: List[ArtifactGap] = []
+        gaps: list[ArtifactGap] = []
 
         pyproject = repo / "pyproject.toml"
         if not pyproject.exists():
@@ -293,9 +293,9 @@ class ArtifactInvariant(Invariant):
 
         return gaps
 
-    def _check_generated_files(self, repo: Path) -> List[ArtifactGap]:
+    def _check_generated_files(self, repo: Path) -> list[ArtifactGap]:
         """Check for stale generated files."""
-        gaps: List[ArtifactGap] = []
+        gaps: list[ArtifactGap] = []
 
         # Check for protobuf/grpc generated files
         pb2_files = list(repo.rglob("*_pb2.py"))
@@ -322,9 +322,9 @@ class ArtifactInvariant(Invariant):
 
         return gaps
 
-    def _check_source_package_consistency(self, repo: Path) -> List[ArtifactGap]:
+    def _check_source_package_consistency(self, repo: Path) -> list[ArtifactGap]:
         """Check consistency between source and package."""
-        gaps: List[ArtifactGap] = []
+        gaps: list[ArtifactGap] = []
 
         # Find Python package directories
         pkg_dirs = [d for d in repo.iterdir() if d.is_dir() and (d / "__init__.py").exists()]

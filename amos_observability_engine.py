@@ -14,6 +14,7 @@ Architecture:
 - ObservabilityEngine: Unified interface
 """
 
+from __future__ import annotations
 
 import asyncio
 import json
@@ -22,11 +23,12 @@ from collections import deque
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class MetricType(Enum):
     """Types of metrics."""
+
     COUNTER = "counter"
     GAUGE = "gauge"
     HISTOGRAM = "histogram"
@@ -35,9 +37,10 @@ class MetricType(Enum):
 @dataclass
 class MetricValue:
     """A metric value with timestamp."""
+
     value: float
     timestamp: float
-    labels: Dict[str, str] = field(default_factory=dict)
+    labels: dict[str, str] = field(default_factory=dict)
 
 
 class Counter:
@@ -61,9 +64,11 @@ class Counter:
 
     def to_prometheus(self) -> str:
         """Export as Prometheus format."""
-        return (f"# HELP {self.name} {self.description}\n"
-                f"# TYPE {self.name} counter\n"
-                f"{self.name} {self._value}")
+        return (
+            f"# HELP {self.name} {self.description}\n"
+            f"# TYPE {self.name} counter\n"
+            f"{self.name} {self._value}"
+        )
 
 
 class Gauge:
@@ -97,20 +102,17 @@ class Gauge:
 
     def to_prometheus(self) -> str:
         """Export as Prometheus format."""
-        return (f"# HELP {self.name} {self.description}\n"
-                f"# TYPE {self.name} gauge\n"
-                f"{self.name} {self._value}")
+        return (
+            f"# HELP {self.name} {self.description}\n"
+            f"# TYPE {self.name} gauge\n"
+            f"{self.name} {self._value}"
+        )
 
 
 class Histogram:
     """Distribution of values."""
 
-    def __init__(
-        self,
-        name: str,
-        description: str = "",
-        buckets: List[float]  = None
-    ) -> None:
+    def __init__(self, name: str, description: str = "", buckets: list[float] = None) -> None:
         self.name = name
         self.description = description
         self.buckets = buckets or [0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10]
@@ -122,7 +124,7 @@ class Histogram:
         async with self._lock:
             self._values.append(value)
 
-    async def get_stats(self) -> Dict[str, float]:
+    async def get_stats(self) -> dict[str, float]:
         """Get histogram statistics."""
         async with self._lock:
             if not self._values:
@@ -133,15 +135,17 @@ class Histogram:
                 "sum": sum(values),
                 "avg": sum(values) / len(values),
                 "min": min(values),
-                "max": max(values)
+                "max": max(values),
             }
 
     def to_prometheus(self) -> str:
         """Export as Prometheus format."""
         lines = [f"# HELP {self.name} {self.description}", f"# TYPE {self.name} histogram"]
+
         async def get_stats():
             async with self._lock:
                 return list(self._values)
+
         # Note: synchronous access for export
         values = list(self._values)
         for bucket in self.buckets:
@@ -156,30 +160,27 @@ class Histogram:
 @dataclass
 class Span:
     """A trace span."""
+
     name: str
     trace_id: str
     span_id: str
     start_time: float
-    end_time: float  = None
-    parent_id: str  = None
-    attributes: Dict[str, Any] = field(default_factory=dict)
-    events: List[dict[str, Any]] = field(default_factory=list)
+    end_time: float = None
+    parent_id: str = None
+    attributes: dict[str, Any] = field(default_factory=dict)
+    events: list[dict[str, Any]] = field(default_factory=list)
 
-    def finish(self, attributes: Dict[str, Any]  = None) -> None:
+    def finish(self, attributes: dict[str, Any] = None) -> None:
         """Finish the span."""
         self.end_time = time.time()
         if attributes:
             self.attributes.update(attributes)
 
-    def add_event(self, name: str, attributes: Dict[str, Any]  = None) -> None:
+    def add_event(self, name: str, attributes: dict[str, Any] = None) -> None:
         """Add event to span."""
-        self.events.append({
-            "name": name,
-            "timestamp": time.time(),
-            "attributes": attributes or {}
-        })
+        self.events.append({"name": name, "timestamp": time.time(), "attributes": attributes or {}})
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "name": self.name,
@@ -190,7 +191,7 @@ class Span:
             "end_time": self.end_time,
             "duration_ms": (self.end_time - self.start_time) * 1000 if self.end_time else None,
             "attributes": self.attributes,
-            "events": self.events
+            "events": self.events,
         }
 
 
@@ -200,30 +201,28 @@ class Tracer:
     def __init__(self, service_name: str = "amos") -> None:
         self.service_name = service_name
         self._spans: deque[Span] = deque(maxlen=1000)
-        self._current_spans: Dict[str, Span] = {}
+        self._current_spans: dict[str, Span] = {}
         self._lock = asyncio.Lock()
 
     async def start_span(
-        self,
-        name: str,
-        parent_id: str  = None,
-        attributes: Dict[str, Any]  = None
+        self, name: str, parent_id: str = None, attributes: dict[str, Any] = None
     ) -> Span:
         """Start a new span."""
         import uuid
+
         span = Span(
             name=name,
             trace_id=str(uuid.uuid4()),
             span_id=str(uuid.uuid4())[:16],
             start_time=time.time(),
             parent_id=parent_id,
-            attributes=attributes or {}
+            attributes=attributes or {},
         )
         async with self._lock:
             self._current_spans[span.span_id] = span
         return span
 
-    async def finish_span(self, span: Span, attributes: Dict[str, Any]  = None) -> None:
+    async def finish_span(self, span: Span, attributes: dict[str, Any] = None) -> None:
         """Finish a span."""
         span.finish(attributes)
         async with self._lock:
@@ -231,7 +230,7 @@ class Tracer:
                 del self._current_spans[span.span_id]
             self._spans.append(span)
 
-    async def get_traces(self, limit: int = 100) -> List[dict[str, Any]]:
+    async def get_traces(self, limit: int = 100) -> list[dict[str, Any]]:
         """Get recent traces."""
         async with self._lock:
             return [s.to_dict() for s in list(self._spans)[-limit:]]
@@ -240,19 +239,20 @@ class Tracer:
 @dataclass
 class HealthStatus:
     """Health status for a component."""
+
     component: str
     status: str  # "healthy", "degraded", "unhealthy"
     message: str = ""
     last_check: float = field(default_factory=time.time)
-    metrics: Dict[str, float] = field(default_factory=dict)
+    metrics: dict[str, float] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "component": self.component,
             "status": self.status,
             "message": self.message,
             "last_check": self.last_check,
-            "metrics": self.metrics
+            "metrics": self.metrics,
         }
 
 
@@ -260,7 +260,7 @@ class HealthAggregator:
     """Aggregates health status from all layers."""
 
     def __init__(self) -> None:
-        self._statuses: Dict[str, HealthStatus] = {}
+        self._statuses: dict[str, HealthStatus] = {}
         self._lock = asyncio.Lock()
 
     async def update(self, status: HealthStatus) -> None:
@@ -268,7 +268,7 @@ class HealthAggregator:
         async with self._lock:
             self._statuses[status.component] = status
 
-    async def get_status(self, component: str  = None) -> Dict[str, Any]:
+    async def get_status(self, component: str = None) -> dict[str, Any]:
         """Get health status."""
         async with self._lock:
             if component:
@@ -280,18 +280,24 @@ class HealthAggregator:
             total = len(self._statuses)
 
             return {
-                "overall": "healthy" if healthy == total else "degraded" if healthy > 0 else "unhealthy",
+                "overall": "healthy"
+                if healthy == total
+                else "degraded"
+                if healthy > 0
+                else "unhealthy",
                 "healthy_count": healthy,
                 "total_count": total,
-                "components": statuses
+                "components": statuses,
             }
+
+
 class MetricsRegistry:
     """Registry for all metrics."""
 
     def __init__(self) -> None:
-        self._counters: Dict[str, Counter] = {}
-        self._gauges: Dict[str, Gauge] = {}
-        self._histograms: Dict[str, Histogram] = {}
+        self._counters: dict[str, Counter] = {}
+        self._gauges: dict[str, Gauge] = {}
+        self._histograms: dict[str, Histogram] = {}
         self._lock = asyncio.Lock()
 
     async def counter(self, name: str, description: str = "") -> Counter:
@@ -335,8 +341,8 @@ class AMOSObservabilityEngine:
         self.tracer = Tracer("amos")
         self.health = HealthAggregator()
         self._running = False
-        self._export_task: asyncio.Task  = None
-        self._layer_metrics: Dict[str, dict[str, Any]] = {}
+        self._export_task: asyncio.Task = None
+        self._layer_metrics: dict[str, dict[str, Any]] = {}
 
     async def start(self) -> None:
         """Start observability engine."""
@@ -344,22 +350,39 @@ class AMOSObservabilityEngine:
         self._running = True
 
         # Initialize layer metrics
-        layers = [f"{i:02d}_{n}" for i, n in enumerate([
-            "ROOT", "BRAIN", "SENSES", "IMMUNE", "BLOOD", "NERVES",
-            "MUSCLE", "METABOLISM", "GROWTH", "SOCIAL", "MEMORY",
-            "LEGAL", "ETHICS", "TIME", "INTERFACES"
-        ])]
+        layers = [
+            f"{i:02d}_{n}"
+            for i, n in enumerate(
+                [
+                    "ROOT",
+                    "BRAIN",
+                    "SENSES",
+                    "IMMUNE",
+                    "BLOOD",
+                    "NERVES",
+                    "MUSCLE",
+                    "METABOLISM",
+                    "GROWTH",
+                    "SOCIAL",
+                    "MEMORY",
+                    "LEGAL",
+                    "ETHICS",
+                    "TIME",
+                    "INTERFACES",
+                ]
+            )
+        ]
 
         for layer in layers:
             self._layer_metrics[layer] = {
-                "cycles": await self.metrics.counter(
-                    f"amos_{layer}_cycles", f"Cycles for {layer}"),
-                "errors": await self.metrics.counter(
-                    f"amos_{layer}_errors", f"Errors for {layer}"),
+                "cycles": await self.metrics.counter(f"amos_{layer}_cycles", f"Cycles for {layer}"),
+                "errors": await self.metrics.counter(f"amos_{layer}_errors", f"Errors for {layer}"),
                 "latency": await self.metrics.histogram(
-                    f"amos_{layer}_latency", f"Latency for {layer}"),
+                    f"amos_{layer}_latency", f"Latency for {layer}"
+                ),
                 "health": await self.metrics.gauge(
-                    f"amos_{layer}_health", f"Health score for {layer}")
+                    f"amos_{layer}_health", f"Health score for {layer}"
+                ),
             }
 
         # Start periodic export
@@ -405,12 +428,11 @@ class AMOSObservabilityEngine:
             await self._layer_metrics[layer]["health"].set(score)
 
         status = "healthy" if score > 0.8 else "degraded" if score > 0.5 else "unhealthy"
-        await self.health.update(HealthStatus(
-            component=layer,
-            status=status,
-            message=message,
-            metrics={"health_score": score}
-        ))
+        await self.health.update(
+            HealthStatus(
+                component=layer, status=status, message=message, metrics={"health_score": score}
+            )
+        )
 
     async def start_trace(self, name: str, **kwargs) -> Span:
         """Start a trace span."""
@@ -424,11 +446,11 @@ class AMOSObservabilityEngine:
         """Get Prometheus metrics."""
         return self.metrics.to_prometheus()
 
-    async def get_health(self) -> Dict[str, Any]:
+    async def get_health(self) -> dict[str, Any]:
         """Get health status."""
         return await self.health.get_status()
 
-    async def get_traces(self, limit: int = 100) -> List[dict[str, Any]]:
+    async def get_traces(self, limit: int = 100) -> list[dict[str, Any]]:
         """Get recent traces."""
         return await self.tracer.get_traces(limit)
 
@@ -446,6 +468,7 @@ def get_observability_engine() -> AMOSObservabilityEngine:
 
 
 if __name__ == "__main__":
+
     async def demo():
         engine = get_observability_engine()
         await engine.start()

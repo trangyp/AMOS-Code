@@ -1,13 +1,16 @@
 """AMOS Knowledge Graph Engine - Semantic knowledge and entity relationships."""
 
+from __future__ import annotations
+
 from collections import defaultdict
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class EntityType(Enum):
     """Types of entities in the knowledge graph."""
+
     PERSON = "person"
     ORGANIZATION = "organization"
     CONCEPT = "concept"
@@ -21,6 +24,7 @@ class EntityType(Enum):
 
 class RelationType(Enum):
     """Types of relationships between entities."""
+
     IS_A = "is_a"
     PART_OF = "part_of"
     RELATED_TO = "related_to"
@@ -41,7 +45,7 @@ class Entity:
     id: str
     name: str
     entity_type: EntityType
-    attributes: Dict[str, Any] = field(default_factory=dict)
+    attributes: dict[str, Any] = field(default_factory=dict)
     confidence: float = 1.0
 
 
@@ -53,7 +57,7 @@ class Relation:
     target_id: str
     relation_type: RelationType
     weight: float = 1.0
-    attributes: Dict[str, Any] = field(default_factory=dict)
+    attributes: dict[str, Any] = field(default_factory=dict)
 
 
 class EntityExtractor:
@@ -69,23 +73,25 @@ class EntityExtractor:
             EntityType.DOMAIN: ["physics", "biology", "cognition", "planetary science"],
         }
 
-    def extract_entities(self, text: str) -> List[Entity]:
+    def extract_entities(self, text: str) -> list[Entity]:
         """Extract entities from input text."""
         entities = []
         entity_id = 0
         for entity_type, keywords in self.patterns.items():
             for keyword in keywords:
                 if keyword.lower() in text.lower():
-                    entities.append(Entity(
-                        id=f"ent_{entity_id}",
-                        name=keyword,
-                        entity_type=entity_type,
-                        attributes={"extracted_from": text[:50]},
-                    ))
+                    entities.append(
+                        Entity(
+                            id=f"ent_{entity_id}",
+                            name=keyword,
+                            entity_type=entity_type,
+                            attributes={"extracted_from": text[:50]},
+                        )
+                    )
                     entity_id += 1
         return entities
 
-    def extract_relations(self, text: str, entities: List[Entity]) -> List[Relation]:
+    def extract_relations(self, text: str, entities: list[Entity]) -> list[Relation]:
         """Extract relations between entities."""
         relations = []
         relation_indicators = {
@@ -101,11 +107,13 @@ class EntityExtractor:
                 if i != j:
                     for rel_type, indicators in relation_indicators.items():
                         if any(ind in text.lower() for ind in indicators):
-                            relations.append(Relation(
-                                source_id=ent1.id,
-                                target_id=ent2.id,
-                                relation_type=rel_type,
-                            ))
+                            relations.append(
+                                Relation(
+                                    source_id=ent1.id,
+                                    target_id=ent2.id,
+                                    relation_type=rel_type,
+                                )
+                            )
         return relations
 
 
@@ -113,7 +121,7 @@ class SemanticSearch:
     """Semantic search capabilities."""
 
     def __init__(self):
-        self.embeddings: Dict[str, list[float]] = {}
+        self.embeddings: dict[str, list[float]] = {}
 
     def compute_similarity(self, text1: str, text2: str) -> float:
         """Compute semantic similarity (simplified)."""
@@ -125,7 +133,7 @@ class SemanticSearch:
             return 0.0
         return len(intersection) / len(union)
 
-    def search(self, query: str, corpus: List[str], top_k: int = 5) -> List[tuple[str, float]]:
+    def search(self, query: str, corpus: list[str], top_k: int = 5) -> list[tuple[str, float]]:
         """Search corpus for relevant documents."""
         scores = [(doc, self.compute_similarity(query, doc)) for doc in corpus]
         scores.sort(key=lambda x: x[1], reverse=True)
@@ -138,7 +146,7 @@ class KnowledgeInference:
     def __init__(self, graph: KnowledgeGraph):
         self.graph = graph
 
-    def infer_transitive(self, entity_id: str, relation_type: RelationType) -> List[str]:
+    def infer_transitive(self, entity_id: str, relation_type: RelationType) -> list[str]:
         """Infer transitive relationships."""
         results = []
         visited = set()
@@ -155,7 +163,7 @@ class KnowledgeInference:
                     queue.append(rel.target_id)
         return results
 
-    def find_paths(self, source: str, target: str, max_depth: int = 3) -> List[list[str]]:
+    def find_paths(self, source: str, target: str, max_depth: int = 3) -> list[list[str]]:
         """Find paths between entities."""
         paths = []
         queue = [(source, [source])]
@@ -177,9 +185,9 @@ class KnowledgeGraph:
     """Knowledge graph store and operations."""
 
     def __init__(self):
-        self.entities: Dict[str, Entity] = {}
-        self.relations: List[Relation] = []
-        self.entity_index: Dict[EntityType, list[str]] = defaultdict(list)
+        self.entities: dict[str, Entity] = {}
+        self.relations: list[Relation] = []
+        self.entity_index: dict[EntityType, list[str]] = defaultdict(list)
 
     def add_entity(self, entity: Entity) -> None:
         """Add entity to graph."""
@@ -190,29 +198,29 @@ class KnowledgeGraph:
         """Add relation to graph."""
         self.relations.append(relation)
 
-    def get_entity(self, entity_id: str) -> Optional[Entity]:
+    def get_entity(self, entity_id: str) -> Entity | None:
         """Get entity by ID."""
         return self.entities.get(entity_id)
 
-    def get_relations_from(self, entity_id: str) -> List[Relation]:
+    def get_relations_from(self, entity_id: str) -> list[Relation]:
         """Get all relations originating from entity."""
         return [r for r in self.relations if r.source_id == entity_id]
 
-    def get_relations_to(self, entity_id: str) -> List[Relation]:
+    def get_relations_to(self, entity_id: str) -> list[Relation]:
         """Get all relations targeting entity."""
         return [r for r in self.relations if r.target_id == entity_id]
 
-    def get_neighbors(self, entity_id: str) -> List[Entity]:
+    def get_neighbors(self, entity_id: str) -> list[Entity]:
         """Get neighboring entities."""
         rels = self.get_relations_from(entity_id)
         return [self.entities[r.target_id] for r in rels if r.target_id in self.entities]
 
-    def query_by_type(self, entity_type: EntityType) -> List[Entity]:
+    def query_by_type(self, entity_type: EntityType) -> list[Entity]:
         """Query entities by type."""
         ids = self.entity_index.get(entity_type, [])
         return [self.entities[i] for i in ids if i in self.entities]
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """Get graph statistics."""
         return {
             "num_entities": len(self.entities),
@@ -232,7 +240,7 @@ class KnowledgeGraphEngine:
         self.graph = KnowledgeGraph()
         self.extractor = EntityExtractor()
         self.search = SemanticSearch()
-        self.inference: Optional[KnowledgeInference] = None
+        self.inference: KnowledgeInference | None = None
         self._initialize_core_knowledge()
 
     def _initialize_core_knowledge(self) -> None:
@@ -241,7 +249,12 @@ class KnowledgeGraphEngine:
         core_entities = [
             Entity("amos", "AMOS", EntityType.SYSTEM, {"version": "vInfinity"}),
             Entity("vomni", "vOmni Kernel", EntityType.SYSTEM, {"type": "meta-router"}),
-            Entity("species", "Species Interaction Core", EntityType.SYSTEM, {"modules": "HIE,UMPL,UST,UIE,UEL"}),
+            Entity(
+                "species",
+                "Species Interaction Core",
+                EntityType.SYSTEM,
+                {"modules": "HIE,UMPL,UST,UIE,UEL"},
+            ),
             Entity("ubi", "UBI Stack", EntityType.SYSTEM, {"type": "neurobiological"}),
             Entity("planetary", "Planetary Stack", EntityType.SYSTEM, {"type": "earth_systems"}),
             Entity("trang", "Trang Phan", EntityType.PERSON, {"role": "Creator"}),
@@ -265,10 +278,10 @@ class KnowledgeGraphEngine:
             self.graph.add_relation(rel)
         self.inference = KnowledgeInference(self.graph)
 
-    def analyze(self, query: str, context: Dict[str, Any]  = None) -> Dict[str, Any]:
+    def analyze(self, query: str, context: dict[str, Any] = None) -> dict[str, Any]:
         """Run knowledge graph analysis."""
         context = context or {}
-        results: Dict[str, Any] = {
+        results: dict[str, Any] = {
             "query": query[:100],
             "extracted_entities": [],
             "extracted_relations": [],
@@ -281,12 +294,17 @@ class KnowledgeGraphEngine:
         entities = self.extractor.extract_entities(query)
         for ent in entities:
             self.graph.add_entity(ent)
-        results["extracted_entities"] = [{"id": e.id, "name": e.name, "type": e.entity_type.value} for e in entities]
+        results["extracted_entities"] = [
+            {"id": e.id, "name": e.name, "type": e.entity_type.value} for e in entities
+        ]
         # Extract relations
         relations = self.extractor.extract_relations(query, entities)
         for rel in relations:
             self.graph.add_relation(rel)
-        results["extracted_relations"] = [{"source": r.source_id, "target": r.target_id, "type": r.relation_type.value} for r in relations]
+        results["extracted_relations"] = [
+            {"source": r.source_id, "target": r.target_id, "type": r.relation_type.value}
+            for r in relations
+        ]
         # Semantic search
         corpus = [
             "AMOS vInfinity is a comprehensive AI system",
@@ -300,10 +318,15 @@ class KnowledgeGraphEngine:
         if self.inference and entities:
             for ent in entities[:2]:  # Limit for performance
                 related = self.inference.infer_transitive(ent.id, RelationType.RELATED_TO)
-                results["inferred_knowledge"].append({
-                    "entity": ent.name,
-                    "inferred_related": [self.graph.get_entity(r).name if self.graph.get_entity(r) else r for r in related[:5]],
-                })
+                results["inferred_knowledge"].append(
+                    {
+                        "entity": ent.name,
+                        "inferred_related": [
+                            self.graph.get_entity(r).name if self.graph.get_entity(r) else r
+                            for r in related[:5]
+                        ],
+                    }
+                )
         # Graph statistics
         results["graph_stats"] = self.graph.get_statistics()
         # Generate recommendations
@@ -338,89 +361,109 @@ class KnowledgeGraphEngine:
         entities = results.get("extracted_entities", [])
         lines.append(f"**Extracted {len(entities)} entities from query:**")
         for ent in entities[:5]:
-            lines.append(f"- **{ent.get('name', 'N/A')}** ({ent.get('type', 'N/A')}) - ID: {ent.get('id', 'N/A')}")
-        lines.extend([
-            "",
-            "## Relationship Extraction",
-            f"**Detected {len(results.get('extracted_relations', []))} relations:**",
-        ])
+            lines.append(
+                f"- **{ent.get('name', 'N/A')}** ({ent.get('type', 'N/A')}) - ID: {ent.get('id', 'N/A')}"
+            )
+        lines.extend(
+            [
+                "",
+                "## Relationship Extraction",
+                f"**Detected {len(results.get('extracted_relations', []))} relations:**",
+            ]
+        )
         for rel in results.get("extracted_relations", [])[:5]:
-            lines.append(f"- {rel.get('source', 'N/A')} --[{rel.get('type', 'N/A')}]--> {rel.get('target', 'N/A')}")
-        lines.extend([
-            "",
-            "## Semantic Search Results",
-        ])
+            lines.append(
+                f"- {rel.get('source', 'N/A')} --[{rel.get('type', 'N/A')}]--> {rel.get('target', 'N/A')}"
+            )
+        lines.extend(
+            [
+                "",
+                "## Semantic Search Results",
+            ]
+        )
         for match in results.get("semantic_matches", []):
-            lines.append(f"- **{match.get('text', 'N/A')[:50]}...** (score: {match.get('score', 0):.2f})")
-        lines.extend([
-            "",
-            "## Knowledge Inference",
-            "Inferred relationships through graph traversal:",
-        ])
+            lines.append(
+                f"- **{match.get('text', 'N/A')[:50]}...** (score: {match.get('score', 0):.2f})"
+            )
+        lines.extend(
+            [
+                "",
+                "## Knowledge Inference",
+                "Inferred relationships through graph traversal:",
+            ]
+        )
         for inf in results.get("inferred_knowledge", []):
-            entity = inf.get('entity', 'N/A')
-            related = inf.get('inferred_related', [])
+            entity = inf.get("entity", "N/A")
+            related = inf.get("inferred_related", [])
             if related:
                 lines.append(f"- **{entity}** is related to: {', '.join(related[:3])}")
-        lines.extend([
-            "",
-            "## Graph Statistics",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Graph Statistics",
+            ]
+        )
         stats = results.get("graph_stats", {})
-        lines.extend([
-            f"- **Total Entities**: {stats.get('num_entities', 0)}",
-            f"- **Total Relations**: {stats.get('num_relations', 0)}",
-            f"- **Graph Density**: {stats.get('density', 0):.4f}",
-        ])
-        entity_types = stats.get('entity_types', {})
+        lines.extend(
+            [
+                f"- **Total Entities**: {stats.get('num_entities', 0)}",
+                f"- **Total Relations**: {stats.get('num_relations', 0)}",
+                f"- **Graph Density**: {stats.get('density', 0):.4f}",
+            ]
+        )
+        entity_types = stats.get("entity_types", {})
         if entity_types:
             lines.append("- **Entity Types**:")
             for etype, count in list(entity_types.items())[:5]:
                 lines.append(f"  - {etype}: {count}")
-        lines.extend([
-            "",
-            "## Supported Entity Types",
-            "- **PERSON**: Individuals, authors, researchers",
-            "- **ORGANIZATION**: Companies, institutions, groups",
-            "- **CONCEPT**: Abstract ideas, theories, principles",
-            "- **TECHNOLOGY**: Tools, systems, methods",
-            "- **SYSTEM**: Complex integrated systems",
-            "- **DOMAIN**: Fields of study, knowledge areas",
-            "",
-            "## Supported Relation Types",
-            "- **IS_A**: Taxonomic relationship (subtype)",
-            "- **PART_OF**: Component or membership",
-            "- **CAUSES**: Causal relationship",
-            "- **DEPENDS_ON**: Dependency or requirement",
-            "- **USES**: Utilization relationship",
-            "- **RELATED_TO**: General association",
-            "",
-            "## Integration with AMOS Core Stack",
-            "The Knowledge Graph Engine connects to:",
-            "- **vOmni Kernel**: Provides semantic routing context",
-            "- **Species Interaction Core**: Grounds entities in human interaction",
-            "- **Logic Core**: Enables formal reasoning over graph",
-            "- **UBI Stack**: Links biological concepts to knowledge",
-            "- **Planetary Stack**: Connects environmental knowledge",
-            "",
-            "## Recommendations",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Supported Entity Types",
+                "- **PERSON**: Individuals, authors, researchers",
+                "- **ORGANIZATION**: Companies, institutions, groups",
+                "- **CONCEPT**: Abstract ideas, theories, principles",
+                "- **TECHNOLOGY**: Tools, systems, methods",
+                "- **SYSTEM**: Complex integrated systems",
+                "- **DOMAIN**: Fields of study, knowledge areas",
+                "",
+                "## Supported Relation Types",
+                "- **IS_A**: Taxonomic relationship (subtype)",
+                "- **PART_OF**: Component or membership",
+                "- **CAUSES**: Causal relationship",
+                "- **DEPENDS_ON**: Dependency or requirement",
+                "- **USES**: Utilization relationship",
+                "- **RELATED_TO**: General association",
+                "",
+                "## Integration with AMOS Core Stack",
+                "The Knowledge Graph Engine connects to:",
+                "- **vOmni Kernel**: Provides semantic routing context",
+                "- **Species Interaction Core**: Grounds entities in human interaction",
+                "- **Logic Core**: Enables formal reasoning over graph",
+                "- **UBI Stack**: Links biological concepts to knowledge",
+                "- **Planetary Stack**: Connects environmental knowledge",
+                "",
+                "## Recommendations",
+            ]
+        )
         for i, rec in enumerate(results.get("recommendations", []), 1):
             lines.append(f"{i}. {rec}")
-        lines.extend([
-            "",
-            "## Limitations",
-            "- Simplified entity extraction (pattern-based)",
-            "- Basic semantic similarity (Jaccard-based)",
-            "- Limited inference rules",
-            "- No external knowledge base integration",
-            "- Static knowledge initialization",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Limitations",
+                "- Simplified entity extraction (pattern-based)",
+                "- Basic semantic similarity (Jaccard-based)",
+                "- Limited inference rules",
+                "- No external knowledge base integration",
+                "- Static knowledge initialization",
+            ]
+        )
         return "\n".join(lines)
 
 
 # Singleton instance
-_kg_engine: Optional[KnowledgeGraphEngine] = None
+_kg_engine: KnowledgeGraphEngine | None = None
 
 
 def get_knowledge_graph_engine() -> KnowledgeGraphEngine:

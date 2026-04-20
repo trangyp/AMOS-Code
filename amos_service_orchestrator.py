@@ -23,16 +23,20 @@ Architecture:
 - Layer 14: Interfaces (API/CLI)
 """
 
+from __future__ import annotations
+
 import asyncio
 import json
 import signal
 import sys
 import time
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
 from enum import Enum
+
+UTC = UTC
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 
 class ServiceStatus(Enum):
@@ -58,7 +62,7 @@ class ServiceState:
     last_health_check: float = None
     health_score: float = 1.0
     error_count: int = 0
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -67,7 +71,7 @@ class SystemHealth:
 
     timestamp: str
     overall_status: str
-    services: Dict[str, ServiceState]
+    services: dict[str, ServiceState]
     active_layers: int
     degraded_layers: int
     error_layers: int
@@ -99,7 +103,7 @@ class AMOSServiceOrchestrator:
     def __init__(self, root_path: Optional[Path] = None) -> None:
         """Initialize orchestrator."""
         self.root = root_path or Path(__file__).parent
-        self.services: Dict[str, ServiceState] = {}
+        self.services: dict[str, ServiceState] = {}
         self.running = False
         self.start_time: float = None
         self._shutdown_event = asyncio.Event()
@@ -316,7 +320,7 @@ def main() -> int:
         print(f"\nActive Services: {running}/{len(orchestrator.LAYERS)}")
         for layer_id, service in orchestrator.services.items():
             icon = "✓" if service.status == ServiceStatus.RUNNING else "○"
-            print(f"  {icon} {layer_id}: {service.name} " f"[{service.status.value}]")
+            print(f"  {icon} {layer_id}: {service.name} [{service.status.value}]")
 
     elif args.action == "health":
         health = asyncio.run(orchestrator.health_check())

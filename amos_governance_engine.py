@@ -11,6 +11,8 @@ Implements 2026 Microsoft Agent Governance Toolkit patterns:
 Component #65 - Governance & Security Layer
 """
 
+from __future__ import annotations
+
 import asyncio
 import hashlib
 import json
@@ -19,7 +21,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any, Optional, Protocol
 
 
 class TrustTier(Enum):
@@ -61,8 +63,8 @@ class ComponentIdentity:
     tier: TrustTier = TrustTier.UNTRUSTED
     created_at: str = field(default_factory=lambda: datetime.now().isoformat())
     last_verified: str = None
-    capabilities: List[str] = field(default_factory=list)
-    violations: List[dict[str, Any]] = field(default_factory=list)
+    capabilities: list[str] = field(default_factory=list)
+    violations: list[dict[str, Any]] = field(default_factory=list)
 
     def verify(self) -> bool:
         """Verify component identity."""
@@ -89,13 +91,13 @@ class PolicyDecision:
     action: PolicyAction
     rule: str = None
     reason: str = ""
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class PolicyProvider(Protocol):
     """Protocol for policy providers."""
 
-    async def evaluate(self, context: Dict[str, Any]) -> PolicyDecision:
+    async def evaluate(self, context: dict[str, Any]) -> PolicyDecision:
         """Evaluate policy for given context."""
         ...
 
@@ -104,7 +106,7 @@ class DefaultPolicyProvider:
     """Default YAML-style policy provider."""
 
     def __init__(self):
-        self.rules: List[PolicyRule] = []
+        self.rules: list[PolicyRule] = []
         self._load_default_rules()
 
     def _load_default_rules(self) -> None:
@@ -165,7 +167,7 @@ class DefaultPolicyProvider:
             ),
         ]
 
-    async def evaluate(self, context: Dict[str, Any]) -> PolicyDecision:
+    async def evaluate(self, context: dict[str, Any]) -> PolicyDecision:
         """Evaluate all rules against context."""
         for rule in self.rules:
             if not rule.enabled:
@@ -181,7 +183,7 @@ class DefaultPolicyProvider:
 
         return PolicyDecision(action=PolicyAction.ALLOW, reason="No rules triggered")
 
-    def _check_condition(self, condition: str, context: Dict[str, Any]) -> bool:
+    def _check_condition(self, condition: str, context: dict[str, Any]) -> bool:
         """Check if condition matches context."""
         # Simplified condition evaluation
         if condition == "critical_action AND trust_score < 600":
@@ -205,10 +207,10 @@ class AMOSGovernanceEngine:
     """
 
     def __init__(self):
-        self.identities: Dict[str, ComponentIdentity] = {}
+        self.identities: dict[str, ComponentIdentity] = {}
         self.policy_provider: PolicyProvider = DefaultPolicyProvider()
-        self.decisions_log: List[dict[str, Any]] = []
-        self.compliance_status: Dict[str, Any] = {
+        self.decisions_log: list[dict[str, Any]] = []
+        self.compliance_status: dict[str, Any] = {
             "owasp_agentic": {f"AGENT-{i:02d}": "compliant" for i in range(1, 11)}
         }
         self._max_log_size = 10000
@@ -233,7 +235,7 @@ class AMOSGovernanceEngine:
         print("[GovernanceEngine] Stopped")
 
     def register_component(
-        self, component_id: str, capabilities: List[str] = None, initial_trust: int = 100
+        self, component_id: str, capabilities: list[str] = None, initial_trust: int = 100
     ) -> ComponentIdentity:
         """Register a new component with identity."""
         # Generate cryptographic identity
@@ -271,7 +273,7 @@ class AMOSGovernanceEngine:
             return TrustTier.HIGH_TRUST
 
     async def evaluate_action(
-        self, component_id: str, action: str, context: Dict[str, Any] = None
+        self, component_id: str, action: str, context: dict[str, Any] = None
     ) -> PolicyDecision:
         """Evaluate if component can perform action."""
         # Get component identity
@@ -303,7 +305,7 @@ class AMOSGovernanceEngine:
         return decision
 
     def _log_decision(
-        self, component_id: str, action: str, decision: PolicyDecision, context: Dict[str, Any]
+        self, component_id: str, action: str, decision: PolicyDecision, context: dict[str, Any]
     ) -> None:
         """Log policy decision."""
         log_entry = {
@@ -323,7 +325,7 @@ class AMOSGovernanceEngine:
             self.decisions_log = self.decisions_log[-self._max_log_size :]
 
     async def _update_trust_score(
-        self, component_id: str, decision: PolicyDecision, context: Dict[str, Any]
+        self, component_id: str, decision: PolicyDecision, context: dict[str, Any]
     ) -> None:
         """Update trust score based on behavior."""
         identity = self.identities.get(component_id)
@@ -355,7 +357,7 @@ class AMOSGovernanceEngine:
         """Get component identity."""
         return self.identities.get(component_id)
 
-    def get_trust_summary(self) -> Dict[str, Any]:
+    def get_trust_summary(self) -> dict[str, Any]:
         """Get trust distribution summary."""
         tier_counts = {tier.value: 0 for tier in TrustTier}
         for identity in self.identities.values():
@@ -371,7 +373,7 @@ class AMOSGovernanceEngine:
             ),
         }
 
-    def get_compliance_report(self) -> Dict[str, Any]:
+    def get_compliance_report(self) -> dict[str, Any]:
         """Get OWASP Agentic AI compliance report."""
         violations = [
             entry
@@ -394,7 +396,7 @@ class AMOSGovernanceEngine:
             "recommendations": self._generate_recommendations(),
         }
 
-    def _generate_recommendations(self) -> List[str]:
+    def _generate_recommendations(self) -> list[str]:
         """Generate governance recommendations."""
         recs = []
 

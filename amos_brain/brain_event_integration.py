@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 """Brain Event Integration - Real-time brain event processing.
 
@@ -11,7 +11,9 @@ Provides brain event streaming and processing for real-time updates.
 import time
 import uuid
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 
 UTC = timezone.utc
 
@@ -23,9 +25,9 @@ class BrainProcessingEvent:
     query_id: str
     step: str
     iteration: int
-    thought: Optional[str]
-    action: Optional[str]
-    observation: Optional[str]
+    thought: str
+    action: str
+    observation: str
     latency_ms: float
     timestamp: str
 
@@ -97,7 +99,7 @@ class BrainEventProcessor:
 
 
 # Global instance
-_processor: Optional[BrainEventProcessor] = None
+_processor: BrainEventProcessor = None
 
 
 def get_brain_event_processor() -> BrainEventProcessor:

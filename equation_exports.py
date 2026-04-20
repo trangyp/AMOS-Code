@@ -59,20 +59,21 @@ Environment Variables:
     EXPORT_EMAIL_ENABLED: Enable email delivery
 """
 
-import io
 import csv
+import io
 import json
 import logging
-from enum import Enum
-from typing import Any, AsyncIterator, BinaryIO, Callable, Dict, List, Optional
-from datetime import datetime
 from dataclasses import dataclass, field
+from datetime import datetime
+from enum import Enum
 from pathlib import Path
+from typing import Any
 
 # FastAPI imports
 try:
     from fastapi import HTTPException, status
-    from fastapi.responses import StreamingResponse, FileResponse
+    from fastapi.responses import FileResponse, StreamingResponse
+
     FASTAPI_AVAILABLE = True
 except ImportError:
     FASTAPI_AVAILABLE = False
@@ -82,6 +83,7 @@ except ImportError:
 # Data processing imports
 try:
     import pandas as pd
+
     PANDAS_AVAILABLE = True
 except ImportError:
     PANDAS_AVAILABLE = False
@@ -89,6 +91,7 @@ except ImportError:
 
 try:
     from xlsxwriter import Workbook
+
     XLSXWRITER_AVAILABLE = True
 except ImportError:
     XLSXWRITER_AVAILABLE = False
@@ -96,38 +99,47 @@ except ImportError:
 
 try:
     from reportlab.lib import colors
-    from reportlab.lib.pagesizes import letter, A4
-    from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
+    from reportlab.lib.pagesizes import A4, letter
     from reportlab.lib.styles import getSampleStyleSheet
+    from reportlab.platypus import Paragraph, SimpleDocTemplate, Table, TableStyle
+
     REPORTLAB_AVAILABLE = True
 except ImportError:
     REPORTLAB_AVAILABLE = False
 
 # Service imports
 try:
-    from equation_services import EquationService, ExecutionService, AnalyticsService
-    from equation_services import get_equation_service
+    from equation_services import (
+        AnalyticsService,
+        EquationService,
+        ExecutionService,
+        get_equation_service,
+    )
+
     SERVICES_AVAILABLE = True
 except ImportError:
     SERVICES_AVAILABLE = False
 
 # Task queue imports
 try:
-    from equation_tasks import celery_app, TaskManager
+    from equation_tasks import TaskManager, celery_app
+
     TASKS_AVAILABLE = True
 except ImportError:
     TASKS_AVAILABLE = False
 
 # Auth imports
 try:
-    from equation_auth import require_permission, Permission, get_current_user
+    from equation_auth import Permission, get_current_user, require_permission
+
     AUTH_AVAILABLE = True
 except ImportError:
     AUTH_AVAILABLE = False
 
 # Logging imports
 try:
-    from equation_logging import get_logger, audit_log, AuditAction
+    from equation_logging import AuditAction, audit_log, get_logger
+
     LOGGING_AVAILABLE = True
 except ImportError:
     LOGGING_AVAILABLE = False
@@ -139,8 +151,10 @@ logger = logging.getLogger("amos_equation_exports")
 # Enums and Constants
 # ============================================================================
 
+
 class ExportFormat(str, Enum):
     """Supported export formats."""
+
     CSV = "csv"
     EXCEL = "excel"
     PDF = "pdf"
@@ -150,6 +164,7 @@ class ExportFormat(str, Enum):
 
 class ExportStatus(str, Enum):
     """Export job status."""
+
     PENDING = "pending"
     PROCESSING = "processing"
     COMPLETED = "completed"
@@ -159,6 +174,7 @@ class ExportStatus(str, Enum):
 
 class EntityType(str, Enum):
     """Entity types for export."""
+
     EQUATIONS = "equations"
     EXECUTIONS = "executions"
     USERS = "users"
@@ -174,28 +190,32 @@ EXPORT_CHUNK_SIZE = 1000
 # Data Classes
 # ============================================================================
 
+
 @dataclass
 class ExportFilters:
     """Filters for data export."""
-    date_from: datetime  = None
-    date_to: datetime  = None
-    domain: str  = None
-    status: str  = None
-    user_id: int  = None
-    equation_ids: List[int] = field(default_factory=list)
-    search_query: str  = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    date_from: datetime = None
+    date_to: datetime = None
+    domain: str = None
+    status: str = None
+    user_id: int = None
+    equation_ids: list[int] = field(default_factory=list)
+    search_query: str = None
+
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             k: v.isoformat() if isinstance(v, datetime) else v
-            for k, v in self.__dict__.items() if v is not None
+            for k, v in self.__dict__.items()
+            if v is not None
         }
 
 
 @dataclass
 class ExportJob:
     """Export job information."""
+
     id: str
     format: ExportFormat
     entity_type: EntityType
@@ -203,13 +223,13 @@ class ExportJob:
     filters: ExportFilters
     user_id: int
     created_at: datetime
-    completed_at: datetime  = None
-    file_path: str  = None
-    file_size: int  = None
-    error_message: str  = None
-    download_url: str  = None
+    completed_at: datetime = None
+    file_path: str = None
+    file_size: int = None
+    error_message: str = None
+    download_url: str = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "id": self.id,
@@ -223,25 +243,27 @@ class ExportJob:
             "file_path": self.file_path,
             "file_size": self.file_size,
             "error_message": self.error_message,
-            "download_url": self.download_url
+            "download_url": self.download_url,
         }
 
 
 @dataclass
 class ExportTemplate:
     """Export template configuration."""
+
     name: str
     format: ExportFormat
-    columns: List[str]
-    column_headers: Dict[str, str]  = None
-    column_formats: Dict[str, str]  = None
-    filters: Optional[ExportFilters] = None
-    sorting: List[tuple[str, str]]  = None
+    columns: list[str]
+    column_headers: dict[str, str] = None
+    column_formats: dict[str, str] = None
+    filters: ExportFilters = None
+    sorting: list[tuple[str, str]] = None
 
 
 # ============================================================================
 # Export Format Handlers (Strategy Pattern)
 # ============================================================================
+
 
 class BaseExportHandler:
     """Base class for export format handlers."""
@@ -252,9 +274,9 @@ class BaseExportHandler:
 
     async def export(
         self,
-        data: List[dict[str, Any]],
-        columns: List[str]  = None,
-        template: Optional[ExportTemplate] = None
+        data: list[dict[str, Any]],
+        columns: list[str] = None,
+        template: ExportTemplate = None,
     ) -> bytes:
         """Export data to format.
 
@@ -285,9 +307,9 @@ class CSVExportHandler(BaseExportHandler):
 
     async def export(
         self,
-        data: List[dict[str, Any]],
-        columns: List[str]  = None,
-        template: Optional[ExportTemplate] = None
+        data: list[dict[str, Any]],
+        columns: list[str] = None,
+        template: ExportTemplate = None,
     ) -> bytes:
         """Export to CSV."""
         if not data:
@@ -322,9 +344,9 @@ class JSONExportHandler(BaseExportHandler):
 
     async def export(
         self,
-        data: List[dict[str, Any]],
-        columns: List[str]  = None,
-        template: Optional[ExportTemplate] = None
+        data: list[dict[str, Any]],
+        columns: list[str] = None,
+        template: ExportTemplate = None,
     ) -> bytes:
         """Export to JSON."""
         # Filter columns if specified
@@ -348,9 +370,9 @@ class ExcelExportHandler(BaseExportHandler):
 
     async def export(
         self,
-        data: List[dict[str, Any]],
-        columns: List[str]  = None,
-        template: Optional[ExportTemplate] = None
+        data: list[dict[str, Any]],
+        columns: list[str] = None,
+        template: ExportTemplate = None,
     ) -> bytes:
         """Export to Excel."""
         if not XLSXWRITER_AVAILABLE or not Workbook:
@@ -399,9 +421,9 @@ class PDFExportHandler(BaseExportHandler):
 
     async def export(
         self,
-        data: List[dict[str, Any]],
-        columns: List[str]  = None,
-        template: Optional[ExportTemplate] = None
+        data: list[dict[str, Any]],
+        columns: list[str] = None,
+        template: ExportTemplate = None,
     ) -> bytes:
         """Export to PDF."""
         if not REPORTLAB_AVAILABLE:
@@ -427,22 +449,23 @@ class PDFExportHandler(BaseExportHandler):
 
         # Create table
         table = Table(table_data)
-        table.setStyle(TableStyle([
-            ("BACKGROUND", (0, 0), (-1, 0), colors.grey),
-            ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
-            ("ALIGN", (0, 0), (-1, -1), "CENTER"),
-            ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
-            ("FONTSIZE", (0, 0), (-1, 0), 14),
-            ("BOTTOMPADDING", (0, 0), (-1, 0), 12),
-            ("BACKGROUND", (0, 1), (-1, -1), colors.beige),
-            ("GRID", (0, 0), (-1, -1), 1, colors.black)
-        ]))
+        table.setStyle(
+            TableStyle(
+                [
+                    ("BACKGROUND", (0, 0), (-1, 0), colors.grey),
+                    ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
+                    ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                    ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                    ("FONTSIZE", (0, 0), (-1, 0), 14),
+                    ("BOTTOMPADDING", (0, 0), (-1, 0), 12),
+                    ("BACKGROUND", (0, 1), (-1, -1), colors.beige),
+                    ("GRID", (0, 0), (-1, -1), 1, colors.black),
+                ]
+            )
+        )
 
         # Build PDF
-        elements = [
-            Paragraph("AMOS Equation Export", getSampleStyleSheet()["Heading1"]),
-            table
-        ]
+        elements = [Paragraph("AMOS Equation Export", getSampleStyleSheet()["Heading1"]), table]
         doc.build(elements)
 
         return output.getvalue()
@@ -458,10 +481,11 @@ class PDFExportHandler(BaseExportHandler):
 # Export Handler Registry
 # ============================================================================
 
+
 class ExportHandlerRegistry:
     """Registry for export format handlers."""
 
-    _handlers: Dict[ExportFormat, BaseExportHandler] = {}
+    _handlers: dict[ExportFormat, BaseExportHandler] = {}
 
     @classmethod
     def register(cls, format: ExportFormat, handler: BaseExportHandler) -> None:
@@ -476,7 +500,7 @@ class ExportHandlerRegistry:
         return cls._handlers[format]
 
     @classmethod
-    def get_available_formats(cls) -> List[ExportFormat]:
+    def get_available_formats(cls) -> list[ExportFormat]:
         """Get list of available formats."""
         return list(cls._handlers.keys())
 
@@ -496,12 +520,13 @@ if REPORTLAB_AVAILABLE:
 # Export Manager
 # ============================================================================
 
+
 class ExportManager:
     """Main export manager."""
 
     def __init__(self):
         self.logger = get_logger("exports") if LOGGING_AVAILABLE else logger
-        self._jobs: Dict[str, ExportJob] = {}
+        self._jobs: dict[str, ExportJob] = {}
         self.storage_path = Path(os.getenv("EXPORT_STORAGE_PATH", "./exports"))
         self.storage_path.mkdir(parents=True, exist_ok=True)
 
@@ -511,7 +536,7 @@ class ExportManager:
         entity_type: EntityType,
         filters: ExportFilters,
         user_id: int,
-        template: Optional[ExportTemplate] = None
+        template: ExportTemplate = None,
     ) -> ExportJob:
         """Start async export job.
 
@@ -534,7 +559,7 @@ class ExportManager:
             status=ExportStatus.PENDING,
             filters=filters,
             user_id=user_id,
-            created_at=datetime.now()
+            created_at=datetime.now(),
         )
 
         self._jobs[job_id] = job
@@ -542,7 +567,9 @@ class ExportManager:
         # Start background processing
         if TASKS_AVAILABLE:
             # Submit to Celery
-            process_export_task.delay(job_id, format.value, entity_type.value, filters.to_dict(), user_id)
+            process_export_task.delay(
+                job_id, format.value, entity_type.value, filters.to_dict(), user_id
+            )
         else:
             # Process synchronously
             await self._process_export(job)
@@ -595,8 +622,8 @@ class ExportManager:
                     details={
                         "format": job.format.value,
                         "rows": len(data),
-                        "file_size": job.file_size
-                    }
+                        "file_size": job.file_size,
+                    },
                 )
 
             self.logger.info(f"Completed export job {job.id}")
@@ -607,10 +634,8 @@ class ExportManager:
             self.logger.error(f"Export job {job.id} failed: {e}")
 
     async def _fetch_data(
-        self,
-        entity_type: EntityType,
-        filters: ExportFilters
-    ) -> List[dict[str, Any]]:
+        self, entity_type: EntityType, filters: ExportFilters
+    ) -> list[dict[str, Any]]:
         """Fetch data for export.
 
         Args:
@@ -627,15 +652,15 @@ class ExportManager:
         # For now, return empty list
         return []
 
-    def get_job(self, job_id: str) -> Optional[ExportJob]:
+    def get_job(self, job_id: str) -> ExportJob:
         """Get export job by ID."""
         return self._jobs.get(job_id)
 
-    def get_user_jobs(self, user_id: int) -> List[ExportJob]:
+    def get_user_jobs(self, user_id: int) -> list[ExportJob]:
         """Get all jobs for a user."""
         return [job for job in self._jobs.values() if job.user_id == user_id]
 
-    def get_download_response(self, job_id: str) -> Optional[FileResponse]:
+    def get_download_response(self, job_id: str) -> FileResponse:
         """Get download response for completed job."""
         job = self._jobs.get(job_id)
 
@@ -650,10 +675,10 @@ class ExportManager:
         return FileResponse(
             path=job.file_path,
             filename=f"amos_export_{job.entity_type.value}.{handler.get_file_extension()}",
-            media_type=handler.get_content_type()
+            media_type=handler.get_content_type(),
         )
 
-    def get_available_formats(self) -> List[str]:
+    def get_available_formats(self) -> list[str]:
         """Get available export formats."""
         return [f.value for f in ExportHandlerRegistry.get_available_formats()]
 
@@ -663,15 +688,16 @@ class ExportManager:
 # ============================================================================
 
 if TASKS_AVAILABLE and celery_app:
+
     @celery_app.task(bind=True, max_retries=3)
     def process_export_task(
         self,
         job_id: str,
         format_value: str,
         entity_type_value: str,
-        filters_dict: Dict[str, Any],
-        user_id: int
-    ) -> Dict[str, Any]:
+        filters_dict: dict[str, Any],
+        user_id: int,
+    ) -> dict[str, Any]:
         """Process export in background.
 
         Args:
@@ -707,7 +733,7 @@ if TASKS_AVAILABLE and celery_app:
 # Export Templates
 # ============================================================================
 
-DEFAULT_TEMPLATES: Dict[str, ExportTemplate] = {
+DEFAULT_TEMPLATES: dict[str, ExportTemplate] = {
     "equations_summary": ExportTemplate(
         name="Equations Summary",
         format=ExportFormat.EXCEL,
@@ -718,8 +744,8 @@ DEFAULT_TEMPLATES: Dict[str, ExportTemplate] = {
             "domain": "Domain",
             "formula": "Formula",
             "created_at": "Created Date",
-            "execution_count": "Executions"
-        }
+            "execution_count": "Executions",
+        },
     ),
     "executions_report": ExportTemplate(
         name="Executions Report",
@@ -730,23 +756,23 @@ DEFAULT_TEMPLATES: Dict[str, ExportTemplate] = {
             "equation_name": "Equation",
             "status": "Status",
             "execution_time_ms": "Execution Time (ms)",
-            "created_at": "Date"
-        }
+            "created_at": "Date",
+        },
     ),
     "analytics_dashboard": ExportTemplate(
         name="Analytics Dashboard",
         format=ExportFormat.PDF,
-        columns=["metric", "value", "period", "change_percent"]
-    )
+        columns=["metric", "value", "period", "change_percent"],
+    ),
 }
 
 
-def get_template(name: str) -> Optional[ExportTemplate]:
+def get_template(name: str) -> ExportTemplate:
     """Get export template by name."""
     return DEFAULT_TEMPLATES.get(name)
 
 
-def list_templates() -> List[dict[str, Any]]:
+def list_templates() -> list[dict[str, Any]]:
     """List available templates."""
     return [
         {"name": name, "format": template.format.value, "columns": template.columns}
@@ -759,7 +785,7 @@ def list_templates() -> List[dict[str, Any]]:
 # ============================================================================
 
 if FASTAPI_AVAILABLE:
-    from fastapi import APIRouter, Depends, Query, BackgroundTasks
+    from fastapi import APIRouter, BackgroundTasks, Query
 
     router = APIRouter(prefix="/api/v1/exports", tags=["Exports"])
 
@@ -767,9 +793,9 @@ if FASTAPI_AVAILABLE:
     async def create_export(
         format: ExportFormat = Query(..., description="Export format"),
         entity_type: EntityType = Query(..., description="Entity type to export"),
-        template_name: str  = Query(None, description="Export template name"),
+        template_name: str = Query(None, description="Export template name"),
         background_tasks: BackgroundTasks = None,
-        current_user = None  # Would use Depends(get_current_user())
+        current_user=None,  # Would use Depends(get_current_user())
     ):
         """Create new export job."""
         manager = ExportManager()
@@ -781,13 +807,13 @@ if FASTAPI_AVAILABLE:
             entity_type=entity_type,
             filters=ExportFilters(),
             user_id=1,  # Would use current_user.id
-            template=template
+            template=template,
         )
 
         return {
             "job_id": job.id,
             "status": job.status.value,
-            "created_at": job.created_at.isoformat()
+            "created_at": job.created_at.isoformat(),
         }
 
     @router.get("/{job_id}")
@@ -799,7 +825,7 @@ if FASTAPI_AVAILABLE:
         if not job:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND if status else 404,
-                detail="Export job not found"
+                detail="Export job not found",
             )
 
         return job.to_dict()
@@ -813,7 +839,7 @@ if FASTAPI_AVAILABLE:
         if not response:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND if status else 404,
-                detail="Export not available for download"
+                detail="Export not available for download",
             )
 
         return response
@@ -834,6 +860,7 @@ if FASTAPI_AVAILABLE:
 # Example Usage
 # ============================================================================
 
+
 async def example_usage():
     """Example usage of export system."""
     print("AMOS Equation Export System")
@@ -849,8 +876,13 @@ async def example_usage():
     # Example data
     sample_data = [
         {"id": 1, "name": "Linear Equation", "domain": "math", "formula": "y = 2x + 3"},
-        {"id": 2, "name": "Quadratic", "domain": "math", "formula": "x = (-b + sqrt(b^2 - 4ac)) / 2a"},
-        {"id": 3, "name": "Newton's Law", "domain": "physics", "formula": "F = ma"}
+        {
+            "id": 2,
+            "name": "Quadratic",
+            "domain": "math",
+            "formula": "x = (-b + sqrt(b^2 - 4ac)) / 2a",
+        },
+        {"id": 3, "name": "Newton's Law", "domain": "physics", "formula": "F = ma"},
     ]
 
     # Export to different formats
@@ -864,6 +896,7 @@ async def example_usage():
 
 
 if __name__ == "__main__":
-    import os
     import asyncio
+    import os
+
     asyncio.run(example_usage())

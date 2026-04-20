@@ -1,7 +1,7 @@
 """AMOS Kernel Router - Routes tasks to appropriate cognitive kernels."""
 
 from dataclasses import dataclass, field
-from typing import Any, List
+from typing import Any
 
 from .loader import BrainLoader, KernelConfig
 
@@ -11,13 +11,13 @@ class TaskIntent:
     """Parsed task intent for routing decisions."""
 
     primary_domain: str
-    secondary_domains: List[str]
+    secondary_domains: list[str]
     risk_level: str
     requires_reasoning: bool
     requires_code: bool
     requires_memory: bool
-    mathematical_domains: List[str] = field(default_factory=list)
-    recommended_frameworks: List[str] = field(default_factory=list)
+    mathematical_domains: list[str] = field(default_factory=list)
+    recommended_frameworks: list[str] = field(default_factory=list)
 
 
 class KernelRouter:
@@ -73,8 +73,8 @@ class KernelRouter:
         requires_memory = any(kw in task_lower for kw in ["remember", "previous", "context"])
 
         # Enhanced detection with mathematical framework engine
-        math_domains: List[str] = []
-        recommended_frameworks: List[str] = []
+        math_domains: list[str] = []
+        recommended_frameworks: list[str] = []
         if self._math_engine:
             try:
                 math_analysis = self._math_engine.analyze_architecture(task_description)
@@ -99,7 +99,7 @@ class KernelRouter:
             recommended_frameworks=recommended_frameworks,
         )
 
-    def route(self, task_description: str) -> List[KernelConfig]:
+    def route(self, task_description: str) -> list[KernelConfig]:
         """Route task to appropriate kernels."""
         intent = self.parse_intent(task_description)
 

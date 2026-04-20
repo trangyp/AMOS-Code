@@ -19,13 +19,15 @@ Provides:
 - CLI interface for operator control
 """
 
+from __future__ import annotations
+
 import asyncio
 import json
 import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from amos_axiom_validator import AxiomValidator, ValidationReport
 from amos_coherence_engine import SignalExtractionEngine
@@ -57,7 +59,7 @@ class OrganismHealth:
     state: OrganismState = OrganismState.DORMANT
 
     # Layer health (0-1 scores)
-    layer_health: Dict[int, float] = field(default_factory=dict)
+    layer_health: dict[int, float] = field(default_factory=dict)
 
     # System metrics
     coherence_score: float = 0.0
@@ -66,9 +68,9 @@ class OrganismHealth:
     energy_efficiency: float = 0.0
 
     # Active components
-    active_processes: List[str] = field(default_factory=list)
-    warnings: List[str] = field(default_factory=list)
-    errors: List[str] = field(default_factory=list)
+    active_processes: list[str] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -106,18 +108,18 @@ class AMOSOrganismRunner:
     across all architectural layers.
     """
 
-    def __init__(self, config: Optional[OrganismConfig] = None):
+    def __init__(self, config: OrganismConfig | None = None):
         self.config = config or OrganismConfig()
         self.state = OrganismState.DORMANT
         self.health = OrganismHealth()
 
         # Layer components (initialized on demand)
-        self.layer_8_infinite: Optional[AMOSInfinite] = None
-        self.layer_7_validator: Optional[AxiomValidator] = None
-        self.layer_4_coherence: Optional[SignalExtractionEngine] = None
-        self.layer_3_memory: Optional[AMOSMemory] = None
-        self.layer_2_time: Optional[AMOSTimeEngine] = None
-        self.layer_2_energy: Optional[EnergyBudget] = None
+        self.layer_8_infinite: AMOSInfinite | None = None
+        self.layer_7_validator: AxiomValidator | None = None
+        self.layer_4_coherence: SignalExtractionEngine | None = None
+        self.layer_3_memory: AMOSMemory | None = None
+        self.layer_2_time: AMOSTimeEngine | None = None
+        self.layer_2_energy: EnergyBudget | None = None
 
         # Runtime state
         self._running = False
@@ -360,7 +362,7 @@ class AMOSOrganismRunner:
 
         print(f"[{self.config.name}] Shutdown complete.")
 
-    async def status(self) -> Dict[str, Any]:
+    async def status(self) -> dict[str, Any]:
         """Get organism status as dictionary."""
         return {
             "name": self.config.name,

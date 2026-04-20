@@ -14,12 +14,14 @@ Implements 2025 ML monitoring patterns (Evidently AI, Whylabs, Arthur):
 Component #93 - Model Monitor
 """
 
+from __future__ import annotations
+
 import asyncio
 import time
 import uuid
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class DriftType(Enum):
@@ -58,11 +60,11 @@ class MonitoringWindow:
 
     # Statistics
     prediction_count: int = 0
-    feature_stats: Dict[str, dict[str, float]] = field(default_factory=dict)
-    prediction_stats: Dict[str, float] = field(default_factory=dict)
+    feature_stats: dict[str, dict[str, float]] = field(default_factory=dict)
+    prediction_stats: dict[str, float] = field(default_factory=dict)
 
     # Drift scores
-    drift_scores: Dict[str, float] = field(default_factory=dict)
+    drift_scores: dict[str, float] = field(default_factory=dict)
 
 
 @dataclass
@@ -81,8 +83,8 @@ class DriftAlert:
     # Metrics
     drift_score: float = 0.0
     threshold: float = 0.0
-    baseline_stats: Dict[str, Any] = field(default_factory=dict)
-    current_stats: Dict[str, Any] = field(default_factory=dict)
+    baseline_stats: dict[str, Any] = field(default_factory=dict)
+    current_stats: dict[str, Any] = field(default_factory=dict)
 
     # Metadata
     timestamp: float = field(default_factory=time.time)
@@ -128,7 +130,7 @@ class MonitoringConfig:
     window_size_hours: int = 24
 
     # Features to monitor
-    monitored_features: List[str] = field(default_factory=list)
+    monitored_features: list[str] = field(default_factory=list)
 
     # Alerting
     alert_on_data_drift: bool = True
@@ -167,14 +169,14 @@ class AMOSModelMonitor:
     """
 
     def __init__(self):
-        self.configs: Dict[str, MonitoringConfig] = {}
-        self.baseline_windows: Dict[str, MonitoringWindow] = {}
-        self.current_windows: Dict[str, MonitoringWindow] = {}
-        self.alerts: Dict[str, DriftAlert] = {}
-        self.performance_history: Dict[str, list[ModelPerformance]] = {}
+        self.configs: dict[str, MonitoringConfig] = {}
+        self.baseline_windows: dict[str, MonitoringWindow] = {}
+        self.current_windows: dict[str, MonitoringWindow] = {}
+        self.alerts: dict[str, DriftAlert] = {}
+        self.performance_history: dict[str, list[ModelPerformance]] = {}
 
         # Model health status
-        self.model_status: Dict[str, ModelStatus] = {}
+        self.model_status: dict[str, ModelStatus] = {}
 
     async def initialize(self) -> None:
         """Initialize the model monitor."""
@@ -223,9 +225,9 @@ class AMOSModelMonitor:
         self,
         model_id: str,
         model_version: str,
-        baseline_data: Dict[str, Any],
+        baseline_data: dict[str, Any],
         drift_threshold: float = 0.1,
-        monitored_features: List[str] = None,
+        monitored_features: list[str] = None,
     ) -> str:
         """Register a model for monitoring."""
         config_id = f"config_{model_id}_{model_version}"
@@ -262,7 +264,7 @@ class AMOSModelMonitor:
         self,
         model_id: str,
         model_version: str,
-        features: Dict[str, Any],
+        features: dict[str, Any],
         prediction: Any,
         latency_ms: float,
         actual: Optional[Any] = None,
@@ -298,7 +300,7 @@ class AMOSModelMonitor:
             window.prediction_stats["prediction"]["count"] += 1
             window.prediction_stats["prediction"]["sum"] += prediction
 
-    def detect_drift(self, model_id: str, model_version: str) -> Dict[str, Any]:
+    def detect_drift(self, model_id: str, model_version: str) -> dict[str, Any]:
         """Detect drift for a model."""
         config_key = f"config_{model_id}_{model_version}"
         window_key = f"{model_id}:{model_version}"
@@ -389,7 +391,7 @@ class AMOSModelMonitor:
         self.alerts[alert_id] = alert
         return alert
 
-    def get_model_health(self, model_id: str, model_version: str) -> Dict[str, Any]:
+    def get_model_health(self, model_id: str, model_version: str) -> dict[str, Any]:
         """Get health status for a model."""
         model_key = f"{model_id}:{model_version}"
         status = self.model_status.get(model_key, ModelStatus.UNKNOWN)
@@ -427,7 +429,7 @@ class AMOSModelMonitor:
         model_id: str = None,
         severity: Optional[AlertSeverity] = None,
         acknowledged: bool = None,
-    ) -> List[DriftAlert]:
+    ) -> list[DriftAlert]:
         """Get alerts with filtering."""
         filtered = list(self.alerts.values())
 
@@ -442,7 +444,7 @@ class AMOSModelMonitor:
 
         return sorted(filtered, key=lambda a: a.timestamp, reverse=True)
 
-    def get_monitoring_summary(self) -> Dict[str, Any]:
+    def get_monitoring_summary(self) -> dict[str, Any]:
         """Get overall monitoring summary."""
         total_models = len(self.model_status)
         healthy = sum(1 for s in self.model_status.values() if s == ModelStatus.HEALTHY)

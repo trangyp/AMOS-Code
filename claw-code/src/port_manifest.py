@@ -3,7 +3,6 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from .models import Subsystem
-from typing import Optional, Tuple
 
 DEFAULT_SRC_ROOT = Path(__file__).resolve().parent
 
@@ -12,7 +11,7 @@ DEFAULT_SRC_ROOT = Path(__file__).resolve().parent
 class PortManifest:
     src_root: Path
     total_python_files: int
-    top_level_modules: Tuple[Subsystem, ...]
+    top_level_modules: tuple[Subsystem, ...]
 
     def to_markdown(self) -> str:
         lines = [

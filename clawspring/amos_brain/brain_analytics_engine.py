@@ -1,4 +1,6 @@
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
+
+from typing import Any
 
 """Brain-Powered Analytics Engine
 
@@ -10,8 +12,10 @@ import asyncio
 import json
 from dataclasses import dataclass
 from datetime import datetime, timezone
+
 UTC = timezone.utc
 
+UTC = timezone.utc
 from amos_brain.integrated_brain_api import get_brain_api
 
 
@@ -24,14 +28,13 @@ class AnalyticsInsight:
     description: str
     confidence: float
     severity: str  # low, medium, high, critical
-    suggested_action: Optional[str]
-    raw_data: Dict[str, Any]
+    suggested_action: str | None
+    raw_data: dict[str, Any]
     timestamp: str
 
 
 class BrainAnalyticsEngine:
-    """
-    Brain-powered analytics with cognitive reasoning.
+    """Brain-powered analytics with cognitive reasoning.
 
     Uses integrated brain to:
     - Detect anomalies with reasoning
@@ -42,18 +45,17 @@ class BrainAnalyticsEngine:
 
     def __init__(self):
         self.brain = get_brain_api()
-        self._insight_history: List[AnalyticsInsight] = []
-        self._metric_context: Dict[str, dict[str, Any]] = {}
+        self._insight_history: list[AnalyticsInsight] = []
+        self._metric_context: dict[str, dict[str, Any]] = {}
 
     async def analyze_metric(
         self,
         metric_name: str,
         current_value: float,
-        historical_values: List[float],
-        threshold: Optional[float] = None,
+        historical_values: list[float],
+        threshold: float | None = None,
     ) -> AnalyticsInsight:
-        """
-        Analyze a metric using brain-powered reasoning.
+        """Analyze a metric using brain-powered reasoning.
 
         Args:
             metric_name: Name of the metric
@@ -63,6 +65,7 @@ class BrainAnalyticsEngine:
 
         Returns:
             AnalyticsInsight with brain-generated analysis
+
         """
         # Build context for brain
         context = {
@@ -124,11 +127,10 @@ What does this indicate and what action should be taken?"""
     async def predict_trend(
         self,
         metric_name: str,
-        historical_values: List[float],
+        historical_values: list[float],
         forecast_horizon: int = 10,
-    ) -> Dict[str, Any]:
-        """
-        Predict future trend using brain reasoning.
+    ) -> dict[str, Any]:
+        """Predict future trend using brain reasoning.
 
         Args:
             metric_name: Name of the metric
@@ -137,6 +139,7 @@ What does this indicate and what action should be taken?"""
 
         Returns:
             Prediction with confidence and reasoning
+
         """
         if len(historical_values) < 3:
             return {
@@ -194,11 +197,10 @@ What will the likely values be and why?"""
 
     async def generate_recommendations(
         self,
-        metrics_summary: Dict[str, float],
-        system_health: Dict[str, Any],
-    ) -> List[dict[str, Any]]:
-        """
-        Generate intelligent recommendations using brain.
+        metrics_summary: dict[str, float],
+        system_health: dict[str, Any],
+    ) -> list[dict[str, Any]]:
+        """Generate intelligent recommendations using brain.
 
         Args:
             metrics_summary: Key metrics and their values
@@ -206,6 +208,7 @@ What will the likely values be and why?"""
 
         Returns:
             List of prioritized recommendations
+
         """
         context = {
             "metrics": metrics_summary,
@@ -239,7 +242,7 @@ What are the top 3 recommendations to improve system performance?"""
         self,
         response: str,
         current_value: float,
-        threshold: Optional[float],
+        threshold: float | None,
     ) -> str:
         """Classify insight type from brain response."""
         response_lower = response.lower()
@@ -259,7 +262,7 @@ What are the top 3 recommendations to improve system performance?"""
         else:
             return "observation"
 
-    def _extract_action(self, response: str) -> Optional[str]:
+    def _extract_action(self, response: str) -> str | None:
         """Extract suggested action from brain response."""
         # Look for action keywords
         action_indicators = [
@@ -280,7 +283,7 @@ What are the top 3 recommendations to improve system performance?"""
 
         return None
 
-    def _parse_recommendations(self, response: str) -> List[str]:
+    def _parse_recommendations(self, response: str) -> list[str]:
         """Parse recommendations from brain response."""
         lines = response.split("\n")
         recommendations = []
@@ -298,9 +301,9 @@ What are the top 3 recommendations to improve system performance?"""
 
     def get_insight_history(
         self,
-        metric_name: Optional[str] = None,
+        metric_name: str | None = None,
         limit: int = 100,
-    ) -> List[AnalyticsInsight]:
+    ) -> list[AnalyticsInsight]:
         """Get historical insights."""
         insights = self._insight_history
 
@@ -311,7 +314,7 @@ What are the top 3 recommendations to improve system performance?"""
 
 
 # Global instance
-_global_analytics_engine: Optional[BrainAnalyticsEngine] = None
+_global_analytics_engine: BrainAnalyticsEngine | None = None
 
 
 def get_brain_analytics() -> BrainAnalyticsEngine:

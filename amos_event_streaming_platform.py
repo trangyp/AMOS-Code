@@ -3,16 +3,20 @@
 Production-grade event streaming for 14-Layer Cognitive Architecture.
 """
 
+from __future__ import annotations
+
 import asyncio
 import json
 import os
 import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 try:
     from aiokafka import AIOKafkaConsumer, AIOKafkaProducer
@@ -51,7 +55,7 @@ class DomainEvent:
     event_type: EventType
     aggregate_id: str
     aggregate_type: str
-    payload: Dict[str, Any]
+    payload: dict[str, Any]
     timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
     event_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     version: int = 1
@@ -74,7 +78,7 @@ class EventStore:
     def __init__(self, path: Path = EVENT_STORE_PATH):
         self.path = path
         self.path.mkdir(parents=True, exist_ok=True)
-        self._streams: Dict[str, list[DomainEvent]] = {}
+        self._streams: dict[str, list[DomainEvent]] = {}
         self._seq = 0
 
     async def append(self, event: DomainEvent) -> None:
@@ -87,7 +91,7 @@ class EventStore:
             self._streams[event.aggregate_id] = []
         self._streams[event.aggregate_id].append(event)
 
-    def get_stream(self, aggregate_id: str) -> List[DomainEvent]:
+    def get_stream(self, aggregate_id: str) -> list[DomainEvent]:
         return self._streams.get(aggregate_id, [])
 
     def replay(self, aggregate_id: str, projector: Callable, initial: Any = None) -> Any:
@@ -103,7 +107,7 @@ class AMOSEventBus:
     def __init__(self):
         self._kafka_producer: Any = None
         self._redis: Any = None
-        self._handlers: Dict[str, list[Callable]] = {}
+        self._handlers: dict[str, list[Callable]] = {}
         self.event_store = EventStore()
 
     async def initialize(self) -> bool:

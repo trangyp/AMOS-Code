@@ -8,28 +8,16 @@ Primary Loop:
 12_QUANTUM_LAYER -> 06_MUSCLE -> 07_METABOLISM -> 01_BRAIN
 """
 
+from __future__ import annotations
+
 import json
-import sys
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Optional
 
-# Add subsystem paths for imports (transitional pattern)
-_ORGANISM_ROOT = Path(__file__).parent
-for _subsystem in [
-    "01_BRAIN", "02_SENSES", "03_IMMUNE", "04_BLOOD", "05_SKELETON",
-    "06_MUSCLE", "07_METABOLISM", "08_WORLD_MODEL",
-    "09_SOCIAL_ENGINE", "09_QUANTUM_LAYER", "10_LIFE_ENGINE", 
-    "11_LEGAL_BRAIN", "11_LIFE_ENGINE",
-    "12_QUANTUM_LAYER", "12_LEGAL_BRAIN", "13_FACTORY", "13_MEMORY_ARCHIVAL",
-    "14_INTERFACES", "15_KNOWLEDGE_CORE",
-]:
-    _path = _ORGANISM_ROOT / _subsystem
-    if str(_path) not in sys.path:
-        sys.path.insert(0, str(_path))
+UTC = UTC
 
 # Import subsystems (through alias modules - relative imports)
 from .BLOOD import BudgetManager, CashflowTracker, ResourceEngine
@@ -70,7 +58,7 @@ class OrganismState:
     started_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     cycle_count: int = 0
     current_subsystem: str = "00_ROOT"
-    global_context: Dict[str, Any] = field(default_factory=dict)
+    global_context: dict[str, Any] = field(default_factory=dict)
 
 
 class AmosOrganism:
@@ -255,7 +243,7 @@ class AmosOrganism:
         ctx = context or ExecutionContext()
         return self.muscle.execute(command, ctx)
 
-    def cycle(self) -> Dict[str, Any]:
+    def cycle(self) -> dict[str, Any]:
         """Run one primary loop cycle."""
         results = {}
 
@@ -316,7 +304,7 @@ class AmosOrganism:
         """Search memory."""
         return self.memory.search(query, limit=limit)
 
-    def status(self) -> Dict[str, Any]:
+    def status(self) -> dict[str, Any]:
         """Get complete organism status."""
         return {
             "session_id": self.state.session_id,
@@ -401,7 +389,7 @@ class AmosOrganism:
         """Scan environment via SENSES."""
         return self.senses.scan(path)
 
-    def gather_context(self) -> Dict[str, Any]:
+    def gather_context(self) -> dict[str, Any]:
         """Gather environment context."""
         return self.context.gather()
 

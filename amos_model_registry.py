@@ -13,6 +13,8 @@ Implements 2025 MLOps patterns (MLflow, Kubeflow Model Registry):
 Component #70 - MLOps & Model Lifecycle Layer
 """
 
+from __future__ import annotations
+
 import asyncio
 import json
 import time
@@ -21,7 +23,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any, Optional, Protocol
 
 
 class ModelStage(Enum):
@@ -59,7 +61,7 @@ class ModelArtifact:
     framework: ModelFramework
     format: str  # e.g., "pt", "onnx", "pkl"
     created_at: float = field(default_factory=time.time)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -84,10 +86,10 @@ class ModelVersion:
     parent_version: str = None  # For version lineage
 
     # Performance metrics
-    metrics: Dict[str, float] = field(default_factory=dict)
-    tags: List[str] = field(default_factory=list)
+    metrics: dict[str, float] = field(default_factory=dict)
+    tags: list[str] = field(default_factory=list)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "version_id": self.version_id,
             "model_id": self.model_id,
@@ -116,7 +118,7 @@ class RegisteredModel:
     task_type: str  # e.g., "classification", "generation", "embedding"
 
     # Versions
-    versions: Dict[str, ModelVersion] = field(default_factory=dict)
+    versions: dict[str, ModelVersion] = field(default_factory=dict)
     latest_version: str = None
     production_version: str = None
 
@@ -124,7 +126,7 @@ class RegisteredModel:
     created_at: float = field(default_factory=time.time)
     updated_at: float = field(default_factory=time.time)
     owner: str = "system"
-    tags: List[str] = field(default_factory=list)
+    tags: list[str] = field(default_factory=list)
 
     def get_production_version(self) -> Optional[ModelVersion]:
         """Get the current production version."""
@@ -217,12 +219,12 @@ class AMOSModelRegistry:
     """
 
     def __init__(self, storage: Optional[ArtifactStorage] = None):
-        self.models: Dict[str, RegisteredModel] = {}
-        self.deployments: Dict[str, ModelDeployment] = {}
+        self.models: dict[str, RegisteredModel] = {}
+        self.deployments: dict[str, ModelDeployment] = {}
         self.storage = storage or LocalArtifactStorage()
 
         # Metrics tracking
-        self.performance_history: Dict[str, list[dict[str, Any]]] = {}
+        self.performance_history: dict[str, list[dict[str, Any]]] = {}
 
     async def initialize(self) -> None:
         """Initialize model registry."""
@@ -239,7 +241,7 @@ class AMOSModelRegistry:
         framework: ModelFramework,
         task_type: str,
         owner: str = "system",
-        tags: List[str] = None,
+        tags: list[str] = None,
     ) -> RegisteredModel:
         """Register a new model in the registry."""
         model_id = f"model_{name.lower().replace(' ', '_')}"
@@ -267,7 +269,7 @@ class AMOSModelRegistry:
         version: str,
         description: str = "",
         source_experiment: str = None,
-        metrics: Dict[str, float] = None,
+        metrics: dict[str, float] = None,
         parent_version: str = None,
         created_by: str = "system",
     ) -> ModelVersion:
@@ -350,7 +352,7 @@ class AMOSModelRegistry:
 
     def list_models(
         self, framework: Optional[ModelFramework] = None, task_type: str = None, tag: str = None
-    ) -> List[RegisteredModel]:
+    ) -> list[RegisteredModel]:
         """List registered models with optional filtering."""
         results = []
 
@@ -365,7 +367,7 @@ class AMOSModelRegistry:
 
         return results
 
-    def compare_versions(self, model_id: str, version_a: str, version_b: str) -> Dict[str, Any]:
+    def compare_versions(self, model_id: str, version_a: str, version_b: str) -> dict[str, Any]:
         """Compare two model versions."""
         v_a = self.get_version(model_id, version_a)
         v_b = self.get_version(model_id, version_b)
@@ -426,7 +428,7 @@ class AMOSModelRegistry:
         n = deployment.inference_count
         deployment.avg_latency_ms = (deployment.avg_latency_ms * (n - 1) + latency_ms) / n
 
-    def get_deployment_stats(self, deployment_id: str) -> Dict[str, Any]:
+    def get_deployment_stats(self, deployment_id: str) -> dict[str, Any]:
         """Get deployment statistics."""
         if deployment_id not in self.deployments:
             return None
@@ -447,7 +449,7 @@ class AMOSModelRegistry:
             "endpoint_url": deployment.endpoint_url,
         }
 
-    def get_registry_summary(self) -> Dict[str, Any]:
+    def get_registry_summary(self) -> dict[str, Any]:
         """Get registry summary statistics."""
         total_versions = sum(len(m.versions) for m in self.models.values())
         production_models = sum(1 for m in self.models.values() if m.production_version)

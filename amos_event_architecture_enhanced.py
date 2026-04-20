@@ -15,21 +15,23 @@ Owner: Trang
 Version: 2.0.0
 """
 
+from __future__ import annotations
 
+import asyncio
 import json
 import time
 import uuid
-from typing import Any, Callable, Dict, List, Optional
-from dataclasses import dataclass, field, asdict
-from datetime import datetime
 from collections import defaultdict
+from collections.abc import Callable
+from dataclasses import asdict, dataclass, field
 from enum import Enum
-import asyncio
 from pathlib import Path
+from typing import Any, Optional
 
 
 class EventPattern(Enum):
     """Event-driven architecture patterns."""
+
     EVENT_NOTIFICATION = "notification"  # Lightweight signal
     EVENT_CARRIED_STATE = "state_transfer"  # Full state in event
     EVENT_SOURCING = "sourcing"  # Store all events
@@ -44,6 +46,7 @@ class DomainEvent:
     Carries complete state needed by consumers - no external lookups required.
     Improves resilience and reduces latency.
     """
+
     event_id: str
     event_type: str
     aggregate_id: str  # Entity this event relates to
@@ -52,18 +55,18 @@ class DomainEvent:
     version: int  # Event version for schema evolution
 
     # Event-Carried State Transfer: Full state included
-    payload: Dict[str, Any]  # Complete state needed by consumers
-    metadata: Dict[str, Any] = field(default_factory=dict)  # Context
+    payload: dict[str, Any]  # Complete state needed by consumers
+    metadata: dict[str, Any] = field(default_factory=dict)  # Context
 
     # Source tracking
     source_service: str = ""  # Which service emitted
     source_version: str = "1.0"
 
     # Tracing (integrates with observability system)
-    trace_id: str  = None
-    correlation_id: str  = None
+    trace_id: str = None
+    correlation_id: str = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Serialize to dictionary."""
         return asdict(self)
 
@@ -80,18 +83,19 @@ class Command:
     Commands represent intentions to change state.
     Separated from queries (reads).
     """
+
     command_id: str
     command_type: str
     aggregate_id: str
     aggregate_type: str
-    payload: Dict[str, Any]
+    payload: dict[str, Any]
     timestamp: float
 
     # Execution metadata
     requested_by: str = "system"
-    expected_version: int  = None  # Optimistic concurrency
+    expected_version: int = None  # Optimistic concurrency
 
-    def to_event(self, event_type: str, payload: Dict[str, Any]) -> DomainEvent:
+    def to_event(self, event_type: str, payload: dict[str, Any]) -> DomainEvent:
         """Convert command to event (after execution)."""
         return DomainEvent(
             event_id=str(uuid.uuid4())[:16],
@@ -102,13 +106,14 @@ class Command:
             version=1,
             payload=payload,
             metadata={"command_id": self.command_id},
-            correlation_id=self.command_id
+            correlation_id=self.command_id,
         )
 
 
 @dataclass
 class EventStoreEntry:
     """Entry in event store for Event Sourcing pattern."""
+
     sequence_number: int
     event: DomainEvent
     stored_at: float
@@ -131,7 +136,7 @@ class EventStore:
         self.storage_path.mkdir(parents=True, exist_ok=True)
 
         # In-memory storage (with persistence option)
-        self.streams: Dict[str, list[EventStoreEntry]] = defaultdict(list)
+        self.streams: dict[str, list[EventStoreEntry]] = defaultdict(list)
         self.global_sequence = 0
         self._lock = asyncio.Lock()
 
@@ -144,7 +149,7 @@ class EventStore:
                 sequence_number=self.global_sequence,
                 event=event,
                 stored_at=time.time(),
-                stream_id=event.aggregate_id
+                stream_id=event.aggregate_id,
             )
 
             # Add to stream
@@ -159,24 +164,25 @@ class EventStore:
         """Persist entry to disk."""
         stream_file = self.storage_path / f"{entry.stream_id}.jsonl"
         with open(stream_file, "a") as f:
-            f.write(json.dumps({
-                "seq": entry.sequence_number,
-                "event": entry.event.to_dict(),
-                "stored_at": entry.stored_at
-            }) + "\n")
+            f.write(
+                json.dumps(
+                    {
+                        "seq": entry.sequence_number,
+                        "event": entry.event.to_dict(),
+                        "stored_at": entry.stored_at,
+                    }
+                )
+                + "\n"
+            )
 
-    def get_stream(self, aggregate_id: str,
-                   from_version: int = 0) -> List[DomainEvent]:
+    def get_stream(self, aggregate_id: str, from_version: int = 0) -> list[DomainEvent]:
         """Get all events for an aggregate."""
         entries = self.streams.get(aggregate_id, [])
-        return [
-            e.event for e in entries
-            if e.event.version >= from_version
-        ]
+        return [e.event for e in entries if e.event.version >= from_version]
 
-    def get_all_events(self,
-                       event_types: List[str ] = None,
-                       since: float  = None) -> List[DomainEvent]:
+    def get_all_events(
+        self, event_types: list[str] = None, since: float = None
+    ) -> list[DomainEvent]:
         """Get all events (for replay/analysis)."""
         events = []
         for stream in self.streams.values():
@@ -189,9 +195,12 @@ class EventStore:
                 events.append(event)
         return sorted(events, key=lambda e: e.timestamp)
 
-    def replay_stream(self, aggregate_id: str,
-                      projector: Callable[[Any, DomainEvent], Any],
-                      initial_state: Any = None) -> Any:
+    def replay_stream(
+        self,
+        aggregate_id: str,
+        projector: Callable[[Any, DomainEvent], Any],
+        initial_state: Any = None,
+    ) -> Any:
         """
         Replay events to reconstruct state.
 
@@ -213,8 +222,8 @@ class CQRSView:
 
     def __init__(self, view_name: str):
         self.view_name = view_name
-        self.data: Dict[str, Any] = {}
-        self.indexes: Dict[str, dict[Any, set[str]]] = defaultdict(lambda: defaultdict(set))
+        self.data: dict[str, Any] = {}
+        self.indexes: dict[str, dict[Any, set[str]]] = defaultdict(lambda: defaultdict(set))
         self.last_update = 0.0
 
     def update(self, event: DomainEvent) -> None:
@@ -223,7 +232,7 @@ class CQRSView:
             "state": event.payload,
             "version": event.version,
             "last_event": event.event_type,
-            "updated_at": event.timestamp
+            "updated_at": event.timestamp,
         }
         self.last_update = time.time()
 
@@ -232,16 +241,16 @@ class CQRSView:
             if isinstance(value, (str, int, float, bool)):
                 self.indexes[key][value].add(event.aggregate_id)
 
-    def query_by_id(self, aggregate_id: str) -> Dict[str, Any ]:
+    def query_by_id(self, aggregate_id: str) -> dict[str, Any]:
         """Query by aggregate ID."""
         return self.data.get(aggregate_id)
 
-    def query_by_field(self, field: str, value: Any) -> List[dict[str, Any]]:
+    def query_by_field(self, field: str, value: Any) -> list[dict[str, Any]]:
         """Query by indexed field."""
         ids = self.indexes[field].get(value, set())
         return [self.data[id] for id in ids if id in self.data]
 
-    def get_all(self) -> List[dict[str, Any]]:
+    def get_all(self) -> list[dict[str, Any]]:
         """Get all entries."""
         return list(self.data.values())
 
@@ -259,18 +268,18 @@ class EnhancedEventBus:
 
     def __init__(self):
         # Publish/Subscribe
-        self.subscribers: Dict[str, list[Callable[[DomainEvent], Any]]] = defaultdict(list)
-        self.subscriber_names: Dict[str, str] = {}  # id -> name
+        self.subscribers: dict[str, list[Callable[[DomainEvent], Any]]] = defaultdict(list)
+        self.subscriber_names: dict[str, str] = {}  # id -> name
 
         # Event Sourcing
         self.event_store = EventStore()
 
         # CQRS Read Models
-        self.views: Dict[str, CQRSView] = {}
+        self.views: dict[str, CQRSView] = {}
 
         # Statistics
         self.events_published = 0
-        self.events_by_type: Dict[str, int] = defaultdict(int)
+        self.events_by_type: dict[str, int] = defaultdict(int)
 
         # Async processing
         self._event_queue: asyncio.Queue = asyncio.Queue()
@@ -286,9 +295,9 @@ class EnhancedEventBus:
 
         return view
 
-    def subscribe(self, subscriber_id: str,
-                  event_types: List[str],
-                  handler: Callable[[DomainEvent], Any]) -> None:
+    def subscribe(
+        self, subscriber_id: str, event_types: list[str], handler: Callable[[DomainEvent], Any]
+    ) -> None:
         """Subscribe to event types."""
         for event_type in event_types:
             self.subscribers[event_type].append(handler)
@@ -326,9 +335,14 @@ class EnhancedEventBus:
 
         return notified
 
-    def publish_sync(self, event_type: str, aggregate_id: str,
-                     aggregate_type: str, payload: Dict[str, Any],
-                     source: str = "system") -> DomainEvent:
+    def publish_sync(
+        self,
+        event_type: str,
+        aggregate_id: str,
+        aggregate_type: str,
+        payload: dict[str, Any],
+        source: str = "system",
+    ) -> DomainEvent:
         """Synchronous publish helper."""
         event = DomainEvent(
             event_id=str(uuid.uuid4())[:16],
@@ -338,7 +352,7 @@ class EnhancedEventBus:
             timestamp=time.time(),
             version=1,
             payload=payload,
-            source_service=source
+            source_service=source,
         )
 
         # Run async publish in sync context using modern pattern
@@ -348,10 +362,11 @@ class EnhancedEventBus:
             # If we get here, we're in an async context - use create_task
             # This requires the caller to handle the task
             import warnings
+
             warnings.warn(
                 "publish_sync called from async context. Use publish() directly.",
                 DeprecationWarning,
-                stacklevel=2
+                stacklevel=2,
             )
         except RuntimeError:
             # No running loop - safe to use asyncio.run()
@@ -370,8 +385,7 @@ class EnhancedEventBus:
         """
         # Create event from command
         event = command.to_event(
-            event_type=f"{command.aggregate_type}.{command.command_type}",
-            payload=command.payload
+            event_type=f"{command.aggregate_type}.{command.command_type}", payload=command.payload
         )
 
         # Publish (triggers storage and view updates)
@@ -380,7 +394,7 @@ class EnhancedEventBus:
             event.aggregate_id,
             event.aggregate_type,
             event.payload,
-            "command_handler"
+            "command_handler",
         )
 
         return event
@@ -389,30 +403,34 @@ class EnhancedEventBus:
         """Get CQRS read model."""
         return self.views.get(view_name)
 
-    def query_aggregate(self, aggregate_id: str) -> List[DomainEvent]:
+    def query_aggregate(self, aggregate_id: str) -> list[DomainEvent]:
         """Query all events for aggregate (CQRS/Event Sourcing)."""
         return self.event_store.get_stream(aggregate_id)
 
-    def replay_aggregate(self, aggregate_id: str,
-                        projector: Callable[[Any, DomainEvent], Any],
-                        initial_state: Any = None) -> Any:
+    def replay_aggregate(
+        self,
+        aggregate_id: str,
+        projector: Callable[[Any, DomainEvent], Any],
+        initial_state: Any = None,
+    ) -> Any:
         """Replay events to reconstruct aggregate state."""
         return self.event_store.replay_stream(aggregate_id, projector, initial_state)
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get bus statistics."""
         return {
             "events_published": self.events_published,
             "event_types": dict(self.events_by_type),
             "subscribers": len(self.subscriber_names),
             "views": list(self.views.keys()),
-            "streams": len(self.event_store.streams)
+            "streams": len(self.event_store.streams),
         }
 
 
 # AMOS-specific event factories
-def create_engine_event(engine_type: str, operation: str,
-                        result: Any, duration_ms: float) -> DomainEvent:
+def create_engine_event(
+    engine_type: str, operation: str, result: Any, duration_ms: float
+) -> DomainEvent:
     """Create event for engine execution."""
     return DomainEvent(
         event_id=str(uuid.uuid4())[:16],
@@ -426,14 +444,15 @@ def create_engine_event(engine_type: str, operation: str,
             "operation": operation,
             "result_summary": str(result)[:200],
             "duration_ms": duration_ms,
-            "success": True
+            "success": True,
         },
-        source_service=engine_type
+        source_service=engine_type,
     )
 
 
-def create_subsystem_event(subsystem: str, state_change: str,
-                           details: Dict[str, Any]) -> DomainEvent:
+def create_subsystem_event(
+    subsystem: str, state_change: str, details: dict[str, Any]
+) -> DomainEvent:
     """Create event for organism subsystem state change."""
     return DomainEvent(
         event_id=str(uuid.uuid4())[:16],
@@ -442,17 +461,12 @@ def create_subsystem_event(subsystem: str, state_change: str,
         aggregate_type="subsystem",
         timestamp=time.time(),
         version=1,
-        payload={
-            "subsystem": subsystem,
-            "state_change": state_change,
-            "details": details
-        },
-        source_service="organism"
+        payload={"subsystem": subsystem, "state_change": state_change, "details": details},
+        source_service="organism",
     )
 
 
-def create_task_event(task_id: str, status: str,
-                      metadata: Dict[str, Any]) -> DomainEvent:
+def create_task_event(task_id: str, status: str, metadata: dict[str, Any]) -> DomainEvent:
     """Create event for task lifecycle."""
     return DomainEvent(
         event_id=str(uuid.uuid4())[:16],
@@ -461,12 +475,8 @@ def create_task_event(task_id: str, status: str,
         aggregate_type="task",
         timestamp=time.time(),
         version=1,
-        payload={
-            "task_id": task_id,
-            "status": status,
-            **metadata
-        },
-        source_service="task_scheduler"
+        payload={"task_id": task_id, "status": status, **metadata},
+        source_service="task_scheduler",
     )
 
 
@@ -526,20 +536,23 @@ def demo_enhanced_architecture():
             "query": "market_analysis",
             "result": {"findings": 5, "confidence": 0.85},
             "duration_ms": 125.5,
-            "resources_used": {"cpu": 15, "memory": 32}
+            "resources_used": {"cpu": 15, "memory": 32},
         },
-        "economics_engine"
+        "economics_engine",
     )
     print(f"   ✓ Engine event published: {engine_event.event_id}")
 
     # Task events with full state
     task_id = f"task:{uuid.uuid4().hex[:8]}"
-    bus.publish_sync("task.created", task_id, "task",
-                    {"status": "created", "priority": 5}, "scheduler")
-    bus.publish_sync("task.started", task_id, "task",
-                    {"status": "running", "worker": "worker-1"}, "scheduler")
-    bus.publish_sync("task.completed", task_id, "task",
-                    {"status": "completed", "result": "success"}, "scheduler")
+    bus.publish_sync(
+        "task.created", task_id, "task", {"status": "created", "priority": 5}, "scheduler"
+    )
+    bus.publish_sync(
+        "task.started", task_id, "task", {"status": "running", "worker": "worker-1"}, "scheduler"
+    )
+    bus.publish_sync(
+        "task.completed", task_id, "task", {"status": "completed", "result": "success"}, "scheduler"
+    )
 
     # 4. Event Store (Event Sourcing)
     print("\n[4] Event Store (Event Sourcing Pattern)...")

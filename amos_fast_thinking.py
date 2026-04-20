@@ -13,7 +13,8 @@ import hashlib
 import json
 import time
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
+
 
 @dataclass
 class FastThinkingResult:
@@ -24,7 +25,8 @@ class FastThinkingResult:
     source: str  # cache, vector_search, pattern_match, fallback_to_slow
     latency_ms: float
     matched_pattern: Optional[str] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
+
 
 class FastThinkingEngine:
     """
@@ -39,11 +41,11 @@ class FastThinkingEngine:
 
     def __init__(self, latency_budget_ms: float = 100.0):
         self.latency_budget_ms = latency_budget_ms
-        self._l1_cache: Dict[str, FastThinkingResult] = {}
+        self._l1_cache: dict[str, FastThinkingResult] = {}
         self.cache_hits = 0
         self.cache_misses = 0
 
-    def _hash_query(self, query: str, context: Dict[str, Any]) -> str:
+    def _hash_query(self, query: str, context: dict[str, Any]) -> str:
         """Create deterministic hash for query + context."""
         key_data = f"{query}:{json.dumps(context, sort_keys=True)}"
         return hashlib.sha256(key_data.encode()).hexdigest()[:32]
@@ -120,7 +122,7 @@ class FastThinkingEngine:
         return None
 
     async def think_fast(
-        self, query: str, context: Optional[Dict[str, Any]] = None
+        self, query: str, context: Optional[dict[str, Any]] = None
     ) -> FastThinkingResult:
         """
         Execute fast thinking path.
@@ -186,7 +188,7 @@ class FastThinkingEngine:
         )
 
     async def _vector_search_path(
-        self, query: str, context: Dict[str, Any], start_time: float
+        self, query: str, context: dict[str, Any], start_time: float
     ) -> Optional[FastThinkingResult]:
         """
         Vector search path for pattern matching.
@@ -239,7 +241,7 @@ class FastThinkingEngine:
         # In production, this would do intelligent template filling
         return f"Based on similar queries, here's what I found:\n\n{pattern_content}"
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get engine statistics."""
         total = self.cache_hits + self.cache_misses
         hit_rate = self.cache_hits / total if total > 0 else 0.0
@@ -255,8 +257,10 @@ class FastThinkingEngine:
         """Clear L1 cache."""
         self._l1_cache.clear()
 
+
 # Global instance
 _fast_thinking_engine: Optional[FastThinkingEngine] = None
+
 
 def get_fast_thinking_engine() -> FastThinkingEngine:
     """Get or create global fast thinking engine."""
@@ -265,8 +269,9 @@ def get_fast_thinking_engine() -> FastThinkingEngine:
         _fast_thinking_engine = FastThinkingEngine()
     return _fast_thinking_engine
 
+
 # Convenience function
-async def think_fast(query: str, context: Optional[Dict[str, Any]] = None) -> FastThinkingResult:
+async def think_fast(query: str, context: Optional[dict[str, Any]] = None) -> FastThinkingResult:
     """Quick access to fast thinking."""
     engine = get_fast_thinking_engine()
     return await engine.think_fast(query, context)

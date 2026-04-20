@@ -51,7 +51,7 @@ class Evidence:
     fact: str
     strength: EvidenceStrength
     source: str  # Where this evidence came from
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -60,8 +60,8 @@ class ReasoningStep:
 
     step_number: int
     description: str
-    input_data: Dict[str, Any]
-    output_data: Dict[str, Any]
+    input_data: dict[str, Any]
+    output_data: dict[str, Any]
     rule_applied: str  # What rule/logic was applied
     confidence_delta: float  # How confidence changed
 
@@ -72,8 +72,8 @@ class ReasoningTrace:
 
     trace_id: str
     decision_type: str
-    start_state: Dict[str, Any]
-    final_state: Dict[str, Any]
+    start_state: dict[str, Any]
+    final_state: dict[str, Any]
     steps: list[ReasoningStep] = field(default_factory=list)
     total_confidence: float = 0.0
 
@@ -81,7 +81,7 @@ class ReasoningTrace:
         """Add a reasoning step."""
         self.steps.append(step)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "trace_id": self.trace_id,
@@ -108,11 +108,11 @@ class Explanation:
     explanation_type: ExplanationType
     target: str  # What is being explained
     natural_language: str  # Human-readable explanation
-    technical_details: Dict[str, Any] = field(default_factory=dict)
+    technical_details: dict[str, Any] = field(default_factory=dict)
     evidence: list[Evidence] = field(default_factory=list)
     confidence: float = 0.0
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "explanation_id": self.explanation_id,
@@ -139,8 +139,8 @@ class ExplanatoryEngine:
 
     def explain_decision(
         self,
-        decision: Dict[str, Any],
-        context: Dict[str, Any] = None,
+        decision: dict[str, Any],
+        context: dict[str, Any] = None,
     ) -> Explanation:
         """
         Generate natural language explanation for a decision.
@@ -187,7 +187,7 @@ class ExplanatoryEngine:
     def explain_confidence(
         self,
         score: float,
-        factors: Dict[str, Any],
+        factors: dict[str, Any],
     ) -> Explanation:
         """
         Explain why confidence is at a particular level.
@@ -247,8 +247,8 @@ Recommendation: {"Proceed with action" if score >= 0.75 else "Review before acti
 
     def trace_reasoning(
         self,
-        start_state: Dict[str, Any],
-        decision: Dict[str, Any],
+        start_state: dict[str, Any],
+        decision: dict[str, Any],
         steps_data: list[dict[str, Any]] = None,
     ) -> ReasoningTrace:
         """
@@ -440,7 +440,7 @@ Comparison:
         return explanation
 
     def _explain_governance_decision(
-        self, decision: Dict[str, Any], context: Dict[str, Any]
+        self, decision: dict[str, Any], context: dict[str, Any]
     ) -> str:
         """Explain a governance decision."""
         action = decision.get("action", "unknown")
@@ -461,7 +461,7 @@ The system evaluated multiple factors including:
 Based on this evaluation, the system decided to {action}.
 """.strip()
 
-    def _explain_prediction(self, decision: Dict[str, Any], context: Dict[str, Any]) -> str:
+    def _explain_prediction(self, decision: dict[str, Any], context: dict[str, Any]) -> str:
         """Explain a prediction."""
         pattern = decision.get("pattern", "unknown")
         confidence = decision.get("confidence", 0.5)
@@ -481,7 +481,7 @@ This prediction is based on:
 Recommended action: Review the affected components and consider preventive measures.
 """.strip()
 
-    def _explain_repair(self, decision: Dict[str, Any], context: Dict[str, Any]) -> str:
+    def _explain_repair(self, decision: dict[str, Any], context: dict[str, Any]) -> str:
         """Explain a repair decision."""
         pathology = decision.get("pathology_type", "unknown")
         suggestion = decision.get("suggestion", "No specific suggestion")
@@ -504,7 +504,7 @@ The system identified this repair based on:
 Apply this fix to resolve the {pathology} issue.
 """.strip()
 
-    def _explain_pathology(self, decision: Dict[str, Any], context: Dict[str, Any]) -> str:
+    def _explain_pathology(self, decision: dict[str, Any], context: dict[str, Any]) -> str:
         """Explain a pathology detection."""
         pathology = decision.get("pathology", "unknown")
         location = decision.get("location", "unknown location")
@@ -524,7 +524,7 @@ The system detected this issue through:
 This pathology indicates a potential architectural issue that should be addressed.
 """.strip()
 
-    def _explain_generic(self, decision: Dict[str, Any], context: Dict[str, Any]) -> str:
+    def _explain_generic(self, decision: dict[str, Any], context: dict[str, Any]) -> str:
         """Generic explanation for unknown decision types."""
         return f"""
 Decision: {decision.get("id", "unknown")}
@@ -535,7 +535,7 @@ Confidence: {decision.get("confidence", 0):.1%}
 This decision was made based on available evidence and system rules.
 """.strip()
 
-    def _gather_evidence(self, decision: Dict[str, Any], context: Dict[str, Any]) -> list[Evidence]:
+    def _gather_evidence(self, decision: dict[str, Any], context: dict[str, Any]) -> list[Evidence]:
         """Gather evidence supporting a decision."""
         evidence = []
 

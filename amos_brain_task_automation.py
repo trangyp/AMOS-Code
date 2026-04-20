@@ -11,11 +11,12 @@ import hashlib
 import json
 import re
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from pathlib import Path
-from typing import Any
+from datetime import UTC, datetime
+from typing import Any, Optional
 
-from amos_brain import BrainClient, get_brain, process_task
+UTC = UTC
+
+from amos_brain import BrainClient, get_brain
 from amos_brain.task_processor import BrainTaskProcessor, TaskResult
 
 
@@ -29,8 +30,8 @@ class AutomationStep:
     input_data: dict[str, Any]
     output_data: dict[str, Any] = field(default_factory=dict)
     status: str = "pending"  # pending, running, completed, failed
-    brain_guidance: TaskResult | None = None
-    error_message: str | None = None
+    brain_guidance: Optional[TaskResult] = None
+    error_message: Optional[str] = None
 
 
 @dataclass
@@ -43,9 +44,7 @@ class AutomationResult:
     final_output: str
     success: bool
     execution_time_ms: float
-    timestamp: str = field(
-        default_factory=lambda: datetime.now(timezone.utc).isoformat()
-    )
+    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
 
 class BrainTaskAutomator:
@@ -69,10 +68,8 @@ class BrainTaskAutomator:
     def _generate_task_id(self) -> str:
         """Generate unique task ID."""
         self._task_counter += 1
-        timestamp = datetime.now(timezone.utc).isoformat()
-        return hashlib.sha256(
-            f"{timestamp}-{self._task_counter}".encode()
-        ).hexdigest()[:16]
+        timestamp = datetime.now(UTC).isoformat()
+        return hashlib.sha256(f"{timestamp}-{self._task_counter}".encode()).hexdigest()[:16]
 
     def _plan_steps(self, request: str, context: dict[str, Any]) -> list[AutomationStep]:
         """Use brain to plan execution steps."""
@@ -115,14 +112,18 @@ Steps should be concrete and actionable."""
                 )
             )
 
-        return steps if steps else [
-            AutomationStep(
-                step_number=1,
-                description=request,
-                action_type="execute",
-                input_data={"original_request": request, **context},
-            )
-        ]
+        return (
+            steps
+            if steps
+            else [
+                AutomationStep(
+                    step_number=1,
+                    description=request,
+                    action_type="execute",
+                    input_data={"original_request": request, **context},
+                )
+            ]
+        )
 
     def _execute_step(self, step: AutomationStep) -> AutomationStep:
         """Execute a single automation step."""
@@ -166,7 +167,9 @@ Provide specific actions and expected output."""
         return {
             "analysis_complete": True,
             "findings": step.brain_guidance.output if step.brain_guidance else "",
-            "confidence": "high" if step.brain_guidance and step.brain_guidance.confidence == "high" else "medium",
+            "confidence": "high"
+            if step.brain_guidance and step.brain_guidance.confidence == "high"
+            else "medium",
         }
 
     def _execute_transform(self, step: AutomationStep) -> dict[str, Any]:
@@ -195,9 +198,7 @@ Provide specific actions and expected output."""
             "status": "success",
         }
 
-    def automate(
-        self, request: str, context: dict[str, Any] | None = None
-    ) -> AutomationResult:
+    def automate(self, request: str, context: dict[str, Optional[Any]] = None) -> AutomationResult:
         """Automate a complex task using brain-guided execution.
 
         Args:
@@ -277,7 +278,7 @@ Provide specific actions and expected output."""
 
 
 # Convenience function
-def automate_task(request: str, context: dict[str, Any] | None = None) -> AutomationResult:
+def automate_task(request: str, context: dict[str, Optional[Any]] = None) -> AutomationResult:
     """Quick task automation."""
     automator = BrainTaskAutomator()
     return automator.automate(request, context)
@@ -308,8 +309,10 @@ if __name__ == "__main__":
         print(f"    Status: {step.status}")
         print(f"    Type: {step.action_type}")
 
-    print(f"\\nFinal Output:")
-    print(result.final_output[:300] + "..." if len(result.final_output) > 300 else result.final_output)
+    print("\\nFinal Output:")
+    print(
+        result.final_output[:300] + "..." if len(result.final_output) > 300 else result.final_output
+    )
 
     print("\\n" + "=" * 70)
     print("Test complete")

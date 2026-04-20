@@ -60,7 +60,7 @@ import sys
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 sys.path.insert(0, str(Path(__file__).parent))
 
@@ -98,7 +98,7 @@ class AMOSHealthStatus:
     """Health check status for AMOS components."""
 
     status: str  # "healthy", "degraded", "unhealthy"
-    components: Dict[str, str] = field(default_factory=dict)
+    components: dict[str, str] = field(default_factory=dict)
     timestamp: float = field(default_factory=time.time)
     version: str = "2.3.0"
     uptime_seconds: float = 0.0
@@ -124,7 +124,7 @@ class AMOSObservability:
         self._logger = None
 
         # Health status tracking
-        self._component_health: Dict[str, str] = {}
+        self._component_health: dict[str, str] = {}
 
     def initialize(self) -> bool:
         """Initialize observability system."""

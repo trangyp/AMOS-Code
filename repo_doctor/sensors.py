@@ -33,7 +33,7 @@ class SensorResult:
 class ExternalSensor:
     """Base class for external tool sensors."""
 
-    def __init__(self, repo_path: str | Path):
+    def __init__(self, repo_path: Union[str, Path]):
         self.repo_path = Path(repo_path).resolve()
 
     def is_available(self) -> bool:
@@ -356,7 +356,7 @@ class BanditSensor(ExternalSensor):
     Checks for hardcoded passwords, SQL injection, unsafe eval, etc.
     """
 
-    def __init__(self, repo_path: str | Path):
+    def __init__(self, repo_path: Union[str, Path]):
         super().__init__(repo_path)
         self.tool_name = "bandit"
 
@@ -449,7 +449,7 @@ class SafetySensor(ExternalSensor):
     Uses comprehensive vulnerability database from Safety DB.
     """
 
-    def __init__(self, repo_path: str | Path):
+    def __init__(self, repo_path: Union[str, Path]):
         super().__init__(repo_path)
         self.tool_name = "safety"
 
@@ -549,7 +549,7 @@ class SafetySensor(ExternalSensor):
 class SensorSuite:
     """Runs all available external sensors and aggregates results."""
 
-    def __init__(self, repo_path: str | Path):
+    def __init__(self, repo_path: Union[str, Path]):
         self.repo_path = Path(repo_path).resolve()
         self.sensors: List[ExternalSensor] = [
             PipAuditSensor(self.repo_path),

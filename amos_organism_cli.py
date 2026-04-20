@@ -17,19 +17,16 @@ import sys
 import time
 from pathlib import Path
 
-# Add parent to path
-sys.path.insert(0, str(Path(__file__).parent))
-
 # Import organism components
 try:
-    from amos_organism_runner import AMOSOrganismRunner, OrganismConfig
+    from AMOS_ORGANISM_OS.amos_organism_runner import AMOSOrganismRunner, OrganismConfig
 
     RUNNER_AVAILABLE = True
 except ImportError:
     RUNNER_AVAILABLE = False
 
 try:
-    from amos_organism_integration import demo
+    from AMOS_ORGANISM_OS.amos_organism_integration import demo
 
     INTEGRATION_AVAILABLE = True
 except ImportError:

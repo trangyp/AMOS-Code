@@ -15,15 +15,17 @@ Creator: Trang Phan
 Version: 3.0.0
 """
 
+from __future__ import annotations
+
 import json
-import sys
 import uuid
 from collections.abc import Awaitable, Callable
 from contextlib import asynccontextmanager
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
+
+UTC = UTC
 
 import structlog
 from fastapi import FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect
@@ -57,17 +59,20 @@ structlog.configure(
 logger = structlog.get_logger("amos.api")
 
 # Import AMOS Brain - PERMANENT ACTIVATION
-_AMOS_ROOT = Path(__file__).parent.parent.resolve()
-sys.path.insert(0, str(_AMOS_ROOT / "clawspring" / "amos_brain"))
+# Import alias modules to set up paths
+import AMOS_ORGANISM_OS  # noqa: F401
+import clawspring.amos_brain  # noqa: F401
 
 try:
-    from amos_brain_working import think as brain_think
+    from clawspring.amos_brain.amos_brain_working import WorkingBrain
 
+    _brain_instance = WorkingBrain()
+    brain_think = _brain_instance.think
     _BRAIN_AVAILABLE = True
-except ImportError:
+except ImportError as e:
     brain_think = None
     _BRAIN_AVAILABLE = False
-    logger.warning("amos_brain_working not available, brain features disabled")
+    logger.warning(f"amos_brain_working not available: {e}, brain features disabled")
 
 # Import modular API routers
 from backend.api.agents import router as agents_router
@@ -388,7 +393,7 @@ class MemoryEntry(BaseModel):
     type: str  # episodic, semantic, procedural, working, long_term
     content: str
     importance: int
-    tags: List[str]
+    tags: list[str]
     timestamp: str
     access_count: int
 
@@ -421,14 +426,14 @@ class SystemStatus(BaseModel):
     confidence: float
     active_layers: int
     total_layers: int
-    components: Dict[str, str]
+    components: dict[str, str]
 
 
 class AGENTSFile(BaseModel):
     id: str
     path: str
     scope: str
-    sections: Dict[str, str]
+    sections: dict[str, str]
     last_modified: str
 
 
@@ -656,7 +661,7 @@ agents_files = [
 # WebSocket Connection Manager
 class ConnectionManager:
     def __init__(self):
-        self.active_connections: List[WebSocket] = []
+        self.active_connections: list[WebSocket] = []
 
     async def connect(self, websocket: WebSocket):
         await websocket.accept()
@@ -849,7 +854,7 @@ async def get_agent_tasks():
 
 
 @app.post("/api/agents/tasks")
-async def create_agent_task(task: Dict[str, Any]):
+async def create_agent_task(task: dict[str, Any]):
     """Create a new agent task"""
     new_task = {
         "id": f"agent-{len(agents) + 1}",
@@ -896,7 +901,7 @@ async def get_memory_entries(type: str = None):
 
 
 @app.post("/api/memory/entries")
-async def create_memory_entry(entry: Dict[str, Any]):
+async def create_memory_entry(entry: dict[str, Any]):
     """Create a new memory entry"""
     new_entry = {
         "id": f"mem-{len(memories) + 1}",
@@ -933,7 +938,7 @@ async def get_checkpoints():
 
 
 @app.post("/api/checkpoints")
-async def create_checkpoint(checkpoint: Dict[str, Any]):
+async def create_checkpoint(checkpoint: dict[str, Any]):
     """Create a new checkpoint"""
     new_checkpoint = {
         "id": f"cp-{len(checkpoints) + 1}",
@@ -1013,7 +1018,7 @@ async def get_agents_md_file(file_id: str):
 
 
 @app.put("/api/agents-md/files/{file_id}")
-async def update_agents_md_file(file_id: str, sections: Dict[str, str]):
+async def update_agents_md_file(file_id: str, sections: dict[str, str]):
     """Update AGENTS.md file sections"""
     file = next((f for f in agents_files if f["id"] == file_id), None)
     if not file:
@@ -1074,8 +1079,7 @@ async def get_system_metrics():
 # ============================================================================
 
 # Import AXIOM One
-_amos_root = Path(__file__).parent.parent.resolve()
-sys.path.insert(0, str(_amos_root))
+# Import alias module to set up paths
 
 try:
     from axiom_one import (

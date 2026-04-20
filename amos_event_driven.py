@@ -41,13 +41,15 @@ Author: AMOS Architecture Team
 Version: 19.0.0-EVENT-DRIVEN
 """
 
+from __future__ import annotations
+
 import asyncio
 import json
 import time
 import uuid
 from abc import ABC, abstractmethod
 from collections.abc import AsyncIterator, Callable
-from typing import Any, Dict, List, Optional, TypeVar
+from typing import Any, Optional, TypeVar
 
 try:
     import pydantic
@@ -93,7 +95,7 @@ if PYDANTIC_AVAILABLE:
         status: str  # success, failure, timeout
         result: float = None
         execution_time_ms: int
-        variables: Dict[str, float]
+        variables: dict[str, float]
         computed_at: str
 
     class BatchStartedEvent(BaseModel):
@@ -101,7 +103,7 @@ if PYDANTIC_AVAILABLE:
 
         metadata: EventMetadata
         batch_id: str
-        equation_ids: List[str]
+        equation_ids: list[str]
         total_count: int
         started_at: str
         initiated_by: str
@@ -136,12 +138,12 @@ if PYDANTIC_AVAILABLE:
         component: str  # api, database, cache, broker, compute_engine
         status: str  # healthy, degraded, unhealthy
         message: str
-        metrics: Dict[str, Any]
+        metrics: dict[str, Any]
 
 
 # Event type registry
 EventType = TypeVar("EventType")
-EVENT_REGISTRY: Dict[str, type] = {}
+EVENT_REGISTRY: dict[str, type] = {}
 
 if PYDANTIC_AVAILABLE:
     EVENT_REGISTRY = {
@@ -223,7 +225,7 @@ class EventPublisher:
     def __init__(self, broker_url: str) -> None:
         self.broker_url = broker_url
         self.broker: Optional[MessageBroker] = None
-        self._outbox: List[tuple[str, str]] = []
+        self._outbox: list[tuple[str, str]] = []
 
     async def connect(self) -> None:
         """Initialize broker connection."""
@@ -263,7 +265,7 @@ class EventPublisher:
             return 0
 
         sent = 0
-        remaining: List[tuple[str, str]] = []
+        remaining: list[tuple[str, str]] = []
 
         for channel, message in self._outbox:
             if await self.broker.publish(channel, message):
@@ -281,7 +283,7 @@ class EventSubscriber:
     def __init__(self, broker_url: str) -> None:
         self.broker_url = broker_url
         self.broker: Optional[MessageBroker] = None
-        self.handlers: Dict[str, list[Callable]] = {}
+        self.handlers: dict[str, list[Callable]] = {}
 
     async def connect(self) -> None:
         """Initialize broker connection."""
@@ -338,7 +340,7 @@ class EventStore:
 
     def __init__(self, storage_path: str = "./event_store") -> None:
         self.storage_path = storage_path
-        self._events: List[BaseModel] = []
+        self._events: list[BaseModel] = []
 
     async def append(self, event: BaseModel) -> None:
         """Append event to store."""
@@ -371,7 +373,7 @@ async def publish_equation_computed(
     equation_id: str,
     result: float,
     execution_time_ms: int,
-    variables: Dict[str, float],
+    variables: dict[str, float],
     status: str = "success",
 ) -> bool:
     """Publish equation computed event."""

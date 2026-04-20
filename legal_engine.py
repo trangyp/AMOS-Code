@@ -1,6 +1,6 @@
 """Legal Engine stub for compatibility."""
 
-from typing import Any, Dict, List
+from typing import Any
 
 
 class LegalRule:
@@ -16,13 +16,13 @@ class LegalEngine:
     """Engine for legal reasoning."""
 
     def __init__(self):
-        self.rules: List[LegalRule] = []
+        self.rules: list[LegalRule] = []
 
     def add_rule(self, rule: LegalRule) -> None:
         """Add legal rule."""
         self.rules.append(rule)
 
-    def evaluate(self, facts: Dict[str, Any]) -> List[LegalRule]:
+    def evaluate(self, facts: dict[str, Any]) -> list[LegalRule]:
         """Evaluate facts against rules."""
         return []
 

@@ -39,11 +39,11 @@ class InvariantResult:
     invariant_type: InvariantType
     passed: bool
     severity: str = "error"  # error, warning, info
-    details: List[str] = field(default_factory=list)
-    files_affected: List[str] = field(default_factory=list)
+    details: list[str] = field(default_factory=list)
+    files_affected: list[str] = field(default_factory=list)
     remediation: str = ""
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "invariant": self.invariant_type.value,
             "passed": self.passed,
@@ -61,7 +61,7 @@ class Invariant(ABC):
         self.inv_type = inv_type
 
     @abstractmethod
-    def check(self, repo_path: str, sensor_data: Dict[str, Any]) -> InvariantResult:
+    def check(self, repo_path: str, sensor_data: dict[str, Any]) -> InvariantResult:
         """Check if invariant holds. Must return pass/fail."""
         pass
 
@@ -90,7 +90,7 @@ class ParseInvariant(Invariant):
     def __init__(self):
         super().__init__(InvariantType.PARSE)
 
-    def check(self, repo_path: str, sensor_data: Dict[str, Any]) -> InvariantResult:
+    def check(self, repo_path: str, sensor_data: dict[str, Any]) -> InvariantResult:
         parse_errors = sensor_data.get("parse_errors", 0)
         error_files = sensor_data.get("parse_error_files", [])
 
@@ -110,7 +110,7 @@ class ImportInvariant(Invariant):
     def __init__(self):
         super().__init__(InvariantType.IMPORT)
 
-    def check(self, repo_path: str, sensor_data: Dict[str, Any]) -> InvariantResult:
+    def check(self, repo_path: str, sensor_data: dict[str, Any]) -> InvariantResult:
         unresolved = sensor_data.get("unresolved_imports", 0)
         details = sensor_data.get("unresolved_import_details", [])
 
@@ -130,7 +130,7 @@ class APIInvariant(Invariant):
     def __init__(self):
         super().__init__(InvariantType.API)
 
-    def check(self, repo_path: str, sensor_data: Dict[str, Any]) -> InvariantResult:
+    def check(self, repo_path: str, sensor_data: dict[str, Any]) -> InvariantResult:
         mismatches = sensor_data.get("signature_mismatches", 0)
         drift_details = sensor_data.get("api_drift_details", [])
 
@@ -150,7 +150,7 @@ class EntrypointInvariant(Invariant):
     def __init__(self):
         super().__init__(InvariantType.ENTRYPOINT)
 
-    def check(self, repo_path: str, sensor_data: Dict[str, Any]) -> InvariantResult:
+    def check(self, repo_path: str, sensor_data: dict[str, Any]) -> InvariantResult:
         missing = sensor_data.get("missing_entrypoints", 0)
         names = sensor_data.get("missing_entrypoint_names", [])
 
@@ -172,7 +172,7 @@ class PackagingInvariant(Invariant):
     def __init__(self):
         super().__init__(InvariantType.PACKAGING)
 
-    def check(self, repo_path: str, sensor_data: Dict[str, Any]) -> InvariantResult:
+    def check(self, repo_path: str, sensor_data: dict[str, Any]) -> InvariantResult:
         conflicts = sensor_data.get("packaging_conflicts", 0)
         metadata_issues = sensor_data.get("metadata_issues", [])
 
@@ -194,7 +194,7 @@ class TestInvariant(Invariant):
     def __init__(self):
         super().__init__(InvariantType.TESTS)
 
-    def check(self, repo_path: str, sensor_data: Dict[str, Any]) -> InvariantResult:
+    def check(self, repo_path: str, sensor_data: dict[str, Any]) -> InvariantResult:
         failures = sensor_data.get("test_failures", 0)
         total = sensor_data.get("total_tests", 1)
 
@@ -214,7 +214,7 @@ class SecurityInvariant(Invariant):
     def __init__(self):
         super().__init__(InvariantType.SECURITY)
 
-    def check(self, repo_path: str, sensor_data: Dict[str, Any]) -> InvariantResult:
+    def check(self, repo_path: str, sensor_data: dict[str, Any]) -> InvariantResult:
         critical = sensor_data.get("critical_findings", 0)
         high = sensor_data.get("high_findings", 0)
 
@@ -232,13 +232,13 @@ class InvariantPack:
     """Collection of invariants to check together."""
 
     def __init__(self):
-        self.invariants: List[Invariant] = []
+        self.invariants: list[Invariant] = []
 
     def add(self, invariant: Invariant) -> None:
         """Add an invariant to the pack."""
         self.invariants.append(invariant)
 
-    def check_all(self, repo_path: str, sensor_data: Dict[str, Any]) -> List[InvariantResult]:
+    def check_all(self, repo_path: str, sensor_data: dict[str, Any]) -> list[InvariantResult]:
         """Run all invariants and return results."""
         return [inv.check(repo_path, sensor_data) for inv in self.invariants]
 
@@ -252,7 +252,7 @@ class InvariantChecker:
     """Main invariant checking orchestrator."""
 
     def __init__(self):
-        self.packs: Dict[str, InvariantPack] = {}
+        self.packs: dict[str, InvariantPack] = {}
 
     def create_default_pack(self) -> InvariantPack:
         """Create the default hard invariant pack."""
@@ -267,7 +267,7 @@ class InvariantChecker:
         return pack
 
     def check_repo_valid(
-        self, repo_path: str, sensor_data: Dict[str, Any]
+        self, repo_path: str, sensor_data: dict[str, Any]
     ) -> tuple[bool, list[InvariantResult]]:
         """
         Check if repository is valid: RepoValid = ∧ I_n

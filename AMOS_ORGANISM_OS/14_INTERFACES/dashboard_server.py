@@ -11,12 +11,14 @@ Version: 1.0.0
 
 import json
 import sys
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 
 # Simple HTTP server for dashboard
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 
 class DashboardHandler(BaseHTTPRequestHandler):
@@ -39,7 +41,7 @@ class DashboardHandler(BaseHTTPRequestHandler):
         else:
             self._send_404()
 
-    def _send_json(self, data: Dict[str, Any]) -> None:
+    def _send_json(self, data: dict[str, Any]) -> None:
         """Send JSON response."""
         self.send_response(200)
         self.send_header("Content-Type", "application/json")
@@ -74,7 +76,7 @@ class DashboardHandler(BaseHTTPRequestHandler):
         data = self._collect_subsystem_data()
         self._send_json(data)
 
-    def _collect_organism_status(self) -> Dict[str, Any]:
+    def _collect_organism_status(self) -> dict[str, Any]:
         """Collect overall organism status."""
         return {
             "timestamp": datetime.now(UTC).isoformat() + "Z",
@@ -85,7 +87,7 @@ class DashboardHandler(BaseHTTPRequestHandler):
             "health_score": 99.8,
         }
 
-    def _collect_subsystem_data(self) -> Dict[str, Any]:
+    def _collect_subsystem_data(self) -> dict[str, Any]:
         """Collect data from all subsystems."""
         subsystems = []
 

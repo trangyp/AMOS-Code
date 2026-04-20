@@ -7,8 +7,9 @@ import sys
 import uuid
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 from pathlib import Path
 
 from fastapi import BackgroundTasks, FastAPI, HTTPException, WebSocket
@@ -742,7 +743,7 @@ async def run_repo_autopsy(repo_id: str, enable_brain: bool = True):
                             "severity": "high",
                             "category": "code_quality",
                             "title": "Bare except clause detected",
-                            "description": f"Line {i+1}: Bare except clause should use 'except Exception:'",
+                            "description": f"Line {i + 1}: Bare except clause should use 'except Exception:'",
                             "file_path": str(file_path.relative_to(repo_path)),
                             "line_number": i + 1,
                             "auto_fixable": False,
@@ -760,7 +761,7 @@ async def run_repo_autopsy(repo_id: str, enable_brain: bool = True):
                                 "severity": "medium",
                                 "category": "maintenance",
                                 "title": "Deprecated datetime.now(timezone.utc) usage",
-                                "description": f"Line {i+1}: Use datetime.now(timezone.utc) instead",
+                                "description": f"Line {i + 1}: Use datetime.now(timezone.utc) instead",
                                 "file_path": str(file_path.relative_to(repo_path)),
                                 "line_number": i + 1,
                                 "auto_fixable": True,

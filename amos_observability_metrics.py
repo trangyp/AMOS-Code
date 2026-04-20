@@ -6,9 +6,11 @@ Provides comprehensive observability for module activation, memory bridges,
 guardrails, and system health.
 """
 
+from __future__ import annotations
+
 import time
 from contextlib import contextmanager
-from typing import Any
+from typing import Any, Optional
 
 from fastapi import Response
 from prometheus_client import (

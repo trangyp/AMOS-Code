@@ -1,4 +1,6 @@
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
+
+from typing import Any, Optional
 
 """
 AMOS Cognitive Processing API
@@ -17,19 +19,15 @@ Creator: Trang Phan
 Version: 1.0.0
 """
 
-import sys
+
 import time
-from pathlib import Path
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
-# Ensure paths
-_AMOS_ROOT = Path(__file__).parent.parent.parent.resolve()
-sys.path.insert(0, str(_AMOS_ROOT))
-sys.path.insert(0, str(_AMOS_ROOT / "clawspring" / "amos_brain"))
-
-
+# Import alias modules to set up paths
+import clawspring  # noqa: F401
+import clawspring.amos_brain  # noqa: F401
 from amos_brain_working import think
 from amos_translation_layer import get_translation_layer
 
@@ -40,7 +38,7 @@ class CognitiveRequest(BaseModel):
     """Cognitive processing request."""
 
     input: str = Field(..., description="Raw natural language input")
-    context: Dict[str, Any] = Field(default_factory=dict, description="Processing context")
+    context: dict[str, Any] = Field(default_factory=dict, description="Processing context")
     priority: str = Field(default="MEDIUM", description="Task priority (LOW/MEDIUM/HIGH/CRITICAL)")
     enable_execution: bool = Field(default=False, description="Allow actual task execution")
 
@@ -77,7 +75,7 @@ class OrchestrationResult(BaseModel):
 
     task_id: Optional[str]
     domain: str
-    engines: List[str]
+    engines: list[str]
     execution_time_ms: float
     success: bool
     output: Optional[str] = None
@@ -223,7 +221,7 @@ async def cognitive_process(request: CognitiveRequest) -> CognitiveResponse:
 
 
 @router.post("/process-fast")
-async def cognitive_process_fast(request: CognitiveRequest) -> Dict[str, Any]:
+async def cognitive_process_fast(request: CognitiveRequest) -> dict[str, Any]:
     """
     Fast cognitive processing with dual-process brain.
 
@@ -272,7 +270,7 @@ async def cognitive_process_fast(request: CognitiveRequest) -> Dict[str, Any]:
 
 
 @router.get("/health")
-async def cognitive_health() -> Dict[str, Any]:
+async def cognitive_health() -> dict[str, Any]:
     """Check cognitive subsystem health."""
     health = {
         "translation_layer": False,

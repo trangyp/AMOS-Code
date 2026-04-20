@@ -14,9 +14,9 @@ from __future__ import annotations
 
 import time
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Optional
 
-from .canon_knowledge_engine import get_canon_knowledge_engine, CanonKnowledgeEntry
+from .canon_knowledge_engine import CanonKnowledgeEntry, get_canon_knowledge_engine
 
 
 @dataclass
@@ -68,8 +68,8 @@ class CanonReasoningEngine:
         self,
         problem: str,
         domain: str = "general",
-        options: Optional[list[str] ] = None,
-        criteria: Optional[list[str] ] = None,
+        options: list[Optional[str]] = None,
+        criteria: list[Optional[str]] = None,
     ) -> ReasoningResult:
         """Perform Canon-aware reasoning on a problem.
 
@@ -151,7 +151,7 @@ class CanonReasoningEngine:
         self,
         problem: str,
         domain: str,
-        options: Optional[list[str] ],
+        options: list[Optional[str]],
         canon_entries: list[CanonKnowledgeEntry],
     ) -> list[ReasoningOption]:
         """Generate or enrich decision options."""
@@ -240,7 +240,7 @@ class CanonReasoningEngine:
     def _evaluate_options(
         self,
         options: list[ReasoningOption],
-        criteria: Optional[list[str] ],
+        criteria: list[Optional[str]],
         canon_entries: list[CanonKnowledgeEntry],
     ) -> list[ReasoningOption]:
         """Evaluate options against criteria and Canon knowledge."""
@@ -306,7 +306,7 @@ def get_canon_reasoning_engine() -> CanonReasoningEngine:
 def canon_reason(
     problem: str,
     domain: str = "general",
-    options: Optional[list[str] ] = None,
+    options: list[Optional[str]] = None,
 ) -> ReasoningResult:
     """Convenience function for Canon-aware reasoning.
 

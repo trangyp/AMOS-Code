@@ -1,12 +1,15 @@
 """AMOS Unified Coding Engine - Cross-domain software analysis."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class CodingLayer(Enum):
     """Engine layers for coding analysis."""
+
     ARCHITECTURE = "architecture_layer"
     BACKEND = "backend_layer"
     MOBILE = "mobile_apps_layer"
@@ -20,6 +23,7 @@ class CodingLayer(Enum):
 
 class CodeQualityDimension(Enum):
     """Quality dimensions for code analysis."""
+
     READABILITY = "readability"
     MAINTAINABILITY = "maintainability"
     PERFORMANCE = "performance"
@@ -50,9 +54,9 @@ class ArchitectureLayerKernel:
     ]
 
     def __init__(self):
-        self.findings: List[CodeFinding] = []
+        self.findings: list[CodeFinding] = []
 
-    def analyze(self, code_description: str) -> List[CodeFinding]:
+    def analyze(self, code_description: str) -> list[CodeFinding]:
         """Analyze architecture aspects."""
         findings = []
         desc_lower = code_description.lower()
@@ -81,7 +85,7 @@ class ArchitectureLayerKernel:
         self.findings = findings
         return findings
 
-    def get_principles(self) -> List[str]:
+    def get_principles(self) -> list[str]:
         return self.PRINCIPLES
 
 
@@ -96,9 +100,9 @@ class BackendLayerKernel:
     ]
 
     def __init__(self):
-        self.findings: List[CodeFinding] = []
+        self.findings: list[CodeFinding] = []
 
-    def analyze(self, code_description: str) -> List[CodeFinding]:
+    def analyze(self, code_description: str) -> list[CodeFinding]:
         """Analyze backend aspects."""
         findings = []
         desc_lower = code_description.lower()
@@ -127,7 +131,7 @@ class BackendLayerKernel:
         self.findings = findings
         return findings
 
-    def get_principles(self) -> List[str]:
+    def get_principles(self) -> list[str]:
         return self.PRINCIPLES
 
 
@@ -142,9 +146,9 @@ class DatabaseLayerKernel:
     ]
 
     def __init__(self):
-        self.findings: List[CodeFinding] = []
+        self.findings: list[CodeFinding] = []
 
-    def analyze(self, code_description: str) -> List[CodeFinding]:
+    def analyze(self, code_description: str) -> list[CodeFinding]:
         """Analyze database aspects."""
         findings = []
         desc_lower = code_description.lower()
@@ -173,7 +177,7 @@ class DatabaseLayerKernel:
         self.findings = findings
         return findings
 
-    def get_principles(self) -> List[str]:
+    def get_principles(self) -> list[str]:
         return self.PRINCIPLES
 
 
@@ -188,9 +192,9 @@ class SecurityLayerKernel:
     ]
 
     def __init__(self):
-        self.findings: List[CodeFinding] = []
+        self.findings: list[CodeFinding] = []
 
-    def analyze(self, code_description: str) -> List[CodeFinding]:
+    def analyze(self, code_description: str) -> list[CodeFinding]:
         """Analyze security aspects."""
         findings = []
         desc_lower = code_description.lower()
@@ -215,7 +219,7 @@ class SecurityLayerKernel:
         self.findings = findings
         return findings
 
-    def get_principles(self) -> List[str]:
+    def get_principles(self) -> list[str]:
         return self.PRINCIPLES
 
 
@@ -231,12 +235,10 @@ class UnifiedCodingEngine:
         self.database_kernel = DatabaseLayerKernel()
         self.security_kernel = SecurityLayerKernel()
 
-    def analyze(
-        self, description: str, domains: Optional[List[str]] = None
-    ) -> Dict[str, Any]:
+    def analyze(self, description: str, domains: list[str | None] = None) -> dict[str, Any]:
         """Run unified coding analysis."""
         domains = domains or ["architecture", "backend", "database", "security"]
-        results: Dict[str, Any] = {}
+        results: dict[str, Any] = {}
         if "architecture" in domains:
             results["architecture"] = self._analyze_architecture(description)
         if "backend" in domains:
@@ -327,32 +329,34 @@ class UnifiedCodingEngine:
                         )
                 if "principles" in data:
                     lines.append(f"- **Principles**: {', '.join(data['principles'][:2])}...")
-        lines.extend([
-            "",
-            f"**Total Findings**: {total_findings}",
-            "",
-            "## Layers Available",
-            "- Architecture: Separation of concerns, SOLID principles",
-            "- Backend: Stateless design, async processing",
-            "- Database: Normalization, indexing, query optimization",
-            "- Security: Input validation, output encoding, least privilege",
-            "- Mobile, Web, Infra, AI/Automation, UX/UI, Documentation",
-            "",
-            "## Gaps and Limitations",
-            "- Static analysis only; no runtime execution",
-            "- Language-specific analysis not yet implemented",
-            "- Pattern detection is keyword-based",
-            "- Automated refactoring suggestions not yet available",
-            "",
-            "## Safety Disclaimer",
-            "Code analysis is advisory. Does not guarantee security or correctness. "
-            "Production code requires professional review and testing.",
-        ])
+        lines.extend(
+            [
+                "",
+                f"**Total Findings**: {total_findings}",
+                "",
+                "## Layers Available",
+                "- Architecture: Separation of concerns, SOLID principles",
+                "- Backend: Stateless design, async processing",
+                "- Database: Normalization, indexing, query optimization",
+                "- Security: Input validation, output encoding, least privilege",
+                "- Mobile, Web, Infra, AI/Automation, UX/UI, Documentation",
+                "",
+                "## Gaps and Limitations",
+                "- Static analysis only; no runtime execution",
+                "- Language-specific analysis not yet implemented",
+                "- Pattern detection is keyword-based",
+                "- Automated refactoring suggestions not yet available",
+                "",
+                "## Safety Disclaimer",
+                "Code analysis is advisory. Does not guarantee security or correctness. "
+                "Production code requires professional review and testing.",
+            ]
+        )
         return "\n".join(lines)
 
 
 # Singleton instance
-_unified_coding_engine: Optional[UnifiedCodingEngine] = None
+_unified_coding_engine: UnifiedCodingEngine | None = None
 
 
 def get_unified_coding_engine() -> UnifiedCodingEngine:

@@ -1,12 +1,15 @@
 """AMOS Species Interaction Engine - Human-facing interaction and safety."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class InteractionState(Enum):
     """Internal state layers for interaction."""
+
     SURFACE_TEXT = "L1_surface_text"
     EMOTIONAL = "L2_emotional_state"
     NERVOUS_SYSTEM = "L3_nervous_system_state"
@@ -18,6 +21,7 @@ class InteractionState(Enum):
 
 class PrimaryGoal(Enum):
     """Primary interaction goals."""
+
     EXPLAIN = "explain"
     SOLVE_TASK = "solve_task"
     STABILIZE = "stabilise_nervous_system"
@@ -30,6 +34,7 @@ class PrimaryGoal(Enum):
 
 class StrategyProfile(Enum):
     """Strategy profiles for responses."""
+
     DIRECT = "direct_structural_answer"
     TUTORIAL = "step_by_step_tutorial"
     BOUNDARY = "boundary_setting_with_explanation"
@@ -52,8 +57,8 @@ class HumanInteractionKernel:
     """Kernel for human-facing interaction."""
 
     def __init__(self):
-        self.state_history: List[dict] = []
-        self.interaction_log: List[dict] = []
+        self.state_history: list[dict] = []
+        self.interaction_log: list[dict] = []
 
     def update_state_layer(self, layer: InteractionState, value: dict) -> dict:
         """Update internal state layer."""
@@ -101,7 +106,7 @@ class HumanInteractionKernel:
             "requires_modification": violations > 0,
         }
 
-    def get_principles(self) -> List[str]:
+    def get_principles(self) -> list[str]:
         return [
             "Integrity: No contradiction between perception and action",
             "Stability: Predictable behaviour",
@@ -115,7 +120,7 @@ class MultimodalPerceptionKernel:
     """Kernel for multimodal perception primitives."""
 
     def __init__(self):
-        self.perception_states: List[PerceptionState] = []
+        self.perception_states: list[PerceptionState] = []
 
     def process_text(self, text: str) -> PerceptionState:
         """Process text input for perception primitives."""
@@ -157,7 +162,7 @@ class MultimodalPerceptionKernel:
             "engagement_index": latest.intensity,
         }
 
-    def get_principles(self) -> List[str]:
+    def get_principles(self) -> list[str]:
         return [
             "Intensity: Strength of sensation",
             "Valence: Pleasant vs unpleasant",
@@ -183,7 +188,7 @@ class UniverseStructureKernel:
     ]
 
     def __init__(self):
-        self.node_activations: Dict[str, float] = {node: 0.0 for node in self.TOP_LEVEL_NODES}
+        self.node_activations: dict[str, float] = dict.fromkeys(self.TOP_LEVEL_NODES, 0.0)
 
     def activate_node(self, node_name: str, strength: float = 1.0) -> dict:
         """Activate a structure tree node."""
@@ -192,7 +197,7 @@ class UniverseStructureKernel:
             return {"node": node_name, "activation": self.node_activations[node_name]}
         return {"error": f"Unknown node: {node_name}"}
 
-    def get_active_path(self) -> List[str]:
+    def get_active_path(self) -> list[str]:
         """Get currently active nodes sorted by activation."""
         sorted_nodes = sorted(
             self.node_activations.items(),
@@ -201,7 +206,7 @@ class UniverseStructureKernel:
         )
         return [node for node, activation in sorted_nodes if activation > 0.3]
 
-    def get_principles(self) -> List[str]:
+    def get_principles(self) -> list[str]:
         return [
             "Uniqueness: One parent per node",
             "MECE: Mutually exclusive, collectively exhaustive",
@@ -221,12 +226,10 @@ class SpeciesInteractionEngine:
         self.perception_kernel = MultimodalPerceptionKernel()
         self.structure_kernel = UniverseStructureKernel()
 
-    def analyze(
-        self, description: str, domains: Optional[List[str]] = None
-    ) -> Dict[str, Any]:
+    def analyze(self, description: str, domains: list[str | None] = None) -> dict[str, Any]:
         """Run species interaction analysis."""
         domains = domains or ["human_interaction", "perception", "structure"]
-        results: Dict[str, Any] = {}
+        results: dict[str, Any] = {}
         if "human_interaction" in domains:
             results["human_interaction"] = self._analyze_hie(description)
         if "perception" in domains:
@@ -315,27 +318,27 @@ class SpeciesInteractionEngine:
                     if key not in ("principles", "query", "global_summary"):
                         lines.append(f"- **{key}**: {value}")
                 if "principles" in data:
-                    lines.append(
-                        f"- **Principles**: {', '.join(data['principles'][:2])}..."
-                    )
-        lines.extend([
-            "",
-            "## Gaps and Limitations",
-            "- Audio, visual, and biosignal modalities not yet enabled",
-            "- Perception primitives are approximations",
-            "- Structure tree activation is keyword-based",
-            "- Complex multi-turn state tracking not implemented",
-            "",
-            "## Safety Disclaimer",
-            "Never induces panic or collapse deliberately. Does not use manipulation "
-            "or coercion. Marks uncertainty when present. Prefers nervous-system "
-            "safety over speed. Explains boundaries when refusing.",
-        ])
+                    lines.append(f"- **Principles**: {', '.join(data['principles'][:2])}...")
+        lines.extend(
+            [
+                "",
+                "## Gaps and Limitations",
+                "- Audio, visual, and biosignal modalities not yet enabled",
+                "- Perception primitives are approximations",
+                "- Structure tree activation is keyword-based",
+                "- Complex multi-turn state tracking not implemented",
+                "",
+                "## Safety Disclaimer",
+                "Never induces panic or collapse deliberately. Does not use manipulation "
+                "or coercion. Marks uncertainty when present. Prefers nervous-system "
+                "safety over speed. Explains boundaries when refusing.",
+            ]
+        )
         return "\n".join(lines)
 
 
 # Singleton instance
-_species_interaction_engine: Optional[SpeciesInteractionEngine] = None
+_species_interaction_engine: SpeciesInteractionEngine | None = None
 
 
 def get_species_interaction_engine() -> SpeciesInteractionEngine:

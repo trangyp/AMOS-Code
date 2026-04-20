@@ -16,11 +16,15 @@ Repos:
 - AMOS-SYSTEM (Python)
 """
 
+from __future__ import annotations
+
 import subprocess
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 @dataclass
@@ -65,7 +69,7 @@ class AMOSGitHubConnector:
     def __init__(self, base_path: str = "./github_repos"):
         self.base_path = Path(base_path)
         self.base_path.mkdir(exist_ok=True)
-        self.repos: Dict[str, GitHubRepo] = {}
+        self.repos: dict[str, GitHubRepo] = {}
         self._init_repos()
 
     def _init_repos(self) -> None:
@@ -74,7 +78,7 @@ class AMOSGitHubConnector:
             repo.local_path = self.base_path / repo.name
             self.repos[repo.name] = repo
 
-    def clone_all(self) -> Dict[str, bool]:
+    def clone_all(self) -> dict[str, bool]:
         """Clone all repositories."""
         results = {}
         for name, repo in self.repos.items():
@@ -124,7 +128,7 @@ class AMOSGitHubConnector:
         except Exception:
             return 0
 
-    def get_repo_stats(self) -> Dict[str, Any]:
+    def get_repo_stats(self) -> dict[str, Any]:
         """Get statistics for all repos."""
         return {
             name: {
@@ -139,7 +143,7 @@ class AMOSGitHubConnector:
             for name, repo in self.repos.items()
         }
 
-    def get_all_files(self, extension: str = ".py") -> List[Path]:
+    def get_all_files(self, extension: str = ".py") -> list[Path]:
         """Get all files with extension across all repos."""
         files = []
         for repo in self.repos.values():
@@ -147,15 +151,15 @@ class AMOSGitHubConnector:
                 files.extend(repo.local_path.rglob(f"*{extension}"))
         return files
 
-    def sync_all(self) -> Dict[str, bool]:
+    def sync_all(self) -> dict[str, bool]:
         """Sync all repositories."""
         return self.clone_all()
 
-    def get_all_repos(self) -> List[str]:
+    def get_all_repos(self) -> list[str]:
         """Get list of all repo names."""
         return list(self.repos.keys())
 
-    def discover_repos(self) -> List[str]:
+    def discover_repos(self) -> list[str]:
         """Discover available repos (returns configured repos)."""
         return self.get_all_repos()
 
@@ -173,13 +177,13 @@ def get_github_connector(base_path: str = "./github_repos") -> AMOSGitHubConnect
 
 
 # Convenience functions
-def connect_all_repos() -> Dict[str, bool]:
+def connect_all_repos() -> dict[str, bool]:
     """Connect and clone all trangyp repos."""
     connector = get_github_connector()
     return connector.clone_all()
 
 
-def get_repo_stats() -> Dict[str, Any]:
+def get_repo_stats() -> dict[str, Any]:
     """Get stats for all repos."""
     connector = get_github_connector()
     return connector.get_repo_stats()

@@ -32,13 +32,15 @@ Author: Trang Phan
 Version: 1.0.0
 """
 
+from __future__ import annotations
+
 import hashlib
 import subprocess
 import sys
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 sys.path.insert(0, str(Path(__file__).parent))
 
@@ -53,9 +55,9 @@ class EvolutionProposal:
     current_code: str
     proposed_code: str
     rationale: str
-    expected_improvements: List[str]
+    expected_improvements: list[str]
     risk_level: str  # low, medium, high
-    laws_checked: List[str] = field(default_factory=list)
+    laws_checked: list[str] = field(default_factory=list)
     status: str = "pending"  # pending, validated, approved, rejected, applied
     timestamp: float = field(default_factory=time.time)
 
@@ -72,7 +74,7 @@ class EvolutionResult:
     invariant_passed: bool
     tests_passed: bool
     error_message: str = ""
-    lessons_learned: List[str] = field(default_factory=list)
+    lessons_learned: list[str] = field(default_factory=list)
     timestamp: float = field(default_factory=time.time)
 
 
@@ -92,7 +94,7 @@ class CodeAnalyzer:
             "law_violations": "Fix code that may violate Global Laws",
         }
 
-    def analyze_file(self, file_path: Path) -> List[dict]:
+    def analyze_file(self, file_path: Path) -> list[dict]:
         """Analyze a single file for improvements."""
         issues = []
 
@@ -165,7 +167,7 @@ class CodeAnalyzer:
 
         return issues
 
-    def analyze_repository(self) -> Dict[str, list[dict]]:
+    def analyze_repository(self) -> dict[str, list[dict]]:
         """Analyze entire repository for improvements."""
         results = {}
 
@@ -221,7 +223,7 @@ class RefactoringAgent:
 
     def generate_proposal(
         self, file_path: str, issue: dict, neural_engine: Any = None
-    ) -> Optional[EvolutionProposal]:
+    ) -> EvolutionProposal | None:
         """Generate evolution proposal for an issue."""
         issue_type = issue["type"]
 
@@ -428,8 +430,8 @@ class AMOSSelfEvolutionEngine:
         self.refactor = RefactoringAgent()
         self.validator = ValidationAgent()
         self.integration = IntegrationAgent(repo_path)
-        self.proposals: List[EvolutionProposal] = []
-        self.results: List[EvolutionResult] = []
+        self.proposals: list[EvolutionProposal] = []
+        self.results: list[EvolutionResult] = []
 
         # Try to load AMOS systems
         self.amos_unified = None

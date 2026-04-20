@@ -8,9 +8,11 @@ Version: 1.0.0
 """
 
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class StandardType(Enum):
@@ -43,7 +45,7 @@ class Standard:
     standard_type: StandardType
     version: str
     description: str
-    requirements: List[str]
+    requirements: list[str]
     reference_url: str = None
     effective_date: datetime = None
 
@@ -57,7 +59,7 @@ class ComplianceRecord:
     assessed_at: datetime
     assessed_by: str
     notes: str
-    evidence: Dict[str, Any] = field(default_factory=dict)
+    evidence: dict[str, Any] = field(default_factory=dict)
     next_review_date: datetime = None
 
 
@@ -69,8 +71,8 @@ class StandardsRegistry:
     """
 
     def __init__(self):
-        self.standards: Dict[str, Standard] = {}
-        self.compliance_records: Dict[str, ComplianceRecord] = {}
+        self.standards: dict[str, Standard] = {}
+        self.compliance_records: dict[str, ComplianceRecord] = {}
         self._load_default_standards()
 
     def _load_default_standards(self):
@@ -118,7 +120,7 @@ class StandardsRegistry:
         status: ComplianceStatus,
         assessed_by: str,
         notes: str = "",
-        evidence: Dict[str, Any] = None,
+        evidence: dict[str, Any] = None,
     ) -> bool:
         """Record a compliance assessment."""
         if standard_id not in self.standards:
@@ -146,14 +148,14 @@ class StandardsRegistry:
         """Get a standard definition."""
         return self.standards.get(standard_id)
 
-    def list_standards(self, standard_type: Optional[StandardType] = None) -> List[Standard]:
+    def list_standards(self, standard_type: Optional[StandardType] = None) -> list[Standard]:
         """List all standards, optionally filtered by type."""
         standards = list(self.standards.values())
         if standard_type:
             standards = [s for s in standards if s.standard_type == standard_type]
         return standards
 
-    def get_compliance_summary(self) -> Dict[str, int]:
+    def get_compliance_summary(self) -> dict[str, int]:
         """Get summary of compliance status across all standards."""
         summary = {
             "total": len(self.standards),
@@ -183,7 +185,7 @@ class StandardsRegistry:
 
         return summary
 
-    def get_non_compliant_standards(self) -> List[Standard]:
+    def get_non_compliant_standards(self) -> list[Standard]:
         """Get all standards that are not fully compliant."""
         non_compliant = []
         for standard_id, record in self.compliance_records.items():

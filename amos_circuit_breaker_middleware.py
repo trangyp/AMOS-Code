@@ -46,12 +46,14 @@ Version: 1.0.0
 Phase: 14 Enhancement
 """
 
+from __future__ import annotations
+
 import functools
 import time
 from collections.abc import Callable, Coroutine
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Any, Dict, List, Optional, TypeVar
+from typing import Any, Optional, TypeVar
 
 # FastAPI imports
 try:
@@ -103,8 +105,8 @@ class CircuitBreakerConfig:
     recovery_timeout: float = 60.0
     half_open_max_calls: int = 3
     success_threshold: int = 2
-    excluded_paths: List[str] = field(default_factory=list)
-    excluded_methods: List[str] = field(default_factory=lambda: ["OPTIONS", "HEAD"])
+    excluded_paths: list[str] = field(default_factory=list)
+    excluded_methods: list[str] = field(default_factory=lambda: ["OPTIONS", "HEAD"])
 
 
 class CircuitBreaker:
@@ -186,7 +188,7 @@ class CircuitBreaker:
                 # Transition to open
                 self.state = CircuitBreakerState.OPEN
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get circuit breaker status."""
         return {
             "name": self.name,
@@ -217,7 +219,7 @@ class CircuitBreakerRegistry:
         if self._initialized:
             return
         self._initialized = True
-        self._breakers: Dict[str, CircuitBreaker] = {}
+        self._breakers: dict[str, CircuitBreaker] = {}
 
     def get_or_create(
         self, name: str, config: Optional[CircuitBreakerConfig] = None
@@ -231,7 +233,7 @@ class CircuitBreakerRegistry:
         """Get circuit breaker by name."""
         return self._breakers.get(name)
 
-    def get_all_status(self) -> List[dict[str, Any]]:
+    def get_all_status(self) -> list[dict[str, Any]]:
         """Get status of all circuit breakers."""
         return [breaker.get_status() for breaker in self._breakers.values()]
 
@@ -261,8 +263,8 @@ class CircuitBreakerMiddleware(BaseHTTPMiddleware):
         app: ASGIApp,
         failure_threshold: int = 5,
         recovery_timeout: float = 60.0,
-        excluded_paths: List[str] = None,
-        excluded_methods: List[str] = None,
+        excluded_paths: list[str] = None,
+        excluded_methods: list[str] = None,
     ):
         super().__init__(app)
         self.config = CircuitBreakerConfig(
@@ -417,7 +419,7 @@ def add_circuit_breaker_middleware(
     app: Any,
     failure_threshold: int = 5,
     recovery_timeout: float = 60.0,
-    excluded_paths: List[str] = None,
+    excluded_paths: list[str] = None,
 ) -> bool:
     """
     Add circuit breaker middleware to FastAPI application.

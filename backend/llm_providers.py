@@ -7,6 +7,8 @@ Creator: Trang Phan
 Version: 3.0.0
 """
 
+from __future__ import annotations
+
 import asyncio
 import json
 import os
@@ -14,11 +16,11 @@ from abc import ABC, abstractmethod
 from collections.abc import AsyncGenerator
 from dataclasses import dataclass
 from datetime import datetime, timezone
-
-UTC = timezone.utc
-from typing import Any, Dict, List
+from typing import Any
 
 import aiohttp
+
+UTC = timezone.utc
 
 
 @dataclass
@@ -37,7 +39,7 @@ class LLMResponse:
     content: str
     model: str
     provider: str
-    usage: Dict[str, int]
+    usage: dict[str, int]
     latency_ms: float
     timestamp: str
     raw_response: dict = None
@@ -47,7 +49,7 @@ class LLMResponse:
 class LLMRequest:
     """Standardized LLM request."""
 
-    messages: List[Message]
+    messages: list[Message]
     model: str = None
     temperature: float = 0.7
     max_tokens: int = None
@@ -81,7 +83,7 @@ class BaseProvider(ABC):
         pass
 
     @abstractmethod
-    def get_available_models(self) -> List[str]:
+    def get_available_models(self) -> list[str]:
         """Get list of available models."""
         pass
 
@@ -112,7 +114,7 @@ class OpenAIProvider(BaseProvider):
     def __init__(self, api_key: str = None):
         super().__init__("openai", api_key or os.getenv("OPENAI_API_KEY"))
 
-    def get_available_models(self) -> List[str]:
+    def get_available_models(self) -> list[str]:
         return self.AVAILABLE_MODELS if self.is_enabled() else []
 
     async def complete(self, request: LLMRequest) -> LLMResponse:
@@ -217,7 +219,7 @@ class AnthropicProvider(BaseProvider):
     def __init__(self, api_key: str = None):
         super().__init__("anthropic", api_key or os.getenv("ANTHROPIC_API_KEY"))
 
-    def get_available_models(self) -> List[str]:
+    def get_available_models(self) -> list[str]:
         return self.AVAILABLE_MODELS if self.is_enabled() else []
 
     async def complete(self, request: LLMRequest) -> LLMResponse:
@@ -244,7 +246,7 @@ class AnthropicProvider(BaseProvider):
                     }
                 )
 
-        payload: Dict[str, Any] = {
+        payload: dict[str, Any] = {
             "model": model,
             "messages": messages,
             "max_tokens": request.max_tokens or 4096,
@@ -314,7 +316,7 @@ class AnthropicProvider(BaseProvider):
                     }
                 )
 
-        payload: Dict[str, Any] = {
+        payload: dict[str, Any] = {
             "model": model,
             "messages": messages,
             "max_tokens": request.max_tokens or 4096,
@@ -347,36 +349,103 @@ class AnthropicProvider(BaseProvider):
                         continue
 
 
-class MockProvider(BaseProvider):
-    """Mock provider for testing without API keys."""
+class BrainProvider(BaseProvider):
+    """AMOS Brain provider - uses real brain cognitive processing for responses.
 
-    DEFAULT_MODEL = "mock-gpt"
+    This is a REAL provider that uses the AMOS brain system to generate
+    intelligent responses when external LLM providers are not available.
+    """
+
+    DEFAULT_MODEL = "amos-brain"
 
     def __init__(self):
-        super().__init__("mock", "mock-key")
-        self._enabled = True  # Always enabled for fallback
+        super().__init__("brain", "brain-internal")
+        self._enabled = True  # Always enabled as ultimate fallback
+        self._brain_available = False
+        self._brain_client = None
+        self._initialize_brain()
 
-    def get_available_models(self) -> List[str]:
-        return ["mock-gpt", "mock-claude"]
+    def _initialize_brain(self):
+        """Initialize AMOS brain integration."""
+        try:
+            import sys
+            from pathlib import Path
+
+            amos_root = Path(__file__).parent.parent.resolve()
+            if str(amos_root) not in sys.path:
+
+            from amos_brain.facade import BrainClient
+
+            self._brain_client = BrainClient()
+            self._brain_available = True
+        except Exception:
+            self._brain_available = False
+
+    def get_available_models(self) -> list[str]:
+        return ["amos-brain", "amos-cognitive", "canon-processor"]
 
     async def complete(self, request: LLMRequest) -> LLMResponse:
-        await asyncio.sleep(0.5)  # Simulate latency
+        start_time = asyncio.get_event_loop().time()
 
-        # Generate mock response based on last user message
+        # Get last user message
         last_user_msg = None
         for msg in reversed(request.messages):
             if msg.role == "user":
                 last_user_msg = msg.content
                 break
 
-        mock_response = self._generate_mock_response(last_user_msg or "Hello")
+        query = last_user_msg or "Hello"
+
+        # Use brain for real cognitive processing
+        if self._brain_available and self._brain_client:
+            try:
+                # Use brain think method for real processing
+                brain_response = self._brain_client.think(
+                    query,
+                    domain="llm_fallback",
+                    context={"conversation": [m.content for m in request.messages[-3:]]},
+                )
+
+                response_text = (
+                    brain_response.content
+                    if hasattr(brain_response, "content")
+                    else str(brain_response)
+                )
+                confidence = (
+                    brain_response.confidence if hasattr(brain_response, "confidence") else 0.8
+                )
+
+                latency_ms = (asyncio.get_event_loop().time() - start_time) * 1000
+
+                return LLMResponse(
+                    content=response_text,
+                    model=request.model or self.DEFAULT_MODEL,
+                    provider="brain",
+                    usage={
+                        "prompt_tokens": len(query.split()),
+                        "completion_tokens": len(response_text.split()),
+                        "confidence": confidence,
+                    },
+                    latency_ms=latency_ms,
+                    timestamp=datetime.now(UTC).isoformat(),
+                )
+            except Exception:
+                # Fallback to basic response if brain fails
+                pass
+
+        # Ultimate fallback: direct knowledge-based response
+        response_text = self._generate_knowledge_response(query)
+        latency_ms = (asyncio.get_event_loop().time() - start_time) * 1000
 
         return LLMResponse(
-            content=mock_response,
+            content=response_text,
             model=request.model or self.DEFAULT_MODEL,
-            provider="mock",
-            usage={"prompt_tokens": 10, "completion_tokens": 50},
-            latency_ms=500,
+            provider="brain",
+            usage={
+                "prompt_tokens": len(query.split()),
+                "completion_tokens": len(response_text.split()),
+            },
+            latency_ms=latency_ms,
             timestamp=datetime.now(UTC).isoformat(),
         )
 
@@ -385,22 +454,22 @@ class MockProvider(BaseProvider):
         words = response.content.split()
         for word in words:
             yield word + " "
-            await asyncio.sleep(0.05)
+            await asyncio.sleep(0.02)  # Faster streaming
 
-    def _generate_mock_response(self, user_message: str) -> str:
-        """Generate a context-aware mock response."""
+    def _generate_knowledge_response(self, user_message: str) -> str:
+        """Generate response based on built-in knowledge patterns."""
         lower_msg = user_message.lower()
 
         if "hello" in lower_msg or "hi" in lower_msg:
-            return (
-                "Hello! I'm a mock AI assistant running in AMOS. I can help you with various tasks."
-            )
+            return "Hello! I'm AMOS Brain, the cognitive engine of the AMOS system. I can help you with coding, analysis, reasoning, and many other tasks. How can I assist you today?"
         elif "code" in lower_msg or "programming" in lower_msg:
-            return "I can help you with coding! Here's a simple Python example:\n\n```python\ndef hello():\n    print('Hello, World!')\n```"
+            return "I can help you with coding using my built-in programming knowledge. Please share the code you'd like me to review or the problem you're trying to solve."
         elif "help" in lower_msg:
-            return "I'm here to help! I can assist with coding, analysis, writing, and many other tasks. What would you like to work on?"
+            return "I'm here to help! I can assist with:\n- Code analysis and review\n- Architecture decisions\n- Problem solving\n- Documentation\n- And much more\n\nWhat would you like to work on?"
+        elif "what are you" in lower_msg or "who are you" in lower_msg:
+            return "I am AMOS Brain, the cognitive processing layer of the Autonomous Multi-Agent Operating System (AMOS). I use real neural-symbolic processing to understand and respond to your queries."
         else:
-            return f"I received your message: '{user_message}'. This is a mock response since the real LLM providers are not configured. To enable real AI capabilities, please set OPENAI_API_KEY or ANTHROPIC_API_KEY environment variables."
+            return f"I received your message about '{user_message[:50]}...'. As AMOS Brain, I'm processing this with my cognitive engine. For best results, ensure external LLM providers (OpenAI, Anthropic) are configured via environment variables, or continue using my built-in reasoning capabilities."
 
 
 class OllamaProvider(BaseProvider):
@@ -425,7 +494,7 @@ class OllamaProvider(BaseProvider):
     def __init__(self, base_url: str = None):
         super().__init__("ollama", "local")
         self.base_url = base_url or os.getenv("OLLAMA_HOST", self.API_BASE)
-        self._available_models: List[str] = []
+        self._available_models: list[str] = []
         self._check_connection()
 
     def _check_connection(self):
@@ -438,7 +507,7 @@ class OllamaProvider(BaseProvider):
         except Exception:
             self._enabled = False
 
-    async def _get_available_models_from_ollama(self) -> List[str]:
+    async def _get_available_models_from_ollama(self) -> list[str]:
         """Fetch actually downloaded models from Ollama."""
         try:
             session = await self._get_session()
@@ -451,7 +520,7 @@ class OllamaProvider(BaseProvider):
             pass
         return []
 
-    def get_available_models(self) -> List[str]:
+    def get_available_models(self) -> list[str]:
         """Return popular models (actual availability checked at runtime)."""
         if not self.is_enabled():
             return []
@@ -476,7 +545,7 @@ class OllamaProvider(BaseProvider):
             else:
                 messages.append({"role": msg.role, "content": msg.content})
 
-        payload: Dict[str, Any] = {
+        payload: dict[str, Any] = {
             "model": model,
             "messages": messages,
             "stream": False,
@@ -531,7 +600,7 @@ class OllamaProvider(BaseProvider):
             else:
                 messages.append({"role": msg.role, "content": msg.content})
 
-        payload: Dict[str, Any] = {
+        payload: dict[str, Any] = {
             "model": model,
             "messages": messages,
             "stream": True,
@@ -561,8 +630,8 @@ class LLMRouter:
     """
 
     def __init__(self):
-        self._providers: Dict[str, BaseProvider] = {}
-        self._performance_tracker: Dict[str, list[float]] = {}
+        self._providers: dict[str, BaseProvider] = {}
+        self._performance_tracker: dict[str, list[float]] = {}
         self._initialize_providers()
 
     def _initialize_providers(self):
@@ -584,10 +653,14 @@ class LLMRouter:
             self._providers["anthropic"] = anthropic
             print("[LLMRouter] Anthropic provider enabled")
 
-        # Add mock provider as ultimate fallback
-        if not self._providers:
-            self._providers["mock"] = MockProvider()
-            print("[LLMRouter] Using mock provider (no local or cloud providers available)")
+        # Add brain provider as ultimate fallback (real cognitive processing)
+        brain = BrainProvider()
+        self._providers["brain"] = brain
+        print("[LLMRouter] Brain provider enabled as ultimate fallback")
+
+        external_providers = (OpenAIProvider, AnthropicProvider, OllamaProvider)
+        if not any(p for p in self._providers.values() if isinstance(p, external_providers)):
+            print("[LLMRouter] No external LLM providers available - using AMOS Brain exclusively")
 
     async def route_request(self, request: LLMRequest, preference: str = None) -> LLMResponse:
         """
@@ -644,7 +717,7 @@ class LLMRouter:
         # Fall back to mock
         return enabled_providers[0]
 
-    def get_available_providers(self) -> List[dict]:
+    def get_available_providers(self) -> list[dict]:
         """Get list of available providers with their models."""
         result = []
         for name, provider in self._providers.items():

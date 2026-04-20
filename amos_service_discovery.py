@@ -25,6 +25,8 @@ Owner: Trang
 Version: 8.0.0
 """
 
+from __future__ import annotations
+
 import random
 import threading
 import time
@@ -32,7 +34,7 @@ from collections import defaultdict
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class HealthStatus(Enum):
@@ -62,7 +64,7 @@ class ServiceEndpoint:
     port: int
     protocol: str = "http"
     path: str = "/"
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     @property
     def url(self) -> str:
@@ -109,9 +111,9 @@ class ServiceInstance:
     name: str
     endpoint: ServiceEndpoint
     version: str = "1.0.0"
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-    health_checks: List[HealthCheck] = field(default_factory=list)
+    tags: list[str] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
+    health_checks: list[HealthCheck] = field(default_factory=list)
 
     # Runtime state
     status: HealthStatus = HealthStatus.UNKNOWN
@@ -135,8 +137,8 @@ class ServiceDefinition:
 
     name: str
     description: str = ""
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    tags: list[str] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
     health_check: Optional[HealthCheck] = None
 
     # Load balancing strategy
@@ -150,10 +152,10 @@ class LoadBalancer:
 
     def __init__(self, strategy: str = "round_robin"):
         self.strategy = strategy
-        self._round_robin_counters: Dict[str, int] = defaultdict(int)
+        self._round_robin_counters: dict[str, int] = defaultdict(int)
 
     def select_instance(
-        self, service_name: str, instances: List[ServiceInstance]
+        self, service_name: str, instances: list[ServiceInstance]
     ) -> Optional[ServiceInstance]:
         """Select an instance based on strategy."""
         if not instances:
@@ -175,24 +177,24 @@ class LoadBalancer:
         else:
             return self._round_robin(service_name, healthy)
 
-    def _round_robin(self, service_name: str, instances: List[ServiceInstance]) -> ServiceInstance:
+    def _round_robin(self, service_name: str, instances: list[ServiceInstance]) -> ServiceInstance:
         """Round-robin selection."""
         counter = self._round_robin_counters[service_name]
         instance = instances[counter % len(instances)]
         self._round_robin_counters[service_name] = counter + 1
         return instance
 
-    def _random(self, instances: List[ServiceInstance]) -> ServiceInstance:
+    def _random(self, instances: list[ServiceInstance]) -> ServiceInstance:
         """Random selection."""
         return random.choice(instances)
 
-    def _least_connections(self, instances: List[ServiceInstance]) -> ServiceInstance:
+    def _least_connections(self, instances: list[ServiceInstance]) -> ServiceInstance:
         """Select instance with least connections."""
         # In real implementation, track active connections
         # For now, use weight as proxy
         return min(instances, key=lambda i: i.weight)
 
-    def _weighted(self, instances: List[ServiceInstance]) -> ServiceInstance:
+    def _weighted(self, instances: list[ServiceInstance]) -> ServiceInstance:
         """Weighted random selection."""
         total_weight = sum(i.weight for i in instances)
         if total_weight == 0:
@@ -217,18 +219,18 @@ class ServiceDiscoveryRegistry:
 
     def __init__(self):
         # Service catalog
-        self._services: Dict[str, ServiceDefinition] = {}
-        self._instances: Dict[str, list[ServiceInstance]] = defaultdict(list)
+        self._services: dict[str, ServiceDefinition] = {}
+        self._instances: dict[str, list[ServiceInstance]] = defaultdict(list)
 
         # Load balancers per service
-        self._load_balancers: Dict[str, LoadBalancer] = {}
+        self._load_balancers: dict[str, LoadBalancer] = {}
 
         # Health check threads
-        self._health_check_threads: Dict[str, threading.Thread] = {}
+        self._health_check_threads: dict[str, threading.Thread] = {}
         self._stop_health_checks: threading.Event = threading.Event()
 
         # Watchers for service changes
-        self._watchers: List[Callable[[str, str, ServiceInstance], None]] = []
+        self._watchers: list[Callable[[str, str, ServiceInstance], None]] = []
 
         # Lock for thread safety
         self._lock = threading.RLock()
@@ -293,7 +295,7 @@ class ServiceDiscoveryRegistry:
 
     def discover_instances(
         self, service_name: str, healthy_only: bool = True
-    ) -> List[ServiceInstance]:
+    ) -> list[ServiceInstance]:
         """Discover service instances."""
         with self._lock:
             instances = self._instances.get(service_name, [])
@@ -301,7 +303,7 @@ class ServiceDiscoveryRegistry:
                 return [i for i in instances if i.is_healthy()]
             return list(instances)
 
-    def resolve_service(self, service_name: str) -> Optional[ServiceEndpoint]:
+    def resolve_service(self, service_name: str) -> ServiceEndpoOptional[int]:
         """
         Resolve a service to an endpoint.
 
@@ -375,7 +377,7 @@ class ServiceDiscoveryRegistry:
 
         instance.last_check = now
 
-    def get_service_stats(self) -> Dict[str, Any]:
+    def get_service_stats(self) -> dict[str, Any]:
         """Get registry statistics."""
         with self._lock:
             total_services = len(self._services)
@@ -414,10 +416,10 @@ class ServiceDiscoveryClient:
     ):
         self.registry = registry
         self.discovery_mode = discovery_mode
-        self._local_cache: Dict[str, tuple[ServiceEndpoint, float]] = {}
+        self._local_cache: dict[str, tuple[ServiceEndpoint, float]] = {}
         self._cache_ttl = 30  # seconds
 
-    def discover(self, service_name: str, use_cache: bool = True) -> Optional[ServiceEndpoint]:
+    def discover(self, service_name: str, use_cache: bool = True) -> ServiceEndpoOptional[int]:
         """Discover a service endpoint."""
         # Check cache
         if use_cache and service_name in self._local_cache:
@@ -435,8 +437,8 @@ class ServiceDiscoveryClient:
         return endpoint
 
     def call_service(
-        self, service_name: str, method: str = "GET", path: str = "/", data: Optional[dict] = None
-    ) -> Optional[dict]:
+        self, service_name: str, method: str = "GET", path: str = "/", data: dict | None = None
+    ) -> dict | None:
         """
         Call a discovered service.
 
@@ -515,11 +517,11 @@ def demo_service_discovery():
         # Register 2-3 instances per service (simulating HA)
         for i in range(2):
             instance = ServiceInstance(
-                id=f"{name}-instance-{i+1}",
+                id=f"{name}-instance-{i + 1}",
                 name=name,
                 endpoint=ServiceEndpoint(host="localhost", port=port + i, protocol="http"),
                 version="1.0.0",
-                tags=["production", f"zone-{i+1}"],
+                tags=["production", f"zone-{i + 1}"],
                 health_checks=[service_def.health_check] if service_def.health_check else [],
             )
             # Simulate some unhealthy instances
@@ -552,7 +554,7 @@ def demo_service_discovery():
     for i in range(5):
         endpoint = client.discover(service_name, use_cache=False)
         if endpoint:
-            print(f"      Request {i+1}: {endpoint.host}:{endpoint.port}")
+            print(f"      Request {i + 1}: {endpoint.host}:{endpoint.port}")
 
     # 4. Health Check Status
     print("\n[4] Health Check Status")

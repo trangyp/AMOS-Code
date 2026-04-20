@@ -1,0 +1,111 @@
+# AMOS Policies: Invariant and Safety Rules
+# Defines what can be auto-applied vs requires approval
+
+policies:
+  auto_apply:
+    low_risk:
+      - pattern: "docs/*.md"
+        action: ["text_edit", "add", "remove"]
+        reason: "Documentation changes are safe"
+
+      - pattern: "tests/**/*.py"
+        action: ["add_test", "modify_test"]
+        constraints:
+          - "must_not_remove_existing_tests"
+          - "must_pass_before_apply"
+        reason: "Test additions are generally safe"
+
+      - pattern: "*.yaml"
+        action: ["update_config"]
+        constraints:
+          - "must_validate_schema"
+        reason: "Config changes with schema validation"
+
+      - pattern: "**/*_test.py"
+        action: ["*"]
+        reason: "All test file modifications allowed"
+
+  requires_approval:
+    medium_risk:
+      - pattern: "amos_brain/*.py"
+        action: ["modify_behavior", "change_signature"]
+        reason: "Core brain modifications affect system stability"
+        requires:
+          - "review_by:core_team"
+          - "integration_tests_pass"
+
+      - pattern: "backend/api/*.py"
+        action: ["modify_endpoint", "change_schema"]
+        reason: "API changes affect consumers"
+        requires:
+          - "backward_compatibility_check"
+          - "schema_validation"
+
+      - pattern: "**/auth*.py"
+        action: ["*"]
+        reason: "Authentication changes are security-critical"
+        requires:
+          - "security_review"
+          - "penetration_test"
+
+      - pattern: "amos_kernel/L*_*.py"
+        action: ["*"]
+        reason: "Kernel law changes affect entire system"
+        requires:
+          - "formal_verification"
+          - "architect_approval"
+
+  protected:
+    high_risk:
+      - pattern: "AMOS_ORGANISM_OS/00_ROOT/**"
+        action: ["none"]
+        reason: "Root orchestrator is system-critical"
+        requires:
+          - "architect_approval"
+          - "staged_rollout"
+
+      - pattern: "amos_kernel/L0_universal_law_kernel.py"
+        action: ["none"]
+        reason: "L0 Universal Law cannot be modified without formal proof"
+        requires:
+          - "mathematical_verification"
+          - "founder_approval"
+
+      - pattern: "*_secrets*"
+        action: ["none"]
+        reason: "Secret files are immutable via automation"
+        requires:
+          - "manual_only"
+
+      - pattern: ".amos/*.yaml"
+        action: ["none"]
+        reason: "AMOS control files require explicit human approval"
+        requires:
+          - "architect_approval"
+
+  invariants:
+    structural:
+      - "no_bare_except_clauses"
+      - "no_datetime_utcnow"
+      - "no_deprecated_typing"
+      - "imports_must_resolve"
+
+    semantic:
+      - "no_duplicate_ssot"
+      - "no_circular_imports"
+      - "public_apis_must_be_typed"
+
+    behavioral:
+      - "tests_must_pass"
+      - "typecheck_must_pass"
+      - "lint_must_pass"
+
+    architectural:
+      - "kernel_cannot_import_upper"
+      - "layers_must_respect_boundaries"
+      - "generated_files_must_not_be_edited"
+
+  thresholds:
+    coverage_minimum: 80.0
+    complexity_maximum: 15
+    line_length: 120

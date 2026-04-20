@@ -11,9 +11,11 @@ Version: 1.0.0
 
 import json
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 
 @dataclass
@@ -53,7 +55,7 @@ class LifeGoal:
     title: str
     category: str  # career, health, learning, relationships
     deadline: str = None
-    milestones: List[dict[str, Any]] = field(default_factory=list)
+    milestones: list[dict[str, Any]] = field(default_factory=list)
     progress: float = 0.0
     status: str = "active"  # active, completed, paused
 
@@ -83,10 +85,10 @@ class LifeEngine:
         self.data_dir = self.life_dir / "data"
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
-        self.routines: List[Routine] = []
-        self.habits: List[Habit] = []
-        self.goals: List[LifeGoal] = []
-        self.day_summaries: List[DaySummary] = []
+        self.routines: list[Routine] = []
+        self.habits: list[Habit] = []
+        self.goals: list[LifeGoal] = []
+        self.day_summaries: list[DaySummary] = []
 
         self._load_state()
         self._setup_defaults()
@@ -277,7 +279,7 @@ class LifeEngine:
                 return True
         return False
 
-    def get_today_schedule(self) -> List[dict[str, Any]]:
+    def get_today_schedule(self) -> list[dict[str, Any]]:
         """Get today's schedule with routines."""
         today = datetime.now(UTC).strftime("%Y-%m-%d")
 
@@ -297,7 +299,7 @@ class LifeEngine:
 
         return sorted(schedule, key=lambda x: x["time"])
 
-    def get_habit_stats(self) -> Dict[str, Any]:
+    def get_habit_stats(self) -> dict[str, Any]:
         """Get habit tracking statistics."""
         total_habits = len(self.habits)
         if total_habits == 0:
@@ -314,7 +316,7 @@ class LifeEngine:
             "total_completions_all": sum(h.total_completions for h in self.habits),
         }
 
-    def calculate_life_balance(self) -> Dict[str, float]:
+    def calculate_life_balance(self) -> dict[str, float]:
         """Calculate life balance across categories."""
         categories = ["health", "work", "learning", "rest", "relationships"]
         balance = dict.fromkeys(categories, 5.0)  # Default middle score
@@ -339,7 +341,7 @@ class LifeEngine:
         print(f"[LIFE] New goal: {title}")
         return goal
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get life engine status."""
         today_str = datetime.now(UTC).strftime("%Y-%m-%d")
         # Count completed routines today

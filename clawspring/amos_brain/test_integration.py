@@ -1,10 +1,8 @@
 """AMOS Brain Integration Test - Full cognitive pipeline validation."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
-# Add parent to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent))
+import sys
 
 from audit_exporter import export_audit
 from cognitive_audit import get_audit_trail, record_cognitive_decision

@@ -15,10 +15,11 @@ import importlib
 import json
 import logging
 import sys
-from datetime import datetime
+from datetime import UTC, datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional, dict
 
+UTC = UTC
 # Setup logging
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s | %(name)s | %(levelname)s | %(message)s"
@@ -31,9 +32,9 @@ class AMOSOrganism:
 
     def __init__(self, organism_root: Optional[Path] = None):
         self.root = organism_root or Path(__file__).parent
-        self.state: Dict[str, Any] = {
+        self.state: dict[str, Any] = {
             "status": "initializing",
-            "boot_time": datetime.now(UTC).isoformat(),
+            "boot_time": datetime.now(timezone.utc).isoformat(),
             "active_subsystems": [],
             "cycle_count": 0,
         }
@@ -54,7 +55,7 @@ class AMOSOrganism:
         self._memory = None
         self._interfaces = None
         self._engine_activation = None
-        self._subsystems: Dict[str, Any] = {}
+        self._subsystems: dict[str, Any] = {}
 
         logger.info(f"AMOS Organism initializing at {self.root}")
         self._bootstrap()
@@ -97,12 +98,6 @@ class AMOSOrganism:
         try:
             brain_path = self.root / "01_BRAIN"
 
-            # Add to path and import directly
-            if str(brain_path) not in sys.path:
-                sys.path.insert(0, str(brain_path))
-            if str(self.root) not in sys.path:
-                sys.path.insert(0, str(self.root))
-
             # Clear any cached brain_kernel module
             if "brain_kernel" in sys.modules:
                 del sys.modules["brain_kernel"]
@@ -123,10 +118,6 @@ class AMOSOrganism:
         try:
             senses_path = self.root / "02_SENSES"
 
-            # Add to path and import directly
-            if str(senses_path) not in sys.path:
-                sys.path.insert(0, str(senses_path))
-
             # Clear any cached module
             if "senses_kernel" in sys.modules:
                 del sys.modules["senses_kernel"]
@@ -146,10 +137,6 @@ class AMOSOrganism:
         """Initialize the SKELETON subsystem."""
         try:
             skeleton_path = self.root / "05_SKELETON"
-
-            # Add to path and import directly
-            if str(skeleton_path) not in sys.path:
-                sys.path.insert(0, str(skeleton_path))
 
             # Clear any cached module
             if "skeleton_kernel" in sys.modules:
@@ -180,10 +167,6 @@ class AMOSOrganism:
         try:
             immune_path = self.root / "03_IMMUNE"
 
-            # Add to path and import directly
-            if str(immune_path) not in sys.path:
-                sys.path.insert(0, str(immune_path))
-
             # Clear any cached module
             if "immune_kernel" in sys.modules:
                 del sys.modules["immune_kernel"]
@@ -204,10 +187,6 @@ class AMOSOrganism:
         """Initialize the BLOOD subsystem."""
         try:
             blood_path = self.root / "04_BLOOD"
-
-            # Add to path and import directly
-            if str(blood_path) not in sys.path:
-                sys.path.insert(0, str(blood_path))
 
             # Clear any cached module
             if "blood_kernel" in sys.modules:
@@ -232,10 +211,6 @@ class AMOSOrganism:
         """Initialize the MUSCLE subsystem."""
         try:
             muscle_path = self.root / "06_MUSCLE"
-
-            # Add to path and import directly
-            if str(muscle_path) not in sys.path:
-                sys.path.insert(0, str(muscle_path))
 
             # Clear any cached module
             if "muscle_kernel" in sys.modules:
@@ -262,10 +237,6 @@ class AMOSOrganism:
         try:
             metabolism_path = self.root / "07_METABOLISM"
 
-            # Add to path and import directly
-            if str(metabolism_path) not in sys.path:
-                sys.path.insert(0, str(metabolism_path))
-
             # Clear any cached module
             if "metabolism_kernel" in sys.modules:
                 del sys.modules["metabolism_kernel"]
@@ -290,10 +261,6 @@ class AMOSOrganism:
         try:
             world_path = self.root / "08_WORLD_MODEL"
 
-            # Add to path and import directly
-            if str(world_path) not in sys.path:
-                sys.path.insert(0, str(world_path))
-
             # Clear any cached module
             if "world_model_kernel" in sys.modules:
                 del sys.modules["world_model_kernel"]
@@ -314,10 +281,6 @@ class AMOSOrganism:
         """Initialize the QUANTUM_LAYER subsystem."""
         try:
             quantum_path = self.root / "09_QUANTUM_LAYER"
-
-            # Add to path and import directly
-            if str(quantum_path) not in sys.path:
-                sys.path.insert(0, str(quantum_path))
 
             # Clear any cached module
             if "quantum_layer_kernel" in sys.modules:
@@ -340,10 +303,6 @@ class AMOSOrganism:
         try:
             learning_path = self.root / "10_LEARNING"
 
-            # Add to path and import directly
-            if str(learning_path) not in sys.path:
-                sys.path.insert(0, str(learning_path))
-
             # Clear any cached module
             if "learning_kernel" in sys.modules:
                 del sys.modules["learning_kernel"]
@@ -364,10 +323,6 @@ class AMOSOrganism:
         """Initialize the CANON_INTEGRATION subsystem."""
         try:
             canon_path = self.root / "11_CANON_INTEGRATION"
-
-            # Add to path and import directly
-            if str(canon_path) not in sys.path:
-                sys.path.insert(0, str(canon_path))
 
             # Clear any cached module
             if "canon_integration_kernel" in sys.modules:
@@ -390,10 +345,6 @@ class AMOSOrganism:
         try:
             ethics_path = self.root / "12_ETHICS_VALIDATION"
 
-            # Add to path and import directly
-            if str(ethics_path) not in sys.path:
-                sys.path.insert(0, str(ethics_path))
-
             # Clear any cached module
             if "ethics_validation_kernel" in sys.modules:
                 del sys.modules["ethics_validation_kernel"]
@@ -414,10 +365,6 @@ class AMOSOrganism:
         """Initialize the MEMORY_ARCHIVAL subsystem."""
         try:
             memory_path = self.root / "13_MEMORY_ARCHIVAL"
-
-            # Add to path and import directly
-            if str(memory_path) not in sys.path:
-                sys.path.insert(0, str(memory_path))
 
             # Clear any cached module
             if "memory_archival_kernel" in sys.modules:
@@ -440,10 +387,6 @@ class AMOSOrganism:
         try:
             interfaces_path = self.root / "14_INTERFACES"
 
-            # Add to path and import directly
-            if str(interfaces_path) not in sys.path:
-                sys.path.insert(0, str(interfaces_path))
-
             # Clear any cached module
             if "interface_layer_kernel" in sys.modules:
                 del sys.modules["interface_layer_kernel"]
@@ -464,10 +407,6 @@ class AMOSOrganism:
         """Initialize the ENGINE_ACTIVATION subsystem."""
         try:
             activation_path = self.root / "15_ENGINE_ACTIVATION"
-
-            # Add to path and import directly
-            if str(activation_path) not in sys.path:
-                sys.path.insert(0, str(activation_path))
 
             # Clear any cached module
             if "engine_activation_kernel" in sys.modules:
@@ -497,7 +436,7 @@ class AMOSOrganism:
         except Exception as e:
             logger.error(f"Failed to initialize ENGINE_ACTIVATION: {e}")
 
-    def perceive(self) -> Dict[str, Any]:
+    def perceive(self) -> dict[str, Any]:
         """Run the SENSES subsystem to gather environmental data."""
         if self._senses is None:
             return {"error": "SENSES not initialized"}
@@ -506,7 +445,7 @@ class AMOSOrganism:
         logger.info(f"Perception complete: {perception.get('buffered_inputs', 0)} buffered inputs")
         return perception
 
-    def think(self, input_data: Dict[str, Any], mode: str = "exploratory") -> Dict[str, Any]:
+    def think(self, input_data: dict[str, Any], mode: str = "exploratory") -> dict[str, Any]:
         """Run the BRAIN subsystem to process input."""
         if self._brain is None:
             return {"error": "BRAIN not initialized"}
@@ -536,26 +475,26 @@ class AMOSOrganism:
         logger.info(f"Thinking complete: thread {result.get('thread_id', 'unknown')}")
         return result
 
-    def act(self, decision: Dict[str, Any]) -> Dict[str, Any]:
+    def act(self, decision: dict[str, Any]) -> dict[str, Any]:
         """Execute actions (MUSCLE subsystem placeholder)."""
         # TODO: Implement full MUSCLE subsystem
         action_result = {
             "status": "logged_only",
             "action": decision.get("action", "none"),
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "note": "Full MUSCLE subsystem not yet implemented",
         }
         logger.info(f"Action logged: {action_result['action']}")
         return action_result
 
-    def run_cycle(self, goal: str = None) -> Dict[str, Any]:
+    def run_cycle(self, goal: str = None) -> dict[str, Any]:
         """Run one full organism cycle through the primary loop.
 
         BRAIN -> SENSES -> SKELETON -> WORLD_MODEL -> QUANTUM_LAYER -> MUSCLE -> METABOLISM -> BRAIN
         """
         logger.info(f"=== Starting Organism Cycle {self.state['cycle_count'] + 1} ===")
 
-        cycle_start = datetime.now(UTC).isoformat()
+        cycle_start = datetime.now(timezone.utc).isoformat()
 
         # 1. PERCEIVE (SENSES)
         perception = self.perceive()
@@ -600,7 +539,7 @@ class AMOSOrganism:
             "state_summary": self.get_state_summary(),
         }
 
-    def get_state_summary(self) -> Dict[str, Any]:
+    def get_state_summary(self) -> dict[str, Any]:
         """Get a summary of current organism state."""
         return {
             "status": self.state["status"],

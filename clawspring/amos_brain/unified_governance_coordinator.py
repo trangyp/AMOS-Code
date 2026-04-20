@@ -38,6 +38,7 @@ Owner: Trang Phan
 Version: 1.0.0
 """
 
+from __future__ import annotations
 
 import json
 import time
@@ -45,7 +46,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 # Import all engines
 try:
@@ -141,8 +142,8 @@ class CycleResult:
 
     # Phase results
     detection_report: dict = None
-    predictions: List[dict] = field(default_factory=list)
-    alerts: List[dict] = field(default_factory=list)
+    predictions: list[dict] = field(default_factory=list)
+    alerts: list[dict] = field(default_factory=list)
     remediation_plan: dict = None
 
     # Outcome
@@ -159,8 +160,7 @@ class CycleResult:
 
 
 class UnifiedGovernanceCoordinator:
-    """
-    Master coordinator for AMOS autonomous governance.
+    """Master coordinator for AMOS autonomous governance.
 
     Manages the complete cycle:
     1. Detection - Run unified detection to get current state
@@ -176,7 +176,7 @@ class UnifiedGovernanceCoordinator:
     - Integration with audit system
     """
 
-    def __init__(self, config: Dict[str, Any] = None):
+    def __init__(self, config: dict[str, Any] = None):
         self.config = config or {}
 
         # Configuration
@@ -186,19 +186,19 @@ class UnifiedGovernanceCoordinator:
         self.preventive_action = self.config.get("preventive_action", True)
 
         # Engines
-        self._detection_engine: Optional[UnifiedDetectionEngine] = None
-        self._prediction_engine: Optional[PredictiveIntelligenceEngine] = None
-        self._remediation_engine: Optional[AutoRemediationEngine] = None
-        self._audit_exporter: Optional[AuditExporter] = None
+        self._detection_engine: UnifiedDetectionEngine | None = None
+        self._prediction_engine: PredictiveIntelligenceEngine | None = None
+        self._remediation_engine: AutoRemediationEngine | None = None
+        self._audit_exporter: AuditExporter | None = None
 
         # Initialize engines if available
         self._init_engines()
 
         # State
         self.current_phase = SystemPhase.IDLE
-        self._cycles: List[CycleResult] = []
+        self._cycles: list[CycleResult] = []
         self._running = False
-        self._last_cycle: Optional[CycleResult] = None
+        self._last_cycle: CycleResult | None = None
 
     def _init_engines(self) -> None:
         """Initialize all sub-engines."""
@@ -234,11 +234,11 @@ class UnifiedGovernanceCoordinator:
     # ==========================================================================
 
     def run_cycle(self) -> CycleResult:
-        """
-        Execute one complete governance cycle.
+        """Execute one complete governance cycle.
 
         Returns:
             CycleResult with full execution details
+
         """
         cycle_id = f"cycle_{int(time.time())}"
         start_time = time.time()
@@ -322,7 +322,7 @@ class UnifiedGovernanceCoordinator:
 
         return result
 
-    def _run_detection(self) -> Optional[UnifiedDetectionReport]:
+    def _run_detection(self) -> UnifiedDetectionReport | None:
         """Run detection phase."""
         if not self._detection_engine:
             return None
@@ -332,7 +332,7 @@ class UnifiedGovernanceCoordinator:
     def _run_prediction(
         self,
         detection: UnifiedDetectionReport,
-    ) -> List[Prediction]:
+    ) -> list[Prediction]:
         """Run prediction phase."""
         if not self._prediction_engine or not detection:
             return []
@@ -344,11 +344,11 @@ class UnifiedGovernanceCoordinator:
         return self._prediction_engine.generate_predictions()
 
     def _make_governance_decision(self, alert: PredictiveAlert) -> str:
-        """
-        Make governance decision for an alert.
+        """Make governance decision for an alert.
 
         Returns:
             "remediate", "escalate", "monitor", or "ignore"
+
         """
         # Check mode
         if self.mode == GovernanceMode.OFF:
@@ -375,7 +375,7 @@ class UnifiedGovernanceCoordinator:
 
         return "monitor"
 
-    def _alert_to_dict(self, alert: PredictiveAlert) -> Dict[str, Any]:
+    def _alert_to_dict(self, alert: PredictiveAlert) -> dict[str, Any]:
         """Convert alert to dictionary."""
         return {
             "alert_id": alert.alert_id,
@@ -408,7 +408,7 @@ class UnifiedGovernanceCoordinator:
         except Exception:
             pass
 
-    def check_math_framework_health(self) -> Dict[str, Any]:
+    def check_math_framework_health(self) -> dict[str, Any]:
         """Check mathematical framework health status.
 
         Performs health checks on the mathematical framework engine and
@@ -416,6 +416,7 @@ class UnifiedGovernanceCoordinator:
 
         Returns:
             Health status dictionary with math framework info
+
         """
         health = {
             "math_framework_available": MATH_FRAMEWORK_AVAILABLE,
@@ -445,8 +446,8 @@ class UnifiedGovernanceCoordinator:
         return health
 
     def validate_math_operation(
-        self, operation: str, domain: str, params: Dict[str, Any] = None
-    ) -> Dict[str, Any]:
+        self, operation: str, domain: str, params: dict[str, Any] = None
+    ) -> dict[str, Any]:
         """Validate a mathematical operation using the framework.
 
         Uses the mathematical framework engine to validate operations
@@ -459,6 +460,7 @@ class UnifiedGovernanceCoordinator:
 
         Returns:
             Validation result with status and any issues found
+
         """
         if not MATH_FRAMEWORK_AVAILABLE or not hasattr(self, "_math_engine"):
             return {
@@ -537,7 +539,7 @@ class UnifiedGovernanceCoordinator:
     # Reporting
     # ==========================================================================
 
-    def get_system_health(self) -> Dict[str, Any]:
+    def get_system_health(self) -> dict[str, Any]:
         """Get overall system health summary."""
         recent_cycles = self._cycles[-10:] if self._cycles else []
 
@@ -638,7 +640,7 @@ class UnifiedGovernanceCoordinator:
 
         return "\n".join(lines)
 
-    def export_governance_data(self, output_path: Optional[Path] = None) -> Path:
+    def export_governance_data(self, output_path: Path | None = None) -> Path:
         """Export all governance data to JSON."""
         if output_path is None:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")

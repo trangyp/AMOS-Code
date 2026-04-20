@@ -26,13 +26,15 @@ Subject to multi-regime admissibility:
               ∩ Z_informational ∩ Z_ethical ∩ Z_identity ∩ Z_energetic
 """
 
+from __future__ import annotations
+
 import hashlib
 from collections import deque
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Optional
 
 import numpy as np
 
@@ -84,7 +86,7 @@ class EnergyBudget:
 
     def thermodynamic_observation(
         self, x: Any, q: float, pi: float, x_prime: Any
-    ) -> Tuple[Any, float]:
+    ) -> tuple[Any, float]:
         """M: x ↦ (x̂, q, π, x', ΔE)"""
         delta_e = self.observation + self.computation * 0.1
         return (x_prime, delta_e)
@@ -96,7 +98,7 @@ class ThermodynamicConstraint:
     def __init__(self, energy_budget: EnergyBudget):
         self.energy = energy_budget
 
-    def check_admissibility(self, transition_cost: float, budget: float) -> Tuple[bool, float]:
+    def check_admissibility(self, transition_cost: float, budget: float) -> tuple[bool, float]:
         """Returns (is_admissible, remaining_energy)"""
         feasible = self.energy.is_feasible(budget)
         remaining = budget - transition_cost
@@ -134,14 +136,14 @@ class TimeSignature:
     frequency: float = 0.0  # ω_i - oscillatory/recurrence structure
     regime: TimeScale = TimeScale.CLASSICAL
 
-    def compatible_with(self, other: "TimeSignature", epsilon: float = 2.0) -> bool:
+    def compatible_with(self, other: TimeSignature, epsilon: float = 2.0) -> bool:
         """Compat_time(i,j) = 1 ⟺ |log(τ_i/τ_j)| ≤ ε_ij"""
         if self.scale <= 0 or other.scale <= 0:
             return False
         log_ratio = abs(np.log(self.scale / other.scale))
         return log_ratio <= epsilon
 
-    def scale_transform(self, target_scale: "TimeSignature") -> float:
+    def scale_transform(self, target_scale: TimeSignature) -> float:
         """Bridge rescaling factor."""
         return self.scale / target_scale.scale
 
@@ -169,7 +171,7 @@ class TemporalHierarchy:
         default_factory=lambda: TimeSignature(2.592e6, 86400, 3.858e-7, TimeScale.META)
     )
 
-    def get_hierarchy(self) -> List[tuple[TimeScale, TimeSignature]]:
+    def get_hierarchy(self) -> list[tuple[TimeScale, TimeSignature]]:
         """Return ordered hierarchy."""
         return [
             (TimeScale.QUANTUM, self.quantum),
@@ -217,12 +219,12 @@ class SelfRepresentation:
     """
 
     program_hash: str = ""
-    structure_signature: Dict[str, Any] = field(default_factory=dict)
-    proof_obligations: List[str] = field(default_factory=list)
-    execution_trace: List[dict] = field(default_factory=list)
-    uncertainty_state: Dict[str, float] = field(default_factory=dict)
+    structure_signature: dict[str, Any] = field(default_factory=dict)
+    proof_obligations: list[str] = field(default_factory=list)
+    execution_trace: list[dict] = field(default_factory=list)
+    uncertainty_state: dict[str, float] = field(default_factory=dict)
     identity_fingerprint: str = ""
-    adaptation_history: List[dict] = field(default_factory=list)
+    adaptation_history: list[dict] = field(default_factory=list)
 
     def compute_hash(self, program_code: str) -> str:
         """Generate program identity hash."""
@@ -238,7 +240,7 @@ class SelfRepresentation:
         }
 
     def is_valid_self_modification(
-        self, new_rep: "SelfRepresentation", identity_threshold: float = 0.8
+        self, new_rep: SelfRepresentation, identity_threshold: float = 0.8
     ) -> bool:
         """Valid(P_{t+1}) ∧ IdentityPreserved(P_t, P_{t+1})"""
         # Check structural continuity
@@ -332,7 +334,7 @@ class IdentityManifold:
         """Check if identity persists above threshold."""
         return self.identity_score >= threshold
 
-    def adaptive_identity_check(self, x_t: dict, x_t1: dict) -> Tuple[bool, float]:
+    def adaptive_identity_check(self, x_t: dict, x_t1: dict) -> tuple[bool, float]:
         """Adapt(x_t) = x_{t+1} ⟹ ι(x_t, x_{t+1}) ≥ λ_I"""
         preserved = self.is_identity_preserved(x_t, x_t1)
         score = self.compute_persistence(x_t, x_t1)
@@ -354,9 +356,9 @@ class ObserverState:
 
     observer_id: str = ""
     observation_capacity: float = 1.0
-    epistemic_state: Dict[str, Any] = field(default_factory=dict)
-    knowledge_base: Dict[str, Any] = field(default_factory=dict)
-    self_knowledge: Dict[str, Any] = field(default_factory=dict)
+    epistemic_state: dict[str, Any] = field(default_factory=dict)
+    knowledge_base: dict[str, Any] = field(default_factory=dict)
+    self_knowledge: dict[str, Any] = field(default_factory=dict)
 
     def observe(self, target: Any, target_id: str) -> dict:
         """M_o(X) - observer-indexed measurement."""
@@ -379,7 +381,7 @@ class ObserverState:
             return {k: target[k] for k in visible_keys}
         return {"value": str(target)[:100]}
 
-    def higher_order_observation(self, other_observer: "ObserverState", target: Any) -> dict:
+    def higher_order_observation(self, other_observer: ObserverState, target: Any) -> dict:
         """M_{o_2}(M_{o_1}(X)) - second-order observation."""
         # Observe another observer's observation
         other_obs = other_observer.observe(target, "indirect_target")
@@ -402,7 +404,7 @@ class ObserverState:
         }
         return self.self_knowledge
 
-    def recursive_epistemic(self, other: "ObserverState", proposition: str) -> dict:
+    def recursive_epistemic(self, other: ObserverState, proposition: str) -> dict:
         """K_{o_1}(K_{o_2}(P)) - recursive knowledge."""
         # o_1 knows that o_2 knows P
         return {
@@ -424,22 +426,21 @@ class LocalTruth:
     """Sheaf-theoretic truth: s_i ∈ F(U_i)
 
     Global truth is not always accessible. Different observers,
-    assays, scales see local sections. Consistency on overlap required:
-    s_i|_{U_i ∩ U_j} = s_j|_{U_i ∩ U_j}
+    assays, scales see local sections. Consistency on overlap required: s_i | _{U_i ∩ U_j} = s_j|_{U_i ∩ U_j}
     """
 
     context_id: str = ""
-    local_facts: Dict[str, Any] = field(default_factory=dict)
+    local_facts: dict[str, Any] = field(default_factory=dict)
     observer_id: str = ""
     time_scale: TimeScale = TimeScale.CLASSICAL
     certainty: float = 1.0
 
-    def restrict_to(self, other_context: "LocalTruth") -> dict:
+    def restrict_to(self, other_context: LocalTruth) -> dict:
         """s_i|_{U_i ∩ U_j} - restriction to overlap."""
         shared_keys = set(self.local_facts.keys()) & set(other_context.local_facts.keys())
         return {k: self.local_facts[k] for k in shared_keys}
 
-    def is_consistent_with(self, other: "LocalTruth") -> Tuple[bool, float]:
+    def is_consistent_with(self, other: LocalTruth) -> tuple[bool, float]:
         """Check if local truths agree on overlap."""
         overlap = self.restrict_to(other)
         other_overlap = other.restrict_to(self)
@@ -457,13 +458,13 @@ class SheafOfTruths:
     """Collection of local truths that can glue to global truth."""
 
     def __init__(self):
-        self.local_sections: Dict[str, LocalTruth] = {}
+        self.local_sections: dict[str, LocalTruth] = {}
 
     def add_section(self, truth: LocalTruth):
         """Add local truth to sheaf."""
         self.local_sections[truth.context_id] = truth
 
-    def check_compatibility(self) -> Tuple[bool, list[tuple[str, str, float]]]:
+    def check_compatibility(self) -> tuple[bool, list[tuple[str, str, float]]]:
         """Check all pairs for consistency."""
         issues = []
         contexts = list(self.local_sections.keys())
@@ -512,10 +513,10 @@ class AgencyField:
     Agency = Optimization + Constraint + Identity + Policy
     """
 
-    goals: Dict[str, float] = field(default_factory=dict)  # Goal → priority
-    preferences: Dict[str, Any] = field(default_factory=dict)
-    policies: List[str] = field(default_factory=list)
-    intentions: Dict[str, Any] = field(default_factory=dict)
+    goals: dict[str, float] = field(default_factory=dict)  # Goal → priority
+    preferences: dict[str, Any] = field(default_factory=dict)
+    policies: list[str] = field(default_factory=list)
+    intentions: dict[str, Any] = field(default_factory=dict)
 
     def utility(self, outcome: dict) -> float:
         """U(outcome) - evaluate outcome utility."""
@@ -530,8 +531,8 @@ class AgencyField:
         return uncertainty * (1.0 - self.utility(outcome))
 
     def choose_action(
-        self, available_actions: List[dict], outcomes: List[dict], uncertainties: List[float]
-    ) -> Tuple[int, float]:
+        self, available_actions: list[dict], outcomes: list[dict], uncertainties: list[float]
+    ) -> tuple[int, float]:
         """u_t = argmax E[Utility(x_{t+1}) - Risk(x_{t+1})]"""
         if not available_actions:
             return (-1, 0.0)
@@ -560,10 +561,10 @@ class AgencyField:
 class WorldState:
     """External world state W that co-evolves with system."""
 
-    environment_fields: Dict[str, Any] = field(default_factory=dict)
-    resource_availability: Dict[str, float] = field(default_factory=dict)
-    external_agents: List[dict] = field(default_factory=list)
-    physical_constraints: Dict[str, Any] = field(default_factory=dict)
+    environment_fields: dict[str, Any] = field(default_factory=dict)
+    resource_availability: dict[str, float] = field(default_factory=dict)
+    external_agents: list[dict] = field(default_factory=list)
+    physical_constraints: dict[str, Any] = field(default_factory=dict)
     timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
 
 
@@ -578,7 +579,7 @@ class EmbodimentOperator:
     world: WorldState = field(default_factory=WorldState)
     coupling_strength: float = 0.5
 
-    def coupled_dynamics(self, x_t: dict, u_t: dict, w_t: WorldState) -> Tuple[dict, WorldState]:
+    def coupled_dynamics(self, x_t: dict, u_t: dict, w_t: WorldState) -> tuple[dict, WorldState]:
         """C_world = (X × W, F ⊕ G)"""
         # System evolution depends on world
         x_t1 = self._system_evolution(x_t, u_t, w_t)
@@ -633,7 +634,7 @@ class ProgramDeformation:
 
     start_program: dict = field(default_factory=dict)
     end_program: dict = field(default_factory=dict)
-    deformation_path: List[dict] = field(default_factory=list)
+    deformation_path: list[dict] = field(default_factory=list)
 
     def preserves_typing(self, intermediate: dict) -> bool:
         """Check if intermediate state preserves types."""
@@ -647,7 +648,7 @@ class ProgramDeformation:
         int_inv = set(intermediate.get("invariants", []))
         return start_inv <= int_inv  # Can add, not remove
 
-    def preserves_behavior(self, intermediate: dict, test_cases: List[dict]) -> bool:
+    def preserves_behavior(self, intermediate: dict, test_cases: list[dict]) -> bool:
         """⟦H(·,t)⟧ ~_obs ⟦P_0⟧"""
         # Check observational equivalence
         start_out = self._simulate(self.start_program, test_cases)
@@ -655,12 +656,12 @@ class ProgramDeformation:
 
         return start_out == int_out
 
-    def _simulate(self, program: dict, inputs: List[dict]) -> List[Any]:
+    def _simulate(self, program: dict, inputs: list[dict]) -> list[Any]:
         """Simulate program on inputs."""
         # Simplified simulation
         return [f"out_{i}" for i in range(len(inputs))]
 
-    def is_valid_homotopy(self, test_cases: List[dict]) -> bool:
+    def is_valid_homotopy(self, test_cases: list[dict]) -> bool:
         """Check if entire deformation path is valid."""
         for intermediate in self.deformation_path:
             if not (
@@ -792,8 +793,8 @@ class MetaSemanticEvaluator:
     """
 
     current_semantics: dict = field(default_factory=dict)
-    fitness_history: List[tuple[float, str]] = field(default_factory=list)
-    adaptation_log: List[dict] = field(default_factory=list)
+    fitness_history: list[tuple[float, str]] = field(default_factory=list)
+    adaptation_log: list[dict] = field(default_factory=list)
 
     def evaluate_fitness(self, semantics: dict, performance_metrics: dict) -> float:
         """Re(Sem_t) - evaluate semantic framework fitness."""
@@ -808,7 +809,7 @@ class MetaSemanticEvaluator:
         self.fitness_history.append((fitness, datetime.now().isoformat()))
         return fitness
 
-    def adapt_semantics(self, trace: List[dict], meta_constraints: dict) -> dict:
+    def adapt_semantics(self, trace: list[dict], meta_constraints: dict) -> dict:
         """AdaptSem(Sem_t, Re(Sem_t), Trace_t)"""
         # Check meta-validity
         if not self._is_meta_valid(self.current_semantics, meta_constraints):
@@ -886,9 +887,9 @@ class EthicalBoundary:
     """
 
     # Deontic operator: D: Action × Context → P
-    deontic_rules: List[dict] = field(default_factory=list)
-    ethical_principles: List[str] = field(default_factory=list)
-    boundary_violations: List[dict] = field(default_factory=list)
+    deontic_rules: list[dict] = field(default_factory=list)
+    ethical_principles: list[str] = field(default_factory=list)
+    boundary_violations: list[dict] = field(default_factory=list)
 
     def evaluate_deontic(self, action: dict, context: dict) -> DeonticStatus:
         """D(action, context) - deontic evaluation."""
@@ -904,7 +905,7 @@ class EthicalBoundary:
 
         return DeonticStatus.PERMITTED
 
-    def check_deontic(self, state: dict) -> Tuple[bool, DeonticStatus]:
+    def check_deontic(self, state: dict) -> tuple[bool, DeonticStatus]:
         """Check deontic status for a state."""
         action = state.get("action", {})
         context = {"type": state.get("type", "")}
@@ -932,7 +933,7 @@ class EthicalBoundary:
             "applies_to_contexts", []
         )
 
-    def check_multi_regime_admissibility(self, x_prime: dict) -> Tuple[bool, list[str]]:
+    def check_multi_regime_admissibility(self, x_prime: dict) -> tuple[bool, list[str]]:
         """X' ∈ Z* - check all regime constraints."""
         regimes = [
             ("type", x_prime.get("type_valid", True)),
@@ -989,13 +990,12 @@ class AMOSMetaOntological:
     meta_semantics: MetaSemanticEvaluator = field(default_factory=MetaSemanticEvaluator)
     ethical_boundary: EthicalBoundary = field(default_factory=EthicalBoundary)
 
-    # Additional operators (instantiated on demand)
-    homotopy: Optional[ProgramDeformation] = None
+    # Additional operators (instantiated on demand)homotopy: Optional[ProgramDeformation] =None
     renormalization: Optional[RenormalizationOperator] = None
 
     def grand_unified_step(
         self, x_t: dict, u_t: dict, w_t: WorldState, energy_budget: float
-    ) -> Tuple[dict, WorldState, dict]:
+    ) -> tuple[dict, WorldState, dict]:
         """x_{t+1} = Commit_{Z*}(R(V(M(B(A(F(x_t, u_t, w_t; Theta, E, Lambda)))))))
 
         Returns: (x_{t+1}, w_{t+1}, meta_info)

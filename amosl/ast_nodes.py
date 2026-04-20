@@ -4,9 +4,10 @@ Implements the 9-tuple language structure:
 (O, S, D, C, E, M, U, V, A, R)
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Any, List, Optional
 
 
 class Substrate(Enum):
@@ -31,7 +32,7 @@ class Location:
 class ASTNode:
     """Base AST node."""
 
-    loc: Optional[Location] = None
+    loc: Location = None
 
 
 # =============================================================================
@@ -50,12 +51,12 @@ class Program(ASTNode):
     ontology: OntologyDecl = field(default_factory=lambda: OntologyDecl())
     state: StateDecl = field(default_factory=lambda: StateDecl())
     dynamics: DynamicsDecl = field(default_factory=lambda: DynamicsDecl())
-    constraints: List[ConstraintDecl] = field(default_factory=list)
-    effects: List[EffectDecl] = field(default_factory=list)
-    measures: List[MeasureDecl] = field(default_factory=list)
-    uncertainties: List[UncertaintyDecl] = field(default_factory=list)
-    verifies: List[VerifyDecl] = field(default_factory=list)
-    adapts: List[AdaptDecl] = field(default_factory=list)
+    constraints: list[ConstraintDecl] = field(default_factory=list)
+    effects: list[EffectDecl] = field(default_factory=list)
+    measures: list[MeasureDecl] = field(default_factory=list)
+    uncertainties: list[UncertaintyDecl] = field(default_factory=list)
+    verifies: list[VerifyDecl] = field(default_factory=list)
+    adapts: list[AdaptDecl] = field(default_factory=list)
     realizes: RealizeDecl = field(default_factory=lambda: RealizeDecl())
 
 
@@ -72,10 +73,10 @@ class OntologyDecl(ASTNode):
     O = O_c ⊕ O_q ⊕ O_b ⊕ O_h
     """
 
-    classical: List[EntityDecl] = field(default_factory=list)
-    quantum: List[QuantumEntityDecl] = field(default_factory=list)
-    biological: List[BioEntityDecl] = field(default_factory=list)
-    hybrid: List[HybridEntityDecl] = field(default_factory=list)
+    classical: list[EntityDecl] = field(default_factory=list)
+    quantum: list[QuantumEntityDecl] = field(default_factory=list)
+    biological: list[BioEntityDecl] = field(default_factory=list)
+    hybrid: list[HybridEntityDecl] = field(default_factory=list)
 
 
 @dataclass
@@ -85,12 +86,12 @@ class StateDecl(ASTNode):
     Σ = ⟨Σ_c, Σ_q, Σ_b, Σ_h, Σ_e, Σ_t⟩
     """
 
-    classical: List[StateVar] = field(default_factory=list)
-    quantum: List[QuantumState] = field(default_factory=list)
-    biological: List[BioState] = field(default_factory=list)
-    hybrid: List[HybridState] = field(default_factory=list)
-    environment: List[EnvVar] = field(default_factory=list)
-    time: Optional[TimeDecl] = None
+    classical: list[StateVar] = field(default_factory=list)
+    quantum: list[QuantumState] = field(default_factory=list)
+    biological: list[BioState] = field(default_factory=list)
+    hybrid: list[HybridState] = field(default_factory=list)
+    environment: list[EnvVar] = field(default_factory=list)
+    time: TimeDecl = None
 
 
 @dataclass
@@ -100,9 +101,9 @@ class DynamicsDecl(ASTNode):
     Σ_{t+1} = F(Σ_t, α_t, μ_t, ε_t, τ_t)
     """
 
-    transitions: List[Transition] = field(default_factory=list)
-    actions: List[ActionDecl] = field(default_factory=list)
-    evolutions: List[Evolution] = field(default_factory=list)
+    transitions: list[Transition] = field(default_factory=list)
+    actions: list[ActionDecl] = field(default_factory=list)
+    evolutions: list[Evolution] = field(default_factory=list)
 
 
 @dataclass
@@ -125,7 +126,7 @@ class EffectDecl(ASTNode):
     """
 
     name: str = ""
-    effects: List[str] = field(default_factory=list)
+    effects: list[str] = field(default_factory=list)
     substrate: Substrate = Substrate.CLASSICAL
 
 
@@ -138,7 +139,7 @@ class MeasureDecl(ASTNode):
 
     target: str = ""
     uncertainty: UncertaintyDecl = field(default_factory=lambda: UncertaintyDecl())
-    perturbation: Optional[Expr] = None
+    perturbation: Expr = None
 
 
 @dataclass
@@ -148,10 +149,10 @@ class UncertaintyDecl(ASTNode):
     U = ⟨p, γ, δ, κ⟩
     """
 
-    probability: Optional[Expr] = None
-    confidence: Optional[Expr] = None
-    width: Optional[Expr] = None
-    context: Optional[Expr] = None
+    probability: Expr = None
+    confidence: Expr = None
+    width: Expr = None
+    context: Expr = None
 
 
 @dataclass
@@ -161,7 +162,7 @@ class VerifyDecl(ASTNode):
     V = V_c ⊕ V_q ⊕ V_b ⊕ V_h
     """
 
-    checks: List[str] = field(default_factory=list)
+    checks: list[str] = field(default_factory=list)
     substrate: Substrate = Substrate.CLASSICAL
 
 
@@ -173,9 +174,9 @@ class AdaptDecl(ASTNode):
     """
 
     target: str = ""
-    mutation: Optional[Expr] = None
-    selection: Optional[Expr] = None
-    refinement: Optional[Expr] = None
+    mutation: Expr = None
+    selection: Expr = None
+    refinement: Expr = None
 
 
 @dataclass
@@ -200,9 +201,9 @@ class EntityDecl(ASTNode):
     """Classical entity declaration."""
 
     name: str = ""
-    fields: List[Field] = field(default_factory=list)
-    states: List[str] = field(default_factory=list)
-    events: List[str] = field(default_factory=list)
+    fields: list[Field] = field(default_factory=list)
+    states: list[str] = field(default_factory=list)
+    events: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -211,9 +212,9 @@ class QuantumEntityDecl(ASTNode):
 
     name: str = ""
     qubits: int = 1
-    registers: List[str] = field(default_factory=list)
-    observables: List[str] = field(default_factory=list)
-    circuit: Optional[Circuit] = None
+    registers: list[str] = field(default_factory=list)
+    observables: list[str] = field(default_factory=list)
+    circuit: Circuit = None
 
 
 @dataclass
@@ -224,7 +225,7 @@ class BioEntityDecl(ASTNode):
     dna: str = None
     rna: str = None
     protein: str = None
-    reactions: List[Reaction] = field(default_factory=list)
+    reactions: list[Reaction] = field(default_factory=list)
 
 
 @dataclass
@@ -232,9 +233,9 @@ class HybridEntityDecl(ASTNode):
     """Hybrid entity declaration."""
 
     name: str = ""
-    bridges: List[Bridge] = field(default_factory=list)
-    mappings: List[Mapping] = field(default_factory=list)
-    signals: List[Signal] = field(default_factory=list)
+    bridges: list[Bridge] = field(default_factory=list)
+    mappings: list[Mapping] = field(default_factory=list)
+    signals: list[Signal] = field(default_factory=list)
 
 
 # =============================================================================
@@ -248,7 +249,7 @@ class StateVar(ASTNode):
 
     name: str = ""
     type_name: str = "Any"
-    initial: Optional[Expr] = None
+    initial: Expr = None
 
 
 @dataclass
@@ -256,7 +257,7 @@ class QuantumState(ASTNode):
     """Quantum state variable."""
 
     name: str = ""
-    amplitude: Optional[Expr] = None
+    amplitude: Expr = None
     density: bool = False
 
 
@@ -265,9 +266,9 @@ class BioState(ASTNode):
     """Biological state variable."""
 
     name: str = ""
-    concentration: Optional[Expr] = None
-    expression: Optional[Expr] = None
-    population: Optional[Expr] = None
+    concentration: Expr = None
+    expression: Expr = None
+    population: Expr = None
 
 
 @dataclass
@@ -277,7 +278,7 @@ class HybridState(ASTNode):
     name: str = ""
     source: str = ""
     target: str = ""
-    threshold: Optional[Expr] = None
+    threshold: Expr = None
 
 
 @dataclass
@@ -293,7 +294,7 @@ class TimeDecl(ASTNode):
     """Time declaration."""
 
     discrete: bool = True
-    step: Optional[Expr] = None
+    step: Expr = None
 
 
 # =============================================================================
@@ -307,7 +308,7 @@ class Transition(ASTNode):
 
     from_state: str = ""
     to_state: str = ""
-    condition: Optional[Expr] = None
+    condition: Expr = None
     action: str = None
 
 
@@ -316,9 +317,9 @@ class ActionDecl(ASTNode):
     """Action declaration."""
 
     name: str = ""
-    pre: Optional[Expr] = None
-    post: Optional[Expr] = None
-    effects: List[str] = field(default_factory=list)
+    pre: Expr = None
+    post: Expr = None
+    effects: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -327,7 +328,7 @@ class Evolution(ASTNode):
 
     target: str = ""
     rule: str = "mutate"
-    rate: Optional[Expr] = None
+    rate: Expr = None
 
 
 # =============================================================================
@@ -347,7 +348,7 @@ class Field(ASTNode):
 class Circuit(ASTNode):
     """Quantum circuit."""
 
-    gates: List[str] = field(default_factory=list)
+    gates: list[str] = field(default_factory=list)
     depth: int = 0
 
 
@@ -355,9 +356,9 @@ class Circuit(ASTNode):
 class Reaction(ASTNode):
     """Biological reaction."""
 
-    reactants: List[str] = field(default_factory=list)
-    products: List[str] = field(default_factory=list)
-    rate: Optional[Expr] = None
+    reactants: list[str] = field(default_factory=list)
+    products: list[str] = field(default_factory=list)
+    rate: Expr = None
 
 
 @dataclass
@@ -385,7 +386,7 @@ class Signal(ASTNode):
 
     name: str = ""
     type_name: str = ""
-    threshold: Optional[Expr] = None
+    threshold: Expr = None
 
 
 @dataclass

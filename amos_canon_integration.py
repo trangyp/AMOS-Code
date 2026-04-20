@@ -26,10 +26,11 @@ import asyncio
 import json
 import logging
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -41,8 +42,8 @@ class CanonLoadStatus:
     """Status of Canon data loading."""
 
     timestamp: str
-    loaded_files: List[str] = field(default_factory=list)
-    failed_files: List[str] = field(default_factory=list)
+    loaded_files: list[str] = field(default_factory=list)
+    failed_files: list[str] = field(default_factory=list)
     total_terms: int = 0
     total_agents: int = 0
     total_engines: int = 0
@@ -61,7 +62,7 @@ class AMOSCanonLoader:
     - Body registry
     """
 
-    _instance: Optional[AMOSCanonLoader] = None
+    _instance: AMOSCanonLoader = None
     _lock = asyncio.Lock()
 
     def __new__(cls) -> AMOSCanonLoader:
@@ -74,13 +75,13 @@ class AMOSCanonLoader:
             return
         self._initialized = True
 
-        self._glossary: Dict[str, Any] = {}
-        self._agent_registry: Dict[str, Any] = {}
-        self._brain_os: List[dict[str, Any]] = []
-        self._body_registry: Dict[str, Any] = {}
-        self._cognitive_stack: Dict[str, Any] = {}
-        self._kernels: Dict[str, Any] = {}
-        self._status: Optional[CanonLoadStatus] = None
+        self._glossary: dict[str, Any] = {}
+        self._agent_registry: dict[str, Any] = {}
+        self._brain_os: list[dict[str, Any]] = []
+        self._body_registry: dict[str, Any] = {}
+        self._cognitive_stack: dict[str, Any] = {}
+        self._kernels: dict[str, Any] = {}
+        self._status: CanonLoadStatus = None
         self._loaded = False
 
     async def initialize(self) -> bool:
@@ -283,31 +284,31 @@ class AMOSCanonLoader:
 
         logger.info(f"Loaded kernels: {len(self._kernels)} categories")
 
-    def get_glossary(self) -> Dict[str, Any]:
+    def get_glossary(self) -> dict[str, Any]:
         """Get canonical glossary."""
         return self._glossary
 
-    def get_agent_registry(self) -> Dict[str, Any]:
+    def get_agent_registry(self) -> dict[str, Any]:
         """Get agent registry."""
         return self._agent_registry
 
-    def get_brain_os_spec(self) -> List[dict[str, Any]]:
+    def get_brain_os_spec(self) -> list[dict[str, Any]]:
         """Get brain OS specification."""
         return self._brain_os
 
-    def get_body_registry(self) -> Dict[str, Any]:
+    def get_body_registry(self) -> dict[str, Any]:
         """Get canonical body registry."""
         return self._body_registry
 
-    def get_cognitive_stack(self) -> Dict[str, Any]:
+    def get_cognitive_stack(self) -> dict[str, Any]:
         """Get cognitive stack."""
         return self._cognitive_stack
 
-    def get_kernels(self) -> Dict[str, Any]:
+    def get_kernels(self) -> dict[str, Any]:
         """Get kernel specifications."""
         return self._kernels
 
-    def get_term_definition(self, term_name: str) -> Dict[str, Any]:
+    def get_term_definition(self, term_name: str) -> dict[str, Any]:
         """Look up a term definition from the glossary."""
         for layer in self._glossary.get("layers", []):
             for term in layer.get("terms", []):
@@ -315,11 +316,11 @@ class AMOSCanonLoader:
                     return term
         return None
 
-    def get_agent_spec(self, agent_name: str) -> Dict[str, Any]:
+    def get_agent_spec(self, agent_name: str) -> dict[str, Any]:
         """Get agent specification by name."""
         return self._agent_registry.get("agents", {}).get(agent_name)
 
-    def get_engine_spec(self, engine_name: str) -> Dict[str, Any]:
+    def get_engine_spec(self, engine_name: str) -> dict[str, Any]:
         """Get engine specification from brain OS."""
         if not self._brain_os or len(self._brain_os) == 0:
             return None
@@ -330,7 +331,7 @@ class AMOSCanonLoader:
 
         return engines.get(engine_name)
 
-    def get_status(self) -> Optional[CanonLoadStatus]:
+    def get_status(self) -> CanonLoadStatus:
         """Get loading status."""
         return self._status
 
@@ -340,7 +341,7 @@ class AMOSCanonLoader:
 
 
 # Global singleton instance
-_canon_loader: Optional[AMOSCanonLoader] = None
+_canon_loader: AMOSCanonLoader = None
 
 
 def get_canon_loader() -> AMOSCanonLoader:

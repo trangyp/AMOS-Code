@@ -1,5 +1,5 @@
-from typing import Any, Dict, List, Optional, Tuple
 from collections.abc import Callable
+from typing import Any
 
 """AMOS Cognitive Substrate - Minimum Viable Superintelligence Stack
 
@@ -84,7 +84,7 @@ Architecture:
     │  │                                                                      │   │
     │  │   Router ──▶ Expert Selection ──▶ Arbitration ──▶ Result           │   │
     │  │                                                                      │   │
-    │  │   Experts: Parser | Causal | Proof | Planner | Compiler | Human    │   │
+    │  │   Experts: Union[Parser, Causal] | Proof | Planner | Compiler | Human    │   │
     │  │                                                                      │   │
     │  │   Arbitration: Confidence-weighted voting with conflict resolution │   │
     │  └─────────────────────────────────────────────────────────────────────┘   │
@@ -150,14 +150,13 @@ Author: AMOS Cognitive Architecture Team
 Version: 1.0.0-SUBSTRATE
 """
 
+import time
 import uuid
 from abc import ABC, abstractmethod
 from collections import defaultdict
-from collections.abc import Callable
 from copy import deepcopy
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime
 from enum import Enum, auto
 
 import numpy as np
@@ -243,25 +242,25 @@ class Object:
 
     id: str
     type: str  # e.g., "system", "database", "query", "user"
-    properties: Dict[str, Any] = field(default_factory=dict)
-    state_history: List[tuple[datetime, dict[str, Any]]] = field(default_factory=list)
+    properties: dict[str, Any] = field(default_factory=dict)
+    state_history: list[tuple[datetime, dict[str, Any]]] = field(default_factory=list)
     belief: float = 1.0  # 0-1, certainty of existence
-    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    last_observed: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+    last_observed: datetime = field(default_factory=lambda: datetime.now(UTC))
 
-    def update_property(self, key: str, value: Any, timestamp: Optional[datetime] = None) -> None:
+    def update_property(self, key: str, value: Any, timestamp: datetime = None) -> None:
         """Update property with history tracking."""
-        timestamp = timestamp or datetime.now(timezone.utc)
+        timestamp = timestamp or datetime.now(UTC)
         old_value = self.properties.get(key)
         self.properties[key] = value
         self.state_history.append((timestamp, {key: old_value}))
         self.last_observed = timestamp
 
-    def get_property_history(self, key: str) -> List[tuple[datetime, Any]]:
+    def get_property_history(self, key: str) -> list[tuple[datetime, Any]]:
         """Get history of property changes."""
         return [(t, s.get(key)) for t, s in self.state_history if key in s]
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "id": self.id,
             "type": self.type,
@@ -290,14 +289,14 @@ class Relation:
     target: str
     type: RelationType
     strength: float = 1.0  # 0-1 confidence
-    properties: Dict[str, Any] = field(default_factory=dict)
-    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    valid_from: Optional[datetime] = None
-    valid_until: Optional[datetime] = None
+    properties: dict[str, Any] = field(default_factory=dict)
+    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+    valid_from: datetime = None
+    valid_until: datetime = None
 
-    def is_active(self, t: Optional[datetime] = None) -> bool:
+    def is_active(self, t: datetime = None) -> bool:
         """Check if relation is active at time t."""
-        t = t or datetime.now(timezone.utc)
+        t = t or datetime.now(UTC)
         if self.valid_from and t < self.valid_from:
             return False
         if self.valid_until and t > self.valid_until:
@@ -320,14 +319,14 @@ class Mechanism:
     id: str
     name: str
     type: MechanismType
-    inputs: List[str]  # Input variable names
-    outputs: List[str]  # Output variable names
+    inputs: list[str]  # Input variable names
+    outputs: list[str]  # Output variable names
     function: Callable[[dict[str, Any]], dict[str, Any]] = None
-    preconditions: List[Callable[[dict[str, Any]], bool]] = field(default_factory=list)
-    causal_graph: Dict[str, list[str]] = field(default_factory=dict)  # var -> affected vars
+    preconditions: list[Callable[[dict[str, Any]], bool]] = field(default_factory=list)
+    causal_graph: dict[str, list[str]] = field(default_factory=dict)  # var -> affected vars
     uncertainty: float = 0.0  # Model uncertainty
 
-    def apply(self, inputs: Dict[str, Any]) -> Dict[str, Any]:
+    def apply(self, inputs: dict[str, Any]) -> dict[str, Any]:
         """Apply mechanism to inputs, return outputs or None if preconditions fail."""
         # Check preconditions
         for precond in self.preconditions:
@@ -364,10 +363,10 @@ class WorldModelState:
     Complete state of the object-centric world model.
     """
 
-    objects: Dict[str, Object] = field(default_factory=dict)
-    relations: Dict[str, Relation] = field(default_factory=dict)
-    mechanisms: Dict[str, Mechanism] = field(default_factory=dict)
-    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    objects: dict[str, Object] = field(default_factory=dict)
+    relations: dict[str, Relation] = field(default_factory=dict)
+    mechanisms: dict[str, Mechanism] = field(default_factory=dict)
+    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
 
     def add_object(self, obj: Object) -> None:
         self.objects[obj.id] = obj
@@ -375,7 +374,7 @@ class WorldModelState:
     def add_relation(self, rel: Relation) -> None:
         self.relations[rel.id] = rel
 
-    def get_related(self, obj_id: str, relation_type: Optional[RelationType] = None) -> List[str]:
+    def get_related(self, obj_id: str, relation_type: RelationType = None) -> list[str]:
         """Get objects related to obj_id."""
         related = []
         for rel in self.relations.values():
@@ -384,7 +383,7 @@ class WorldModelState:
                     related.append(rel.target)
         return related
 
-    def get_causal_ancestors(self, obj_id: str, depth: int = 3) -> List[str]:
+    def get_causal_ancestors(self, obj_id: str, depth: int = 3) -> list[str]:
         """Get causal ancestors (what causes this object)."""
         ancestors = []
         to_check = [(obj_id, 0)]
@@ -410,7 +409,7 @@ class WorldModelState:
             objects=deepcopy(self.objects),
             relations=deepcopy(self.relations),
             mechanisms=deepcopy(self.mechanisms),
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
         )
 
 
@@ -428,14 +427,14 @@ class ObjectCentricWorldModel:
 
     def __init__(self):
         self.state = WorldModelState()
-        self.history: List[WorldModelState] = []
-        self.transformation_rules: List[Transformation] = []
+        self.history: list[WorldModelState] = []
+        self.transformation_rules: list[Transformation] = []
 
     def create_object(
         self,
         obj_type: str,
-        obj_id: Optional[str] = None,
-        properties: Dict[str, Any] = None,
+        obj_id: str = None,
+        properties: dict[str, Any] = None,
     ) -> Object:
         """Create and register a new object."""
         obj_id = obj_id or f"{obj_type}_{uuid.uuid4().hex[:8]}"
@@ -453,7 +452,7 @@ class ObjectCentricWorldModel:
         target: str,
         relation_type: RelationType,
         strength: float = 1.0,
-        properties: Dict[str, Any] = None,
+        properties: dict[str, Any] = None,
     ) -> Relation:
         """Add a relation between objects."""
         rel_id = f"rel_{uuid.uuid4().hex[:8]}"
@@ -474,9 +473,9 @@ class ObjectCentricWorldModel:
 
     def predict_effects(
         self,
-        action: Dict[str, Any],
+        action: dict[str, Any],
         steps: int = 1,
-    ) -> List[tuple[str, float, dict[str, Any]]]:
+    ) -> list[tuple[str, float, dict[str, Any]]]:
         """
         Predict effects of an action using mechanisms.
 
@@ -496,13 +495,13 @@ class ObjectCentricWorldModel:
 
         return effects
 
-    def _find_objects_with_property(self, prop: str) -> List[str]:
+    def _find_objects_with_property(self, prop: str) -> list[str]:
         """Find objects that have a given property."""
         return [obj_id for obj_id, obj in self.state.objects.items() if prop in obj.properties]
 
     def simulate_counterfactual(
         self,
-        intervention: Dict[str, Any],
+        intervention: dict[str, Any],
     ) -> WorldModelState:
         """
         Simulate what-if scenario by applying intervention.
@@ -529,7 +528,7 @@ class ObjectCentricWorldModel:
         """Save current state to history."""
         self.history.append(self.state.copy())
 
-    def get_object_persistent_summary(self, obj_id: str) -> Dict[str, Any]:
+    def get_object_persistent_summary(self, obj_id: str) -> dict[str, Any]:
         """Get summary of object across its lifetime."""
         if obj_id not in self.state.objects:
             return None
@@ -559,11 +558,11 @@ class GraphNode:
     id: str
     type: str  # e.g., "hypothesis", "fact", "query", "conclusion"
     content: Any
-    metadata: Dict[str, Any] = field(default_factory=dict)
-    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    metadata: dict[str, Any] = field(default_factory=dict)
+    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
     confidence: float = 1.0
-    parent_ids: List[str] = field(default_factory=list)
-    child_ids: List[str] = field(default_factory=list)
+    parent_ids: list[str] = field(default_factory=list)
+    child_ids: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -574,7 +573,7 @@ class GraphEdge:
     target: str
     type: str  # e.g., "supports", "contradicts", "implies", "depends"
     strength: float = 1.0
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class WorkingMemoryGraph:
@@ -586,17 +585,17 @@ class WorkingMemoryGraph:
 
     def __init__(self, name: str):
         self.name = name
-        self.nodes: Dict[str, GraphNode] = {}
-        self.edges: Dict[tuple[str, str], GraphEdge] = {}
+        self.nodes: dict[str, GraphNode] = {}
+        self.edges: dict[tuple[str, str], GraphEdge] = {}
         self.node_count = 0
 
     def add_node(
         self,
         node_type: str,
         content: Any,
-        node_id: Optional[str] = None,
+        node_id: str = None,
         confidence: float = 1.0,
-        metadata: Dict[str, Any] = None,
+        metadata: dict[str, Any] = None,
     ) -> str:
         """Add a node to the graph."""
         node_id = node_id or f"{self.name}_{self.node_count}"
@@ -630,7 +629,7 @@ class WorkingMemoryGraph:
             self.nodes[source].child_ids.append(target)
             self.nodes[target].parent_ids.append(source)
 
-    def get_neighbors(self, node_id: str, edge_type: Optional[str] = None) -> List[str]:
+    def get_neighbors(self, node_id: str, edge_type: str = None) -> list[str]:
         """Get neighbors of a node."""
         if node_id not in self.nodes:
             return []
@@ -647,7 +646,7 @@ class WorkingMemoryGraph:
         source: str,
         target: str,
         max_depth: int = 5,
-    ) -> List[list[str]]:
+    ) -> list[list[str]]:
         """Find paths between nodes."""
         paths = []
         queue = [(source, [source])]
@@ -667,19 +666,19 @@ class WorkingMemoryGraph:
 
         return paths
 
-    def get_roots(self) -> List[str]:
+    def get_roots(self) -> list[str]:
         """Get root nodes (no parents)."""
         return [n.id for n in self.nodes.values() if not n.parent_ids]
 
-    def get_leaves(self) -> List[str]:
+    def get_leaves(self) -> list[str]:
         """Get leaf nodes (no children)."""
         return [n.id for n in self.nodes.values() if not n.child_ids]
 
-    def query_by_type(self, node_type: str) -> List[GraphNode]:
+    def query_by_type(self, node_type: str) -> list[GraphNode]:
         """Query nodes by type."""
         return [n for n in self.nodes.values() if n.type == node_type]
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Serialize graph."""
         return {
             "name": self.name,
@@ -715,7 +714,7 @@ class ExternalWorkingMemory:
         self.error = WorkingMemoryGraph("error")
         self.context = WorkingMemoryGraph("context")
 
-        self._graphs: Dict[str, WorkingMemoryGraph] = {
+        self._graphs: dict[str, WorkingMemoryGraph] = {
             "scratch": self.scratch,
             "proof": self.proof,
             "task": self.task,
@@ -724,7 +723,7 @@ class ExternalWorkingMemory:
             "context": self.context,
         }
 
-    def get_graph(self, name: str) -> Optional[WorkingMemoryGraph]:
+    def get_graph(self, name: str) -> WorkingMemoryGraph:
         """Get a specific memory graph."""
         return self._graphs.get(name)
 
@@ -735,7 +734,7 @@ class ExternalWorkingMemory:
             graph.edges.clear()
             graph.node_count = 0
 
-    def get_summary(self) -> Dict[str, Any]:
+    def get_summary(self) -> dict[str, Any]:
         """Get summary of all memory graphs."""
         return {
             name: {"nodes": len(g.nodes), "edges": len(g.edges)} for name, g in self._graphs.items()
@@ -755,8 +754,8 @@ class Proposal:
     content: Any
     confidence: float
     source: str  # Which module generated it
-    alternative_proposals: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    alternative_proposals: list[str] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -767,8 +766,8 @@ class VerificationResult:
     method: VerificationMethod
     passed: bool
     confidence: float
-    counterexample: Optional[Any] = None
-    proof_trace: List[str] = field(default_factory=list)
+    counterexample: Any = None
+    proof_trace: list[str] = field(default_factory=list)
     verification_time_ms: float = 0.0
 
 
@@ -784,7 +783,7 @@ class SymbolicVerifier:
     """
 
     def __init__(self):
-        self.verification_stats: Dict[VerificationMethod, dict[str, Any]] = {
+        self.verification_stats: dict[VerificationMethod, dict[str, Any]] = {
             method: {"total": 0, "passed": 0, "avg_time_ms": 0.0} for method in VerificationMethod
         }
 
@@ -792,7 +791,7 @@ class SymbolicVerifier:
         self,
         proposal: Proposal,
         method: VerificationMethod,
-        context: Dict[str, Any] = None,
+        context: dict[str, Any] = None,
     ) -> VerificationResult:
         """
         Verify a proposal using specified method.
@@ -837,8 +836,8 @@ class SymbolicVerifier:
     def _verify_logical(
         self,
         proposal: Proposal,
-        context: Dict[str, Any],
-    ) -> Tuple[bool, float, Any]:
+        context: dict[str, Any],
+    ) -> tuple[bool, float, Any]:
         """Logical verification via constraint checking."""
         # Simplified: check for logical contradictions
         content = str(proposal.content)
@@ -860,8 +859,8 @@ class SymbolicVerifier:
     def _verify_causal(
         self,
         proposal: Proposal,
-        context: Dict[str, Any],
-    ) -> Tuple[bool, float, Any]:
+        context: dict[str, Any],
+    ) -> tuple[bool, float, Any]:
         """Causal verification via counterfactual test."""
         # Check if world model is in context
         world_model = context.get("world_model") if context else None
@@ -875,8 +874,8 @@ class SymbolicVerifier:
     def _verify_computational(
         self,
         proposal: Proposal,
-        context: Dict[str, Any],
-    ) -> Tuple[bool, float, Any]:
+        context: dict[str, Any],
+    ) -> tuple[bool, float, Any]:
         """Computational verification via execution."""
         # If proposal contains code, try to execute
         content = proposal.content
@@ -895,8 +894,8 @@ class SymbolicVerifier:
     def _verify_empirical(
         self,
         proposal: Proposal,
-        context: Dict[str, Any],
-    ) -> Tuple[bool, float, Any]:
+        context: dict[str, Any],
+    ) -> tuple[bool, float, Any]:
         """Empirical verification against observations."""
         # Check against known facts in context
         known_facts = context.get("known_facts", []) if context else []
@@ -935,8 +934,8 @@ class DualReasoningSubstrate:
 
     def __init__(self):
         self.verifier = SymbolicVerifier()
-        self.proposal_history: List[Proposal] = []
-        self.verification_history: List[VerificationResult] = []
+        self.proposal_history: list[Proposal] = []
+        self.verification_history: list[VerificationResult] = []
         self.proposal_counter = 0
 
     def propose(
@@ -944,7 +943,7 @@ class DualReasoningSubstrate:
         content: Any,
         confidence: float = 0.8,
         source: str = "default",
-        alternatives: Optional[list[str]] = None,
+        alternatives: list[str] = None,
     ) -> Proposal:
         """Generate a proposal."""
         self.proposal_counter += 1
@@ -962,7 +961,7 @@ class DualReasoningSubstrate:
         self,
         proposal: Proposal,
         method: VerificationMethod,
-        context: Dict[str, Any] = None,
+        context: dict[str, Any] = None,
     ) -> VerificationResult:
         """Verify a proposal."""
         result = self.verifier.verify(proposal, method, context)
@@ -974,8 +973,8 @@ class DualReasoningSubstrate:
         content: Any,
         method: VerificationMethod,
         confidence: float = 0.8,
-        context: Dict[str, Any] = None,
-    ) -> Tuple[Proposal, VerificationResult]:
+        context: dict[str, Any] = None,
+    ) -> tuple[Proposal, VerificationResult]:
         """Generate proposal and verify it."""
         proposal = self.propose(content, confidence)
         result = self.verify(proposal, method, context)
@@ -983,9 +982,9 @@ class DualReasoningSubstrate:
 
     def select_best_verified(
         self,
-        proposals: List[Proposal],
+        proposals: list[Proposal],
         min_confidence: float = 0.7,
-    ) -> Optional[Proposal]:
+    ) -> Proposal:
         """Select best proposal that passes verification."""
         verified = []
         for prop in proposals:
@@ -1013,12 +1012,12 @@ class ErrorRecord:
     id: str
     error_type: str
     operator: str  # Which operator/module failed
-    observation: Dict[str, Any]
+    observation: dict[str, Any]
     expected: Any
     actual: Any
     error_magnitude: float
-    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    context: Dict[str, Any] = field(default_factory=dict)
+    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
+    context: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -1047,20 +1046,20 @@ class OnlineLearningSystem:
 
     def __init__(self, learning_rate: float = 0.1):
         self.learning_rate = learning_rate
-        self.policies: Dict[str, dict[str, float]] = defaultdict(lambda: defaultdict(float))
-        self.error_history: List[ErrorRecord] = []
-        self.update_history: List[PolicyUpdate] = []
-        self.operator_error_counts: Dict[str, int] = defaultdict(int)
+        self.policies: dict[str, dict[str, float]] = defaultdict(lambda: defaultdict(float))
+        self.error_history: list[ErrorRecord] = []
+        self.update_history: list[PolicyUpdate] = []
+        self.operator_error_counts: dict[str, int] = defaultdict(int)
         self.error_counter = 0
 
     def register_error(
         self,
         error_type: str,
         operator: str,
-        observation: Dict[str, Any],
+        observation: dict[str, Any],
         expected: Any,
         actual: Any,
-        context: Dict[str, Any] = None,
+        context: dict[str, Any] = None,
     ) -> ErrorRecord:
         """Register an error for learning."""
         self.error_counter += 1
@@ -1099,7 +1098,7 @@ class OnlineLearningSystem:
 
         return 1.0 if expected != actual else 0.0
 
-    def _update_policy_from_error(self, error: ErrorRecord) -> Optional[PolicyUpdate]:
+    def _update_policy_from_error(self, error: ErrorRecord) -> PolicyUpdate:
         """Compute and apply policy update from error."""
         operator = error.operator
 
@@ -1162,12 +1161,12 @@ class Experiment:
 
     id: str
     target_variable: str
-    action: Dict[str, Any]
+    action: dict[str, Any]
     expected_information_gain: float
     cost: float
     risk: float
     utility: float
-    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
 
 
 class ActiveExperimentationSystem:
@@ -1179,9 +1178,9 @@ class ActiveExperimentationSystem:
     """
 
     def __init__(self):
-        self.experiments: List[Experiment] = []
-        self.executed_experiments: List[Experiment] = []
-        self.uncertainty_estimates: Dict[str, float] = {}
+        self.experiments: list[Experiment] = []
+        self.executed_experiments: list[Experiment] = []
+        self.uncertainty_estimates: dict[str, float] = {}
         self.experiment_counter = 0
 
     def estimate_uncertainty(self, variable: str) -> float:
@@ -1195,9 +1194,9 @@ class ActiveExperimentationSystem:
     def design_experiment(
         self,
         target_variable: str,
-        action_space: List[dict[str, Any]],
-        world_model: Optional[ObjectCentricWorldModel] = None,
-    ) -> Optional[Experiment]:
+        action_space: list[dict[str, Any]],
+        world_model: ObjectCentricWorldModel = None,
+    ) -> Experiment:
         """
         Design an experiment to reduce uncertainty about target.
         """
@@ -1240,8 +1239,8 @@ class ActiveExperimentationSystem:
     def _estimate_information_gain(
         self,
         target: str,
-        action: Dict[str, Any],
-        world_model: Optional[ObjectCentricWorldModel],
+        action: dict[str, Any],
+        world_model: ObjectCentricWorldModel,
     ) -> float:
         """Estimate information gain from action."""
         # Simplified: higher uncertainty → higher potential gain
@@ -1255,7 +1254,7 @@ class ActiveExperimentationSystem:
 
         return current_uncertainty
 
-    def _estimate_cost(self, action: Dict[str, Any]) -> float:
+    def _estimate_cost(self, action: dict[str, Any]) -> float:
         """Estimate cost of action."""
         # Simplified cost estimation
         base_cost = 0.1
@@ -1271,8 +1270,8 @@ class ActiveExperimentationSystem:
 
     def _estimate_risk(
         self,
-        action: Dict[str, Any],
-        world_model: Optional[ObjectCentricWorldModel],
+        action: dict[str, Any],
+        world_model: ObjectCentricWorldModel,
     ) -> float:
         """Estimate risk of action."""
         # Simplified risk estimation
@@ -1293,7 +1292,7 @@ class ActiveExperimentationSystem:
 
         return min(1.0, base_risk)
 
-    def _estimate_utility(self, action: Dict[str, Any]) -> float:
+    def _estimate_utility(self, action: dict[str, Any]) -> float:
         """Estimate intrinsic utility of action."""
         # Simplified utility
         return 0.2
@@ -1301,10 +1300,10 @@ class ActiveExperimentationSystem:
     def select_action(
         self,
         objective: str,
-        target: Optional[str] = None,
-        action_space: List[dict[str, Any]] = None,
-        world_model: Optional[ObjectCentricWorldModel] = None,
-    ) -> Dict[str, Any]:
+        target: str = None,
+        action_space: list[dict[str, Any]] = None,
+        world_model: ObjectCentricWorldModel = None,
+    ) -> dict[str, Any]:
         """
         Select best action for given objective.
         """
@@ -1333,7 +1332,7 @@ class ExpertResult:
     output: Any
     confidence: float
     processing_time_ms: float
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class ExpertModule(ABC):
@@ -1342,12 +1341,12 @@ class ExpertModule(ABC):
     expert_type: ExpertType
 
     @abstractmethod
-    def can_handle(self, input_data: Dict[str, Any]) -> float:
+    def can_handle(self, input_data: dict[str, Any]) -> float:
         """Return confidence that this expert can handle input (0-1)."""
         pass
 
     @abstractmethod
-    def process(self, input_data: Dict[str, Any]) -> ExpertResult:
+    def process(self, input_data: dict[str, Any]) -> ExpertResult:
         """Process input and return result."""
         pass
 
@@ -1357,12 +1356,12 @@ class ParserExpert(ExpertModule):
 
     expert_type = ExpertType.PARSER
 
-    def can_handle(self, input_data: Dict[str, Any]) -> float:
+    def can_handle(self, input_data: dict[str, Any]) -> float:
         if "text" in input_data or "code" in input_data:
             return 0.9
         return 0.1
 
-    def process(self, input_data: Dict[str, Any]) -> ExpertResult:
+    def process(self, input_data: dict[str, Any]) -> ExpertResult:
         start = time.time()
 
         text = input_data.get("text", "")
@@ -1385,14 +1384,14 @@ class CausalExpert(ExpertModule):
 
     expert_type = ExpertType.CAUSAL
 
-    def can_handle(self, input_data: Dict[str, Any]) -> float:
+    def can_handle(self, input_data: dict[str, Any]) -> float:
         if "causes" in input_data or "effects" in input_data:
             return 0.9
         if "why" in str(input_data).lower():
             return 0.8
         return 0.2
 
-    def process(self, input_data: Dict[str, Any]) -> ExpertResult:
+    def process(self, input_data: dict[str, Any]) -> ExpertResult:
         start = time.time()
 
         # Simplified causal analysis
@@ -1419,14 +1418,14 @@ class ProofExpert(ExpertModule):
 
     expert_type = ExpertType.PROOF
 
-    def can_handle(self, input_data: Dict[str, Any]) -> float:
+    def can_handle(self, input_data: dict[str, Any]) -> float:
         if "theorem" in input_data or "prove" in input_data:
             return 0.95
         if "valid" in str(input_data).lower():
             return 0.7
         return 0.1
 
-    def process(self, input_data: Dict[str, Any]) -> ExpertResult:
+    def process(self, input_data: dict[str, Any]) -> ExpertResult:
         start = time.time()
 
         # Simplified proof checking
@@ -1449,14 +1448,14 @@ class PlannerExpert(ExpertModule):
 
     expert_type = ExpertType.PLANNER
 
-    def can_handle(self, input_data: Dict[str, Any]) -> float:
+    def can_handle(self, input_data: dict[str, Any]) -> float:
         if "goal" in input_data or "plan" in input_data:
             return 0.9
         if "steps" in input_data or "sequence" in input_data:
             return 0.8
         return 0.2
 
-    def process(self, input_data: Dict[str, Any]) -> ExpertResult:
+    def process(self, input_data: dict[str, Any]) -> ExpertResult:
         """Process planning request with real brain-powered task decomposition."""
         import time
 
@@ -1478,7 +1477,7 @@ class PlannerExpert(ExpertModule):
             processing_time_ms=elapsed,
         )
 
-    def _generate_plan(self, goal: str, context: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def _generate_plan(self, goal: str, context: dict[str, Any]) -> list[dict[str, Any]]:
         """Generate intelligent plan steps using cognitive reasoning."""
         if not goal:
             return []
@@ -1551,8 +1550,8 @@ class SparseExpertRouter:
     """
 
     def __init__(self):
-        self.experts: Dict[ExpertType, ExpertModule] = {}
-        self.routing_history: List[dict[str, Any]] = []
+        self.experts: dict[ExpertType, ExpertModule] = {}
+        self.routing_history: list[dict[str, Any]] = []
         self._register_default_experts()
 
     def _register_default_experts(self) -> None:
@@ -1568,9 +1567,9 @@ class SparseExpertRouter:
 
     def route(
         self,
-        input_data: Dict[str, Any],
+        input_data: dict[str, Any],
         top_k: int = 3,
-    ) -> List[tuple[ExpertType, float]]:
+    ) -> list[tuple[ExpertType, float]]:
         """
         Route input to top-k experts.
 
@@ -1596,9 +1595,9 @@ class SparseExpertRouter:
 
     def execute(
         self,
-        input_data: Dict[str, Any],
-        expert_types: Optional[list[ExpertType]] = None,
-    ) -> Dict[ExpertType, ExpertResult]:
+        input_data: dict[str, Any],
+        expert_types: list[ExpertType] = None,
+    ) -> dict[ExpertType, ExpertResult]:
         """
         Execute input through specified experts.
 
@@ -1618,9 +1617,9 @@ class SparseExpertRouter:
 
     def arbitrate(
         self,
-        results: Dict[ExpertType, ExpertResult],
+        results: dict[ExpertType, ExpertResult],
         conflict_resolution: str = "confidence_weighted",
-    ) -> Tuple[ExpertResult, dict[str, Any]]:
+    ) -> tuple[ExpertResult, dict[str, Any]]:
         """
         Arbitrate between expert results.
 
@@ -1681,8 +1680,8 @@ class ModeSeparationController:
 
     def __init__(self):
         self.current_mode: Mode = Mode.READ
-        self.mode_history: List[ModeTransition] = []
-        self.mode_policies: Dict[Mode, dict[str, Any]] = {
+        self.mode_history: list[ModeTransition] = []
+        self.mode_policies: dict[Mode, dict[str, Any]] = {
             Mode.READ: {"allow_output": False, "allow_inference": False},
             Mode.THINK: {"allow_output": False, "allow_inference": True},
             Mode.REASON: {"allow_output": False, "allow_inference": True},
@@ -1705,7 +1704,7 @@ class ModeSeparationController:
         transition = ModeTransition(
             from_mode=self.current_mode,
             to_mode=new_mode,
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
             reason=reason,
         )
         self.mode_history.append(transition)
@@ -1721,7 +1720,7 @@ class ModeSeparationController:
         """Check if current mode allows inference."""
         return self.mode_policies[self.current_mode].get("allow_inference", False)
 
-    def enforce_read(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+    def enforce_read(self, input_data: dict[str, Any]) -> dict[str, Any]:
         """
         Enforce READ mode: process input, no output, no reasoning.
         """
@@ -1734,7 +1733,7 @@ class ModeSeparationController:
             "mode": Mode.READ.name,
         }
 
-    def enforce_reason(self, structured_input: Dict[str, Any]) -> Dict[str, Any]:
+    def enforce_reason(self, structured_input: dict[str, Any]) -> dict[str, Any]:
         """
         Enforce REASON mode: inference only, no output generation.
         """
@@ -1746,7 +1745,7 @@ class ModeSeparationController:
             "mode": Mode.REASON.name,
         }
 
-    def enforce_verify(self, proposal: Dict[str, Any]) -> Dict[str, Any]:
+    def enforce_verify(self, proposal: dict[str, Any]) -> dict[str, Any]:
         """
         Enforce VERIFY mode: validation only.
         """
@@ -1758,7 +1757,7 @@ class ModeSeparationController:
             "mode": Mode.VERIFY.name,
         }
 
-    def enforce_render(self, verified_result: Dict[str, Any]) -> str:
+    def enforce_render(self, verified_result: dict[str, Any]) -> str:
         """
         Enforce RENDER mode: output generation only.
         """
@@ -1767,7 +1766,7 @@ class ModeSeparationController:
         # Only render, no new reasoning
         return str(verified_result.get("content", ""))
 
-    def get_mode_trace(self) -> List[dict[str, Any]]:
+    def get_mode_trace(self) -> list[dict[str, Any]]:
         """Get trace of mode transitions."""
         return [
             {
@@ -1799,24 +1798,24 @@ class MetacognitiveState:
     """
 
     # Knowledge tracking
-    known_facts: Dict[str, float] = field(default_factory=dict)  # fact -> certainty
+    known_facts: dict[str, float] = field(default_factory=dict)  # fact -> certainty
 
     # Inference tracking
-    derivation_chain: List[dict[str, Any]] = field(default_factory=list)
+    derivation_chain: list[dict[str, Any]] = field(default_factory=list)
 
     # Information gaps
-    information_gaps: List[str] = field(default_factory=list)
+    information_gaps: list[str] = field(default_factory=list)
 
     # Error localization
-    operator_reliability: Dict[str, float] = field(default_factory=dict)
-    suspected_faulty_operator: Optional[str] = None
+    operator_reliability: dict[str, float] = field(default_factory=dict)
+    suspected_faulty_operator: str = None
 
     # Confidence calibration
-    confidence_history: List[tuple[str, float, bool]] = field(
+    confidence_history: list[tuple[str, float, bool]] = field(
         default_factory=list
     )  # (claim, confidence, was_correct)
 
-    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
 
     def record_inference(
         self, premise: str, conclusion: str, operator: str, confidence: float
@@ -1828,7 +1827,7 @@ class MetacognitiveState:
                 "conclusion": conclusion,
                 "operator": operator,
                 "confidence": confidence,
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             }
         )
 
@@ -1855,7 +1854,7 @@ class MetacognitiveState:
         if error_severity > 0.7:
             self.suspected_faulty_operator = operator
 
-    def get_summary(self) -> Dict[str, Any]:
+    def get_summary(self) -> dict[str, Any]:
         """Get summary of metacognitive state."""
         return {
             "known_facts_count": len(self.known_facts),
@@ -1880,21 +1879,21 @@ class MetacognitiveSupervisor:
 
     def __init__(self):
         self.current_state = MetacognitiveState()
-        self.state_history: List[MetacognitiveState] = []
+        self.state_history: list[MetacognitiveState] = []
 
-    def what_is_known(self) -> Dict[str, float]:
+    def what_is_known(self) -> dict[str, float]:
         """Report what is known with certainty levels."""
         return self.current_state.known_facts.copy()
 
-    def what_was_inferred(self, depth: int = 5) -> List[dict[str, Any]]:
+    def what_was_inferred(self, depth: int = 5) -> list[dict[str, Any]]:
         """Report recent inference chain."""
         return self.current_state.derivation_chain[-depth:]
 
-    def what_is_missing(self) -> List[str]:
+    def what_is_missing(self) -> list[str]:
         """Report information gaps."""
         return self.current_state.information_gaps.copy()
 
-    def where_is_error_likely(self) -> Dict[str, Any]:
+    def where_is_error_likely(self) -> dict[str, Any]:
         """Report error localization."""
         return {
             "suspected_operator": self.current_state.suspected_faulty_operator,
@@ -1911,7 +1910,7 @@ class MetacognitiveSupervisor:
             ),
         }
 
-    def which_operator_failed(self) -> Optional[str]:
+    def which_operator_failed(self) -> str:
         """Report which operator most likely failed."""
         return self.current_state.suspected_faulty_operator
 
@@ -1970,7 +1969,7 @@ class AMOSCognitiveSubstrate:
         # Metacognitive supervision
         self.metacognition = MetacognitiveSupervisor()
 
-    def perceive(self, observation: Dict[str, Any]) -> None:
+    def perceive(self, observation: dict[str, Any]) -> None:
         """
         Perceive and integrate observation into world model.
         """
@@ -1999,8 +1998,8 @@ class AMOSCognitiveSubstrate:
     def think(
         self,
         task: str,
-        context: Dict[str, Any] = None,
-    ) -> Dict[str, Any]:
+        context: dict[str, Any] = None,
+    ) -> dict[str, Any]:
         """
         Execute thinking with full substrate support.
         """
@@ -2046,7 +2045,7 @@ class AMOSCognitiveSubstrate:
         self,
         proposition: Any,
         verification_method: VerificationMethod = VerificationMethod.LOGICAL,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Propose and verify through dual reasoning system.
         """
@@ -2092,10 +2091,10 @@ class AMOSCognitiveSubstrate:
         self,
         error_type: str,
         operator: str,
-        observation: Dict[str, Any],
+        observation: dict[str, Any],
         expected: Any,
         actual: Any,
-    ) -> Optional[PolicyUpdate]:
+    ) -> PolicyUpdate:
         """
         Learn from error.
         """
@@ -2129,8 +2128,8 @@ class AMOSCognitiveSubstrate:
     def select_experiment(
         self,
         target_variable: str,
-        action_space: List[dict[str, Any]],
-    ) -> Dict[str, Any]:
+        action_space: list[dict[str, Any]],
+    ) -> dict[str, Any]:
         """
         Select action to reduce uncertainty.
         """
@@ -2158,7 +2157,7 @@ class AMOSCognitiveSubstrate:
 
         return None
 
-    def get_metacognitive_report(self) -> Dict[str, Any]:
+    def get_metacognitive_report(self) -> dict[str, Any]:
         """
         Get full metacognitive report.
         """
@@ -2187,9 +2186,9 @@ class AMOSCognitiveSubstrate:
 
     def execute_full_cycle(
         self,
-        observation: Dict[str, Any],
+        observation: dict[str, Any],
         task: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Execute full cognitive cycle.
         """
@@ -2226,7 +2225,7 @@ def create_substrate() -> AMOSCognitiveSubstrate:
 
 
 # Global instance (singleton pattern)
-_global_substrate: Optional[AMOSCognitiveSubstrate] = None
+_global_substrate: AMOSCognitiveSubstrate = None
 
 
 def get_substrate() -> AMOSCognitiveSubstrate:

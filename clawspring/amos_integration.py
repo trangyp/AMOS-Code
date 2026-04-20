@@ -6,16 +6,10 @@ Adds 'AMOS' tool for 6-layer cognitive reasoning with all built-in tools.
 
 import json
 import sys
-from pathlib import Path
-
-# Add parent directory to path for AMOS imports
-_PARENT = Path(__file__).parent.parent
-if str(_PARENT) not in sys.path:
-    sys.path.insert(0, str(_PARENT))
 
 from amos_agent_bridge import AMOSAgentBridge
-from tool_registry import ToolDef, register_tool
-from typing import Optional
+
+from clawspring.tool_registry import ToolDef, register_tool
 
 
 class AMOSClawspringIntegration:
@@ -24,7 +18,7 @@ class AMOSClawspringIntegration:
     """
 
     def __init__(self):
-        self._bridge: Optional[AMOSAgentBridge] = None
+        self._bridge: AMOSAgentBridge | None = None
         self._initialized = False
 
     def _ensure_initialized(self):
@@ -47,6 +41,7 @@ class AMOSClawspringIntegration:
 
         Returns:
             Structured analysis with AMOS quality checks
+
         """
         self._ensure_initialized()
 
@@ -85,6 +80,7 @@ class AMOSClawspringIntegration:
 
         Returns:
             Task analysis with developer recommendations
+
         """
         self._ensure_initialized()
 
@@ -128,6 +124,7 @@ class AMOSClawspringIntegration:
 
         Returns:
             Architecture design with UBI alignment check
+
         """
         self._ensure_initialized()
 
@@ -175,6 +172,7 @@ class AMOSClawspringIntegration:
 
         Returns:
             Audit report with law compliance status
+
         """
         self._ensure_initialized()
 
@@ -219,7 +217,7 @@ class AMOSClawspringIntegration:
 
 
 # Global integration instance
-_integration: Optional[AMOSClawspringIntegration] = None
+_integration: AMOSClawspringIntegration | None = None
 
 
 def get_amos_integration() -> AMOSClawspringIntegration:
@@ -316,6 +314,7 @@ def _amos_tool(params: dict, config: dict) -> str:
 
     Returns:
         AMOS analysis result
+
     """
     amos = get_amos_integration()
     action = params.get("action", "think")

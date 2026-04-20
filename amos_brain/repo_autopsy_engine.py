@@ -5,13 +5,15 @@ Section 10 of Axiom One: Automatic fault analysis and repair for repositories.
 
 from __future__ import annotations
 
-
 import asyncio
 import re
 import subprocess
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
+
 UTC = timezone.utc
 from enum import Enum
 from pathlib import Path
@@ -145,9 +147,9 @@ class AutopsyReport:
     request_id: str = ""
     patterns_found: list[PatternMatch] = field(default_factory=list)
     fault_locations: list[FaultLocation] = field(default_factory=list)
-    impact_graph: Optional[ImpactGraph] = None
+    impact_graph: ImpactGraph = None
     proposed_fixes: list[ProposedFix] = field(default_factory=list)
-    recommended_fix: Optional[GeneratedFix] = None
+    recommended_fix: GeneratedFix = None
     estimated_repair_time: int = 0  # minutes
     requires_human_review: bool = True
     generated_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
@@ -240,10 +242,10 @@ class AutopsySession:
     collected_evidence: list[Evidence] = field(default_factory=list)
     identified_patterns: list[PatternMatch] = field(default_factory=list)
     fault_locations: list[FaultLocation] = field(default_factory=list)
-    impact_graph: Optional[ImpactGraph] = None
+    impact_graph: ImpactGraph = None
     generated_fixes: list[GeneratedFix] = field(default_factory=list)
     validation_results: list[ValidationResult] = field(default_factory=list)
-    report: Optional[AutopsyReport] = None
+    report: AutopsyReport = None
     started_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     completed_at: datetime = None
 
@@ -569,7 +571,7 @@ class FixGenerator:
         pattern: FailurePattern,
         fault_locations: list[FaultLocation],
         evidence: list[Evidence],
-    ) -> Optional[GeneratedFix]:
+    ) -> GeneratedFix:
         """Generate fix for identified pattern."""
 
         if not pattern.auto_repair_eligible:
@@ -947,7 +949,7 @@ class RepoAutopsyEngine:
 
         print(f"[AUTOPSY] {session.request.id}: Report complete - {len(proposed)} fixes proposed")
 
-    def get_session(self, session_id: str) -> Optional[AutopsySession]:
+    def get_session(self, session_id: str) -> AutopsySession:
         """Get autopsy session by ID."""
         return self._sessions.get(session_id)
 
@@ -957,7 +959,7 @@ class RepoAutopsyEngine:
 
 
 # Global engine instance
-_autopsy_engine: Optional[RepoAutopsyEngine] = None
+_autopsy_engine: RepoAutopsyEngine = None
 
 
 def get_repo_autopsy_engine() -> RepoAutopsyEngine:

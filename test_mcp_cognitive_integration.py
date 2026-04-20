@@ -20,15 +20,15 @@ sys.path.insert(0, str(_AMOS_ROOT))
 sys.path.insert(0, str(_AMOS_ROOT / "AMOS_ORGANISM_OS"))
 sys.path.insert(0, str(_AMOS_ROOT / "clawspring"))
 
+
 from amos_cognitive_bridge_v2 import AMOSCognitiveBridge, get_cognitive_bridge
-from typing import List
 
 
 class MCPIntegrationTester:
     """Test MCP server integration with cognitive bridge."""
 
     def __init__(self):
-        self.results: List[dict] = []
+        self.results: list[dict] = []
 
     async def run_all_tests(self) -> bool:
         """Run all integration tests."""

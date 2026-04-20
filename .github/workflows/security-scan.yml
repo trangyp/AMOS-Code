@@ -137,12 +137,10 @@ jobs:
       - name: Run OSV-Scanner
         run: |
           osv-scanner scan -r . --format table
-        continue-on-error: true
 
       - name: Run OSV-Scanner with SARIF output
         run: |
           osv-scanner scan -r . --format sarif --output osv-results.sarif
-        continue-on-error: true
 
       - name: Upload OSV results to GitHub Security
         uses: github/codeql-action/upload-sarif@v3
@@ -170,9 +168,8 @@ jobs:
 
       - name: Run Bandit
         run: |
-          bandit -r . -f sarif -o bandit-results.sarif --skip B101,B311 || true
+          bandit -r . -f sarif -o bandit-results.sarif --skip B101,B311
           bandit -r . -f screen
-        continue-on-error: true
 
       - name: Upload Bandit results to GitHub Security
         uses: github/codeql-action/upload-sarif@v3

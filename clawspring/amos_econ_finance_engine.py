@@ -1,12 +1,15 @@
 """AMOS Economics & Finance Engine - Market and financial analysis."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class EconFinanceDomain(Enum):
     """Economics and finance domain classifications."""
+
     MICRO = "micro"
     MACRO = "macro"
     PUBLIC_FINANCE = "public_finance"
@@ -27,13 +30,11 @@ class MicroEconomicsKernel:
     """Kernel for microeconomic analysis."""
 
     def __init__(self):
-        self.firms: List[dict] = []
-        self.households: List[dict] = []
-        self.markets: List[dict] = []
+        self.firms: list[dict] = []
+        self.households: list[dict] = []
+        self.markets: list[dict] = []
 
-    def add_firm(
-        self, name: str, industry: str, employees: int, revenue_m: float
-    ) -> dict:
+    def add_firm(self, name: str, industry: str, employees: int, revenue_m: float) -> dict:
         """Add firm."""
         firm = {
             "name": name,
@@ -64,9 +65,7 @@ class MicroEconomicsKernel:
         self.markets.append(market)
         return market
 
-    def calculate_elasticity(
-        self, pct_change_quantity: float, pct_change_price: float
-    ) -> dict:
+    def calculate_elasticity(self, pct_change_quantity: float, pct_change_price: float) -> dict:
         """Calculate price elasticity."""
         if pct_change_price == 0:
             return {"error": "Zero price change"}
@@ -78,7 +77,7 @@ class MicroEconomicsKernel:
             "elastic": abs(elasticity) > 1,
         }
 
-    def get_principles(self) -> List[str]:
+    def get_principles(self) -> list[str]:
         return [
             "Supply and demand equilibrium",
             "Consumer choice theory",
@@ -91,12 +90,10 @@ class MacroEconomicsKernel:
     """Kernel for macroeconomic analysis."""
 
     def __init__(self):
-        self.countries: List[dict] = []
-        self.indicators: List[dict] = []
+        self.countries: list[dict] = []
+        self.indicators: list[dict] = []
 
-    def add_country(
-        self, name: str, gdp_b: float, population_m: float, currency: str
-    ) -> dict:
+    def add_country(self, name: str, gdp_b: float, population_m: float, currency: str) -> dict:
         """Add country economy."""
         country = {
             "name": name,
@@ -135,7 +132,7 @@ class MacroEconomicsKernel:
             "relationship": "Okuns_Law",
         }
 
-    def get_principles(self) -> List[str]:
+    def get_principles(self) -> list[str]:
         return [
             "GDP and economic growth",
             "Inflation and monetary policy",
@@ -148,12 +145,10 @@ class PublicFinanceKernel:
     """Kernel for public finance analysis."""
 
     def __init__(self):
-        self.tax_systems: List[dict] = []
-        self.spending_programs: List[dict] = []
+        self.tax_systems: list[dict] = []
+        self.spending_programs: list[dict] = []
 
-    def add_tax_system(
-        self, name: str, tax_type: str, rate_pct: float, revenue_b: float
-    ) -> dict:
+    def add_tax_system(self, name: str, tax_type: str, rate_pct: float, revenue_b: float) -> dict:
         """Add tax system."""
         tax = {
             "name": name,
@@ -177,9 +172,7 @@ class PublicFinanceKernel:
         self.spending_programs.append(program)
         return program
 
-    def calculate_deficit(
-        self, revenue_b: float, spending_b: float
-    ) -> dict:
+    def calculate_deficit(self, revenue_b: float, spending_b: float) -> dict:
         """Calculate budget deficit/surplus."""
         deficit = spending_b - revenue_b
         return {
@@ -202,7 +195,7 @@ class PublicFinanceKernel:
             "sustainable": ratio < 90,  # Rough heuristic
         }
 
-    def get_principles(self) -> List[str]:
+    def get_principles(self) -> list[str]:
         return [
             "Taxation and revenue",
             "Government spending",
@@ -215,12 +208,10 @@ class FinancialSystemKernel:
     """Kernel for financial system analysis."""
 
     def __init__(self):
-        self.banks: List[dict] = []
-        self.assets: List[dict] = []
+        self.banks: list[dict] = []
+        self.assets: list[dict] = []
 
-    def add_bank(
-        self, name: str, assets_b: float, deposits_b: float, capital_ratio: float
-    ) -> dict:
+    def add_bank(self, name: str, assets_b: float, deposits_b: float, capital_ratio: float) -> dict:
         """Add bank."""
         bank = {
             "name": name,
@@ -231,9 +222,7 @@ class FinancialSystemKernel:
         self.banks.append(bank)
         return bank
 
-    def add_asset(
-        self, name: str, asset_type: str, value: float, risk_rating: str
-    ) -> dict:
+    def add_asset(self, name: str, asset_type: str, value: float, risk_rating: str) -> dict:
         """Add financial asset."""
         asset = {
             "name": name,
@@ -244,9 +233,7 @@ class FinancialSystemKernel:
         self.assets.append(asset)
         return asset
 
-    def calculate_leverage_ratio(
-        self, tier1_capital: float, total_assets: float
-    ) -> dict:
+    def calculate_leverage_ratio(self, tier1_capital: float, total_assets: float) -> dict:
         """Calculate Tier 1 leverage ratio."""
         if total_assets == 0:
             return {"error": "Zero assets"}
@@ -258,9 +245,7 @@ class FinancialSystemKernel:
             "min_requirement_met": ratio >= 0.03,  # Basel III minimum
         }
 
-    def portfolio_return(
-        self, weights: List[float], returns: List[float]
-    ) -> dict:
+    def portfolio_return(self, weights: list[float], returns: list[float]) -> dict:
         """Calculate weighted portfolio return."""
         if len(weights) != len(returns):
             return {"error": "Weights and returns length mismatch"}
@@ -273,7 +258,7 @@ class FinancialSystemKernel:
             "portfolio_return": portfolio_return,
         }
 
-    def get_principles(self) -> List[str]:
+    def get_principles(self) -> list[str]:
         return [
             "Banking and leverage",
             "Asset pricing",
@@ -294,14 +279,10 @@ class EconFinanceEngine:
         self.public_finance_kernel = PublicFinanceKernel()
         self.financial_kernel = FinancialSystemKernel()
 
-    def analyze(
-        self, description: str, domains: Optional[List[str]] = None
-    ) -> Dict[str, Any]:
+    def analyze(self, description: str, domains: list[str | None] = None) -> dict[str, Any]:
         """Run economic/financial analysis across specified domains."""
-        domains = domains or [
-            "micro", "macro", "public_finance", "financial_system"
-        ]
-        results: Dict[str, Any] = {}
+        domains = domains or ["micro", "macro", "public_finance", "financial_system"]
+        results: dict[str, Any] = {}
         if "micro" in domains:
             results["micro"] = self._analyze_micro(description)
         if "macro" in domains:
@@ -368,28 +349,28 @@ class EconFinanceEngine:
                     if key not in ("principles", "query"):
                         lines.append(f"- **{key}**: {value}")
                 if "principles" in data:
-                    lines.append(
-                        f"- **Principles**: {', '.join(data['principles'][:2])}..."
-                    )
-        lines.extend([
-            "",
-            "## Gaps and Limitations",
-            "- Real-time market data not available",
-            "- Long-horizon forecasts inherently uncertain",
-            "- Personalized investment advice not provided",
-            "- Country-specific regulations require manual lookup",
-            "",
-            "## Safety Disclaimer",
-            "Does not provide personalized investment advice. "
-            "All economic projections are subject to significant uncertainty. "
-            "Consult qualified financial professionals for investment decisions. "
-            "Avoid illegal financial behavior.",
-        ])
+                    lines.append(f"- **Principles**: {', '.join(data['principles'][:2])}...")
+        lines.extend(
+            [
+                "",
+                "## Gaps and Limitations",
+                "- Real-time market data not available",
+                "- Long-horizon forecasts inherently uncertain",
+                "- Personalized investment advice not provided",
+                "- Country-specific regulations require manual lookup",
+                "",
+                "## Safety Disclaimer",
+                "Does not provide personalized investment advice. "
+                "All economic projections are subject to significant uncertainty. "
+                "Consult qualified financial professionals for investment decisions. "
+                "Avoid illegal financial behavior.",
+            ]
+        )
         return "\n".join(lines)
 
 
 # Singleton instance
-_econ_finance_engine: Optional[EconFinanceEngine] = None
+_econ_finance_engine: EconFinanceEngine | None = None
 
 
 def get_econ_finance_engine() -> EconFinanceEngine:

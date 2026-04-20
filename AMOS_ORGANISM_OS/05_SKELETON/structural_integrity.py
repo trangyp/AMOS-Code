@@ -1,9 +1,11 @@
 """Structural Integrity — System integrity checking for AMOS."""
 
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from enum import Enum
-from typing import Any, Dict, List
+from typing import Any
 
 
 class IntegrityLevel(Enum):
@@ -21,7 +23,7 @@ class IntegrityCheck:
     passed: bool
     level: IntegrityLevel
     message: str
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: dict[str, Any] = field(default_factory=dict)
     timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
 
@@ -29,10 +31,10 @@ class StructuralIntegrity:
     """Monitors structural integrity of the organism."""
 
     def __init__(self):
-        self._checks: Dict[str, Any] = {}
-        self._history: List[IntegrityCheck] = []
+        self._checks: dict[str, Any] = {}
+        self._history: list[IntegrityCheck] = []
 
-    def check(self) -> List[IntegrityCheck]:
+    def check(self) -> list[IntegrityCheck]:
         """Run all integrity checks."""
         results = []
 
@@ -80,7 +82,7 @@ class StructuralIntegrity:
             message="Memory utilization normal",
         )
 
-    def status(self) -> Dict[str, Any]:
+    def status(self) -> dict[str, Any]:
         """Get integrity status."""
         if not self._history:
             return {"status": IntegrityLevel.HEALTHY.value, "checks_run": 0}

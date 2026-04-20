@@ -8,9 +8,11 @@ Author: AMOS System
 Version: 3.0.0
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 from .execution_slot import ExecutionSlot, SlotMode
 from .ledger import Ledger
@@ -56,7 +58,7 @@ class AxiomOne:
         self.ledger = Ledger() if self.config.enable_ledger else None
 
         # Active slots
-        self._active_slots: Dict[str, ExecutionSlot] = {}
+        self._active_slots: dict[str, ExecutionSlot] = {}
 
     def execute(self, objective: str, mode: Optional[SlotMode] = None) -> ExecutionSlot:
         """
@@ -171,7 +173,7 @@ class AxiomOne:
 
         return dag
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get full system status."""
         return {
             "mode": self.config.mode.value,

@@ -7,7 +7,7 @@ Version: 3.0.0
 """
 
 from amos_brain.canon_learning_engine import canon_learn
-from amos_brain.canon_memory_system import canon_store, canon_search
+from amos_brain.canon_memory_system import canon_search, canon_store
 
 
 def test_canon_learning():
@@ -23,7 +23,7 @@ def test_canon_learning():
         success=True,
     )
 
-    print(f"✅ Learning successful")
+    print("✅ Learning successful")
     print(f"   Patterns learned: {len(result.learned_patterns)}")
     print(f"   Canon sources: {len(result.canon_sources_used)}")
     print(f"   Learning time: {result.learning_time_ms:.2f}ms")
@@ -90,7 +90,7 @@ def test_learning_stats():
     engine = get_canon_learning_engine()
     stats = engine.get_learning_stats()
 
-    print(f"✅ Learning stats:")
+    print("✅ Learning stats:")
     print(f"   Patterns cached: {stats['patterns_cached']}")
     print(f"   Domains: {stats['domains']}")
     print(f"   Canon entries available: {stats['canon_entries_available']}")
@@ -107,7 +107,7 @@ def test_memory_stats():
     system = get_canon_memory_system()
     stats = system.get_memory_stats()
 
-    print(f"✅ Memory stats:")
+    print("✅ Memory stats:")
     print(f"   Total memories: {stats['total_memories']}")
     print(f"   Domains: {stats['domains']}")
     print(f"   Domain breakdown: {stats['domain_breakdown']}")

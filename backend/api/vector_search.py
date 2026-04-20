@@ -1,4 +1,6 @@
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
+
+from typing import Any, Optional
 
 """Vector search with embeddings - Real semantic search for AMOS.
 
@@ -16,17 +18,15 @@ import hashlib
 import sys
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-
-UTC = timezone.utc
 from pathlib import Path
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
+UTC = timezone.utc
+
 AMOS_BRAIN_PATH = Path(__file__).parent.parent.parent / "clawspring" / "amos_brain"
 if str(AMOS_BRAIN_PATH) not in sys.path:
-    sys.path.insert(0, str(AMOS_BRAIN_PATH))
-
 
 from amos_kernel_runtime import AMOSKernelRuntime  # noqa: E402
 
@@ -38,7 +38,7 @@ class IndexRequest(BaseModel):
 
     id: str
     text: str
-    metadata: Dict[str, Any] = {}
+    metadata: dict[str, Any] = {}
 
 
 class SearchRequest(BaseModel):
@@ -47,7 +47,7 @@ class SearchRequest(BaseModel):
     query: str
     top_k: int = 5
     use_brain_ranking: bool = True
-    filter_metadata: Dict[str, Any] = None
+    filter_metadata: dict[str, Any] = None
 
 
 class SearchResult(BaseModel):
@@ -55,16 +55,16 @@ class SearchResult(BaseModel):
 
     id: str
     text: str
-    score: float
+    score:float
     brain_score: Optional[float] = None
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
 
 
 class SearchResponse(BaseModel):
     """Search response."""
 
     query: str
-    results: List[SearchResult]
+    results: list[SearchResult]
     total_indexed: int
     search_time_ms: float
     brain_enhanced: bool
@@ -76,8 +76,8 @@ class VectorDocument:
 
     id: str
     text: str
-    embedding: List[float]
-    metadata: Dict[str, Any]
+    embedding: list[float]
+    metadata: dict[str, Any]
     indexed_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
     def compute_hash(self) -> str:
@@ -91,10 +91,10 @@ class SimpleVectorIndex:
 
     def __init__(self, dimension: int = 384):
         self.dimension = dimension
-        self.documents: Dict[str, VectorDocument] = {}
+        self.documents: dict[str, VectorDocument] = {}
         self._lock = asyncio.Lock()
 
-    def _simple_embedding(self, text: str) -> List[float]:
+    def _simple_embedding(self, text: str) -> list[float]:
         """Generate simple deterministic embedding.
 
         In production, replace with sentence-transformers:
@@ -112,7 +112,7 @@ class SimpleVectorIndex:
             embedding.append(val)
         return embedding
 
-    def _cosine_similarity(self, a: List[float], b: List[float]) -> float:
+    def _cosine_similarity(self, a: list[float], b: list[float]) -> float:
         """Compute cosine similarity between two vectors."""
         dot = sum(x * y for x, y in zip(a, b))
         norm_a = sum(x * x for x in a) ** 0.5
@@ -128,10 +128,10 @@ class SimpleVectorIndex:
 
     async def search(
         self,
-        query_embedding: List[float],
+        query_embedding: list[float],
         top_k: int = 5,
-        filter_metadata: Dict[str, Any] = None,
-    ) -> List[tuple[str, float]]:
+        filter_metadata: dict[str, Any] = None,
+    ) -> list[tuple[str, float]]:
         """Search for similar documents."""
         async with self._lock:
             scores = []
@@ -157,7 +157,7 @@ class SimpleVectorIndex:
                 return True
             return False
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get index statistics."""
         return {
             "total_documents": len(self.documents),
@@ -173,7 +173,7 @@ class BrainEnhancedSearcher:
         self.index = SimpleVectorIndex()
         self.kernel = AMOSKernelRuntime()
 
-    async def index_document(self, request: IndexRequest) -> Dict[str, Any]:
+    async def index_document(self, request: IndexRequest) -> dict[str, Any]:
         """Index a document with embedding."""
         embedding = self.index._simple_embedding(request.text)
 
@@ -267,7 +267,7 @@ class BrainEnhancedSearcher:
             brain_enhanced=request.use_brain_ranking,
         )
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get searcher statistics."""
         return self.index.get_stats()
 
@@ -277,7 +277,7 @@ _searcher = BrainEnhancedSearcher()
 
 
 @router.post("/index", response_model=dict[str, Any])
-async def index_document(request: IndexRequest) -> Dict[str, Any]:
+async def index_document(request: IndexRequest) -> dict[str, Any]:
     """Index a document for vector search."""
     if not request.text.strip():
         raise HTTPException(status_code=400, detail="Text cannot be empty")
@@ -301,7 +301,7 @@ async def search_documents(request: SearchRequest) -> SearchResponse:
 
 
 @router.delete("/document/{doc_id}")
-async def delete_document(doc_id: str) -> Dict[str, bool]:
+async def delete_document(doc_id: str) -> dict[str, bool]:
     """Delete a document from the index."""
     deleted = await _searcher.index.delete_document(doc_id)
     if not deleted:
@@ -310,13 +310,13 @@ async def delete_document(doc_id: str) -> Dict[str, bool]:
 
 
 @router.get("/stats")
-async def get_stats() -> Dict[str, Any]:
+async def get_stats() -> dict[str, Any]:
     """Get vector search index statistics."""
     return _searcher.get_stats()
 
 
 @router.post("/batch/index")
-async def batch_index(documents: List[IndexRequest]) -> Dict[str, Any]:
+async def batch_index(documents: list[IndexRequest]) -> dict[str, Any]:
     """Index multiple documents in batch."""
     results = []
     for doc in documents:

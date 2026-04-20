@@ -13,7 +13,7 @@ import json
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 
 @dataclass
@@ -24,7 +24,7 @@ class CognitiveEngine:
     version: str
     description: str
     domain: str
-    data: Dict[str, Any]
+    data: dict[str, Any]
     file_path: Path
     size_bytes: int
 
@@ -43,10 +43,10 @@ class CognitiveEngineActivator:
     ENGINE_DIR = Path(__file__).parent.parent.parent / "_AMOS_BRAIN" / "Cognitive"
 
     def __init__(self):
-        self.engines: Dict[str, CognitiveEngine] = {}
+        self.engines: dict[str, CognitiveEngine] = {}
         self._loaded = False
 
-    def load_all_engines(self) -> Dict[str, CognitiveEngine]:
+    def load_all_engines(self) -> dict[str, CognitiveEngine]:
         """Load all cognitive engines from _AMOS_BRAIN/Cognitive/."""
         if not self.ENGINE_DIR.exists():
             print(f"[COGNITIVE] Engine directory not found: {self.ENGINE_DIR}")
@@ -127,7 +127,7 @@ class CognitiveEngineActivator:
             self.load_all_engines()
         return self.engines.get(name)
 
-    def query_domain(self, domain: str, query: str) -> Dict[str, Any]:
+    def query_domain(self, domain: str, query: str) -> dict[str, Any]:
         """Query engines in a specific domain."""
         if not self._loaded:
             self.load_all_engines()
@@ -150,7 +150,7 @@ class CognitiveEngineActivator:
             "engines": results,
         }
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get activator status."""
         if not self._loaded:
             self.load_all_engines()

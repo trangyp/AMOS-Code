@@ -21,7 +21,6 @@ import sys
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Dict, List, Optional
 
 # Add project to path
 sys.path.insert(0, str(Path(__file__).parent))
@@ -51,7 +50,7 @@ class EcosystemTool:
     description: str
     command: str
     lines: int
-    keywords: List[str]
+    keywords: list[str]
 
 
 class AMOSEcosystemController:
@@ -66,7 +65,7 @@ class AMOSEcosystemController:
 
     def __init__(self):
         self.root = Path(__file__).parent
-        self.tools: Dict[ToolType, EcosystemTool] = {}
+        self.tools: dict[ToolType, EcosystemTool] = {}
         self._register_tools()
 
     def _register_tools(self) -> None:
@@ -186,7 +185,7 @@ class AMOSEcosystemController:
         request_lower = request.lower()
 
         # Score each tool based on keyword matches
-        scores: Dict[ToolType, int] = {}
+        scores: dict[ToolType, int] = {}
 
         for tool_type, tool in self.tools.items():
             if tool_type == ToolType.CONTROLLER:
@@ -215,9 +214,13 @@ class AMOSEcosystemController:
         command = f"{tool.command} {args}".strip()
 
         try:
+            # SECURITY: Use shlex.split() and shell=False to prevent injection
+            import shlex
+
+            cmd_parts = shlex.split(command)
             result = subprocess.run(
-                command,
-                shell=True,
+                cmd_parts,
+                shell=False,
                 capture_output=False,  # Show output to user
                 text=True,
                 timeout=120,

@@ -1,0 +1,379 @@
+# ============================================================================
+# AMOS-INVEST: Quantitative Finance Platform
+# Tool Lattice: Six-Kernel Architecture for Deterministic Financial Systems
+# ============================================================================
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "amos-invest"
+version = "1.0.0"
+description = "AMOS-Invest: Deterministic quantitative finance platform with Pydantic schemas, property-tested invariants, and layered architecture"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Apache-2.0" }
+authors = [
+    { name = "Trang Phan", email = "trang@amos-project.dev" }
+]
+keywords = [
+    "quantitative-finance",
+    "algorithmic-trading",
+    "portfolio-management",
+    "risk-engine",
+    "deterministic-computation",
+    "pydantic",
+    "property-testing"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Financial and Insurance Industry",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Office/Business :: Financial :: Investment",
+    "Topic :: Scientific/Engineering :: Mathematics",
+]
+
+# ============================================================================
+# KERNEL 1: Bootstrap Dependencies
+# ============================================================================
+dependencies = [
+    # Core runtime
+    "pydantic>=2.5.0",           # Schema kernel - canonical state
+    "pydantic-settings>=2.1.0",  # Configuration management
+    "typing-extensions>=4.9.0",    # Extended type hints
+]
+
+[project.optional-dependencies]
+# ============================================================================
+# KERNEL 2: Schema & Deterministic Core
+# ============================================================================
+schema = [
+    "pydantic>=2.5.0",
+    "hypothesis>=6.92.0",          # Property-based invariant testing
+    "attrs>=23.2.0",               # Class definitions with validation
+]
+
+# ============================================================================
+# KERNEL 3: Numeric Speed Layer
+# ============================================================================
+numeric = [
+    "numpy>=1.26.0",               # Vectorized array computing
+    "polars>=0.20.0",              # High-performance DataFrames
+    "numba>=0.59.0",               # JIT compilation for hot loops
+    "pandas>=2.1.0",               # Time-series operations
+]
+
+numeric-gpu = [
+    "numpy>=1.26.0",
+    "polars>=0.20.0",
+    "numba>=0.59.0",
+    "jax[cuda12_pip]>=0.4.20",     # GPU-accelerated JIT + autodiff
+    "jaxlib>=0.4.20",
+    "pandas>=2.1.0",
+]
+
+# ============================================================================
+# KERNEL 4: Code-Agent Accelerators (Install separately after core settles)
+# ============================================================================
+agent = [
+    "aider-chat>=0.24.0",          # Terminal pair programming
+]
+
+# ============================================================================
+# KERNEL 5: Enforcement Layer
+# ============================================================================
+enforcement = [
+    "ruff>=0.1.0",                 # Fast linting and formatting
+    "mypy>=1.7.0",                 # Static type checking
+    "bandit[toml]>=1.7.7",         # Security linting
+    "pip-audit>=2.7.0",            # Vulnerability scanning
+    "import-linter>=2.0.0",        # Architecture enforcement
+    "jscpd>=3.5.0",                # Duplicate code detection
+    "deptry>=0.15.0",              # Dependency audit
+    "pre-commit>=3.6.0",           # Git hook automation
+]
+
+# ============================================================================
+# KERNEL 6: Test & Async Layer
+# ============================================================================
+test = [
+    "pytest>=7.4.0",               # Test runner
+    "pytest-asyncio>=0.21.0",      # Async test support
+    "pytest-cov>=4.1.0",           # Coverage reporting
+    "hypothesis>=6.92.0",          # Property-based testing
+    "respx>=0.20.0",               # HTTPX mocking
+    "time-machine>=2.13.0",        # Time manipulation for tests
+]
+
+# ============================================================================
+# AMOS-INVEST DOMAIN LAYERS (L0-L15 mapped to dependencies)
+# ============================================================================
+
+# L0-L1: Law, Invariants, Architecture Authority
+law = [
+    "pydantic>=2.5.0",
+    "hypothesis>=6.92.0",
+    "import-linter>=2.0.0",
+]
+
+# L2-L3: State and Semantics
+state = [
+    "pydantic>=2.5.0",
+    "ruff>=0.1.0",
+    "mypy>=1.7.0",
+    "deptry>=0.15.0",
+]
+
+# L4-L5: Dynamics, Bridges, Routing, Execution Math
+dynamics = [
+    "numpy>=1.26.0",
+    "polars>=0.20.0",
+    "numba>=0.59.0",
+    "pandas>=2.1.0",
+]
+
+# L6-L7: Observation, Uncertainty, Async Ingestion
+observation = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "polars>=0.20.0",
+    "numpy>=1.26.0",
+]
+
+# L8-L9: Constraints and Verification
+constraints = [
+    "hypothesis>=6.92.0",
+    "pytest>=7.4.0",
+    "import-linter>=2.0.0",
+]
+
+# L10-L11: Planning and Runtime (Code agents)
+planning = [
+    "aider-chat>=0.24.0",
+]
+
+# L12-L15: Ledger, Adaptation, Identity, Governance
+governance = [
+    "pydantic>=2.5.0",
+    "hypothesis>=6.92.0",
+    "pytest>=7.4.0",
+    "bandit[toml]>=1.7.7",
+    "pip-audit>=2.7.0",
+]
+
+# ============================================================================
+# AMOS-INVEST FINANCE DOMAIN MODULES
+# ============================================================================
+market = [
+    "yfinance>=0.2.28",            # Yahoo Finance data
+    "alpha-vantage>=2.3.1",        # Alpha Vantage API
+    "polygon-api-client>=1.12",  # Polygon.io market data
+    "websockets>=12.0",            # Real-time market feeds
+]
+
+execution = [
+    "ib-insync>=0.9.70",           # Interactive Brokers
+    "alpaca-py>=0.15.0",           # Alpaca trading API
+    "ccxt>=4.2.0",                 # Crypto exchange unified API
+]
+
+risk = [
+    "pyfolio-reloaded>=0.9.5",     # Performance analytics
+    "empyrical>=0.5.5",            # Financial metrics
+    "arch>=6.3.0",                 # Volatility modeling
+]
+
+# Full installation: pip install -e ".[all]"
+all = [
+    "amos-invest[schema,numeric,test,enforcement,market,execution,risk]",
+]
+
+dev = [
+    "amos-invest[all,agent]",
+]
+
+[project.scripts]
+invest = "amos_invest.cli:main"
+invest-cli = "amos_invest.cli:interactive"
+
+[project.urls]
+Homepage = "https://github.com/trangyp/amos-invest"
+Documentation = "https://amos-invest.readthedocs.io"
+Repository = "https://github.com/trangyp/amos-invest"
+
+# ============================================================================
+# TOOL CONFIGURATION - AMOS TOOL LATTICE
+# ============================================================================
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["amos_invest*"]
+exclude = ["tests*", "examples*"]
+
+[tool.setuptools.package-data]
+amos_invest = ["*.json", "*.yaml", "*.toml"]
+
+# ============================================================================
+# RUFF: Fast Linting & Formatting (Kernel 5)
+# ============================================================================
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+indent-width = 4
+src = ["amos_invest"]
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "F",    # Pyflakes
+    "W",    # pycodestyle warnings
+    "I",    # isort
+    "N",    # pep8-naming
+    "D",    # pydocstyle
+    "B",    # flake8-bugbear
+    "C4",   # flake8-comprehensions
+    "UP",   # pyupgrade (Python 3.11+)
+    "SIM",  # flake8-simplify
+    "S",    # flake8-bandit (security)
+    "C90",  # mccabe (complexity)
+    "PL",   # pylint
+]
+ignore = [
+    "D100",  # Missing docstring in public module
+    "D101",
+    "D102",
+    "D103",
+    "D104",
+    "D105",
+    "D107",
+    "S101",  # Use of assert (allowed in tests)
+    "S311",  # Pseudo-random generators (non-crypto use ok)
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.mccabe]
+max-complexity = 12
+
+[tool.ruff.lint.isort]
+known-first-party = ["amos_invest"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+
+# ============================================================================
+# MYPY: Static Type Checking (Kernel 5)
+# ============================================================================
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_return_any = true
+warn_unused_ignores = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+ignore_missing_imports = true
+show_error_codes = true
+show_column_numbers = true
+warn_redundant_casts = true
+warn_unused_configs = true
+exclude = [
+    "tests",
+    "venv",
+    ".venv",
+    "__pycache__",
+]
+
+# ============================================================================
+# PYTEST: Test & Async Kernel (Kernel 6)
+# ============================================================================
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short --strict-markers --cov=amos_invest --cov-report=term-missing"
+markers = [
+    "slow: marks tests as slow",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
+    "property: marks property-based tests (Hypothesis)",
+    "invariant: marks ledger/financial invariant tests",
+]
+asyncio_mode = "auto"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]
+
+[tool.coverage.run]
+source = ["amos_invest"]
+branch = true
+omit = [
+    "*/tests/*",
+    "*/test_*",
+    "*/venv/*",
+    "*/__pycache__/*",
+]
+
+[tool.coverage.report]
+precision = 2
+show_missing = true
+skip_covered = false
+
+# ============================================================================
+# BANDIT: Security Linting (Kernel 5)
+# ============================================================================
+[tool.bandit]
+exclude_dirs = ["tests", "venv", ".venv", "__pycache__"]
+skips = ["B101", "B311"]  # Allow assertions and non-crypto random
+
+# ============================================================================
+# DEPTRY: Dependency Audit (Kernel 5)
+# ============================================================================
+[tool.deptry]
+ignore_obsolete = []
+ignore_missing = []
+ignore_transitive = []
+extend_exclude = ["tests", "venv", ".venv"]
+
+# ============================================================================
+# IMPORT LINTER: Architecture Enforcement (Kernel 2, 5)
+# See: amos_invest/importlinter.toml for full contracts
+# ============================================================================
+[tool.importlinter]
+root_package = "amos_invest"
+include_external_packages = false
+
+[[tool.importlinter.contracts]]
+name = "AMOS-Invest Layer Architecture"
+type = "layers"
+layers = [
+    "cli",
+    "interfaces",
+    "runtime",
+    "execution",
+    "portfolio",
+    "market",
+    "decision",
+    "core",
+    "config"
+]
+containers = ["amos_invest"]
+exhaustive = true
+exhaustive_ignores = ["tests", "examples"]
+
+[[tool.importlinter.contracts]]
+name = "Core Isolation"
+type = "forbidden"
+source_modules = ["amos_invest.core"]
+forbidden_modules = [
+    "amos_invest.cli",
+    "amos_invest.interfaces",
+]

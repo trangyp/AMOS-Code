@@ -5,7 +5,7 @@ import logging
 import os
 import subprocess
 import threading
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -34,11 +34,11 @@ class StdioTransport:
         self._process: subprocess.Popen = None
         self._lock = threading.Lock()
         self._next_id = 1
-        self._pending: Dict[int, dict] = {}  # id → {"event": Event, "result": ...}
+        self._pending: dict[int, dict] = {}  # id → {"event": Event, "result": ...}
         self._reader: threading.Thread = None
         self._stderr_reader: threading.Thread = None
         self._running = False
-        self._stderr_lines: List[str] = []
+        self._stderr_lines: list[str] = []
 
     def start(self) -> None:
         env = {**os.environ, **(self._config.env or {})}
@@ -152,7 +152,7 @@ class HttpTransport:
         self._next_id = 1
         self._client = None  # httpx.Client, loaded lazily
         self._sse_thread: threading.Thread = None
-        self._sse_pending: Dict[int, dict] = {}
+        self._sse_pending: dict[int, dict] = {}
         self._running = False
 
     def _get_client(self):
@@ -302,7 +302,7 @@ class MCPClient:
         self._transport: Optional[Any] = None
         self._server_info: dict = {}
         self._capabilities: dict = {}
-        self._tools: List[MCPTool] = []
+        self._tools: list[MCPTool] = []
         self._error: str = ""
 
     # ── Connection ────────────────────────────────────────────────────────────
@@ -356,7 +356,7 @@ class MCPClient:
 
     # ── Tool discovery ────────────────────────────────────────────────────────
 
-    def list_tools(self) -> List[MCPTool]:
+    def list_tools(self) -> list[MCPTool]:
         """Fetch tool list from server and cache as MCPTool objects."""
         if self.state != MCPServerState.CONNECTED:
             raise RuntimeError(f"MCP server '{self.config.name}' is not connected")
@@ -410,7 +410,7 @@ class MCPClient:
         content = result.get("content", [])
 
         # Collect text content blocks
-        parts: List[str] = []
+        parts: list[str] = []
         for block in content:
             btype = block.get("type", "")
             if btype == "text":
@@ -455,7 +455,7 @@ class MCPManager:
     """Singleton that manages all configured MCP server connections."""
 
     def __init__(self):
-        self._clients: Dict[str, MCPClient] = {}
+        self._clients: dict[str, MCPClient] = {}
 
     def add_server(self, config: MCPServerConfig) -> MCPClient:
         """Register a server. Replaces any existing client with the same name."""
@@ -468,9 +468,9 @@ class MCPManager:
         self._clients[config.name] = client
         return client
 
-    def connect_all(self) -> Dict[str, str]:
+    def connect_all(self) -> dict[str, str]:
         """Connect to all registered servers. Returns {name: error_or_None}."""
-        errors: Dict[str, str] = {}
+        errors: dict[str, str] = {}
         for name, client in self._clients.items():
             if client.config.disabled:
                 errors[name] = "disabled"
@@ -493,9 +493,9 @@ class MCPManager:
             client.list_tools()
         return client
 
-    def all_tools(self) -> List[MCPTool]:
+    def all_tools(self) -> list[MCPTool]:
         """Return all tools from all connected servers."""
-        tools: List[MCPTool] = []
+        tools: list[MCPTool] = []
         for client in self._clients.values():
             if client.state == MCPServerState.CONNECTED:
                 tools.extend(client._tools)
@@ -528,7 +528,7 @@ class MCPManager:
 
         return client.call_tool(original_name, arguments)
 
-    def list_servers(self) -> List[MCPClient]:
+    def list_servers(self) -> list[MCPClient]:
         return list(self._clients.values())
 
     def disconnect_all(self) -> None:
@@ -545,9 +545,7 @@ class MCPManager:
             client.list_tools()
 
 
-# ── Module-level singleton ────────────────────────────────────────────────────
-
-_manager: Optional[MCPManager] = None
+# ── Module-level singleton ────────────────────────────────────────────────────_manager: Optional[MCPManager] = None
 
 
 def get_mcp_manager() -> MCPManager:

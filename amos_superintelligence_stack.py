@@ -1,4 +1,3 @@
-
 """
 AMOS Super-Intelligence Kernel Stack (SIKS)
 Phase 29: Cognitive Meta-Layer Implementation
@@ -27,11 +26,12 @@ from abc import ABC, abstractmethod
 from collections import defaultdict
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 from enum import Enum, auto
 from functools import reduce
-from typing import Any, Callable, Callable, Callable, Dict, List, Optional, Self, Set, TypeVar, TypeVar, TypeVar
+from typing import Any, TypeVar
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -39,6 +39,7 @@ logger = logging.getLogger(__name__)
 # ============================================================================
 # ENUMS AND TYPE DEFINITIONS
 # ============================================================================
+
 
 class KernelStatus(Enum):
     """Status of a cognitive kernel."""
@@ -50,6 +51,7 @@ class KernelStatus(Enum):
     ERROR = auto()
     CALIBRATING = auto()
 
+
 class AbstractionLevel(Enum):
     """Levels in the abstraction ladder."""
 
@@ -58,6 +60,7 @@ class AbstractionLevel(Enum):
     MECHANISM = 2  # Causal process
     LAW = 3  # Domain-invariant principle
     META_LAW = 4  # Cross-domain abstraction
+
 
 class CausalRelation(Enum):
     """Types of causal relationships."""
@@ -68,6 +71,7 @@ class CausalRelation(Enum):
     INHIBITS = "inhibits"  # A suppresses B
     CORRELATES = "correlates"  # A ⟷ B (no causal claim)
 
+
 class ExperimentType(Enum):
     """Types of active experiments."""
 
@@ -76,6 +80,7 @@ class ExperimentType(Enum):
     COUNTERFACTUAL = auto()  # What if?
     COMPARISON = auto()  # A vs B
 
+
 class CalibrationState(Enum):
     """Calibration quality states."""
 
@@ -83,6 +88,7 @@ class CalibrationState(Enum):
     OVERCONFIDENT = auto()  # Confidence > Accuracy
     UNDERCONFIDENT = auto()  # Confidence < Accuracy
     UNCERTAIN = auto()  # Don't know accuracy
+
 
 class OntologyChangeType(Enum):
     """Types of ontology modifications."""
@@ -93,6 +99,7 @@ class OntologyChangeType(Enum):
     BOUNDARY_SHIFT = auto()  # Redraw category boundaries
     NEW_DISTINCTION = auto()  # Introduce new dimension
 
+
 class ProblemType(Enum):
     """Types of problems that can be found."""
 
@@ -101,6 +108,7 @@ class ProblemType(Enum):
     FALSE_GOAL = auto()  # Optimizing wrong metric
     LEVERAGE_POINT = auto()  # High-impact intervention
     MISSING_QUESTION = auto()  # Unasked but important
+
 
 class BoundaryType(Enum):
     """Types of self/world boundaries."""
@@ -111,6 +119,7 @@ class BoundaryType(Enum):
     INFERRED_STATE = auto()  # System's model of state
     UNKNOWN_STATE = auto()  # Acknowledged ignorance
 
+
 class TransferType(Enum):
     """Types of knowledge transfer."""
 
@@ -119,6 +128,7 @@ class TransferType(Enum):
     PROCEDURAL = auto()  # Same process pattern
     ABSTRACT = auto()  # Same formal structure
 
+
 class ToolType(Enum):
     """Types of tools that can be invented."""
 
@@ -126,6 +136,7 @@ class ToolType(Enum):
     PROCEDURAL = auto()  # Process/workflow
     REPRESENTATIONAL = auto()  # Data structure/format
     COMPUTATIONAL = auto()  # Algorithm/shortcut
+
 
 class AdversarialThreat(Enum):
     """Types of adversarial threats."""
@@ -137,6 +148,7 @@ class AdversarialThreat(Enum):
     POISONED_MEMORY = auto()
     FALSE_CERTAINTY = auto()
 
+
 # Type variables
 T = TypeVar("T")
 S = TypeVar("S")
@@ -145,24 +157,25 @@ S = TypeVar("S")
 # DATA CLASSES
 # ============================================================================
 
+
 @dataclass
 class Concept:
     """A formed concept with invariants and instances."""
 
     id: str
     name: str
-    invariants: List[dict[str, Any]] = field(default_factory=list)
-    instances: List[str] = field(default_factory=list)
+    invariants: list[dict[str, Any]] = field(default_factory=list)
+    instances: list[str] = field(default_factory=list)
     abstraction_level: AbstractionLevel = AbstractionLevel.PATTERN
     compression_ratio: float = 0.0
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
-    def add_instance(self, instance_id: str, features: Dict[str, Any]) -> None:
+    def add_instance(self, instance_id: str, features: dict[str, Any]) -> None:
         """Add an instance and update invariants."""
         self.instances.append(instance_id)
         self._update_invariants(features)
 
-    def _update_invariants(self, features: Dict[str, Any]) -> None:
+    def _update_invariants(self, features: dict[str, Any]) -> None:
         """Update invariant structure across instances."""
         if not self.invariants:
             self.invariants = [{k: type(v).__name__} for k, v in features.items()]
@@ -173,12 +186,13 @@ class Concept:
             common_keys = current_keys & new_keys
             self.invariants = [inv for inv in self.invariants if inv.get("key") in common_keys]
 
-    def matches(self, features: Dict[str, Any], threshold: float = 0.7) -> bool:
+    def matches(self, features: dict[str, Any], threshold: float = 0.7) -> bool:
         """Check if features match this concept."""
         if not self.invariants:
             return False
         matches = sum(1 for inv in self.invariants if inv.get("key") in features)
         return matches / len(self.invariants) >= threshold
+
 
 @dataclass
 class CausalEdge:
@@ -189,9 +203,10 @@ class CausalEdge:
     relation: CausalRelation
     strength: float  # 0.0 to 1.0
     confidence: float  # 0.0 to 1.0
-    mechanisms: List[str] = field(default_factory=list)
-    interventions: List[str] = field(default_factory=list)
+    mechanisms: list[str] = field(default_factory=list)
+    interventions: list[str] = field(default_factory=list)
     evidence_count: int = 0
+
 
 @dataclass
 class Experiment:
@@ -199,13 +214,14 @@ class Experiment:
 
     id: str
     experiment_type: ExperimentType
-    target_variables: List[str]
+    target_variables: list[str]
     expected_info_gain: float
     cost_estimate: float
     risk_estimate: float
     status: str = "pending"
-    result: Dict[str, Any]  = None
-    executed_at: Optional[str] = None
+    result: dict[str, Any] = None
+    executed_at: str = None
+
 
 @dataclass
 class CalibrationRecord:
@@ -221,15 +237,17 @@ class CalibrationRecord:
         """Check if this record shows good calibration."""
         return abs(self.confidence - (1.0 if self.outcome else 0.0)) < 0.2
 
+
 @dataclass
 class OntologyVersion:
     """A version of the ontology at a point in time."""
 
     version_id: str
     timestamp: str
-    types: Set[str] = field(default_factory=set)
-    relations: Set[tuple[str, str, str]] = field(default_factory=set)
-    mappings: Dict[str, str] = field(default_factory=dict)  # old → new
+    types: set[str] = field(default_factory=set)
+    relations: set[tuple[str, str, str]] = field(default_factory=set)
+    mappings: dict[str, str] = field(default_factory=dict)  # old → new
+
 
 @dataclass
 class CompressedRepresentation:
@@ -240,8 +258,9 @@ class CompressedRepresentation:
     compression_ratio: float
     predictive_accuracy: float
     intervention_preservation: float
-    representation: Dict[str, Any]
+    representation: dict[str, Any]
     decompression_key: str
+
 
 @dataclass
 class DiscoveredProblem:
@@ -252,31 +271,34 @@ class DiscoveredProblem:
     description: str
     severity: float  # 0.0 to 1.0
     potential_impact: float
-    related_concepts: List[str] = field(default_factory=list)
-    suggested_action: Optional[str] = None
+    related_concepts: list[str] = field(default_factory=list)
+    suggested_action: str = None
     discovered_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
 
 @dataclass
 class ValueSystem:
     """A learned or inferred value system."""
 
-    values: Dict[str, float] = field(default_factory=dict)  # value → weight
-    conflicts: List[tuple[str, str, float]] = field(
+    values: dict[str, float] = field(default_factory=dict)  # value → weight
+    conflicts: list[tuple[str, str, float]] = field(
         default_factory=list
     )  # (v1, v2, conflict_strength)
-    uncertainty: Dict[str, float] = field(default_factory=dict)
+    uncertainty: dict[str, float] = field(default_factory=dict)
     horizon: int = 1  # How many steps ahead values are considered
     updated_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
 
 @dataclass
 class BoundaryState:
     """State of the self/world boundary at a point in time."""
 
-    self_model: Dict[str, Any] = field(default_factory=dict)
-    user_model: Dict[str, Any] = field(default_factory=dict)
-    world_model: Dict[str, Any] = field(default_factory=dict)
-    confidence_map: Dict[BoundaryType, float] = field(default_factory=dict)
-    ambiguity_zones: List[str] = field(default_factory=list)
+    self_model: dict[str, Any] = field(default_factory=dict)
+    user_model: dict[str, Any] = field(default_factory=dict)
+    world_model: dict[str, Any] = field(default_factory=dict)
+    confidence_map: dict[BoundaryType, float] = field(default_factory=dict)
+    ambiguity_zones: list[str] = field(default_factory=list)
+
 
 @dataclass
 class TransferMapping:
@@ -285,9 +307,10 @@ class TransferMapping:
     source_domain: str
     target_domain: str
     transfer_type: TransferType
-    invariant_structure: Dict[str, Any]
+    invariant_structure: dict[str, Any]
     mapping_confidence: float
     success_rate: float = 0.0
+
 
 @dataclass
 class InventedTool:
@@ -297,7 +320,7 @@ class InventedTool:
     name: str
     tool_type: ToolType
     purpose: str
-    implementation: Dict[str, Any]
+    implementation: dict[str, Any]
     cost_reduction: float
     error_reduction: float
     latency_reduction: float
@@ -305,22 +328,25 @@ class InventedTool:
     success_rate: float = 0.0
     invented_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
+
 @dataclass
 class Theorem:
     """A durable explanatory system (theorem)."""
 
     id: str
     statement: str
-    proof: List[str] = field(default_factory=list)
-    assumptions: List[str] = field(default_factory=list)
-    implications: List[str] = field(default_factory=list)
-    cross_domain_applications: List[str] = field(default_factory=list)
+    proof: list[str] = field(default_factory=list)
+    assumptions: list[str] = field(default_factory=list)
+    implications: list[str] = field(default_factory=list)
+    cross_domain_applications: list[str] = field(default_factory=list)
     confidence: float = 0.0
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
 
 # ============================================================================
 # ABSTRACT BASE CLASSES
 # ============================================================================
+
 
 class CognitiveKernel(ABC):
     """Abstract base class for all cognitive kernels."""
@@ -328,7 +354,7 @@ class CognitiveKernel(ABC):
     def __init__(self, kernel_id: str) -> None:
         self.kernel_id = kernel_id
         self.status = KernelStatus.UNINITIALIZED
-        self.metrics: Dict[str, Any] = {}
+        self.metrics: dict[str, Any] = {}
         self.last_execution_time: float = 0.0
         self.error_count: int = 0
         self.success_count: int = 0
@@ -352,11 +378,11 @@ class CognitiveKernel(ABC):
         pass
 
     @abstractmethod
-    async def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def process(self, input_data: dict[str, Any]) -> dict[str, Any]:
         """Process input and return output."""
         pass
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """Get kernel performance metrics."""
         return {
             "kernel_id": self.kernel_id,
@@ -367,9 +393,11 @@ class CognitiveKernel(ABC):
             "last_execution_time": self.last_execution_time,
         }
 
+
 # ============================================================================
 # KERNEL 1: UNDERSTANDING KERNEL
 # ============================================================================
+
 
 class UnderstandingKernel(CognitiveKernel):
     """
@@ -385,8 +413,8 @@ class UnderstandingKernel(CognitiveKernel):
 
     def __init__(self) -> None:
         super().__init__("understanding_kernel")
-        self.explanations: Dict[str, dict[str, Any]] = {}
-        self.explanation_validity: Dict[str, float] = {}
+        self.explanations: dict[str, dict[str, Any]] = {}
+        self.explanation_validity: dict[str, float] = {}
         self.transfer_successes: defaultdict[str, list[bool]] = defaultdict(list)
         self.prediction_accuracy: defaultdict[str, list[bool]] = defaultdict(list)
 
@@ -397,7 +425,7 @@ class UnderstandingKernel(CognitiveKernel):
         self.metrics["avg_transfer_rate"] = 0.0
         self.metrics["avg_prediction_accuracy"] = 0.0
 
-    async def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def process(self, input_data: dict[str, Any]) -> dict[str, Any]:
         """
         Process input for understanding.
 
@@ -455,7 +483,7 @@ class UnderstandingKernel(CognitiveKernel):
             "truly_understands": understanding_score > 0.7,
         }
 
-    async def _generate_explanations(self, content: str) -> List[dict[str, Any]]:
+    async def _generate_explanations(self, content: str) -> list[dict[str, Any]]:
         """Generate multiple forms of explanation."""
         explanations = []
 
@@ -532,9 +560,11 @@ class UnderstandingKernel(CognitiveKernel):
         recent = self.prediction_accuracy[explanation_id][-10:]
         self.metrics["avg_prediction_accuracy"] = sum(recent) / len(recent)
 
+
 # ============================================================================
 # KERNEL 2: CONCEPT FORMATION KERNEL
 # ============================================================================
+
 
 class ConceptFormationKernel(CognitiveKernel):
     """
@@ -546,9 +576,9 @@ class ConceptFormationKernel(CognitiveKernel):
 
     def __init__(self) -> None:
         super().__init__("concept_formation_kernel")
-        self.concepts: Dict[str, Concept] = {}
-        self.instance_cache: Dict[str, dict[str, Any]] = {}
-        self.invariant_extractor: Optional[Callable] = None
+        self.concepts: dict[str, Concept] = {}
+        self.instance_cache: dict[str, dict[str, Any]] = {}
+        self.invariant_extractor: Callable = None
 
     async def _initialize_impl(self) -> None:
         """Initialize the concept formation kernel."""
@@ -557,7 +587,7 @@ class ConceptFormationKernel(CognitiveKernel):
         self.metrics["instances_processed"] = 0
         self.metrics["avg_compression_ratio"] = 0.0
 
-    async def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def process(self, input_data: dict[str, Any]) -> dict[str, Any]:
         """
         Process instances to form or refine concepts.
 
@@ -630,7 +660,7 @@ class ConceptFormationKernel(CognitiveKernel):
             "abstraction_level": concept.abstraction_level.name,
         }
 
-    def _extract_invariants(self, instances: List[dict[str, Any]]) -> List[dict[str, Any]]:
+    def _extract_invariants(self, instances: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """Extract invariant structure across instances."""
         if not instances:
             return []
@@ -656,8 +686,8 @@ class ConceptFormationKernel(CognitiveKernel):
         return invariants
 
     def match_instance(
-        self, features: Dict[str, Any], concept_id: Optional[str] = None
-    ) -> List[dict[str, Any]]:
+        self, features: dict[str, Any], concept_id: str = None
+    ) -> list[dict[str, Any]]:
         """Match features against stored concepts."""
         matches = []
 
@@ -677,17 +707,19 @@ class ConceptFormationKernel(CognitiveKernel):
         matches.sort(key=lambda x: x["confidence"], reverse=True)
         return matches
 
-    def get_concept(self, concept_id: str) -> Optional[Concept]:
+    def get_concept(self, concept_id: str) -> Concept:
         """Get a concept by ID."""
         return self.concepts.get(concept_id)
 
-    def get_all_concepts(self) -> Dict[str, Concept]:
+    def get_all_concepts(self) -> dict[str, Concept]:
         """Get all formed concepts."""
         return self.concepts.copy()
+
 
 # ============================================================================
 # KERNEL 3: ABSTRACTION KERNEL
 # ============================================================================
+
 
 class AbstractionKernel(CognitiveKernel):
     """
@@ -699,9 +731,9 @@ class AbstractionKernel(CognitiveKernel):
 
     def __init__(self) -> None:
         super().__init__("abstraction_kernel")
-        self.ladder_state: Dict[str, AbstractionLevel] = {}
-        self.abstractions: Dict[str, dict[str, Any]] = {}
-        self.descents: Dict[str, list[str]] = defaultdict(list)  # abstract → concrete
+        self.ladder_state: dict[str, AbstractionLevel] = {}
+        self.abstractions: dict[str, dict[str, Any]] = {}
+        self.descents: dict[str, list[str]] = defaultdict(list)  # abstract → concrete
 
     async def _initialize_impl(self) -> None:
         """Initialize the abstraction kernel."""
@@ -709,7 +741,7 @@ class AbstractionKernel(CognitiveKernel):
         self.metrics["abstractions_created"] = 0
         self.metrics["avg_ladder_height"] = 0.0
 
-    async def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def process(self, input_data: dict[str, Any]) -> dict[str, Any]:
         """
         Move up or down the abstraction ladder.
 
@@ -734,7 +766,7 @@ class AbstractionKernel(CognitiveKernel):
 
         return result
 
-    async def _move_up(self, content: str, current_level: AbstractionLevel) -> Dict[str, Any]:
+    async def _move_up(self, content: str, current_level: AbstractionLevel) -> dict[str, Any]:
         """Move up the abstraction ladder."""
         next_level = AbstractionLevel(min(current_level.value + 1, 4))
 
@@ -770,7 +802,7 @@ class AbstractionKernel(CognitiveKernel):
             "to_level": next_level.name,
         }
 
-    async def _move_down(self, content: str, current_level: AbstractionLevel) -> Dict[str, Any]:
+    async def _move_down(self, content: str, current_level: AbstractionLevel) -> dict[str, Any]:
         """Move down the abstraction ladder (instantiate)."""
         next_level = AbstractionLevel(max(current_level.value - 1, 0))
 
@@ -798,13 +830,15 @@ class AbstractionKernel(CognitiveKernel):
             "concrete_examples": len(self.descents[content]),
         }
 
-    def get_ladder_position(self, content_id: str) -> Optional[AbstractionLevel]:
+    def get_ladder_position(self, content_id: str) -> AbstractionLevel:
         """Get current position on abstraction ladder."""
         return self.ladder_state.get(content_id)
+
 
 # ============================================================================
 # KERNEL 4: CAUSAL MODEL BUILDER
 # ============================================================================
+
 
 class CausalModelBuilderKernel(CognitiveKernel):
     """
@@ -818,9 +852,9 @@ class CausalModelBuilderKernel(CognitiveKernel):
 
     def __init__(self) -> None:
         super().__init__("causal_model_builder_kernel")
-        self.models: Dict[str, dict[str, Any]] = {}
-        self.edges: Dict[str, list[CausalEdge]] = defaultdict(list)
-        self.intervention_history: List[dict[str, Any]] = []
+        self.models: dict[str, dict[str, Any]] = {}
+        self.edges: dict[str, list[CausalEdge]] = defaultdict(list)
+        self.intervention_history: list[dict[str, Any]] = []
 
     async def _initialize_impl(self) -> None:
         """Initialize the causal model builder."""
@@ -829,7 +863,7 @@ class CausalModelBuilderKernel(CognitiveKernel):
         self.metrics["edges_discovered"] = 0
         self.metrics["interventions_tested"] = 0
 
-    async def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def process(self, input_data: dict[str, Any]) -> dict[str, Any]:
         """
         Build or update a causal model.
 
@@ -894,8 +928,8 @@ class CausalModelBuilderKernel(CognitiveKernel):
         }
 
     def _infer_causal_edges(
-        self, variables: List[str], observations: List[dict[str, Any]]
-    ) -> List[CausalEdge]:
+        self, variables: list[str], observations: list[dict[str, Any]]
+    ) -> list[CausalEdge]:
         """Infer causal edges from observations."""
         edges = []
 
@@ -921,8 +955,8 @@ class CausalModelBuilderKernel(CognitiveKernel):
         return edges
 
     def _identify_mechanisms(
-        self, edges: List[CausalEdge], observations: List[dict[str, Any]]
-    ) -> List[str]:
+        self, edges: list[CausalEdge], observations: list[dict[str, Any]]
+    ) -> list[str]:
         """Identify mediating mechanisms."""
         mechanisms = []
 
@@ -933,7 +967,7 @@ class CausalModelBuilderKernel(CognitiveKernel):
 
         return mechanisms
 
-    def _identify_interventions(self, edges: List[CausalEdge]) -> List[str]:
+    def _identify_interventions(self, edges: list[CausalEdge]) -> list[str]:
         """Identify possible interventions."""
         interventions = []
 
@@ -945,7 +979,7 @@ class CausalModelBuilderKernel(CognitiveKernel):
 
         return interventions
 
-    def _build_counterfactuals(self, variables: List[str], edges: List[CausalEdge]) -> List[str]:
+    def _build_counterfactuals(self, variables: list[str], edges: list[CausalEdge]) -> list[str]:
         """Build counterfactual queries."""
         counterfactuals = []
 
@@ -957,7 +991,7 @@ class CausalModelBuilderKernel(CognitiveKernel):
 
     async def test_intervention(
         self, model_id: str, intervention: str, expected_outcome: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Test an intervention and record results."""
         self.metrics["interventions_tested"] += 1
 
@@ -984,9 +1018,11 @@ class CausalModelBuilderKernel(CognitiveKernel):
             "model_validity": len(relevant) > 0,
         }
 
+
 # ============================================================================
 # KERNEL 5: ACTIVE INFERENCE / EXPERIMENT KERNEL
 # ============================================================================
+
 
 class ActiveInferenceKernel(CognitiveKernel):
     """
@@ -997,9 +1033,9 @@ class ActiveInferenceKernel(CognitiveKernel):
 
     def __init__(self) -> None:
         super().__init__("active_inference_kernel")
-        self.experiments: Dict[str, Experiment] = {}
-        self.experiment_history: List[dict[str, Any]] = []
-        self.uncertainty_model: Dict[str, float] = {}
+        self.experiments: dict[str, Experiment] = {}
+        self.experiment_history: list[dict[str, Any]] = []
+        self.uncertainty_model: dict[str, float] = {}
 
     async def _initialize_impl(self) -> None:
         """Initialize the active inference kernel."""
@@ -1008,7 +1044,7 @@ class ActiveInferenceKernel(CognitiveKernel):
         self.metrics["experiments_executed"] = 0
         self.metrics["uncertainty_reduced"] = 0.0
 
-    async def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def process(self, input_data: dict[str, Any]) -> dict[str, Any]:
         """
         Design and recommend experiments.
 
@@ -1063,7 +1099,7 @@ class ActiveInferenceKernel(CognitiveKernel):
             "action_recommendation": self._recommend_action_type(best_experiment),
         }
 
-    def _design_experiment(self, uncertainty_area: Dict[str, Any]) -> Experiment:
+    def _design_experiment(self, uncertainty_area: dict[str, Any]) -> Experiment:
         """Design an experiment for an uncertainty area."""
         area_name = uncertainty_area.get("name", "unknown")
         current_uncertainty = uncertainty_area.get("uncertainty", 0.5)
@@ -1096,7 +1132,7 @@ class ActiveInferenceKernel(CognitiveKernel):
             risk_estimate=risk,
         )
 
-    def _score_experiment(self, exp: Experiment, weights: Dict[str, float]) -> float:
+    def _score_experiment(self, exp: Experiment, weights: dict[str, float]) -> float:
         """Score an experiment using the action* formula."""
         # Simplified scoring: info_gain is the primary utility here
         utility = 0.5  # Base utility
@@ -1122,7 +1158,7 @@ class ActiveInferenceKernel(CognitiveKernel):
         else:
             return "WITHHOLD_JUDGMENT"
 
-    async def execute_experiment(self, experiment_id: str) -> Dict[str, Any]:
+    async def execute_experiment(self, experiment_id: str) -> dict[str, Any]:
         """Execute a designed experiment."""
         exp = self.experiments.get(experiment_id)
         if not exp:
@@ -1163,9 +1199,11 @@ class ActiveInferenceKernel(CognitiveKernel):
             "result": exp.result,
         }
 
+
 # ============================================================================
 # KERNEL 6: CALIBRATION KERNEL
 # ============================================================================
+
 
 class CalibrationKernel(CognitiveKernel):
     """
@@ -1176,9 +1214,9 @@ class CalibrationKernel(CognitiveKernel):
 
     def __init__(self) -> None:
         super().__init__("calibration_kernel")
-        self.calibration_records: List[CalibrationRecord] = []
-        self.confidence_bins: Dict[int, list[bool]] = defaultdict(list)
-        self.calibration_curve: List[tuple[float, float]] = []
+        self.calibration_records: list[CalibrationRecord] = []
+        self.confidence_bins: dict[int, list[bool]] = defaultdict(list)
+        self.calibration_curve: list[tuple[float, float]] = []
 
     async def _initialize_impl(self) -> None:
         """Initialize the calibration kernel."""
@@ -1187,7 +1225,7 @@ class CalibrationKernel(CognitiveKernel):
         self.metrics["calibration_score"] = 0.0
         self.metrics["calibration_state"] = CalibrationState.UNCERTAIN.name
 
-    async def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def process(self, input_data: dict[str, Any]) -> dict[str, Any]:
         """
         Record a prediction for calibration tracking.
 
@@ -1287,7 +1325,7 @@ class CalibrationKernel(CognitiveKernel):
 
         return avg_confidence < accuracy - 0.1
 
-    def get_calibration_report(self) -> Dict[str, Any]:
+    def get_calibration_report(self) -> dict[str, Any]:
         """Generate a calibration report."""
         total = len(self.calibration_records)
         if total == 0:
@@ -1313,7 +1351,7 @@ class CalibrationKernel(CognitiveKernel):
             ],
         }
 
-    def recommend_confidence_adjustment(self) -> Dict[str, Any]:
+    def recommend_confidence_adjustment(self) -> dict[str, Any]:
         """Recommend how to adjust confidence."""
         state = self.metrics.get("calibration_state", "UNCERTAIN")
 
@@ -1332,9 +1370,11 @@ class CalibrationKernel(CognitiveKernel):
         else:
             return {"adjustment": "maintain", "factor": 1.0, "reason": "Well calibrated"}
 
+
 # ============================================================================
 # KERNEL 7: ONTOLOGY MANAGEMENT KERNEL
 # ============================================================================
+
 
 class OntologyManagementKernel(CognitiveKernel):
     """
@@ -1345,10 +1385,10 @@ class OntologyManagementKernel(CognitiveKernel):
 
     def __init__(self) -> None:
         super().__init__("ontology_management_kernel")
-        self.current_ontology: Optional[OntologyVersion] = None
-        self.ontology_history: List[OntologyVersion] = []
-        self.type_system: Dict[str, dict[str, Any]] = {}
-        self.relation_system: Set[tuple[str, str, str]] = set()
+        self.current_ontology: OntologyVersion = None
+        self.ontology_history: list[OntologyVersion] = []
+        self.type_system: dict[str, dict[str, Any]] = {}
+        self.relation_system: set[tuple[str, str, str]] = set()
 
     async def _initialize_impl(self) -> None:
         """Initialize the ontology management kernel."""
@@ -1369,7 +1409,7 @@ class OntologyManagementKernel(CognitiveKernel):
         self.metrics["type_count"] = 0
         self.metrics["relation_count"] = 0
 
-    async def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def process(self, input_data: dict[str, Any]) -> dict[str, Any]:
         """
         Process ontology change request.
 
@@ -1388,9 +1428,7 @@ class OntologyManagementKernel(CognitiveKernel):
             return {"error": f"Unknown change type: {change_type_str}"}
 
         # Create new ontology version
-        new_version_id = (
-            f"onto_v{len(self.ontology_history)}_{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}"
-        )
+        new_version_id = f"onto_v{len(self.ontology_history)}_{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}"
 
         # Copy current state
         new_types = set(self.current_ontology.types) if self.current_ontology else set()
@@ -1466,7 +1504,7 @@ class OntologyManagementKernel(CognitiveKernel):
             "preservation_check": self._check_truth_preservation(),
         }
 
-    def _check_truth_preservation(self) -> Dict[str, Any]:
+    def _check_truth_preservation(self) -> dict[str, Any]:
         """Check if ontology change preserves truth mappings."""
         if len(self.ontology_history) < 2:
             return {"preserved": True, "reason": "Initial version"}
@@ -1483,7 +1521,7 @@ class OntologyManagementKernel(CognitiveKernel):
             "mapping_coverage": len(current.mappings),
         }
 
-    def get_ontology_version(self, version_id: Optional[str] = None) -> Optional[OntologyVersion]:
+    def get_ontology_version(self, version_id: str = None) -> OntologyVersion:
         """Get a specific ontology version."""
         if version_id is None:
             return self.current_ontology
@@ -1493,7 +1531,7 @@ class OntologyManagementKernel(CognitiveKernel):
                 return onto
         return None
 
-    def detect_bad_ontology(self, observations: List[dict[str, Any]]) -> List[str]:
+    def detect_bad_ontology(self, observations: list[dict[str, Any]]) -> list[str]:
         """Detect signs of bad ontology."""
         issues = []
 
@@ -1514,9 +1552,11 @@ class OntologyManagementKernel(CognitiveKernel):
 
         return issues
 
+
 # ============================================================================
 # KERNEL 8: COMPRESSION KERNEL
 # ============================================================================
+
 
 class CompressionKernel(CognitiveKernel):
     """
@@ -1528,8 +1568,8 @@ class CompressionKernel(CognitiveKernel):
 
     def __init__(self) -> None:
         super().__init__("compression_kernel")
-        self.compressed_representations: Dict[str, CompressedRepresentation] = {}
-        self.compression_stats: Dict[str, dict[str, float]] = {}
+        self.compressed_representations: dict[str, CompressedRepresentation] = {}
+        self.compression_stats: dict[str, dict[str, float]] = {}
 
     async def _initialize_impl(self) -> None:
         """Initialize the compression kernel."""
@@ -1538,7 +1578,7 @@ class CompressionKernel(CognitiveKernel):
         self.metrics["avg_compression_ratio"] = 0.0
         self.metrics["prediction_preservation"] = 0.0
 
-    async def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def process(self, input_data: dict[str, Any]) -> dict[str, Any]:
         """
         Compress representation while preserving key properties.
 
@@ -1617,8 +1657,8 @@ class CompressionKernel(CognitiveKernel):
         }
 
     def _compress(
-        self, representation: Dict[str, Any], requirements: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, representation: dict[str, Any], requirements: dict[str, Any]
+    ) -> dict[str, Any]:
         """Compress representation intelligently."""
         compressed = {}
 
@@ -1641,7 +1681,7 @@ class CompressionKernel(CognitiveKernel):
 
         return compressed
 
-    def _compress_nested(self, value: Dict[str, Any] | list[Any]) -> Any:
+    def _compress_nested(self, value: dict[str, Any] | list[Any]) -> Any:
         """Compress nested structures."""
         if isinstance(value, list) and len(value) > 5:
             # Check if all elements are similar
@@ -1660,10 +1700,10 @@ class CompressionKernel(CognitiveKernel):
 
         return value
 
-    def _factor_common_structures(self, compressed: Dict[str, Any]) -> Dict[str, Any]:
+    def _factor_common_structures(self, compressed: dict[str, Any]) -> dict[str, Any]:
         """Factor out common structures to reduce redundancy."""
         # Find duplicate values
-        value_counts: Dict[str, tuple[Any, int]] = {}
+        value_counts: dict[str, tuple[Any, int]] = {}
         for k, v in compressed.items():
             v_str = str(v)
             if v_str in value_counts:
@@ -1695,7 +1735,7 @@ class CompressionKernel(CognitiveKernel):
 
         return result
 
-    async def decompress(self, compression_id: str) -> Dict[str, Any] :
+    async def decompress(self, compression_id: str) -> dict[str, Any]:
         """Decompress a representation."""
         comp = self.compressed_representations.get(compression_id)
         if not comp:
@@ -1704,7 +1744,7 @@ class CompressionKernel(CognitiveKernel):
         # In a real implementation, would use decompression_key
         return comp.representation
 
-    def get_compression_stats(self, compression_id: str) -> Dict[str, Any] :
+    def get_compression_stats(self, compression_id: str) -> dict[str, Any]:
         """Get compression statistics."""
         comp = self.compressed_representations.get(compression_id)
         if not comp:
@@ -1716,9 +1756,11 @@ class CompressionKernel(CognitiveKernel):
             "intervention_preservation": comp.intervention_preservation,
         }
 
+
 # ============================================================================
 # KERNEL 9: PROBLEM FINDING KERNEL
 # ============================================================================
+
 
 class ProblemFindingKernel(CognitiveKernel):
     """
@@ -1730,9 +1772,9 @@ class ProblemFindingKernel(CognitiveKernel):
 
     def __init__(self) -> None:
         super().__init__("problem_finding_kernel")
-        self.discovered_problems: Dict[str, DiscoveredProblem] = {}
-        self.pattern_library: Dict[str, dict[str, Any]] = {}
-        self.search_history: List[dict[str, Any]] = []
+        self.discovered_problems: dict[str, DiscoveredProblem] = {}
+        self.pattern_library: dict[str, dict[str, Any]] = {}
+        self.search_history: list[dict[str, Any]] = []
 
     async def _initialize_impl(self) -> None:
         """Initialize the problem finding kernel."""
@@ -1741,7 +1783,7 @@ class ProblemFindingKernel(CognitiveKernel):
         self.metrics["hidden_problems"] = 0
         self.metrics["false_goals_detected"] = 0
 
-    async def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def process(self, input_data: dict[str, Any]) -> dict[str, Any]:
         """
         Search for hidden problems in a context.
 
@@ -1815,8 +1857,8 @@ class ProblemFindingKernel(CognitiveKernel):
         }
 
     def _find_hidden_problems(
-        self, context: Dict[str, Any], goals: List[str]
-    ) -> List[DiscoveredProblem]:
+        self, context: dict[str, Any], goals: list[str]
+    ) -> list[DiscoveredProblem]:
         """Find problems not explicitly stated."""
         problems = []
 
@@ -1851,8 +1893,8 @@ class ProblemFindingKernel(CognitiveKernel):
         return problems
 
     def _detect_false_goals(
-        self, goals: List[str], context: Dict[str, Any]
-    ) -> List[DiscoveredProblem]:
+        self, goals: list[str], context: dict[str, Any]
+    ) -> list[DiscoveredProblem]:
         """Detect goals that might be optimizing the wrong thing."""
         problems = []
 
@@ -1874,8 +1916,8 @@ class ProblemFindingKernel(CognitiveKernel):
         return problems
 
     def _detect_framing_errors(
-        self, approach: Dict[str, Any], context: Dict[str, Any]
-    ) -> List[DiscoveredProblem]:
+        self, approach: dict[str, Any], context: dict[str, Any]
+    ) -> list[DiscoveredProblem]:
         """Detect errors in problem framing."""
         problems = []
 
@@ -1896,8 +1938,8 @@ class ProblemFindingKernel(CognitiveKernel):
         return problems
 
     def _find_leverage_points(
-        self, context: Dict[str, Any], goals: List[str]
-    ) -> List[DiscoveredProblem]:
+        self, context: dict[str, Any], goals: list[str]
+    ) -> list[DiscoveredProblem]:
         """Find high-impact intervention points."""
         problems = []
 
@@ -1913,12 +1955,13 @@ class ProblemFindingKernel(CognitiveKernel):
                     potential_impact=0.9,
                     suggested_action="Systematically explore high-DoF regions",
                 )
+            )
 
         return problems
 
     def _find_missing_questions(
-        self, context: Dict[str, Any], goals: List[str]
-    ) -> List[DiscoveredProblem]:
+        self, context: dict[str, Any], goals: list[str]
+    ) -> list[DiscoveredProblem]:
         """Find important unasked questions."""
         problems = []
 
@@ -1943,30 +1986,33 @@ class ProblemFindingKernel(CognitiveKernel):
                         potential_impact=0.6,
                         suggested_action=f"Ask: {q.replace('_', ' ')}?",
                     )
+                )
 
         return problems
 
-    def _calculate_search_depth(self, context: Dict[str, Any]) -> int:
+    def _calculate_search_depth(self, context: dict[str, Any]) -> int:
         """Calculate how deep the problem search went."""
         return len(context) // 5  # Simple heuristic
 
-    def _assess_coverage(self, context: Dict[str, Any]) -> float:
+    def _assess_coverage(self, context: dict[str, Any]) -> float:
         """Assess what fraction of potential problems were checked."""
         # Simplified coverage assessment
         checked_aspects = len(context)
         return min(checked_aspects / 10, 1.0)
 
-    def get_problem(self, problem_id: str) -> Optional[DiscoveredProblem]:
+    def get_problem(self, problem_id: str) -> DiscoveredProblem:
         """Get a specific problem by ID."""
         return self.discovered_problems.get(problem_id)
 
-    def get_problems_by_type(self, problem_type: ProblemType) -> List[DiscoveredProblem]:
+    def get_problems_by_type(self, problem_type: ProblemType) -> list[DiscoveredProblem]:
         """Get all problems of a specific type."""
         return [p for p in self.discovered_problems.values() if p.problem_type == problem_type]
+
 
 # ============================================================================
 # KERNEL 10: VALUE LEARNING KERNEL
 # ============================================================================
+
 
 class ValueLearningKernel(CognitiveKernel):
     """
@@ -1977,9 +2023,9 @@ class ValueLearningKernel(CognitiveKernel):
 
     def __init__(self) -> None:
         super().__init__("value_learning_kernel")
-        self.value_systems: Dict[str, ValueSystem] = {}
-        self.inferred_values: Dict[str, dict[str, float]] = {}
-        self.value_conflicts: List[dict[str, Any]] = []
+        self.value_systems: dict[str, ValueSystem] = {}
+        self.inferred_values: dict[str, dict[str, float]] = {}
+        self.value_conflicts: list[dict[str, Any]] = []
 
     async def _initialize_impl(self) -> None:
         """Initialize the value learning kernel."""
@@ -1988,7 +2034,7 @@ class ValueLearningKernel(CognitiveKernel):
         self.metrics["conflicts_detected"] = 0
         self.metrics["avg_value_confidence"] = 0.0
 
-    async def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def process(self, input_data: dict[str, Any]) -> dict[str, Any]:
         """
         Learn or update a value system.
 
@@ -2057,8 +2103,8 @@ class ValueLearningKernel(CognitiveKernel):
         }
 
     def _infer_values_from_observations(
-        self, observations: List[dict[str, Any]], vs: ValueSystem
-    ) -> Dict[str, tuple[float, float]]:
+        self, observations: list[dict[str, Any]], vs: ValueSystem
+    ) -> dict[str, tuple[float, float]]:
         """Infer values from behavioral observations."""
         inferred = {}
 
@@ -2082,7 +2128,7 @@ class ValueLearningKernel(CognitiveKernel):
 
         return inferred
 
-    def _detect_value_conflicts(self, vs: ValueSystem) -> List[tuple[str, str, float]]:
+    def _detect_value_conflicts(self, vs: ValueSystem) -> list[tuple[str, str, float]]:
         """Detect conflicts between values."""
         conflicts = []
 
@@ -2115,7 +2161,7 @@ class ValueLearningKernel(CognitiveKernel):
 
         return False
 
-    def _check_long_horizon(self, vs: ValueSystem) -> List[str]:
+    def _check_long_horizon(self, vs: ValueSystem) -> list[str]:
         """Check for long-horizon value preservation needs."""
         considerations = []
 
@@ -2129,8 +2175,8 @@ class ValueLearningKernel(CognitiveKernel):
         return considerations
 
     def make_value_aligned_decision(
-        self, vs_key: str, world_model: Dict[str, Any], options: List[dict[str, Any]]
-    ) -> Dict[str, Any]:
+        self, vs_key: str, world_model: dict[str, Any], options: list[dict[str, Any]]
+    ) -> dict[str, Any]:
         """Make a decision aligned with learned values."""
         vs = self.value_systems.get(vs_key)
         if not vs:
@@ -2165,9 +2211,11 @@ class ValueLearningKernel(CognitiveKernel):
             - (sum(vs.uncertainty.values()) / len(vs.uncertainty) if vs.uncertainty else 0.5),
         }
 
+
 # ============================================================================
 # KERNEL 11: SELF/WORLD BOUNDARY KERNEL
 # ============================================================================
+
 
 class SelfWorldBoundaryKernel(CognitiveKernel):
     """
@@ -2183,9 +2231,9 @@ class SelfWorldBoundaryKernel(CognitiveKernel):
 
     def __init__(self) -> None:
         super().__init__("self_world_boundary_kernel")
-        self.boundary_states: Dict[str, BoundaryState] = {}
-        self.confusion_events: List[dict[str, Any]] = []
-        self.boundary_rules: List[dict[str, Any]] = []
+        self.boundary_states: dict[str, BoundaryState] = {}
+        self.confusion_events: list[dict[str, Any]] = []
+        self.boundary_rules: list[dict[str, Any]] = []
 
     async def _initialize_impl(self) -> None:
         """Initialize the boundary kernel."""
@@ -2194,7 +2242,7 @@ class SelfWorldBoundaryKernel(CognitiveKernel):
         self.metrics["confusion_events"] = 0
         self.metrics["boundary_clarity"] = 0.0
 
-    async def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def process(self, input_data: dict[str, Any]) -> dict[str, Any]:
         """
         Process state and maintain boundaries.
 
@@ -2262,7 +2310,7 @@ class SelfWorldBoundaryKernel(CognitiveKernel):
             "boundary_warnings": self._generate_boundary_warnings(boundary_state),
         }
 
-    def _assess_confidence(self, state: Dict[str, Any]) -> float:
+    def _assess_confidence(self, state: dict[str, Any]) -> float:
         """Assess confidence in a state representation."""
         if not state:
             return 0.0
@@ -2276,7 +2324,7 @@ class SelfWorldBoundaryKernel(CognitiveKernel):
         return min(detail_score + explicit_confidence * 0.5, 1.0)
 
     def _assess_unknown_state(
-        self, self_state: Dict[str, Any], user_state: Dict[str, Any], world_state: Dict[str, Any]
+        self, self_state: dict[str, Any], user_state: dict[str, Any], world_state: dict[str, Any]
     ) -> float:
         """Assess how much is explicitly unknown."""
         total_known = len(self_state) + len(user_state) + len(world_state)
@@ -2284,8 +2332,8 @@ class SelfWorldBoundaryKernel(CognitiveKernel):
         return 1.0 - min(total_known / 30, 0.7)  # More known = less unknown
 
     def _identify_ambiguity_zones(
-        self, self_state: Dict[str, Any], user_state: Dict[str, Any], inferred_state: Dict[str, Any]
-    ) -> List[str]:
+        self, self_state: dict[str, Any], user_state: dict[str, Any], inferred_state: dict[str, Any]
+    ) -> list[str]:
         """Identify zones where boundaries are unclear."""
         zones = []
 
@@ -2302,7 +2350,7 @@ class SelfWorldBoundaryKernel(CognitiveKernel):
 
         return zones
 
-    def _check_for_confusion(self, bs: BoundaryState) -> Optional[str]:
+    def _check_for_confusion(self, bs: BoundaryState) -> str:
         """Check for specific types of confusion."""
         # Model vs reality confusion
         if bs.confidence_map.get(BoundaryType.INFERRED_STATE, 0) > 0.9:
@@ -2320,7 +2368,7 @@ class SelfWorldBoundaryKernel(CognitiveKernel):
 
         return None
 
-    def _generate_boundary_warnings(self, bs: BoundaryState) -> List[str]:
+    def _generate_boundary_warnings(self, bs: BoundaryState) -> list[str]:
         """Generate warnings about boundary issues."""
         warnings = []
 
@@ -2333,9 +2381,7 @@ class SelfWorldBoundaryKernel(CognitiveKernel):
 
         return warnings
 
-    def get_state_by_type(
-        self, session_id: str, boundary_type: BoundaryType
-    ) -> Dict[str, Any] :
+    def get_state_by_type(self, session_id: str, boundary_type: BoundaryType) -> dict[str, Any]:
         """Get state of a specific boundary type."""
         bs = self.boundary_states.get(session_id)
         if not bs:
@@ -2352,9 +2398,11 @@ class SelfWorldBoundaryKernel(CognitiveKernel):
 
         return None
 
+
 # ============================================================================
 # KERNEL 12: TRANSFER KERNEL
 # ============================================================================
+
 
 class TransferKernel(CognitiveKernel):
     """
@@ -2365,9 +2413,9 @@ class TransferKernel(CognitiveKernel):
 
     def __init__(self) -> None:
         super().__init__("transfer_kernel")
-        self.transfer_mappings: Dict[str, TransferMapping] = {}
-        self.domain_structures: Dict[str, dict[str, Any]] = {}
-        self.transfer_history: List[dict[str, Any]] = []
+        self.transfer_mappings: dict[str, TransferMapping] = {}
+        self.domain_structures: dict[str, dict[str, Any]] = {}
+        self.transfer_history: list[dict[str, Any]] = []
 
     async def _initialize_impl(self) -> None:
         """Initialize the transfer kernel."""
@@ -2376,7 +2424,7 @@ class TransferKernel(CognitiveKernel):
         self.metrics["successful_transfers"] = 0
         self.metrics["avg_transfer_confidence"] = 0.0
 
-    async def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def process(self, input_data: dict[str, Any]) -> dict[str, Any]:
         """
         Attempt knowledge transfer between domains.
 
@@ -2442,7 +2490,7 @@ class TransferKernel(CognitiveKernel):
             "validation_needed": confidence < 0.8,
         }
 
-    def _extract_structure(self, knowledge: Dict[str, Any], domain: str) -> Dict[str, Any]:
+    def _extract_structure(self, knowledge: dict[str, Any], domain: str) -> dict[str, Any]:
         """Extract invariant structure from knowledge."""
         return {
             "domain": domain,
@@ -2453,8 +2501,8 @@ class TransferKernel(CognitiveKernel):
         }
 
     def _map_structure(
-        self, source_structure: Dict[str, Any], source_domain: str, target_domain: str
-    ) -> Dict[str, Any]:
+        self, source_structure: dict[str, Any], source_domain: str, target_domain: str
+    ) -> dict[str, Any]:
         """Map source structure to target domain."""
         # Simplified mapping: preserve structure, change domain labels
         target_structure = dict(source_structure)
@@ -2478,7 +2526,7 @@ class TransferKernel(CognitiveKernel):
         return target_structure
 
     def _calculate_mapping_confidence(
-        self, source: Dict[str, Any], target: Dict[str, Any], transfer_type: TransferType
+        self, source: dict[str, Any], target: dict[str, Any], transfer_type: TransferType
     ) -> float:
         """Calculate confidence in the mapping."""
         base_confidence = 0.5
@@ -2500,7 +2548,7 @@ class TransferKernel(CognitiveKernel):
 
         return min(max(base_confidence, 0.1), 0.95)
 
-    async def validate_transfer(self, mapping_id: str, test_results: List[bool]) -> Dict[str, Any]:
+    async def validate_transfer(self, mapping_id: str, test_results: list[bool]) -> dict[str, Any]:
         """Validate a transfer with test results."""
         mapping = self.transfer_mappings.get(mapping_id)
         if not mapping:
@@ -2523,7 +2571,7 @@ class TransferKernel(CognitiveKernel):
             else "Discard",
         }
 
-    def find_transfer_opportunities(self, source_domain: str) -> List[dict[str, Any]]:
+    def find_transfer_opportunities(self, source_domain: str) -> list[dict[str, Any]]:
         """Find potential domains for transfer from source."""
         opportunities = []
 
@@ -2543,9 +2591,11 @@ class TransferKernel(CognitiveKernel):
         opportunities.sort(key=lambda x: x["success_rate"], reverse=True)
         return opportunities
 
+
 # ============================================================================
 # KERNEL 13: TOOL SYNTHESIS KERNEL
 # ============================================================================
+
 
 class ToolSynthesisKernel(CognitiveKernel):
     """
@@ -2556,9 +2606,9 @@ class ToolSynthesisKernel(CognitiveKernel):
 
     def __init__(self) -> None:
         super().__init__("tool_synthesis_kernel")
-        self.invented_tools: Dict[str, InventedTool] = {}
-        self.synthesis_patterns: List[dict[str, Any]] = []
-        self.tool_usage_stats: Dict[str, dict[str, Any]] = {}
+        self.invented_tools: dict[str, InventedTool] = {}
+        self.synthesis_patterns: list[dict[str, Any]] = []
+        self.tool_usage_stats: dict[str, dict[str, Any]] = {}
 
     async def _initialize_impl(self) -> None:
         """Initialize the tool synthesis kernel."""
@@ -2567,7 +2617,7 @@ class ToolSynthesisKernel(CognitiveKernel):
         self.metrics["avg_cost_reduction"] = 0.0
         self.metrics["avg_error_reduction"] = 0.0
 
-    async def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def process(self, input_data: dict[str, Any]) -> dict[str, Any]:
         """
         Synthesize a new tool for a specific purpose.
 
@@ -2639,7 +2689,7 @@ class ToolSynthesisKernel(CognitiveKernel):
             "implementation_ready": True,
         }
 
-    def _design_tool(self, purpose: str, tool_type: ToolType) -> Dict[str, Any]:
+    def _design_tool(self, purpose: str, tool_type: ToolType) -> dict[str, Any]:
         """Design a tool for the given purpose."""
         if tool_type == ToolType.COGNITIVE:
             return {
@@ -2672,25 +2722,25 @@ class ToolSynthesisKernel(CognitiveKernel):
                 "description": f"Process for {purpose}",
             }
 
-    def _estimate_cost_reduction(self, design: Dict[str, Any], current: float) -> float:
+    def _estimate_cost_reduction(self, design: dict[str, Any], current: float) -> float:
         """Estimate cost reduction from tool."""
         # Simplified estimation
         efficiency_factor = 0.6 if design.get("parallelizable") else 0.8
         return min((current - current * efficiency_factor) / current if current > 0 else 0, 0.9)
 
-    def _estimate_error_reduction(self, design: Dict[str, Any], current: float) -> float:
+    def _estimate_error_reduction(self, design: dict[str, Any], current: float) -> float:
         """Estimate error reduction from tool."""
         # Tools with more structure reduce error
         steps = len(design.get("steps", []))
         return min(steps * 0.1, 0.8) if steps > 0 else 0.2
 
-    def _estimate_latency_reduction(self, design: Dict[str, Any], current: float) -> float:
+    def _estimate_latency_reduction(self, design: dict[str, Any], current: float) -> float:
         """Estimate latency reduction from tool."""
         if design.get("complexity", "").endswith("log n"):
             return 0.7  # Log complexity is fast
         return 0.3
 
-    async def use_tool(self, tool_id: str, input_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def use_tool(self, tool_id: str, input_data: dict[str, Any]) -> dict[str, Any]:
         """Use an invented tool and track results."""
         tool = self.invented_tools.get(tool_id)
         if not tool:
@@ -2719,7 +2769,7 @@ class ToolSynthesisKernel(CognitiveKernel):
             "success_rate": tool.success_rate,
         }
 
-    def get_tool_effectiveness_report(self, tool_id: str) -> Dict[str, Any] :
+    def get_tool_effectiveness_report(self, tool_id: str) -> dict[str, Any]:
         """Get effectiveness report for a tool."""
         tool = self.invented_tools.get(tool_id)
         stats = self.tool_usage_stats.get(tool_id)
@@ -2742,9 +2792,11 @@ class ToolSynthesisKernel(CognitiveKernel):
             else "Retire",
         }
 
+
 # ============================================================================
 # KERNEL 14: ADVERSARIAL ROBUSTNESS KERNEL
 # ============================================================================
+
 
 class AdversarialRobustnessKernel(CognitiveKernel):
     """
@@ -2761,10 +2813,10 @@ class AdversarialRobustnessKernel(CognitiveKernel):
 
     def __init__(self) -> None:
         super().__init__("adversarial_robustness_kernel")
-        self.threat_patterns: Dict[AdversarialThreat, list[dict[str, Any]]] = defaultdict(list)
-        self.defense_mechanisms: Dict[AdversarialThreat, list[dict[str, Any]]] = defaultdict(list)
-        self.incident_history: List[dict[str, Any]] = []
-        self.blocked_ips: Set[str] = set()
+        self.threat_patterns: dict[AdversarialThreat, list[dict[str, Any]]] = defaultdict(list)
+        self.defense_mechanisms: dict[AdversarialThreat, list[dict[str, Any]]] = defaultdict(list)
+        self.incident_history: list[dict[str, Any]] = []
+        self.blocked_ips: set[str] = set()
 
     async def _initialize_impl(self) -> None:
         """Initialize the adversarial robustness kernel."""
@@ -2778,7 +2830,7 @@ class AdversarialRobustnessKernel(CognitiveKernel):
         self.metrics["threats_blocked"] = 0
         self.metrics["robustness_score"] = 0.0
 
-    async def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def process(self, input_data: dict[str, Any]) -> dict[str, Any]:
         """
         Analyze input for adversarial threats.
 
@@ -2905,8 +2957,8 @@ class AdversarialRobustnessKernel(CognitiveKernel):
         ]
 
     def _detect_threat(
-        self, content: str, context: Dict[str, Any], threat_type: AdversarialThreat
-    ) -> Dict[str, Any] :
+        self, content: str, context: dict[str, Any], threat_type: AdversarialThreat
+    ) -> dict[str, Any]:
         """Detect a specific type of threat."""
         patterns = self.threat_patterns.get(threat_type, [])
 
@@ -2931,8 +2983,8 @@ class AdversarialRobustnessKernel(CognitiveKernel):
         return None
 
     def _get_defense(
-        self, threat_type: AdversarialThreat, detection: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, threat_type: AdversarialThreat, detection: dict[str, Any]
+    ) -> dict[str, Any]:
         """Get defense mechanism for a threat."""
         mechanisms = self.defense_mechanisms.get(threat_type, [])
 
@@ -2956,11 +3008,11 @@ class AdversarialRobustnessKernel(CognitiveKernel):
             "severity": "MEDIUM",
         }
 
-    def get_robustness_assessment(self) -> Dict[str, Any]:
+    def get_robustness_assessment(self) -> dict[str, Any]:
         """Get overall robustness assessment."""
         recent_incidents = self.incident_history[-50:]
 
-        threat_type_counts: Dict[str, int] = defaultdict(int)
+        threat_type_counts: dict[str, int] = defaultdict(int)
         for incident in recent_incidents:
             for threat in incident.get("threats", []):
                 threat_type_counts[threat] += 1
@@ -2979,9 +3031,11 @@ class AdversarialRobustnessKernel(CognitiveKernel):
             ],
         }
 
+
 # ============================================================================
 # KERNEL 15: THEOREM BUILDING KERNEL
 # ============================================================================
+
 
 class TheoremBuildingKernel(CognitiveKernel):
     """
@@ -2995,10 +3049,10 @@ class TheoremBuildingKernel(CognitiveKernel):
 
     def __init__(self) -> None:
         super().__init__("theorem_building_kernel")
-        self.theorems: Dict[str, Theorem] = {}
-        self.proof_library: Dict[str, list[str]] = {}
-        self.axioms: List[str] = []
-        self.cross_domain_mappings: List[dict[str, Any]] = []
+        self.theorems: dict[str, Theorem] = {}
+        self.proof_library: dict[str, list[str]] = {}
+        self.axioms: list[str] = []
+        self.cross_domain_mappings: list[dict[str, Any]] = []
 
     async def _initialize_impl(self) -> None:
         """Initialize the theorem building kernel."""
@@ -3016,7 +3070,7 @@ class TheoremBuildingKernel(CognitiveKernel):
         self.metrics["proofs_verified"] = 0
         self.metrics["cross_domain_unifications"] = 0
 
-    async def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def process(self, input_data: dict[str, Any]) -> dict[str, Any]:
         """
         Build a theorem from evidence and reasoning.
 
@@ -3082,8 +3136,8 @@ class TheoremBuildingKernel(CognitiveKernel):
         }
 
     def _construct_proof(
-        self, statement: str, evidence: List[dict[str, Any]], assumptions: List[str]
-    ) -> List[str]:
+        self, statement: str, evidence: list[dict[str, Any]], assumptions: list[str]
+    ) -> list[str]:
         """Construct a proof for the theorem."""
         proof_steps = []
 
@@ -3101,7 +3155,7 @@ class TheoremBuildingKernel(CognitiveKernel):
 
         return proof_steps
 
-    def _extract_implications(self, statement: str, proof: List[str]) -> List[str]:
+    def _extract_implications(self, statement: str, proof: list[str]) -> list[str]:
         """Extract implications from the theorem."""
         implications = []
 
@@ -3121,7 +3175,7 @@ class TheoremBuildingKernel(CognitiveKernel):
 
         return implications
 
-    def _find_cross_domain_applications(self, statement: str, domains: List[str]) -> List[str]:
+    def _find_cross_domain_applications(self, statement: str, domains: list[str]) -> list[str]:
         """Find applications across domains."""
         applications = []
 
@@ -3143,7 +3197,7 @@ class TheoremBuildingKernel(CognitiveKernel):
         return applications
 
     def _calculate_theorem_confidence(
-        self, evidence: List[dict[str, Any]], proof: List[str]
+        self, evidence: list[dict[str, Any]], proof: list[str]
     ) -> float:
         """Calculate confidence in the theorem."""
         base_confidence = 0.5
@@ -3157,8 +3211,8 @@ class TheoremBuildingKernel(CognitiveKernel):
         return min(base_confidence + evidence_boost + proof_boost, 0.95)
 
     async def verify_theorem(
-        self, theorem_id: str, test_cases: List[dict[str, Any]]
-    ) -> Dict[str, Any]:
+        self, theorem_id: str, test_cases: list[dict[str, Any]]
+    ) -> dict[str, Any]:
         """Verify a theorem with test cases."""
         theorem = self.theorems.get(theorem_id)
         if not theorem:
@@ -3188,7 +3242,7 @@ class TheoremBuildingKernel(CognitiveKernel):
             "verified": verification_rate > 0.8,
         }
 
-    def find_unifying_laws(self, theorems: List[str]) -> List[dict[str, Any]]:
+    def find_unifying_laws(self, theorems: list[str]) -> list[dict[str, Any]]:
         """Find laws that unify multiple theorems."""
         unifying_laws = []
 
@@ -3213,17 +3267,19 @@ class TheoremBuildingKernel(CognitiveKernel):
 
         return unifying_laws
 
-    def get_theorem(self, theorem_id: str) -> Optional[Theorem]:
+    def get_theorem(self, theorem_id: str) -> Theorem:
         """Get a specific theorem."""
         return self.theorems.get(theorem_id)
 
-    def get_theorems_by_confidence(self, min_confidence: float = 0.0) -> List[Theorem]:
+    def get_theorems_by_confidence(self, min_confidence: float = 0.0) -> list[Theorem]:
         """Get theorems meeting confidence threshold."""
         return [t for t in self.theorems.values() if t.confidence >= min_confidence]
+
 
 # ============================================================================
 # SUPER-INTELLIGENCE STACK ORCHESTRATOR
 # ============================================================================
+
 
 class SuperIntelligenceStack:
     """
@@ -3236,7 +3292,7 @@ class SuperIntelligenceStack:
 
     def __init__(self) -> None:
         """Initialize the Super-Intelligence Stack."""
-        self.kernels: Dict[str, CognitiveKernel] = {}
+        self.kernels: dict[str, CognitiveKernel] = {}
         self.execution_order = [
             "understanding_kernel",
             "concept_formation_kernel",
@@ -3255,7 +3311,7 @@ class SuperIntelligenceStack:
             "theorem_building_kernel",
         ]
         self.stack_state = "uninitialized"
-        self.metrics_history: List[dict[str, Any]] = []
+        self.metrics_history: list[dict[str, Any]] = []
 
     async def initialize(self) -> bool:
         """Initialize all kernels in the stack."""
@@ -3297,8 +3353,8 @@ class SuperIntelligenceStack:
         return success_count == len(self.kernels)
 
     async def execute_pipeline(
-        self, input_data: Dict[str, Any], stages: Optional[list[str]] = None
-    ) -> Dict[str, Any]:
+        self, input_data: dict[str, Any, stages : list[str]] = None
+    ) -> dict[str, Any]:
         """
         Execute the full SIKS pipeline.
 
@@ -3358,10 +3414,10 @@ class SuperIntelligenceStack:
     def _prepare_stage_input(
         self,
         stage_id: str,
-        original_input: Dict[str, Any],
-        context: Dict[str, Any],
-        previous_results: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        original_input: dict[str, Any],
+        context: dict[str, Any],
+        previous_results: dict[str, Any],
+    ) -> dict[str, Any]:
         """Prepare input for a specific stage based on pipeline state."""
         # Base input
         stage_input = {"_stage_id": stage_id}
@@ -3394,7 +3450,7 @@ class SuperIntelligenceStack:
 
         return stage_input
 
-    def _synthesize_output(self, results: Dict[str, Any]) -> Dict[str, Any]:
+    def _synthesize_output(self, results: dict[str, Any]) -> dict[str, Any]:
         """Synthesize final output from stage results."""
         synthesis = {
             "understanding_score": results.get("understanding_kernel", {}).get(
@@ -3432,11 +3488,11 @@ class SuperIntelligenceStack:
 
         return synthesis
 
-    def get_stack_metrics(self) -> Dict[str, Any]:
+    def get_stack_metrics(self) -> dict[str, Any]:
         """Get metrics from all kernels."""
         return {kernel_id: kernel.get_metrics() for kernel_id, kernel in self.kernels.items()}
 
-    def get_kernel(self, kernel_id: str) -> Optional[CognitiveKernel]:
+    def get_kernel(self, kernel_id: str) -> CognitiveKernel:
         """Get a specific kernel."""
         return self.kernels.get(kernel_id)
 
@@ -3445,11 +3501,13 @@ class SuperIntelligenceStack:
         logger.info("Shutting down Super-Intelligence Stack")
         self.stack_state = "shutdown"
 
+
 # ============================================================================
 # GLOBAL INSTANCE MANAGEMENT
 # ============================================================================
 
-_siks_instance: Optional[SuperIntelligenceStack] = None
+_siks_instance: SuperIntelligenceStack = None
+
 
 async def initialize_superintelligence_stack() -> SuperIntelligenceStack:
     """Initialize and return the global Super-Intelligence Stack."""
@@ -3461,18 +3519,22 @@ async def initialize_superintelligence_stack() -> SuperIntelligenceStack:
 
     return _siks_instance
 
-def get_superintelligence_stack() -> Optional[SuperIntelligenceStack]:
+
+def get_superintelligence_stack() -> SuperIntelligenceStack:
     """Get the global Super-Intelligence Stack instance."""
     return _siks_instance
 
-async def execute_siks_pipeline(input_data: Dict[str, Any]) -> Dict[str, Any]:
+
+async def execute_siks_pipeline(input_data: dict[str, Any]) -> dict[str, Any]:
     """Convenience function to execute the SIKS pipeline."""
     siks = await initialize_superintelligence_stack()
     return await siks.execute_pipeline(input_data)
 
+
 # ============================================================================
 # MAIN / DEMO
 # ============================================================================
+
 
 async def demo_superintelligence_stack() -> None:
     """Demonstrate the Super-Intelligence Stack capabilities."""
@@ -3541,6 +3603,7 @@ async def demo_superintelligence_stack() -> None:
     # Shutdown
     await siks.shutdown()
     print("\n✓ Stack shutdown complete")
+
 
 if __name__ == "__main__":
     asyncio.run(demo_superintelligence_stack())

@@ -24,10 +24,11 @@ Version: 1.0.0
 import hashlib
 import json
 from dataclasses import dataclass
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class EntryType(Enum):
@@ -59,10 +60,10 @@ class LedgerEntry:
     entry_type: EntryType
     state_hash: str
     previous_hash: str
-    data: Dict[str, Any]
+    data: dict[str, Any]
     signature: str
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert entry to dictionary."""
         return {
             "index": self.index,
@@ -96,15 +97,15 @@ class StateLedger:
     """
 
     def __init__(self):
-        self._entries: List[LedgerEntry] = []
+        self._entries: list[LedgerEntry] = []
         self._current_hash: str = "0" * 32  # Genesis hash
-        self._state_cache: Dict[int, dict[str, Any]] = {}
+        self._state_cache: dict[int, dict[str, Any]] = {}
 
     def append(
         self,
         entry_type: EntryType,
-        state_data: Dict[str, Any],
-        metadata: Dict[str, Any] = None,
+        state_data: dict[str, Any],
+        metadata: dict[str, Any] = None,
     ) -> LedgerEntry:
         """Append new entry to ledger.
 
@@ -165,17 +166,17 @@ class StateLedger:
 
         return True
 
-    def get_entry(self, index: int) -> Optional[LedgerEntry]:
+    def get_entry(self, index: int) -> LedgerEntry:
         """Retrieve entry by index."""
         if 0 <= index < len(self._entries):
             return self._entries[index]
         return None
 
-    def get_state_at(self, index: int) -> Dict[str, Any]:
+    def get_state_at(self, index: int) -> dict[str, Any]:
         """Get reconstructed state at specific ledger index."""
         return self._state_cache.get(index)
 
-    def get_audit_trail(self, start_index: int = 0, end_index: int = None) -> List[LedgerEntry]:
+    def get_audit_trail(self, start_index: int = 0, end_index: int = None) -> list[LedgerEntry]:
         """Get audit trail for range of entries.
 
         Args:
@@ -188,7 +189,7 @@ class StateLedger:
         end = end_index or len(self._entries)
         return self._entries[start_index:end]
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """Get ledger statistics."""
         type_counts = {}
         for entry in self._entries:
@@ -204,7 +205,7 @@ class StateLedger:
             "last_timestamp": self._entries[-1].timestamp if self._entries else None,
         }
 
-    def reconstruct_state(self, target_index: int) -> Dict[str, Any]:
+    def reconstruct_state(self, target_index: int) -> dict[str, Any]:
         """Reconstruct state at specific point in history.
 
         Args:
@@ -280,7 +281,7 @@ class TransactionLog:
 
     def __init__(self, ledger: StateLedger):
         self.ledger = ledger
-        self._active_transactions: Dict[str, dict[str, Any]] = {}
+        self._active_transactions: dict[str, dict[str, Any]] = {}
 
     def begin_transaction(
         self, tx_id: str, operation: str, substrate: str = "local"
@@ -299,7 +300,7 @@ class TransactionLog:
             {"event": "begin", "tx_id": tx_id},
         )
 
-    def commit_transaction(self, tx_id: str) -> Optional[LedgerEntry]:
+    def commit_transaction(self, tx_id: str) -> LedgerEntry:
         """Log transaction commit."""
         if tx_id not in self._active_transactions:
             return None
@@ -317,7 +318,7 @@ class TransactionLog:
         del self._active_transactions[tx_id]
         return entry
 
-    def rollback_transaction(self, tx_id: str, reason: str) -> Optional[LedgerEntry]:
+    def rollback_transaction(self, tx_id: str, reason: str) -> LedgerEntry:
         """Log transaction rollback."""
         if tx_id not in self._active_transactions:
             return None

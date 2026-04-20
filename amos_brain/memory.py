@@ -1,21 +1,30 @@
 """AMOS Brain Memory Integration - Persists reasoning to clawspring memory."""
 
+from __future__ import annotations
+
 import hashlib
 import json
 import logging
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+# Python 3.9 compatibility - UTC is only in 3.11+
+UTC = UTC
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 logger = logging.getLogger(__name__)
 
 # Import clawspring memory if available
+MemoryEntry = None  # Default to None
+CLAWSPRING_MEMORY = False
 try:
+    from clawspring.memory.manager import save_memory
+
+    from clawspring.memory import MemoryEntry
+
     CLAWSPRING_MEMORY = True
 except ImportError:
-    CLAWSPRING_MEMORY = False
-    MemoryEntry = None
+    pass
 
 
 class BrainMemory:
@@ -34,12 +43,10 @@ class BrainMemory:
     def __init__(self, memory_dir: Optional[Path] = None):
         self.memory_dir = memory_dir or Path.home() / ".amos_brain" / "memory"
         self.memory_dir.mkdir(parents=True, exist_ok=True)
-        self._local_cache: Dict[str, Any] = {}
+        self._local_cache: dict[str, Any] = {}
         self._load_local_entries()
 
-    def save_reasoning(
-        self, problem: str, analysis: Dict[str, Any], tags: List[str]  = None
-    ) -> str:
+    def save_reasoning(self, problem: str, analysis: dict[str, Any], tags: list[str] = None) -> str:
         """Save a reasoning result to memory.
 
         Args:
@@ -99,7 +106,7 @@ class BrainMemory:
 
         return entry_id
 
-    def _persist_local_entry(self, entry: Dict[str, Any]) -> None:
+    def _persist_local_entry(self, entry: dict[str, Any]) -> None:
         filepath = self.memory_dir / f"{entry['id']}.json"
         with open(filepath, "w", encoding="utf-8") as f:
             json.dump(entry, f, indent=2, default=str)
@@ -120,7 +127,7 @@ class BrainMemory:
             except Exception as e:
                 logger.debug(f"Failed to load memory entry: {e}")
 
-    def find_similar_reasoning(self, problem: str, threshold: float = 0.6) -> List[dict[str, Any]]:
+    def find_similar_reasoning(self, problem: str, threshold: float = 0.6) -> list[dict[str, Any]]:
         """Find past reasoning similar to current problem.
 
         Args:
@@ -191,8 +198,8 @@ class BrainMemory:
         return similar[:5]  # Top 5
 
     def get_reasoning_history(
-        self, limit: int = 10, tag_filter: str  = None
-    ) -> List[dict[str, Any]]:
+        self, limit: int = 10, tag_filter: str = None
+    ) -> list[dict[str, Any]]:
         """Get recent reasoning history.
 
         Args:
@@ -213,7 +220,7 @@ class BrainMemory:
 
         return entries[:limit]
 
-    def get_audit_trail(self, problem_contains: str  = None) -> Dict[str, Any]:
+    def get_audit_trail(self, problem_contains: str = None) -> dict[str, Any]:
         """Get audit trail of brain reasoning.
 
         Args:
@@ -247,7 +254,7 @@ class BrainMemory:
             },
         }
 
-    def recall_for_problem(self, problem: str) -> Dict[str, Any]:
+    def recall_for_problem(self, problem: str) -> dict[str, Any]:
         """Recall relevant past reasoning and similar analyses for a problem.
 
         This is the main interface for using memory during reasoning.
@@ -291,7 +298,7 @@ class BrainMemory:
         """Generate hash ID for problem."""
         return hashlib.sha256(problem.encode()).hexdigest()[:16]
 
-    def _summarize_analysis(self, analysis: Dict[str, Any]) -> Dict[str, Any]:
+    def _summarize_analysis(self, analysis: dict[str, Any]) -> dict[str, Any]:
         """Create summary of analysis for memory storage."""
         summary = {
             "recommendations_count": len(analysis.get("recommendations", [])),
@@ -318,7 +325,7 @@ class BrainMemory:
 
         return summary
 
-    def _format_for_memory(self, entry: Dict[str, Any]) -> str:
+    def _format_for_memory(self, entry: dict[str, Any]) -> str:
         """Format entry as readable text for memory storage."""
         lines = [
             f"## AMOS Brain Reasoning - {entry['timestamp']}",
@@ -356,15 +363,13 @@ def get_brain_memory() -> BrainMemory:
     return _brain_memory
 
 
-def save_reasoning_result(
-    problem: str, analysis: Dict[str, Any], tags: List[str]  = None
-) -> str:
+def save_reasoning_result(problem: str, analysis: dict[str, Any], tags: list[str] = None) -> str:
     """Convenience function to save reasoning result."""
     memory = get_brain_memory()
     return memory.save_reasoning(problem, analysis, tags)
 
 
-def recall_reasoning_context(problem: str) -> Dict[str, Any]:
+def recall_reasoning_context(problem: str) -> dict[str, Any]:
     """Convenience function to recall context for a problem."""
     memory = get_brain_memory()
     return memory.recall_for_problem(problem)

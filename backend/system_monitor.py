@@ -1,4 +1,6 @@
-from typing import Any, Dict, Optional
+from __future__ import annotations
+
+from typing import Any, Optional
 
 """Production System Monitor for AMOS.
 
@@ -33,7 +35,7 @@ class SystemMonitor:
         self.registry = CollectorRegistry()
         self._init_metrics()
         self._running = False
-        self._api_times: Dict[str, list[float]] = {}
+        self._api_times: dict[str, list[float]] = {}
 
     def _init_metrics(self) -> None:
         """Initialize Prometheus metrics."""
@@ -145,7 +147,7 @@ class SystemMonitor:
         """Get metrics in Prometheus format."""
         return generate_latest(self.registry)
 
-    async def get_health_summary(self) -> Dict[str, Any]:
+    async def get_health_summary(self) -> dict[str, Any]:
         """Get summary of system health."""
         health = {"timestamp": time.time(), "system": {}, "database": {}, "amos": {}}
 
@@ -198,7 +200,7 @@ async def prometheus_metrics() -> Response:
 
 
 @router.get("/health")
-async def health_summary() -> Dict[str, Any]:
+async def health_summary() -> dict[str, Any]:
     """JSON health summary endpoint."""
     monitor = get_monitor()
     return await monitor.get_health_summary()

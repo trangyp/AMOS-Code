@@ -1,14 +1,17 @@
 """AMOS Workflow Orchestrator Engine - Hierarchical task orchestration."""
 
+from __future__ import annotations
+
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class TaskStatus(Enum):
     """Task execution status."""
+
     PENDING = auto()
     RUNNING = auto()
     COMPLETED = auto()
@@ -18,6 +21,7 @@ class TaskStatus(Enum):
 
 class OrchestrationMode(Enum):
     """Orchestration mode."""
+
     SEQUENTIAL = "sequential"
     PARALLEL = "parallel"
     ADAPTIVE = "adaptive"
@@ -30,14 +34,14 @@ class Task:
     id: str
     name: str
     description: str
-    tool: str  = None
+    tool: str = None
     params: dict = field(default_factory=dict)
-    dependencies: List[str] = field(default_factory=list)
+    dependencies: list[str] = field(default_factory=list)
     status: TaskStatus = TaskStatus.PENDING
     result: Any = None
-    error: str  = None
+    error: str = None
     created_at: str = field(default_factory=lambda: datetime.now().isoformat())
-    completed_at: str  = None
+    completed_at: str = None
 
 
 @dataclass
@@ -47,7 +51,7 @@ class Workflow:
     id: str
     name: str
     description: str
-    tasks: Dict[str, Task] = field(default_factory=dict)
+    tasks: dict[str, Task] = field(default_factory=dict)
     mode: OrchestrationMode = OrchestrationMode.ADAPTIVE
     global_context: dict = field(default_factory=dict)
 
@@ -58,12 +62,12 @@ class PlanningKernel:
     STRATEGIES = ["divide_and_conquer", "sequential", "parallel", "iterative_refinement"]
 
     def __init__(self):
-        self.plans: Dict[str, dict] = {}
+        self.plans: dict[str, dict] = {}
 
     def create_plan(
         self,
         goal: str,
-        constraints: Optional[List[str]] = None,
+        constraints: list[str | None] = None,
     ) -> dict:
         """Create hierarchical plan for goal."""
         plan_id = str(uuid.uuid4())[:8]
@@ -82,7 +86,7 @@ class PlanningKernel:
         self.plans[plan_id] = plan
         return plan
 
-    def _decompose_goal(self, goal: str) -> List[str]:
+    def _decompose_goal(self, goal: str) -> list[str]:
         """Decompose goal using Rule of 2-4."""
         # Default decomposition pattern
         return [
@@ -113,7 +117,7 @@ class PlanningKernel:
 
         return plan
 
-    def _get_principles(self) -> List[str]:
+    def _get_principles(self) -> list[str]:
         """Return kernel principles."""
         return [
             "Hierarchical goal decomposition",
@@ -127,8 +131,8 @@ class ExecutionKernel:
     """Kernel for workflow execution."""
 
     def __init__(self):
-        self.workflows: Dict[str, Workflow] = {}
-        self.execution_log: List[dict] = []
+        self.workflows: dict[str, Workflow] = {}
+        self.execution_log: list[dict] = []
 
     def create_workflow(
         self,
@@ -151,9 +155,9 @@ class ExecutionKernel:
         workflow_id: str,
         name: str,
         description: str,
-        tool: str  = None,
-        params: dict  = None,
-        dependencies: Optional[List[str]] = None,
+        tool: str = None,
+        params: dict = None,
+        dependencies: list[str | None] = None,
     ) -> Task:
         """Add task to workflow."""
         workflow = self.workflows.get(workflow_id)
@@ -193,7 +197,7 @@ class ExecutionKernel:
             "results": results,
         }
 
-    def _resolve_dependencies(self, tasks: Dict[str, Task]) -> List[str]:
+    def _resolve_dependencies(self, tasks: dict[str, Task]) -> list[str]:
         """Resolve task dependencies (topological sort)."""
         # Simple dependency resolution
         resolved = []
@@ -231,15 +235,17 @@ class ExecutionKernel:
         task.result = result
         task.completed_at = datetime.now().isoformat()
 
-        self.execution_log.append({
-            "task": task.id,
-            "timestamp": task.completed_at,
-            "status": "completed",
-        })
+        self.execution_log.append(
+            {
+                "task": task.id,
+                "timestamp": task.completed_at,
+                "status": "completed",
+            }
+        )
 
         return result
 
-    def _get_principles(self) -> List[str]:
+    def _get_principles(self) -> list[str]:
         """Return kernel principles."""
         return [
             "Dependency-aware execution",
@@ -253,8 +259,8 @@ class ReflectionKernel:
     """Kernel for self-reflection and improvement."""
 
     def __init__(self):
-        self.critiques: List[dict] = []
-        self.improvements: List[dict] = []
+        self.critiques: list[dict] = []
+        self.improvements: list[dict] = []
 
     def critique_execution(
         self,
@@ -281,7 +287,7 @@ class ReflectionKernel:
         self,
         workflow_id: str,
         critique: dict,
-    ) -> List[dict]:
+    ) -> list[dict]:
         """Generate improvements based on critique."""
         improvements = []
 
@@ -310,7 +316,7 @@ class ReflectionKernel:
             "method": "Self-Refine: generate → critique → revise",
         }
 
-    def _get_principles(self) -> List[str]:
+    def _get_principles(self) -> list[str]:
         """Return kernel principles."""
         return [
             "Verbal reinforcement learning",
@@ -370,7 +376,7 @@ class StateManagementKernel:
             "timestamp": datetime.now().isoformat(),
         }
 
-    def _get_principles(self) -> List[str]:
+    def _get_principles(self) -> list[str]:
         """Return kernel principles."""
         return [
             "Hierarchical state management",
@@ -396,8 +402,8 @@ class WorkflowOrchestratorEngine:
         self,
         goal: str,
         mode: str = "adaptive",
-        tools: Optional[List[str]] = None,
-    ) -> Dict[str, Any]:
+        tools: list[str | None] = None,
+    ) -> dict[str, Any]:
         """Orchestrate workflow for goal."""
         # Step 1: Plan
         plan = self.planning_kernel.create_plan(goal)
@@ -414,7 +420,7 @@ class WorkflowOrchestratorEngine:
             tool = tools[i % len(tools)] if tools else None
             self.execution_kernel.add_task(
                 workflow_id=workflow.id,
-                name=f"Task {i+1}",
+                name=f"Task {i + 1}",
                 description=sub_goal,
                 tool=tool,
             )
@@ -426,9 +432,7 @@ class WorkflowOrchestratorEngine:
         execution_result = self.execution_kernel.execute_workflow(workflow.id)
 
         # Step 6: Reflect
-        critique = self.reflection_kernel.critique_execution(
-            workflow.id, execution_result
-        )
+        critique = self.reflection_kernel.critique_execution(workflow.id, execution_result)
 
         return {
             "plan": plan,
@@ -441,11 +445,11 @@ class WorkflowOrchestratorEngine:
     def analyze(
         self,
         description: str,
-        domains: Optional[List[str]] = None,
-    ) -> Dict[str, Any]:
+        domains: list[str | None] = None,
+    ) -> dict[str, Any]:
         """Run orchestrator analysis."""
         domains = domains or ["planning", "execution", "reflection", "state"]
-        results: Dict[str, Any] = {}
+        results: dict[str, Any] = {}
 
         if "planning" in domains:
             results["planning"] = {
@@ -502,62 +506,66 @@ class WorkflowOrchestratorEngine:
 
         for domain, data in results.items():
             display_name = domain_names.get(domain, domain.title())
-            lines.extend([
-                "",
-                f"### {display_name}",
-            ])
+            lines.extend(
+                [
+                    "",
+                    f"### {display_name}",
+                ]
+            )
             if isinstance(data, dict):
                 for key, value in data.items():
                     if key != "principles":
                         lines.append(f"- {key}: {value}")
 
-        lines.extend([
-            "",
-            "## Safety & Compliance",
-            "",
-            "### Safety Constraints",
-            "- NO autonomous execution without human oversight",
-            "- NO infinite loops - max iteration limits enforced",
-            "- NO state explosion - retention policies active",
-            "- Tool permissions required for all actions",
-            "",
-            "### Global Law Compliance",
-            "- L1 (Structural): Hierarchical decomposition (Rule of 2-4)",
-            "- L2 (Temporal): State persistence and checkpointing",
-            "- L3 (Semantic): Clear plan-execution-reflection trace",
-            "- L4 (Cognitive): Multi-strategy planning (sequential/parallel/adaptive)",
-            "- L5 (Safety): Dependency resolution prevents cycles",
-            "- L6 (Humility): GAP acknowledgment below",
-            "",
-            "## Gap Acknowledgment",
-            "",
-            "**CRITICAL GAP:** This is NOT a production workflow engine. "
-            "All orchestration is SIMULATED for architectural demonstration.",
-            "",
-            "Specific Gaps:",
-            "- No actual tool execution (mock only)",
-            "- No real-time latency management",
-            "- No distributed execution across nodes",
-            "- No persistence layer for recovery",
-            "- No cost optimization algorithms",
-            "- Pattern demonstration only, not production orchestrator",
-            "",
-            "### Research Integration",
-            "Based on 2024-2025 Agentic AI surveys:",
-            "- Agentic AI: Architectures, Taxonomies (arXiv:2601.12560)",
-            "- ReAct, Tree of Thoughts, LATS planning methods",
-            "- Self-Refine, CRITIC reflection mechanisms",
-            "- MemGPT, MemoryBank memory architectures",
-            "",
-            "### Creator Attribution",
-            "This engine was architected by Trang Phan as part of AMOS vInfinity.",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Safety & Compliance",
+                "",
+                "### Safety Constraints",
+                "- NO autonomous execution without human oversight",
+                "- NO infinite loops - max iteration limits enforced",
+                "- NO state explosion - retention policies active",
+                "- Tool permissions required for all actions",
+                "",
+                "### Global Law Compliance",
+                "- L1 (Structural): Hierarchical decomposition (Rule of 2-4)",
+                "- L2 (Temporal): State persistence and checkpointing",
+                "- L3 (Semantic): Clear plan-execution-reflection trace",
+                "- L4 (Cognitive): Multi-strategy planning (sequential/parallel/adaptive)",
+                "- L5 (Safety): Dependency resolution prevents cycles",
+                "- L6 (Humility): GAP acknowledgment below",
+                "",
+                "## Gap Acknowledgment",
+                "",
+                "**CRITICAL GAP:** This is NOT a production workflow engine. "
+                "All orchestration is SIMULATED for architectural demonstration.",
+                "",
+                "Specific Gaps:",
+                "- No actual tool execution (mock only)",
+                "- No real-time latency management",
+                "- No distributed execution across nodes",
+                "- No persistence layer for recovery",
+                "- No cost optimization algorithms",
+                "- Pattern demonstration only, not production orchestrator",
+                "",
+                "### Research Integration",
+                "Based on 2024-2025 Agentic AI surveys:",
+                "- Agentic AI: Architectures, Taxonomies (arXiv:2601.12560)",
+                "- ReAct, Tree of Thoughts, LATS planning methods",
+                "- Self-Refine, CRITIC reflection mechanisms",
+                "- MemGPT, MemoryBank memory architectures",
+                "",
+                "### Creator Attribution",
+                "This engine was architected by Trang Phan as part of AMOS vInfinity.",
+            ]
+        )
 
         return "\n".join(lines)
 
 
 # Singleton
-_workflow_orchestrator: Optional[WorkflowOrchestratorEngine] = None
+_workflow_orchestrator: WorkflowOrchestratorEngine | None = None
 
 
 def get_workflow_orchestrator() -> WorkflowOrchestratorEngine:

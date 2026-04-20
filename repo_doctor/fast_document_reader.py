@@ -16,6 +16,8 @@ Performance targets:
 - full_document_deep_parse: background_only
 """
 
+from __future__ import annotations
+
 import contextlib
 import hashlib
 import os
@@ -26,7 +28,7 @@ import time
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 # ============================================================================
 # Stage 1: Format Detection
@@ -48,15 +50,15 @@ class FormatSignature:
     """Immutable signature for format detection."""
 
     extension: str
-    mime_hint: Optional[str] = None
-    header_bytes: Optional[bytes] = None
+    mime_hint: str = None
+    header_bytes: bytes = None
 
 
-def detect_format(file_path: Path, header_bytes: Optional[bytes] = None) -> DocumentFormat:
+def detect_format(file_path: Path, header_bytes: bytes = None) -> DocumentFormat:
     """Fast format detection based on extension and optional header bytes."""
     ext = file_path.suffix.lower()
 
-    format_map: Dict[str, DocumentFormat] = {
+    format_map: dict[str, DocumentFormat] = {
         ".txt": DocumentFormat.PLAIN_TEXT,
         ".md": DocumentFormat.MARKDOWN,
         ".py": DocumentFormat.PYTHON,
@@ -102,7 +104,7 @@ class DocumentIndex:
     mtime: float
 
     # Structural index (built in ~200ms)
-    line_offsets: List[int] = field(default_factory=list)
+    line_offsets: list[int] = field(default_factory=list)
     headings: list[tuple[int, str, int]] = field(default_factory=list)  # (level, text, offset)
     code_blocks: list[tuple[int, int, str]] = field(default_factory=list)  # (start, end, lang)
     table_locations: list[tuple[int, int]] = field(default_factory=list)  # (start, end)
@@ -115,7 +117,7 @@ class DocumentIndex:
     has_frontmatter: bool = False
     encoding: str = "utf-8"
 
-    def get_line_range(self, start_line: int, end_line: int) -> Tuple[int, int]:
+    def get_line_range(self, start_line: int, end_line: int) -> tuple[int, int]:
         """Get byte offsets for a line range."""
         if not self.line_offsets:
             return (0, 0)
@@ -153,7 +155,7 @@ class QuickIndexer:
     }
 
     @classmethod
-    def build_index(cls, file_path: Path, content: Optional[str] = None) -> DocumentIndex:
+    def build_index(cls, file_path: Path, content: str = None) -> DocumentIndex:
         """Build quick index in <200ms target."""
         start_time = time.perf_counter()
 
@@ -210,7 +212,7 @@ class QuickIndexer:
         return h.hexdigest()[:16]
 
     @staticmethod
-    def _build_line_offsets(content: str) -> List[int]:
+    def _build_line_offsets(content: str) -> list[int]:
         """Build table of line start offsets."""
         offsets = [0]
         for i, char in enumerate(content):
@@ -220,7 +222,7 @@ class QuickIndexer:
 
     @classmethod
     def _extract_headings(
-        cls, content: str, doc_format: DocumentFormat, line_offsets: List[int]
+        cls, content: str, doc_format: DocumentFormat, line_offsets: list[int]
     ) -> list[tuple[int, str, int]]:
         """Extract heading locations without full parsing."""
         headings = []
@@ -252,7 +254,7 @@ class QuickIndexer:
 
     @classmethod
     def _extract_code_blocks(
-        cls, content: str, doc_format: DocumentFormat, line_offsets: List[int]
+        cls, content: str, doc_format: DocumentFormat, line_offsets: list[int]
     ) -> list[tuple[int, int, str]]:
         """Extract code block boundaries."""
         blocks = []
@@ -294,7 +296,7 @@ class QuickIndexer:
 
     @classmethod
     def _extract_tables(
-        cls, content: str, doc_format: DocumentFormat, line_offsets: List[int]
+        cls, content: str, doc_format: DocumentFormat, line_offsets: list[int]
     ) -> list[tuple[int, int]]:
         """Extract table locations."""
         tables = []
@@ -371,16 +373,16 @@ class DocumentCacheEntry:
 class DocumentCache:
     """Persistent document cache with LRU eviction."""
 
-    def __init__(self, cache_dir: Optional[Path] = None, max_entries: int = 100):
+    def __init__(self, cache_dir: Path = None, max_entries: int = 100):
         self.cache_dir = cache_dir or Path.home() / ".cache" / "fast_document_reader"
         self.cache_dir.mkdir(parents=True, exist_ok=True)
         self.max_entries = max_entries
 
-        self._memory_cache: Dict[str, DocumentCacheEntry] = {}
+        self._memory_cache: dict[str, DocumentCacheEntry] = {}
         self._lock = threading.RLock()
-        self._access_order: List[str] = []  # LRU tracking
+        self._access_order: list[str] = []  # LRU tracking
 
-    def get(self, file_path: Path) -> Optional[DocumentCacheEntry]:
+    def get(self, file_path: Path) -> DocumentCacheEntry:
         """Get cached entry if valid."""
         cache_key = self._get_cache_key(file_path)
 
@@ -472,7 +474,7 @@ class DocumentCache:
         except Exception as e:
             print(f"[cache] Failed to save {cache_key}: {e}")
 
-    def _load_from_disk(self, cache_key: str) -> Optional[DocumentCacheEntry]:
+    def _load_from_disk(self, cache_key: str) -> DocumentCacheEntry:
         """Load entry from disk cache."""
         cache_file = self.cache_dir / f"{cache_key}.pkl"
         try:
@@ -504,8 +506,8 @@ class QueryPlan:
 
     query_class: QueryClass
     needs_deep_parse: bool
-    target_sections: Optional[list[int] ] = None  # Section indices to read
-    target_lines: Tuple[int, int] = None  # Line range to read
+    target_sections: list[int] = None  # Section indices to read
+    target_lines: tuple[int, int] = None  # Line range to read
     use_semantic: bool = False
     verify_result: bool = False
 
@@ -782,7 +784,7 @@ class LocalSemanticParser:
         self.entity_pattern = re.compile(r"\b([A-Z][a-z]+(?:[A-Z][a-z]+)*)\b")  # CamelCase
         self.key_value_pattern = re.compile(r"^([\w\s]+):\s*(.+)$", re.MULTILINE)
 
-    def parse(self, spans: list[tuple[str, int, int]]) -> Dict[str, Any]:
+    def parse(self, spans: list[tuple[str, int, int]]) -> dict[str, Any]:
         """Parse semantics on small spans only."""
         result = {"entities": [], "key_values": [], "sentences": [], "summary": ""}
 
@@ -836,14 +838,14 @@ class FastDocumentReader:
     Never: Open → ParseEverything → UnderstandEverything → Answer
     """
 
-    def __init__(self, cache_dir: Optional[Path] = None):
+    def __init__(self, cache_dir: Path = None):
         self.cache = DocumentCache(cache_dir)
         self.indexer = QuickIndexer()
         self.router = QueryRouter()
         self.parser = LocalSemanticParser()
         self._lock = threading.RLock()
 
-    def read(self, file_path: str | Path, query: str) -> ReadResult:
+    def read(self, file_path: Union[str, Path], query: str) -> ReadResult:
         """
         Read document with fast path by default.
 
@@ -918,11 +920,11 @@ class FastDocumentReader:
             used_deep_parse=used_deep_parse,
         )
 
-    def read_async(self, file_path: str | Path, query: str) -> ReadResult:
+    def read_async(self, file_path: Union[str, Path], query: str) -> ReadResult:
         """Async wrapper for read (can be made truly async later)."""
         return self.read(file_path, query)
 
-    def invalidate(self, file_path: str | Path) -> None:
+    def invalidate(self, file_path: Union[str, Path]) -> None:
         """Invalidate cache for file."""
         self.cache.invalidate(Path(file_path))
 
@@ -960,7 +962,7 @@ class FastDocumentReader:
         self,
         query: str,
         spans: list[tuple[str, int, int]],
-        semantics: Dict[str, Any],
+        semantics: dict[str, Any],
         plan: QueryPlan,
     ) -> str:
         """Generate answer with semantic understanding (deep path)."""
@@ -978,7 +980,7 @@ class FastDocumentReader:
         return "\n\n".join(parts)
 
     def _generate_summary(
-        self, spans: list[tuple[str, int, int]], semantics: Dict[str, Any]
+        self, spans: list[tuple[str, int, int]], semantics: dict[str, Any]
     ) -> str:
         """Generate document summary."""
         total_text = " ".join([s[0] for s in spans])
@@ -1000,12 +1002,10 @@ class FastDocumentReader:
 
 # ============================================================================
 # Convenience Functions
-# ============================================================================
-
-_global_reader: Optional[FastDocumentReader] = None
+# ============================================================================_global_reader: FastDocumentReader  = None
 
 
-def get_reader(cache_dir: Optional[Path] = None) -> FastDocumentReader:
+def get_reader(cache_dir: Path = None) -> FastDocumentReader:
     """Get or create global reader instance."""
     global _global_reader
     if _global_reader is None:
@@ -1013,7 +1013,7 @@ def get_reader(cache_dir: Optional[Path] = None) -> FastDocumentReader:
     return _global_reader
 
 
-def read_document(file_path: str | Path, query: str) -> ReadResult:
+def read_document(file_path: Union[str, Path], query: str) -> ReadResult:
     """Convenience function for one-off reads."""
     return get_reader().read(file_path, query)
 

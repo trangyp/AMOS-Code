@@ -5,20 +5,17 @@ FastAPI router for AXIOM One Execution Slots with AMOS Brain integration.
 Uses real brain components: CognitiveEngine, MasterOrchestrator, SuperBrain.
 """
 
-import sys
-from datetime import datetime, timezone
-
-UTC = timezone.utc
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
+
+UTC = UTC
 
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
 
 # Add paths for imports
 REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
-sys.path.insert(0, str(REPO_ROOT / "clawspring"))
 
 # Import AXIOM One
 
@@ -40,13 +37,13 @@ router = APIRouter(prefix="/axiom-one", tags=["AXIOM One Execution Slots"])
 
 # Global state
 _slot_manager = ExecutionSlotManager()
-_brain_cache: Dict[str, Any] = {}
+_brain_cache: dict[str, Any] = {}
 
 
 class CreateSlotRequest(BaseModel):
     objective: str
     mode: str = "local"
-    context: Dict[str, Any] = None
+    context: dict[str, Any] = None
 
 
 class SlotResponse(BaseModel):
@@ -56,7 +53,7 @@ class SlotResponse(BaseModel):
     objective: str
     created_at: str
     events: int
-    artifacts: Dict[str, Any]
+    artifacts: dict[str, Any]
 
 
 @router.post("/slots", response_model=SlotResponse)

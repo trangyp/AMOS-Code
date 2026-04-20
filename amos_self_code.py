@@ -8,9 +8,11 @@ new code following AMOS architectural principles.
 
 import ast
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 
 @dataclass
@@ -20,9 +22,9 @@ class CodeTemplate:
     name: str
     description: str
     template_type: str  # class, function, module, method
-    parameters: List[dict[str, str]] = field(default_factory=list)
+    parameters: list[dict[str, str]] = field(default_factory=list)
     body_template: str = ""
-    imports: List[str] = field(default_factory=list)
+    imports: list[str] = field(default_factory=list)
     docstring_template: str = ""
 
 
@@ -36,7 +38,7 @@ class GeneratedCode:
     entity_name: str
     generated_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     validation_status: str = "pending"  # pending, valid, invalid
-    errors: List[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
 
 
 class CodeGenerator:
@@ -59,7 +61,7 @@ class {component_name}:
     """{purpose}"""
 
     # State
-    state: Dict[str, Any] = field(default_factory=dict)
+    state: dict[str, Any] = field(default_factory=dict)
 
     def __init__(self):
         self.initialize()
@@ -125,7 +127,7 @@ def test_{component_name}_{test_scenario}():
     }
 
     def generate(
-        self, template_name: str, params: Dict[str, str], target_file: str = "generated.py"
+        self, template_name: str, params: dict[str, str], target_file: str = "generated.py"
     ) -> GeneratedCode:
         """Generate code from template."""
         template = self.TEMPLATES.get(template_name)
@@ -201,7 +203,7 @@ class CodeModifier:
         backup_path.write_text(original.read_text())
         return str(backup_path)
 
-    def add_method(self, file_path: str, class_name: str, method_code: str) -> Dict[str, Any]:
+    def add_method(self, file_path: str, class_name: str, method_code: str) -> dict[str, Any]:
         """Add method to existing class."""
         # Backup first
         backup = self.backup_file(file_path)
@@ -253,7 +255,7 @@ class CodeModifier:
 
     def refactor_extract_method(
         self, file_path: str, start_line: int, end_line: int, new_method_name: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Extract code block into new method."""
         backup = self.backup_file(file_path)
 
@@ -324,7 +326,7 @@ class SelfImprovement:
         },
     }
 
-    def analyze_for_improvement(self, code_entities: List[dict]) -> List[dict]:
+    def analyze_for_improvement(self, code_entities: list[dict]) -> list[dict]:
         """Analyze code for improvement opportunities."""
         improvements = []
 
@@ -359,7 +361,7 @@ class SelfImprovement:
 
         return min(base_priority, 1.0)
 
-    def generate_improvement_plan(self, improvements: List[dict]) -> str:
+    def generate_improvement_plan(self, improvements: list[dict]) -> str:
         """Generate improvement plan."""
         plan = ["# AMOS Self-Improvement Plan\n"]
 
@@ -390,8 +392,8 @@ class AMOSSelfCoding:
         self.modifier = CodeModifier()
         self.improver = SelfImprovement()
 
-        self.generation_history: List[GeneratedCode] = []
-        self.modification_history: List[dict] = []
+        self.generation_history: list[GeneratedCode] = []
+        self.modification_history: list[dict] = []
 
     def create_component(
         self, component_name: str, purpose: str, zone: str = "organs"

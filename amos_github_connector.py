@@ -19,13 +19,16 @@ Owner: Trang
 Version: 1.0.0
 """
 
+from __future__ import annotations
+
 import asyncio
 import os
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 import aiohttp
 
@@ -180,7 +183,7 @@ class AMOSGitHubConnector:
         self,
         repo_name: str,
         state: str = "open",
-        labels: Optional[list[str] ] = None,
+        labels: list[Optional[str]] = None,
     ) -> list[RepositoryIssue]:
         """
         Get issues from a specific repository.

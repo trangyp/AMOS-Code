@@ -12,7 +12,7 @@ Version: 2.0.0
 """
 
 from collections.abc import Callable
-from typing import Any, Dict, List
+from typing import Any
 
 try:
     from backend.workflow.workflow_service import (
@@ -50,10 +50,10 @@ class Workflow:
 
     def __init__(self, name: str):
         self.name = name
-        self.steps: List[dict[str, Any]] = []
-        self._activities: List[Any] = []
+        self.steps: list[dict[str, Any]] = []
+        self._activities: list[Any] = []
 
-    def add_step(self, func: Callable, args: Dict[str, Any] = None) -> None:
+    def add_step(self, func: Callable, args: dict[str, Any] = None) -> None:
         """Add step to workflow."""
         self.steps.append({"func": func, "args": args or {}})
 
@@ -62,7 +62,7 @@ class Workflow:
         import uuid
 
         async def wrapper(**kwargs: Any) -> Any:
-            ctx: Dict[str, Any] = kwargs.pop("context", {})
+            ctx: dict[str, Any] = kwargs.pop("context", {})
             merged = {**(args or {}), **kwargs, **ctx}
             if asyncio.iscoroutinefunction(func):
                 return await func(**merged)
@@ -82,7 +82,7 @@ class WorkflowEngine:
     """Engine for workflow execution (backward compatible)."""
 
     def __init__(self):
-        self.workflows: Dict[str, Workflow] = {}
+        self.workflows: dict[str, Workflow] = {}
         self._service: Any = workflow_service
 
     def create_workflow(self, name: str) -> Workflow:
@@ -91,7 +91,7 @@ class WorkflowEngine:
         self.workflows[name] = workflow
         return workflow
 
-    async def execute(self, workflow_name: str, context: Dict[str, Any] = None) -> Dict[str, Any]:
+    async def execute(self, workflow_name: str, context: dict[str, Any] = None) -> dict[str, Any]:
         """Execute workflow."""
 
         workflow = self.workflows.get(workflow_name)

@@ -1,12 +1,15 @@
 """AMOS vOmni Kernel Engine - Master orchestration and routing kernel."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class RoutingCondition(Enum):
     """Routing conditions for kernel selection."""
+
     LOGIC_HEAVY = "logic-heavy"
     MATH_HEAVY = "math-heavy"
     HUMAN_STATE = "human_state"
@@ -24,7 +27,7 @@ class RoutingDecision:
 
     condition: str
     primary_kernel: str
-    secondary_kernels: List[str]
+    secondary_kernels: list[str]
     priority: str
 
 
@@ -41,7 +44,7 @@ class MetaCognitionKernel:
         "Multi_Perspective_Reasoning",
     ]
 
-    def analyze(self, query: str) -> Dict[str, Any]:
+    def analyze(self, query: str) -> dict[str, Any]:
         """Analyze meta-cognitive requirements."""
         query_lower = query.lower()
         indicators = {
@@ -76,7 +79,7 @@ class MathFoundationsKernel:
         "Simulation",
     ]
 
-    def analyze(self, query: str) -> Dict[str, Any]:
+    def analyze(self, query: str) -> dict[str, Any]:
         """Analyze mathematical requirements."""
         query_lower = query.lower()
         indicators = {
@@ -109,7 +112,7 @@ class HumanSocietyKernel:
         "Ethical_Reasoning",
     ]
 
-    def analyze(self, query: str) -> Dict[str, Any]:
+    def analyze(self, query: str) -> dict[str, Any]:
         """Analyze human/society requirements."""
         query_lower = query.lower()
         indicators = {
@@ -141,7 +144,7 @@ class MachineArchitectureKernel:
         "Reinforcement_Learning",
     ]
 
-    def analyze(self, query: str) -> Dict[str, Any]:
+    def analyze(self, query: str) -> dict[str, Any]:
         """Analyze machine architecture requirements."""
         query_lower = query.lower()
         indicators = {
@@ -172,7 +175,7 @@ class PlanetaryStackKernel:
         "Ecosystem_Logic",
     ]
 
-    def analyze(self, query: str) -> Dict[str, Any]:
+    def analyze(self, query: str) -> dict[str, Any]:
         """Analyze planetary/ecosystem requirements."""
         query_lower = query.lower()
         indicators = {
@@ -230,9 +233,7 @@ class VOmniKernelEngine:
         self.machine_architecture = MachineArchitectureKernel()
         self.planetary_stack = PlanetaryStackKernel()
 
-    def analyze(
-        self, query: str, context: Dict[str, Any]  = None
-    ) -> Dict[str, Any]:
+    def analyze(self, query: str, context: dict[str, Any] = None) -> dict[str, Any]:
         """Run vOmni kernel routing analysis."""
         context = context or {}
         # Analyze all kernel domains
@@ -269,7 +270,7 @@ class VOmniKernelEngine:
         human: dict,
         machine: dict,
         planetary: dict,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Determine optimal kernel routing."""
         # Score each domain
         scores = {
@@ -299,9 +300,7 @@ class VOmniKernelEngine:
         }
         # Secondary kernels (top 2 other scores)
         sorted_scores = sorted(scores.items(), key=lambda x: x[1], reverse=True)
-        secondary = [
-            kernel_map.get(k, k) for k, v in sorted_scores[1:3] if v > 0
-        ]
+        secondary = [kernel_map.get(k, k) for k, v in sorted_scores[1:3] if v > 0]
         return {
             "primary_condition": primary,
             "primary_kernel": kernel_map.get(primary, "AMOS_ORCHESTRATOR_ROUTING"),
@@ -309,7 +308,7 @@ class VOmniKernelEngine:
             "all_scores": scores,
         }
 
-    def _check_safety(self, query: str) -> Dict[str, Any]:
+    def _check_safety(self, query: str) -> dict[str, Any]:
         """Check for safety violations."""
         query_lower = query.lower()
         violations = []
@@ -320,10 +319,7 @@ class VOmniKernelEngine:
             "violations_found": len(violations),
             "violations": violations,
             "safe": len(violations) == 0,
-            "fallback": (
-                "Provide only high-level conceptual explanation."
-                if violations else None
-            ),
+            "fallback": ("Provide only high-level conceptual explanation." if violations else None),
         }
 
     def get_findings_summary(self, results: dict) -> str:
@@ -340,13 +336,15 @@ class VOmniKernelEngine:
             lines.append(f"- {rule}")
         lines.extend(["", "## Routing Analysis"])
         routing = results.get("routing", {})
-        lines.extend([
-            f"- **Primary Condition**: {routing.get('primary_condition', 'N/A')}",
-            f"- **Primary Kernel**: {routing.get('primary_kernel', 'N/A')}",
-            f"- **Secondary Kernels**: {', '.join(routing.get('secondary_kernels', []))}",
-            "",
-            "### Domain Scores",
-        ])
+        lines.extend(
+            [
+                f"- **Primary Condition**: {routing.get('primary_condition', 'N/A')}",
+                f"- **Primary Kernel**: {routing.get('primary_kernel', 'N/A')}",
+                f"- **Secondary Kernels**: {', '.join(routing.get('secondary_kernels', []))}",
+                "",
+                "### Domain Scores",
+            ]
+        )
         scores = routing.get("all_scores", {})
         for condition, score in scores.items():
             if score > 0:
@@ -356,93 +354,103 @@ class VOmniKernelEngine:
         for domain, data in kernel_matches.items():
             matches = data.get("matches", {})
             if matches:
-                lines.extend([
-                    "",
-                    f"### {domain.replace('_', ' ').title()}",
-                    f"- Primary: {data.get('primary', 'N/A')}",
-                    f"- Matches: {', '.join(matches.keys())}",
-                ])
+                lines.extend(
+                    [
+                        "",
+                        f"### {domain.replace('_', ' ').title()}",
+                        f"- Primary: {data.get('primary', 'N/A')}",
+                        f"- Matches: {', '.join(matches.keys())}",
+                    ]
+                )
         lines.extend(["", "## Safety Check"])
         safety = results.get("safety_check", {})
-        lines.extend([
-            f"- **Safe**: {safety.get('safe', False)}",
-            f"- **Violations**: {safety.get('violations_found', 0)}",
-        ])
+        lines.extend(
+            [
+                f"- **Safe**: {safety.get('safe', False)}",
+                f"- **Violations**: {safety.get('violations_found', 0)}",
+            ]
+        )
         if safety.get("violations"):
             lines.append(f"- **Flags**: {', '.join(safety['violations'])}")
-        lines.extend([
-            "",
-            "## Component Architecture",
-            "### Root Components",
-            "- AMOS_OS_ROOT",
-            "- AMOS_BRAIN_ROOT",
-            "- Language_Overlay_And_IP_Protection",
-            "- IP_Kernel_Shield",
-            "",
-            "### Meta-Cognition (7 subkernels)",
-            "- Meta_Epistemology_Kernel",
-            "- Meta_Ontology_Kernel",
-            "- Meta_Logic_Kernel",
-            "- Cognitive_Compression_Kernel",
-            "- Analogy_Abstraction_Kernel",
-            "- Counterfactual_Reasoning_Kernel",
-            "- Multi_Perspective_Reasoning_Kernel",
-            "",
-            "### Math Foundations (5 subkernels)",
-            "- Optimization_Kernel",
-            "- Control_Systems_Kernel",
-            "- Signal_Processing_Kernel",
-            "- Probability_Statistics_Kernel",
-            "- Simulation_Kernel",
-            "",
-            "### Human & Society (5 subkernels)",
-            "- Psychology_Decision_Kernel",
-            "- Behavioral_Economics_Kernel",
-            "- Organizational_Behavior_Kernel",
-            "- Political_Dynamics_Kernel",
-            "- Ethical_Reasoning_Kernel",
-            "",
-            "### Machine Architecture (4 subkernels)",
-            "- Multi_Agent_Coordination_Kernel",
-            "- Memory_Optimization_Kernel",
-            "- Toolchain_Integration_Kernel",
-            "- Reinforcement_Learning_Analysis_Kernel",
-            "",
-            "### Planetary Stack (4 subkernels)",
-            "- TSS_TPE_Engine (Temporal Spatial System)",
-            "- PSI_Core (Planetary Systems Integration)",
-            "- Earth_Cycle_Model",
-            "- Ecosystem_Logic",
-            "",
-            "## Priority Order (Governance)",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Component Architecture",
+                "### Root Components",
+                "- AMOS_OS_ROOT",
+                "- AMOS_BRAIN_ROOT",
+                "- Language_Overlay_And_IP_Protection",
+                "- IP_Kernel_Shield",
+                "",
+                "### Meta-Cognition (7 subkernels)",
+                "- Meta_Epistemology_Kernel",
+                "- Meta_Ontology_Kernel",
+                "- Meta_Logic_Kernel",
+                "- Cognitive_Compression_Kernel",
+                "- Analogy_Abstraction_Kernel",
+                "- Counterfactual_Reasoning_Kernel",
+                "- Multi_Perspective_Reasoning_Kernel",
+                "",
+                "### Math Foundations (5 subkernels)",
+                "- Optimization_Kernel",
+                "- Control_Systems_Kernel",
+                "- Signal_Processing_Kernel",
+                "- Probability_Statistics_Kernel",
+                "- Simulation_Kernel",
+                "",
+                "### Human & Society (5 subkernels)",
+                "- Psychology_Decision_Kernel",
+                "- Behavioral_Economics_Kernel",
+                "- Organizational_Behavior_Kernel",
+                "- Political_Dynamics_Kernel",
+                "- Ethical_Reasoning_Kernel",
+                "",
+                "### Machine Architecture (4 subkernels)",
+                "- Multi_Agent_Coordination_Kernel",
+                "- Memory_Optimization_Kernel",
+                "- Toolchain_Integration_Kernel",
+                "- Reinforcement_Learning_Analysis_Kernel",
+                "",
+                "### Planetary Stack (4 subkernels)",
+                "- TSS_TPE_Engine (Temporal Spatial System)",
+                "- PSI_Core (Planetary Systems Integration)",
+                "- Earth_Cycle_Model",
+                "- Ecosystem_Logic",
+                "",
+                "## Priority Order (Governance)",
+            ]
+        )
         for i, priority in enumerate(self.PRIORITY_ORDER, 1):
             lines.append(f"{i}. {priority}")
-        lines.extend([
-            "",
-            "## Safety Constraints",
-            "**Never Override:**",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Safety Constraints",
+                "**Never Override:**",
+            ]
+        )
         for item in self.SAFETY_DISALLOWED:
             lines.append(f"- {item}")
-        lines.extend([
-            "",
-            "## Gaps and Limitations",
-            "- Routing is based on keyword matching, not semantic understanding",
-            "- Does not execute kernels, only routes to them",
-            "- Safety check is pattern-based, not foolproof",
-            "- Secondary kernel selection may not capture all dependencies",
-            "",
-            "## Usage Note",
-            "The vOmni Kernel serves as the meta-cognitive routing layer for AMOS. "
-            "It analyzes queries and determines which specialized kernels should be activated. "
-            "This enables efficient resource allocation and appropriate expertise matching.",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Gaps and Limitations",
+                "- Routing is based on keyword matching, not semantic understanding",
+                "- Does not execute kernels, only routes to them",
+                "- Safety check is pattern-based, not foolproof",
+                "- Secondary kernel selection may not capture all dependencies",
+                "",
+                "## Usage Note",
+                "The vOmni Kernel serves as the meta-cognitive routing layer for AMOS. "
+                "It analyzes queries and determines which specialized kernels should be activated. "
+                "This enables efficient resource allocation and appropriate expertise matching.",
+            ]
+        )
         return "\n".join(lines)
 
 
 # Singleton instance
-_vomni_engine: Optional[VOmniKernelEngine] = None
+_vomni_engine: VOmniKernelEngine | None = None
 
 
 def get_vomni_engine() -> VOmniKernelEngine:

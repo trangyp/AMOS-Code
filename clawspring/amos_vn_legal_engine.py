@@ -1,12 +1,15 @@
 """AMOS VN Legal Engine - Vietnam-specialised legal reasoning."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class LegalDomain(Enum):
     """Vietnam legal domains."""
+
     CORPORATE = "corporate"
     FINANCE = "finance"
     DISPUTES = "disputes"
@@ -37,9 +40,9 @@ class CorporateLawKernel:
     ]
 
     def __init__(self):
-        self.findings: List[LegalFinding] = []
+        self.findings: list[LegalFinding] = []
 
-    def analyze(self, scenario: str) -> List[LegalFinding]:
+    def analyze(self, scenario: str) -> list[LegalFinding]:
         """Analyze corporate law aspects."""
         findings = []
         scenario_lower = scenario.lower()
@@ -68,7 +71,7 @@ class CorporateLawKernel:
         self.findings = findings
         return findings
 
-    def get_principles(self) -> List[str]:
+    def get_principles(self) -> list[str]:
         return self.PRINCIPLES
 
 
@@ -84,9 +87,9 @@ class FinanceLawKernel:
     ]
 
     def __init__(self):
-        self.findings: List[LegalFinding] = []
+        self.findings: list[LegalFinding] = []
 
-    def analyze(self, scenario: str) -> List[LegalFinding]:
+    def analyze(self, scenario: str) -> list[LegalFinding]:
         """Analyze finance law aspects."""
         findings = []
         scenario_lower = scenario.lower()
@@ -115,7 +118,7 @@ class FinanceLawKernel:
         self.findings = findings
         return findings
 
-    def get_principles(self) -> List[str]:
+    def get_principles(self) -> list[str]:
         return self.PRINCIPLES
 
 
@@ -131,9 +134,9 @@ class DisputesLawKernel:
     ]
 
     def __init__(self):
-        self.findings: List[LegalFinding] = []
+        self.findings: list[LegalFinding] = []
 
-    def analyze(self, scenario: str) -> List[LegalFinding]:
+    def analyze(self, scenario: str) -> list[LegalFinding]:
         """Analyze dispute resolution aspects."""
         findings = []
         scenario_lower = scenario.lower()
@@ -162,7 +165,7 @@ class DisputesLawKernel:
         self.findings = findings
         return findings
 
-    def get_principles(self) -> List[str]:
+    def get_principles(self) -> list[str]:
         return self.PRINCIPLES
 
 
@@ -178,9 +181,9 @@ class RegulatoryLawKernel:
     ]
 
     def __init__(self):
-        self.findings: List[LegalFinding] = []
+        self.findings: list[LegalFinding] = []
 
-    def analyze(self, scenario: str) -> List[LegalFinding]:
+    def analyze(self, scenario: str) -> list[LegalFinding]:
         """Analyze regulatory compliance aspects."""
         findings = []
         scenario_lower = scenario.lower()
@@ -209,7 +212,7 @@ class RegulatoryLawKernel:
         self.findings = findings
         return findings
 
-    def get_principles(self) -> List[str]:
+    def get_principles(self) -> list[str]:
         return self.PRINCIPLES
 
 
@@ -225,9 +228,9 @@ class IPDataLawKernel:
     ]
 
     def __init__(self):
-        self.findings: List[LegalFinding] = []
+        self.findings: list[LegalFinding] = []
 
-    def analyze(self, scenario: str) -> List[LegalFinding]:
+    def analyze(self, scenario: str) -> list[LegalFinding]:
         """Analyze IP and data protection aspects."""
         findings = []
         scenario_lower = scenario.lower()
@@ -256,7 +259,7 @@ class IPDataLawKernel:
         self.findings = findings
         return findings
 
-    def get_principles(self) -> List[str]:
+    def get_principles(self) -> list[str]:
         return self.PRINCIPLES
 
 
@@ -272,9 +275,9 @@ class ESGLawKernel:
     ]
 
     def __init__(self):
-        self.findings: List[LegalFinding] = []
+        self.findings: list[LegalFinding] = []
 
-    def analyze(self, scenario: str) -> List[LegalFinding]:
+    def analyze(self, scenario: str) -> list[LegalFinding]:
         """Analyze ESG aspects."""
         findings = []
         scenario_lower = scenario.lower()
@@ -303,7 +306,7 @@ class ESGLawKernel:
         self.findings = findings
         return findings
 
-    def get_principles(self) -> List[str]:
+    def get_principles(self) -> list[str]:
         return self.PRINCIPLES
 
 
@@ -321,9 +324,7 @@ class VNLegalEngine:
         self.ip_data_kernel = IPDataLawKernel()
         self.esg_kernel = ESGLawKernel()
 
-    def analyze(
-        self, description: str, domains: Optional[List[str]] = None
-    ) -> Dict[str, Any]:
+    def analyze(self, description: str, domains: list[str | None] = None) -> dict[str, Any]:
         """Run Vietnam legal analysis."""
         domains = domains or [
             "corporate",
@@ -333,7 +334,7 @@ class VNLegalEngine:
             "ip_data",
             "esg",
         ]
-        results: Dict[str, Any] = {}
+        results: dict[str, Any] = {}
         if "corporate" in domains:
             results["corporate"] = self._analyze_corporate(description)
         if "finance" in domains:
@@ -452,57 +453,59 @@ class VNLegalEngine:
                         )
                 if "principles" in data:
                     lines.append(f"- **Legal Principles**: {', '.join(data['principles'][:3])}...")
-        lines.extend([
-            "",
-            "## Vietnam Legal Framework",
-            "- **Civil Law System**: Based on French civil law tradition",
-            "- **Key Codes**: Civil Code 2015, Criminal Code 2015, Labor Code 2019",
-            "- **Courts**: People's Courts (4-tier system)",
-            "- **Arbitration**: VIAC (Vietnam International Arbitration Centre)",
-            "- **Foreign Investment**: Law on Investment 2020, Law on Enterprises 2020",
-            "- **Data Protection**: PDPD (Personal Data Protection Decree) 2023",
-            "",
-            "## Critical Safety Disclaimer",
-            "⚠️ **THIS IS INFORMATIONAL ONLY - NOT LEGAL ADVICE**",
-            "",
-            "- Analysis is for educational and preliminary guidance purposes",
-            "- Vietnamese law changes frequently - verify with current regulations",
-            "- Always consult licensed Vietnamese attorneys for specific matters",
-            "- Government procedures vary by province and interpretation",
-            "- This engine does not establish attorney-client relationship",
-            "- Not suitable for emergency legal situations",
-            "",
-            "## 24-Dimensional Legal Analysis Axes",
-            "1. Matter Type (advisory/transactional/contentious/regulatory)",
-            "2. Jurisdiction Scope (local/cross-border/global)",
-            "3. Client Type (individual/SME/corporate/state)",
-            "4. Industry Context (tech/finance/energy/healthcare)",
-            "5. Risk Level (low/moderate/high/critical)",
-            "6. Materiality (under 1m / 1-10m / 10-100m / over 100m)",
-            "7. Time Pressure (normal/expedited/urgent/emergency)",
-            "8. Regulatory Intensity (light/medium/heavy/special)",
-            "9. Dispute Stage (pre-dispute/filed/trial/appeal/enforcement)",
-            "10. Contract Stage (structuring/drafting/negotiation/signing)",
-            "11. Evidence State (incomplete/partial/strong/forensic)",
-            "12. Counterparty Profile (cooperative/neutral/aggressive)",
-            "13. Document Type (MOU/term sheet/main agreement/policy)",
-            "14. Enforcement Forum (court/arbitration/mediator/regulator)",
-            "15. Standard Level (local/regional/global/internal)",
-            "16. Legal Function Role (external/in-house/regulator/board)",
-            "17. Time Horizon (short/medium/long/legacy)",
-            "18. Outcome Priority (risk/speed/value/relationship)",
-            "19. Evidence Risk Tolerance",
-            "20. Documentation Style (lean/standard/comprehensive)",
-            "21. Discovery/Disclosure Exposure",
-            "22. Public Sensitivity",
-            "23. Governance Layer (ops/management/board/regulator)",
-            "24. Output Mode (memo/opinion/markup/playbook)",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Vietnam Legal Framework",
+                "- **Civil Law System**: Based on French civil law tradition",
+                "- **Key Codes**: Civil Code 2015, Criminal Code 2015, Labor Code 2019",
+                "- **Courts**: People's Courts (4-tier system)",
+                "- **Arbitration**: VIAC (Vietnam International Arbitration Centre)",
+                "- **Foreign Investment**: Law on Investment 2020, Law on Enterprises 2020",
+                "- **Data Protection**: PDPD (Personal Data Protection Decree) 2023",
+                "",
+                "## Critical Safety Disclaimer",
+                "⚠️ **THIS IS INFORMATIONAL ONLY - NOT LEGAL ADVICE**",
+                "",
+                "- Analysis is for educational and preliminary guidance purposes",
+                "- Vietnamese law changes frequently - verify with current regulations",
+                "- Always consult licensed Vietnamese attorneys for specific matters",
+                "- Government procedures vary by province and interpretation",
+                "- This engine does not establish attorney-client relationship",
+                "- Not suitable for emergency legal situations",
+                "",
+                "## 24-Dimensional Legal Analysis Axes",
+                "1. Matter Type (advisory/transactional/contentious/regulatory)",
+                "2. Jurisdiction Scope (local/cross-border/global)",
+                "3. Client Type (individual/SME/corporate/state)",
+                "4. Industry Context (tech/finance/energy/healthcare)",
+                "5. Risk Level (low/moderate/high/critical)",
+                "6. Materiality (under 1m / 1-10m / 10-100m / over 100m)",
+                "7. Time Pressure (normal/expedited/urgent/emergency)",
+                "8. Regulatory Intensity (light/medium/heavy/special)",
+                "9. Dispute Stage (pre-dispute/filed/trial/appeal/enforcement)",
+                "10. Contract Stage (structuring/drafting/negotiation/signing)",
+                "11. Evidence State (incomplete/partial/strong/forensic)",
+                "12. Counterparty Profile (cooperative/neutral/aggressive)",
+                "13. Document Type (MOU/term sheet/main agreement/policy)",
+                "14. Enforcement Forum (court/arbitration/mediator/regulator)",
+                "15. Standard Level (local/regional/global/internal)",
+                "16. Legal Function Role (external/in-house/regulator/board)",
+                "17. Time Horizon (short/medium/long/legacy)",
+                "18. Outcome Priority (risk/speed/value/relationship)",
+                "19. Evidence Risk Tolerance",
+                "20. Documentation Style (lean/standard/comprehensive)",
+                "21. Discovery/Disclosure Exposure",
+                "22. Public Sensitivity",
+                "23. Governance Layer (ops/management/board/regulator)",
+                "24. Output Mode (memo/opinion/markup/playbook)",
+            ]
+        )
         return "\n".join(lines)
 
 
 # Singleton instance
-_vn_legal_engine: Optional[VNLegalEngine] = None
+_vn_legal_engine: VNLegalEngine | None = None
 
 
 def get_vn_legal_engine() -> VNLegalEngine:

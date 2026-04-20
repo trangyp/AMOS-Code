@@ -15,7 +15,6 @@ paths = [
     '''\.pyc$''',
     '''\.pyo$''',
     '''\.log$''',
-    '''\.json$''',
     '''_AMOS_BRAIN/_Archive''',
     '''original-source-code''',
     '''claude-code-source-code''',
@@ -27,6 +26,18 @@ paths = [
     '''\.git''',
     '''\.cache''',
     '''node_modules''',
+    # Cache directories only (not all JSON files)
+    '''\.pytest_cache/''',
+    '''\.mypy_cache/''',
+    # Safe generated artifacts - only exclude directories, not all JSON files
+    '''\.axiom_generated/''',
+    '''generated/''',
+    '''amos_logs/''',
+    '''profiling_results/''',
+    # Package build artifacts
+    '''build/''',
+    '''dist/''',
+    '''\.egg-info/''',
 ]
 
 # Regexes for test/mock data that look like secrets

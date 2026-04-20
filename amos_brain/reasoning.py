@@ -1,5 +1,7 @@
 """Reasoning engines implementing Rule of 2, Rule of 4, and structural analysis."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from typing import Any
 

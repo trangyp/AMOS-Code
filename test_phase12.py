@@ -37,7 +37,7 @@ def main():
     result2 = bridge.compute(
         "anyon_braiding", {"num_braids": 2, "anyon_type": "non_abelian", "exchange_fraction": 0.0}
     )
-    print(f'  Ising anyons: θ={result2.outputs["result"]:.3f} rad (expected π/4) ✓')
+    print(f"  Ising anyons: θ={result2.outputs['result']:.3f} rad (expected π/4) ✓")
 
     # Test Wilson loop
     print("Testing Wilson loop:", end=" ")

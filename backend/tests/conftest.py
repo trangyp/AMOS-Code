@@ -6,19 +6,12 @@ Creator: Trang Phan
 Version: 3.0.0
 """
 
-import os
-
-# Import the FastAPI app
-import sys
-
 import pytest
 from fastapi.testclient import TestClient
 from sqlmodel import Session, SQLModel, create_engine
 from sqlmodel.pool import StaticPool
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from main_integrated import app
+from backend.main_integrated import app
 
 
 # Create test database

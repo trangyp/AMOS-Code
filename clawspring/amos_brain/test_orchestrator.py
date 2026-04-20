@@ -6,16 +6,13 @@ demo system) into single orchestrated execution with
 consolidated reporting.
 """
 
+from __future__ import annotations
 
 import sys
 import time
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, List
-
-sys.path.insert(0, ".")
-sys.path.insert(0, "clawspring")
-sys.path.insert(0, "clawspring/amos_brain")
+from typing import Any
 
 
 @dataclass
@@ -35,17 +32,17 @@ class TestOrchestrator:
     """Orchestrates all AMOS test suites."""
 
     def __init__(self):
-        self.results: List[TestSuiteResult] = []
+        self.results: list[TestSuiteResult] = []
         self.start_time = time.time()
 
-    def run_all_tests(self) -> Dict[str, Any]:
+    def run_all_tests(self) -> dict[str, Any]:
         """Execute complete test orchestration."""
         print("\n" + "=" * 78)
         print(" " * 18 + "AMOS ECOSYSTEM v2.8")
         print(" " * 16 + "AUTOMATED TEST ORCHESTRATOR")
         print("=" * 78)
         print(f"\nStarted: {datetime.now().isoformat()}")
-        print("Suites: 4 | Target: Production Readiness\n")
+        print("Suites: Union[4, Target]: Production Readiness\n")
 
         # Suite 1: Integration Test Suite
         self._run_suite("Integration Test Suite", self._run_integration_suite)
@@ -199,7 +196,7 @@ class TestOrchestrator:
 
         return passed, failed, f"Modules: {passed}/{passed + failed}"
 
-    def _generate_final_report(self) -> Dict[str, Any]:
+    def _generate_final_report(self) -> dict[str, Any]:
         """Generate final orchestrated test report."""
         duration = time.time() - self.start_time
 

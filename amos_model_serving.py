@@ -18,7 +18,7 @@ import time
 import uuid
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List
+from typing import Any
 
 
 class ServingMode(Enum):
@@ -55,7 +55,7 @@ class ModelEndpoint:
     strategy: DeploymentStrategy = DeploymentStrategy.STANDARD
 
     # Traffic splitting (for A/B and canary)
-    traffic_split: Dict[str, float] = field(default_factory=dict)
+    traffic_split: dict[str, float] = field(default_factory=dict)
 
     # Resources
     min_replicas: int = 1
@@ -82,10 +82,10 @@ class PredictionRequest:
     endpoint_id: str
 
     # Input data
-    inputs: Dict[str, Any]
+    inputs: dict[str, Any]
 
     # Context from Feature Store
-    feature_values: Dict[str, Any] = field(default_factory=dict)
+    feature_values: dict[str, Any] = field(default_factory=dict)
 
     # Request metadata
     timestamp: float = field(default_factory=time.time)
@@ -112,7 +112,7 @@ class PredictionResponse:
     timestamp: float = field(default_factory=time.time)
 
     # Explanation (if enabled)
-    explanation: Dict[str, Any] = None
+    explanation: dict[str, Any] = None
 
 
 @dataclass
@@ -123,13 +123,13 @@ class ModelEnsemble:
     name: str
 
     # Models in ensemble
-    models: List[dict[str, Any]] = field(default_factory=list)
+    models: list[dict[str, Any]] = field(default_factory=list)
 
     # Aggregation method
     aggregation: str = "weighted_average"  # weighted_average, voting, stacking
 
     # Weights (for weighted aggregation)
-    weights: List[float] = field(default_factory=list)
+    weights: list[float] = field(default_factory=list)
 
 
 class AMOSModelServing:
@@ -153,15 +153,15 @@ class AMOSModelServing:
     """
 
     def __init__(self):
-        self.endpoints: Dict[str, ModelEndpoint] = {}
-        self.ensembles: Dict[str, ModelEnsemble] = {}
+        self.endpoints: dict[str, ModelEndpoint] = {}
+        self.ensembles: dict[str, ModelEnsemble] = {}
 
         # Request history
-        self.requests: Dict[str, PredictionRequest] = {}
-        self.responses: Dict[str, PredictionResponse] = {}
+        self.requests: dict[str, PredictionRequest] = {}
+        self.responses: dict[str, PredictionResponse] = {}
 
         # Performance tracking
-        self.endpoint_metrics: Dict[str, dict[str, Any]] = {}
+        self.endpoint_metrics: dict[str, dict[str, Any]] = {}
 
     async def initialize(self) -> None:
         """Initialize model serving."""
@@ -271,7 +271,7 @@ class AMOSModelServing:
 
         return True
 
-    def configure_ab_test(self, endpoint_id: str, versions: Dict[str, float]) -> bool:
+    def configure_ab_test(self, endpoint_id: str, versions: dict[str, float]) -> bool:
         """Configure A/B testing."""
         endpoint = self.endpoints.get(endpoint_id)
         if not endpoint:
@@ -290,8 +290,8 @@ class AMOSModelServing:
     async def predict(
         self,
         endpoint_id: str,
-        inputs: Dict[str, Any],
-        feature_values: Dict[str, Any] = None,
+        inputs: dict[str, Any],
+        feature_values: dict[str, Any] = None,
         timeout_ms: int = 5000,
     ) -> PredictionResponse:
         """Make a prediction request."""
@@ -370,7 +370,7 @@ class AMOSModelServing:
 
         return endpoint.model_version
 
-    def _generate_prediction(self, inputs: Dict[str, Any], model_version: str) -> Any:
+    def _generate_prediction(self, inputs: dict[str, Any], model_version: str) -> Any:
         """Generate a simulated prediction."""
         # Simulate different prediction types
         if "text" in inputs:
@@ -383,8 +383,8 @@ class AMOSModelServing:
             return {"prediction": "result", "version": model_version}
 
     async def batch_predict(
-        self, endpoint_id: str, batch_inputs: List[dict[str, Any]]
-    ) -> List[PredictionResponse]:
+        self, endpoint_id: str, batch_inputs: list[dict[str, Any]]
+    ) -> list[PredictionResponse]:
         """Batch prediction."""
         responses = []
 
@@ -397,9 +397,9 @@ class AMOSModelServing:
     def create_ensemble(
         self,
         name: str,
-        models: List[dict[str, Any]],
+        models: list[dict[str, Any]],
         aggregation: str = "weighted_average",
-        weights: List[float] = None,
+        weights: list[float] = None,
     ) -> str:
         """Create a model ensemble."""
         ensemble_id = f"ens_{uuid.uuid4().hex[:8]}"
@@ -419,7 +419,7 @@ class AMOSModelServing:
         return ensemble_id
 
     async def ensemble_predict(
-        self, ensemble_id: str, inputs: Dict[str, Any]
+        self, ensemble_id: str, inputs: dict[str, Any]
     ) -> PredictionResponse:
         """Predict using an ensemble."""
         start_time = time.time()
@@ -451,7 +451,7 @@ class AMOSModelServing:
         )
 
     def _aggregate_predictions(
-        self, predictions: List[Any], method: str, weights: List[float]
+        self, predictions: list[Any], method: str, weights: list[float]
     ) -> Any:
         """Aggregate predictions from multiple models."""
         if method == "weighted_average":
@@ -468,7 +468,7 @@ class AMOSModelServing:
         else:
             return predictions[0] if predictions else None
 
-    def get_endpoint_metrics(self, endpoint_id: str) -> Dict[str, Any]:
+    def get_endpoint_metrics(self, endpoint_id: str) -> dict[str, Any]:
         """Get metrics for an endpoint."""
         endpoint = self.endpoints.get(endpoint_id)
         metrics = self.endpoint_metrics.get(endpoint_id, {})
@@ -490,7 +490,7 @@ class AMOSModelServing:
             "traffic_split": endpoint.traffic_split,
         }
 
-    def get_serving_summary(self) -> Dict[str, Any]:
+    def get_serving_summary(self) -> dict[str, Any]:
         """Get serving infrastructure summary."""
         return {
             "total_endpoints": len(self.endpoints),
@@ -530,7 +530,7 @@ async def demo_model_serving():
             feature_values={"user_tier": "premium"},
         )
         print(
-            f"  Request {i+1}: latency={response.latency_ms:.2f}ms, "
+            f"  Request {i + 1}: latency={response.latency_ms:.2f}ms, "
             f"version={response.model_version}, "
             f"prediction={response.predictions}"
         )
@@ -588,7 +588,7 @@ async def demo_model_serving():
 
     print(f"  Batch of {len(batch_responses)} predictions completed")
     for i, resp in enumerate(batch_responses):
-        print(f"    {i+1}. {resp.predictions} (latency: {resp.latency_ms:.2f}ms)")
+        print(f"    {i + 1}. {resp.predictions} (latency: {resp.latency_ms:.2f}ms)")
 
     print("\n[6] Creating model ensemble...")
 

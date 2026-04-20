@@ -18,7 +18,7 @@ import json
 import sys
 import unittest
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 # Add parent to path
 AMOS_ROOT = Path(__file__).parent
@@ -278,7 +278,7 @@ class TestCycleResult(unittest.TestCase):
         self.assertIsNone(result.next_recommended)
 
 
-def run_integration_tests() -> Dict[str, Any]:
+def run_integration_tests() -> dict[str, Any]:
     """Run all integration tests and return summary."""
     print("=" * 70)
     print("AMOS ORGANISM_OS SUBSYSTEM INTEGRATION TESTS")

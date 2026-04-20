@@ -1,0 +1,115 @@
+# AMOS Architecture Map
+# Defines layer boundaries, dependencies, and SSOT ownership
+
+architecture:
+  layers:
+    # Layer 0: Foundation
+    L0_Universal:
+      path: "amos_kernel/L0_universal_law_kernel.py"
+      description: "Universal laws - immutable foundation"
+      allowed_imports: []
+
+    L1_Core:
+      path: "amos_kernel/L1_deterministic_core.py"
+      description: "Deterministic state transitions"
+      allowed_imports: ["L0_Universal"]
+
+    L2_State:
+      path: "amos_kernel/L2_universal_state_model.py"
+      description: "Universal state graph representation"
+      allowed_imports: ["L0_Universal", "L1_Core"]
+
+    # Layer 1: System
+    L3_Organism:
+      path: "AMOS_ORGANISM_OS/"
+      description: "Biological architecture (14 layers)"
+      allowed_imports: ["L0_Universal", "L1_Core", "L2_State"]
+
+    L4_Brain:
+      path: "amos_brain/"
+      description: "Cognitive runtime and orchestration"
+      allowed_imports: ["L3_Organism", "L2_State"]
+
+    # Layer 2: Services
+    L5_Platform:
+      path: "backend/"
+      description: "API and service layer"
+      allowed_imports: ["L4_Brain", "L3_Organism"]
+
+    L6_Interfaces:
+      path: "INTERFACES/"
+      description: "External interfaces and adapters"
+      allowed_imports: ["L5_Platform"]
+
+  boundaries:
+    forbidden:
+      - from: "L5_Platform"
+        to: "L0_Universal"
+        reason: "Direct kernel access bypasses safety layers"
+
+      - from: "*"
+        to: "*_secrets*"
+        reason: "Secrets must be injected, not imported"
+
+      - from: "tests/"
+        to: "*_test.py"
+        reason: "Tests should not import other tests"
+
+    restricted:
+      - from: "L4_Brain"
+        to: "L1_Core"
+        requires: ["explicit_intent", "audit_log"]
+        reason: "Brain should use L2 State interface"
+
+  ssot_owners:
+    canonical_state:
+      owner: "amos_brain/state_manager.py"
+      description: "Single source of truth for system state"
+
+    canonical_equations:
+      owner: "amos_equations/"
+      description: "All executable equations"
+
+    canonical_config:
+      owner: "pyproject.toml"
+      description: "Project configuration and dependencies"
+
+    canonical_health:
+      owner: "amos_health/health_monitor.py"
+      description: "Health status and metrics"
+
+    canonical_auth:
+      owner: "amos_auth_manager.py"
+      description: "Authentication and authorization"
+
+  dependency_rules:
+    # Dependency direction must flow downward through layers
+    direction: "downward_only"
+
+    # Cycles are forbidden at the module level
+    cycles: "forbidden"
+
+    # External dependencies must be declared
+    external:
+      require_declaration: true
+      allowed:
+        - fastapi
+        - pydantic
+        - sqlalchemy
+        - redis
+        - celery
+        - pytest
+        - structlog
+
+  entrypoints:
+    cli:
+      file: "amos_cli.py"
+      exports: ["main", "cli"]
+
+    api:
+      file: "backend/main.py"
+      exports: ["app"]
+
+    kernel:
+      file: "amos_kernel/L1_deterministic_core.py"
+      exports: ["DeterministicCore", "StateTransition"]

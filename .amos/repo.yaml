@@ -1,0 +1,42 @@
+# AMOS Repo Configuration
+# This file defines the repo structure and commands for the AMOS compiler
+
+repo:
+  name: AMOS-Code
+  version: "1.0.0"
+
+  languages:
+    primary: python
+    secondary: [typescript, yaml, markdown]
+
+  package_root:
+    python: "."  # Repo root contains Python packages
+    typescript: "dashboard/src"
+
+  entrypoints:
+    cli:
+      - amos_cli.py
+      - backend/main.py
+    api:
+      - backend/main:app
+      - amos_fastapi_gateway.py
+    workers:
+      - backend/workers/
+
+  commands:
+    test: "python -m pytest tests/ -v"
+    typecheck: "python -m mypy amos_brain/ backend/ --ignore-missing-imports"
+    lint: "python -m ruff check amos_brain/ backend/"
+    format: "python -m ruff format amos_brain/ backend/"
+    build: "docker build -f Dockerfile.fastapi -t amos:latest ."
+
+  paths:
+    source: ["amos_brain/", "backend/", "amos_kernel/", "amosl/"]
+    tests: ["tests/"]
+    docs: ["docs/"]
+    generated: ["generated/"]
+    config: ["pyproject.toml", "alembic.ini"]
+
+  ignore:
+    patterns: ["*.pyc", "__pycache__/", "node_modules/", ".git/"]
+    paths: ["dashboard/node_modules/", "claw-code/node_modules/"]

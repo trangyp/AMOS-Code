@@ -3,10 +3,14 @@
 Structured AI agent system with safety controls, bounded scope, and audit trails.
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
 from enum import Enum, auto
-from typing import Any, Dict, List, Optional
+
+UTC = UTC
+from typing import Any, Optional
 
 from axiom_one_graph import (
     AxiomGraph,
@@ -65,12 +69,12 @@ class AgentAction:
     id: str
     agent_id: str
     action_type: ActionType
-    params: Dict[str, Any]
+    params: dict[str, Any]
     status: str  # pending, running, success, failed
     started_at: str
     completed_at: str = None
-    result: Dict[str, Any] = None
-    evidence: Dict[str, Any] = field(default_factory=dict)
+    result: dict[str, Any] = None
+    evidence: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -80,7 +84,7 @@ class AgentPlan:
     id: str
     agent_id: str
     goal: str
-    steps: List[dict[str, Any]]
+    steps: list[dict[str, Any]]
     estimated_blast_radius: str
     requires_approval: bool
     created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
@@ -93,13 +97,13 @@ class Agent:
     id: str
     name: str
     role: AgentRole
-    scope: List[str]  # Allowed paths/modules
-    tools: List[AgentTool]
-    permissions: List[str]
+    scope: list[str]  # Allowed paths/modules
+    tools: list[AgentTool]
+    permissions: list[str]
     budget_limit: float  # Max cost per run
     approval_threshold: str  # auto, low, medium, high
-    memory: List[dict[str, Any]] = field(default_factory=list)
-    action_log: List[AgentAction] = field(default_factory=list)
+    memory: list[dict[str, Any]] = field(default_factory=list)
+    action_log: list[AgentAction] = field(default_factory=list)
     status: str = "inactive"
 
     def __post_init__(self):
@@ -115,8 +119,8 @@ class AgentSafetyPolicy:
     require_approval_for_writes: bool = True
     max_actions_per_run: int = 50
     max_budget_usd: float = 10.0
-    allowed_file_patterns: List[str] = field(default_factory=lambda: ["*.py", "*.md", "*.toml"])
-    blocked_commands: List[str] = field(default_factory=lambda: ["rm -rf /", "sudo", "chmod"])
+    allowed_file_patterns: list[str] = field(default_factory=lambda: ["*.py", "*.md", "*.toml"])
+    blocked_commands: list[str] = field(default_factory=lambda: ["rm -rf /", "sudo", "chmod"])
 
 
 class AgentPlane:
@@ -134,7 +138,7 @@ class AgentPlane:
     def __init__(self, graph: AxiomGraph, policy: Optional[AgentSafetyPolicy] = None):
         self.graph = graph
         self.policy = policy or AgentSafetyPolicy()
-        self.agents: Dict[str, Agent] = {}
+        self.agents: dict[str, Agent] = {}
         self._setup_default_agents()
 
     def _setup_default_agents(self) -> None:
@@ -180,9 +184,9 @@ class AgentPlane:
         self,
         agent_id: str,
         goal: str,
-        context: Dict[str, Any],
+        context: dict[str, Any],
         dry_run: bool = True,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Execute an agent with full safety controls."""
         agent = self.agents.get(agent_id)
         if not agent:
@@ -225,7 +229,7 @@ class AgentPlane:
             "results": results,
         }
 
-    async def _create_plan(self, agent: Agent, goal: str, context: Dict[str, Any]) -> AgentPlan:
+    async def _create_plan(self, agent: Agent, goal: str, context: dict[str, Any]) -> AgentPlan:
         """Generate execution plan for goal."""
         # Simplified plan generation
         steps = [
@@ -244,7 +248,7 @@ class AgentPlane:
             requires_approval=agent.approval_threshold in ["medium", "high"],
         )
 
-    async def _execute_step(self, agent: Agent, step: Dict[str, Any], dry_run: bool) -> AgentAction:
+    async def _execute_step(self, agent: Agent, step: dict[str, Any], dry_run: bool) -> AgentAction:
         """Execute a single plan step."""
         action = AgentAction(
             id=generate_node_id(DomainType.AI, NodeType.AGENT, f"action:{agent.name}"),
@@ -269,5 +273,5 @@ class AgentPlane:
     def get_agent(self, agent_id: str) -> Optional[Agent]:
         return self.agents.get(agent_id)
 
-    def list_agents(self) -> List[Agent]:
+    def list_agents(self) -> list[Agent]:
         return list(self.agents.values())

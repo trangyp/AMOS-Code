@@ -13,15 +13,17 @@ A2A Design Principles:
 Reference: https://a2a-protocol.org/latest/
 """
 
+from __future__ import annotations
 
 import json
 import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
 from enum import Enum, auto
-from typing import Any, Dict, List, Optional
+from typing import Any
+
+UTC = UTC
 
 
 class TaskState(Enum):
@@ -43,10 +45,10 @@ class A2AMessage:
     role: str  # "user" | "agent"
     content: str
     content_type: str = "text"
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "message_id": self.message_id,
@@ -65,8 +67,8 @@ class A2ATask:
 
     task_id: str
     state: TaskState
-    messages: List[A2AMessage] = field(default_factory=list)
-    artifacts: List[dict[str, Any]] = field(default_factory=list)
+    messages: list[A2AMessage] = field(default_factory=list)
+    artifacts: list[dict[str, Any]] = field(default_factory=list)
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     updated_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
@@ -75,7 +77,7 @@ class A2ATask:
         self.messages.append(message)
         self.updated_at = datetime.now(timezone.utc).isoformat()
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "task_id": self.task_id,
@@ -94,11 +96,11 @@ class A2AAgent:
     agent_id: str
     name: str
     description: str
-    capabilities: List[str] = field(default_factory=list)
+    capabilities: list[str] = field(default_factory=list)
     endpoint: str = None
-    skills: List[dict[str, Any]] = field(default_factory=list)
+    skills: list[dict[str, Any]] = field(default_factory=list)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "agent_id": self.agent_id,
@@ -117,9 +119,9 @@ class A2AProtocol:
     """
 
     def __init__(self) -> None:
-        self._tasks: Dict[str, A2ATask] = {}
-        self._agents: Dict[str, A2AAgent] = {}
-        self._handlers: Dict[str, Callable[[A2ATask], None]] = {}
+        self._tasks: dict[str, A2ATask] = {}
+        self._agents: dict[str, A2AAgent] = {}
+        self._handlers: dict[str, Callable[[A2ATask], None]] = {}
 
     def register_agent(self, agent: A2AAgent) -> bool:
         """Register an agent in the A2A network.
@@ -147,7 +149,7 @@ class A2AProtocol:
         return True
 
     def create_task(
-        self, initial_message: str, target_agent_id: str = None, context: Dict[str, Any] = None
+        self, initial_message: str, target_agent_id: str = None, context: dict[str, Any] = None
     ) -> A2ATask:
         """Create a new A2A task.
 
@@ -212,7 +214,7 @@ class A2AProtocol:
         return task
 
     def complete_task(
-        self, task_id: str, result: str, artifacts: List[dict[str, Any]] = None
+        self, task_id: str, result: str, artifacts: list[dict[str, Any]] = None
     ) -> A2ATask:
         """Complete a task with results.
 
@@ -244,7 +246,7 @@ class A2AProtocol:
 
         return task
 
-    def list_agents(self, capability: str = None) -> List[A2AAgent]:
+    def list_agents(self, capability: str = None) -> list[A2AAgent]:
         """List registered agents.
 
         Args:
@@ -257,7 +259,7 @@ class A2AProtocol:
             return [agent for agent in self._agents.values() if capability in agent.capabilities]
         return list(self._agents.values())
 
-    def get_task(self, task_id: str) -> Optional[A2ATask]:
+    def get_task(self, task_id: str) -> A2ATask | None:
         """Get a task by ID.
 
         Args:
@@ -268,7 +270,7 @@ class A2AProtocol:
         """
         return self._tasks.get(task_id)
 
-    def list_tasks(self, state: Optional[TaskState] = None) -> List[A2ATask]:
+    def list_tasks(self, state: TaskState | None = None) -> list[A2ATask]:
         """List tasks.
 
         Args:

@@ -40,28 +40,24 @@ Usage:
     )
 """
 
-
-import json
-import re
-from dataclasses import dataclass, field
-from enum import Enum, auto
-from typing import Any, Callable, Dict, List, Optional
-from datetime import datetime
 import hashlib
+import json
+from dataclasses import dataclass
+from datetime import datetime
+from enum import Enum, auto
+from typing import Any, Optional
 
 # Import SuperBrain components
 try:
-    from amos_superbrain_equation_bridge import (
-        AMOSSuperBrainBridge, Domain, MathematicalPattern
-    )
+    from amos_superbrain_equation_bridge import AMOSSuperBrainBridge, Domain, MathematicalPattern
+
     SUPERBRAIN_AVAILABLE = True
 except ImportError:
     SUPERBRAIN_AVAILABLE = False
 
 try:
-    from amos_equation_verifier import (
-        EquationFormalVerifier, ProofStatus, ProofCertificate
-    )
+    from amos_equation_verifier import EquationFormalVerifier, ProofCertificate, ProofStatus
+
     VERIFIER_AVAILABLE = True
 except ImportError:
     VERIFIER_AVAILABLE = False
@@ -69,35 +65,38 @@ except ImportError:
 
 class ProofStrategy(Enum):
     """Neural-symbolic proof strategies."""
-    DIRECT = auto()           # Direct proof from axioms
-    CONTRADICTION = auto()    # Proof by contradiction
-    INDUCTION = auto()        # Mathematical induction
-    CONSTRUCTION = auto()     # Constructive proof
-    ANALOGY = auto()          # Proof by analogy to known theorem
-    COMPOSITION = auto()      # Compose smaller proofs
+
+    DIRECT = auto()  # Direct proof from axioms
+    CONTRADICTION = auto()  # Proof by contradiction
+    INDUCTION = auto()  # Mathematical induction
+    CONSTRUCTION = auto()  # Constructive proof
+    ANALOGY = auto()  # Proof by analogy to known theorem
+    COMPOSITION = auto()  # Compose smaller proofs
 
 
 class DiscoveryType(Enum):
     """Types of automated discoveries."""
-    EQUATION = auto()         # New equation formulation
-    ISOMORPHISM = auto()     # Cross-domain mapping
-    INVARIANT = auto()       # New invariant property
-    BOUNDARY = auto()        # Boundary condition
-    PATTERN = auto()         # Structural pattern
+
+    EQUATION = auto()  # New equation formulation
+    ISOMORPHISM = auto()  # Cross-domain mapping
+    INVARIANT = auto()  # New invariant property
+    BOUNDARY = auto()  # Boundary condition
+    PATTERN = auto()  # Structural pattern
 
 
 @dataclass
 class ProofAttempt:
     """Record of a neural-symbolic proof attempt."""
+
     theorem_id: str
     strategy: ProofStrategy
     neural_confidence: float  # LLM confidence score
     formal_status: ProofStatus
-    proof_steps: List[dict[str, Any]]
+    proof_steps: list[dict[str, Any]]
     verification_time_ms: float
     timestamp: str
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "theorem_id": self.theorem_id,
@@ -106,25 +105,26 @@ class ProofAttempt:
             "formal_status": self.formal_status.name,
             "proof_steps": self.proof_steps,
             "verification_time_ms": self.verification_time_ms,
-            "timestamp": self.timestamp
+            "timestamp": self.timestamp,
         }
 
 
 @dataclass
 class EquationDiscovery:
     """Result of automated equation discovery."""
+
     discovery_type: DiscoveryType
     source_equation: str
     target_equation: str
     source_domain: str
     target_domain: str
     pattern: str
-    isomorphism_mapping: Dict[str, str]
+    isomorphism_mapping: dict[str, str]
     confidence: float
-    proof_sketch: List[str]
+    proof_sketch: list[str]
     formal_verified: bool
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "discovery_type": self.discovery_type.name,
@@ -136,16 +136,17 @@ class EquationDiscovery:
             "isomorphism_mapping": self.isomorphism_mapping,
             "confidence": self.confidence,
             "proof_sketch": self.proof_sketch,
-            "formal_verified": self.formal_verified
+            "formal_verified": self.formal_verified,
         }
 
 
 @dataclass
 class NeuralTactic:
     """A neural-generated proof tactic with formal verification."""
+
     name: str
     description: str
-    applicable_patterns: List[str]
+    applicable_patterns: list[str]
     success_rate: float
     formal_safety: bool  # Verified not to break proof state
 
@@ -175,8 +176,8 @@ class NeuralSymbolicEngine:
             enable_formal: Whether to use formal verification
         """
         self.enable_formal = enable_formal and VERIFIER_AVAILABLE
-        self.proof_history: List[ProofAttempt] = []
-        self.discoveries: List[EquationDiscovery] = []
+        self.proof_history: list[ProofAttempt] = []
+        self.discoveries: list[EquationDiscovery] = []
 
         # Initialize components
         if SUPERBRAIN_AVAILABLE:
@@ -195,7 +196,7 @@ class NeuralSymbolicEngine:
         # Pattern isomorphism database
         self.known_isomorphisms = self._load_isomorphism_patterns()
 
-    def _initialize_tactics(self) -> List[NeuralTactic]:
+    def _initialize_tactics(self) -> list[NeuralTactic]:
         """Initialize neural proof tactics."""
         return [
             NeuralTactic(
@@ -203,39 +204,39 @@ class NeuralSymbolicEngine:
                 description="Prove output bounds through interval analysis",
                 applicable_patterns=["convex_optimization", "information_flow"],
                 success_rate=0.85,
-                formal_safety=True
+                formal_safety=True,
             ),
             NeuralTactic(
                 name="conservation_substitution",
                 description="Use conservation laws for equality proofs",
                 applicable_patterns=["conservation_law"],
                 success_rate=0.92,
-                formal_safety=True
+                formal_safety=True,
             ),
             NeuralTactic(
                 name="symmetry_exploitation",
                 description="Exploit symmetries to simplify proofs",
                 applicable_patterns=["linear_systems", "algebraic"],
                 success_rate=0.78,
-                formal_safety=True
+                formal_safety=True,
             ),
             NeuralTactic(
                 name="inductive_extension",
                 description="Extend proof from base case inductively",
                 applicable_patterns=["convergence", "stochastic_process"],
                 success_rate=0.73,
-                formal_safety=True
+                formal_safety=True,
             ),
             NeuralTactic(
                 name="cross_domain_analogy",
                 description="Adapt proof from analogous domain",
                 applicable_patterns=["all"],
                 success_rate=0.81,
-                formal_safety=False  # Requires verification
-            )
+                formal_safety=False,  # Requires verification
+            ),
         ]
 
-    def _load_isomorphism_patterns(self) -> List[dict[str, Any]]:
+    def _load_isomorphism_patterns(self) -> list[dict[str, Any]]:
         """Load known cross-domain isomorphism patterns."""
         return [
             {
@@ -244,14 +245,14 @@ class NeuralSymbolicEngine:
                     {
                         "source": ("physics", "energy_conservation"),
                         "target": ("ml", "privacy_budget"),
-                        "mapping": {"E": "ε", "dE/dt": "dε/drounds"}
+                        "mapping": {"E": "ε", "dE/dt": "dε/drounds"},
                     },
                     {
                         "source": ("physics", "momentum"),
                         "target": ("queueing", "littles_law"),
-                        "mapping": {"p": "L", "m": "λ", "v": "W"}
-                    }
-                ]
+                        "mapping": {"p": "L", "m": "λ", "v": "W"},
+                    },
+                ],
             },
             {
                 "pattern": "information_flow",
@@ -259,9 +260,9 @@ class NeuralSymbolicEngine:
                     {
                         "source": ("info_theory", "entropy"),
                         "target": ("ml", "softmax"),
-                        "mapping": {"H": "-Σ softmax·log(softmax)"}
+                        "mapping": {"H": "-Σ softmax·log(softmax)"},
                     }
-                ]
+                ],
             },
             {
                 "pattern": "convergence",
@@ -269,17 +270,19 @@ class NeuralSymbolicEngine:
                     {
                         "source": ("optimization", "gradient_descent"),
                         "target": ("physics", "dissipative_system"),
-                        "mapping": {"η": "γ", "∇L": "F_friction"}
+                        "mapping": {"η": "γ", "∇L": "F_friction"},
                     }
-                ]
-            }
+                ],
+            },
         ]
 
-    def discover_equation(self,
-                         source_domain: str,
-                         target_domain: str,
-                         pattern: str,
-                         confidence_threshold: float = 0.7) -> Optional[EquationDiscovery]:
+    def discover_equation(
+        self,
+        source_domain: str,
+        target_domain: str,
+        pattern: str,
+        confidence_threshold: float = 0.7,
+    ) -> Optional[EquationDiscovery]:
         """
         Automatically discover equation isomorphism across domains.
 
@@ -315,9 +318,7 @@ class NeuralSymbolicEngine:
 
                     if confidence >= confidence_threshold:
                         # Generate proof sketch
-                        proof_sketch = self._generate_proof_sketch(
-                            src_eq, tgt_eq, iso["mapping"]
-                        )
+                        proof_sketch = self._generate_proof_sketch(src_eq, tgt_eq, iso["mapping"])
 
                         # Attempt formal verification
                         formal_verified = False
@@ -336,7 +337,7 @@ class NeuralSymbolicEngine:
                             isomorphism_mapping=iso["mapping"],
                             confidence=confidence,
                             proof_sketch=proof_sketch,
-                            formal_verified=formal_verified
+                            formal_verified=formal_verified,
                         )
 
                         self.discoveries.append(discovery)
@@ -344,10 +345,9 @@ class NeuralSymbolicEngine:
 
         return None
 
-    def prove_theorem(self,
-                     theorem: str,
-                     strategy: ProofStrategy = ProofStrategy.DIRECT,
-                     timeout_ms: int = 30000) -> ProofAttempt:
+    def prove_theorem(
+        self, theorem: str, strategy: ProofStrategy = ProofStrategy.DIRECT, timeout_ms: int = 30000
+    ) -> ProofAttempt:
         """
         Attempt to prove a theorem using neural-symbolic reasoning.
 
@@ -362,11 +362,14 @@ class NeuralSymbolicEngine:
             ProofAttempt with results
         """
         import time
+
         start_time = time.perf_counter()
 
         # Step 1: Neural tactic selection
         recommended_tactics = self._select_tactics(theorem, strategy)
-        neural_confidence = sum(t.success_rate for t in recommended_tactics) / len(recommended_tactics)
+        neural_confidence = sum(t.success_rate for t in recommended_tactics) / len(
+            recommended_tactics
+        )
 
         # Step 2: Generate proof steps
         proof_steps = self._generate_proof_steps(theorem, recommended_tactics, strategy)
@@ -386,15 +389,13 @@ class NeuralSymbolicEngine:
             formal_status=formal_status,
             proof_steps=proof_steps,
             verification_time_ms=verification_time,
-            timestamp=datetime.now(timezone.utc).isoformat()
+            timestamp=datetime.now(timezone.utc).isoformat(),
         )
 
         self.proof_history.append(attempt)
         return attempt
 
-    def suggest_invariants(self,
-                         equation_name: str,
-                         domain: str) -> List[dict[str, Any]]:
+    def suggest_invariants(self, equation_name: str, domain: str) -> list[dict[str, Any]]:
         """
         Suggest likely invariants for an equation using neural analysis.
 
@@ -412,27 +413,33 @@ class NeuralSymbolicEngine:
 
         # Pattern-based suggestions
         if domain == "ml":
-            suggestions.extend([
-                {"invariant": "output_range", "confidence": 0.9, "check": "bounds"},
-                {"invariant": "monotonicity", "confidence": 0.7, "check": "derivative"},
-                {"invariant": "convexity", "confidence": 0.6, "check": "hessian"}
-            ])
+            suggestions.extend(
+                [
+                    {"invariant": "output_range", "confidence": 0.9, "check": "bounds"},
+                    {"invariant": "monotonicity", "confidence": 0.7, "check": "derivative"},
+                    {"invariant": "convexity", "confidence": 0.6, "check": "hessian"},
+                ]
+            )
         elif domain == "info_theory":
-            suggestions.extend([
-                {"invariant": "non_negativity", "confidence": 0.95, "check": "positivity"},
-                {"invariant": "symmetry", "confidence": 0.8, "check": "commutativity"},
-                {"invariant": "chain_rule", "confidence": 0.85, "check": "decomposition"}
-            ])
+            suggestions.extend(
+                [
+                    {"invariant": "non_negativity", "confidence": 0.95, "check": "positivity"},
+                    {"invariant": "symmetry", "confidence": 0.8, "check": "commutativity"},
+                    {"invariant": "chain_rule", "confidence": 0.85, "check": "decomposition"},
+                ]
+            )
         elif domain == "physics":
-            suggestions.extend([
-                {"invariant": "conservation", "confidence": 0.9, "check": "continuity"},
-                {"invariant": "symmetry", "confidence": 0.88, "check": "noether"},
-                {"invariant": "causality", "confidence": 0.92, "check": "time_ordering"}
-            ])
+            suggestions.extend(
+                [
+                    {"invariant": "conservation", "confidence": 0.9, "check": "continuity"},
+                    {"invariant": "symmetry", "confidence": 0.88, "check": "noether"},
+                    {"invariant": "causality", "confidence": 0.92, "check": "time_ordering"},
+                ]
+            )
 
         return suggestions
 
-    def analyze_proof_failure(self, attempt: ProofAttempt) -> Dict[str, Any]:
+    def analyze_proof_failure(self, attempt: ProofAttempt) -> dict[str, Any]:
         """
         Analyze why a proof failed and suggest corrections.
 
@@ -453,7 +460,7 @@ class NeuralSymbolicEngine:
             "missing_assumptions": [],
             "suggested_tactics": [],
             "alternative_strategies": [],
-            "counterexample_hint": None
+            "counterexample_hint": None,
         }
 
         if attempt.formal_status == ProofStatus.DISPROVEN:
@@ -465,7 +472,7 @@ class NeuralSymbolicEngine:
             analysis["suggested_tactics"] = ["decompose", "lemma_introduction"]
             analysis["alternative_strategies"] = [
                 ProofStrategy.INDUCTION,
-                ProofStrategy.COMPOSITION
+                ProofStrategy.COMPOSITION,
             ]
 
         elif attempt.formal_status == ProofStatus.UNKNOWN:
@@ -474,9 +481,9 @@ class NeuralSymbolicEngine:
 
         return analysis
 
-    def generate_novel_equation(self,
-                                 base_equations: List[str],
-                                 composition_rule: str) -> Dict[str, Any ]:
+    def generate_novel_equation(
+        self, base_equations: list[str], composition_rule: str
+    ) -> dict[str, Any]:
         """
         Generate novel equation by composing existing ones.
 
@@ -501,7 +508,7 @@ class NeuralSymbolicEngine:
                 "structure": "sequential",
                 "components": base_equations,
                 "formula": self._generate_chain_formula(base_equations),
-                "expected_properties": ["differentiability", "composition"]
+                "expected_properties": ["differentiability", "composition"],
             }
         elif composition_rule == "feedback":
             # Recurrent connection
@@ -510,14 +517,14 @@ class NeuralSymbolicEngine:
                 "structure": "recurrent",
                 "components": base_equations,
                 "formula": self._generate_feedback_formula(base_equations),
-                "expected_properties": ["convergence", "fixed_point"]
+                "expected_properties": ["convergence", "fixed_point"],
             }
         else:
             return None
 
         return novel_eq
 
-    def export_knowledge_graph(self) -> Dict[str, Any]:
+    def export_knowledge_graph(self) -> dict[str, Any]:
         """
         Export neural-symbolic knowledge as graph.
 
@@ -535,22 +542,26 @@ class NeuralSymbolicEngine:
         # Add equation nodes
         if self.superbrain:
             for name, meta in self.superbrain.registry.metadata.items():
-                nodes.append({
-                    "id": name,
-                    "type": "equation",
-                    "domain": meta.domain.value,
-                    "pattern": meta.pattern.value
-                })
+                nodes.append(
+                    {
+                        "id": name,
+                        "type": "equation",
+                        "domain": meta.domain.value,
+                        "pattern": meta.pattern.value,
+                    }
+                )
 
         # Add discovery edges
         for discovery in self.discoveries:
-            edges.append({
-                "source": discovery.source_equation,
-                "target": discovery.target_equation,
-                "type": "isomorphism",
-                "confidence": discovery.confidence,
-                "pattern": discovery.pattern
-            })
+            edges.append(
+                {
+                    "source": discovery.source_equation,
+                    "target": discovery.target_equation,
+                    "type": "isomorphism",
+                    "confidence": discovery.confidence,
+                    "pattern": discovery.pattern,
+                }
+            )
 
         return {
             "nodes": nodes,
@@ -558,16 +569,15 @@ class NeuralSymbolicEngine:
             "statistics": {
                 "num_equations": len(nodes),
                 "num_isomorphisms": len(edges),
-                "num_proofs": len(self.proof_history)
-            }
+                "num_proofs": len(self.proof_history),
+            },
         }
 
     # Helper methods
 
-    def _calculate_isomorphism_confidence(self,
-                                        src_eq: str,
-                                        tgt_eq: str,
-                                        mapping: Dict[str, str]) -> float:
+    def _calculate_isomorphism_confidence(
+        self, src_eq: str, tgt_eq: str, mapping: dict[str, str]
+    ) -> float:
         """Calculate confidence score for isomorphism."""
         # Base confidence
         confidence = 0.7
@@ -582,28 +592,24 @@ class NeuralSymbolicEngine:
 
         return min(confidence, 0.98)  # Cap at 0.98
 
-    def _generate_proof_sketch(self,
-                              src_eq: str,
-                              tgt_eq: str,
-                              mapping: Dict[str, str]) -> List[str]:
+    def _generate_proof_sketch(
+        self, src_eq: str, tgt_eq: str, mapping: dict[str, str]
+    ) -> list[str]:
         """Generate proof sketch for isomorphism."""
         return [
             f"1. Establish variable correspondence: {mapping}",
             f"2. Transform {src_eq} using substitution",
             f"3. Simplify to obtain {tgt_eq}",
-            "4. Verify equivalence through algebraic manipulation"
+            "4. Verify equivalence through algebraic manipulation",
         ]
 
-    def _verify_isomorphism(self,
-                           src_eq: str,
-                           tgt_eq: str,
-                           mapping: Dict[str, str]) -> bool:
+    def _verify_isomorphism(self, src_eq: str, tgt_eq: str, mapping: dict[str, str]) -> bool:
         """Attempt formal verification of isomorphism."""
         # Simplified verification
         # In practice, would use Z3 to verify equivalence
         return len(mapping) > 0
 
-    def _select_tactics(self, theorem: str, strategy: ProofStrategy) -> List[NeuralTactic]:
+    def _select_tactics(self, theorem: str, strategy: ProofStrategy) -> list[NeuralTactic]:
         """Select neural tactics for proof."""
         # Match tactics to theorem pattern
         selected = []
@@ -612,24 +618,23 @@ class NeuralSymbolicEngine:
                 selected.append(tactic)
         return selected if selected else self.tactics[:2]
 
-    def _generate_proof_steps(self,
-                            theorem: str,
-                            tactics: List[NeuralTactic],
-                            strategy: ProofStrategy) -> List[dict[str, Any]]:
+    def _generate_proof_steps(
+        self, theorem: str, tactics: list[NeuralTactic], strategy: ProofStrategy
+    ) -> list[dict[str, Any]]:
         """Generate proof steps from tactics."""
         steps = []
         for i, tactic in enumerate(tactics):
-            steps.append({
-                "step": i + 1,
-                "tactic": tactic.name,
-                "description": tactic.description,
-                "status": "pending"
-            })
+            steps.append(
+                {
+                    "step": i + 1,
+                    "tactic": tactic.name,
+                    "description": tactic.description,
+                    "status": "pending",
+                }
+            )
         return steps
 
-    def _attempt_formal_proof(self,
-                           theorem: str,
-                           steps: List[dict[str, Any]]) -> ProofStatus:
+    def _attempt_formal_proof(self, theorem: str, steps: list[dict[str, Any]]) -> ProofStatus:
         """Attempt formal verification of proof steps."""
         # Simplified: in practice would verify each step
         if self.verifier:
@@ -640,11 +645,11 @@ class NeuralSymbolicEngine:
         """Generate unique ID for theorem."""
         return hashlib.sha256(theorem.encode()).hexdigest()[:12]
 
-    def _generate_chain_formula(self, equations: List[str]) -> str:
+    def _generate_chain_formula(self, equations: list[str]) -> str:
         """Generate formula for chained equations."""
         return f"compose({', '.join(equations)})"
 
-    def _generate_feedback_formula(self, equations: List[str]) -> str:
+    def _generate_feedback_formula(self, equations: list[str]) -> str:
         """Generate formula for feedback equations."""
         return f"feedback({', '.join(equations)})"
 
@@ -653,37 +658,13 @@ def main():
     """CLI for neural-symbolic engine."""
     import argparse
 
-    parser = argparse.ArgumentParser(
-        description="AMOS Neural-Symbolic Integration Engine"
-    )
-    parser.add_argument(
-        "--discover", "-d",
-        action="store_true",
-        help="Run automated discovery"
-    )
-    parser.add_argument(
-        "--prove", "-p",
-        help="Prove specific theorem"
-    )
-    parser.add_argument(
-        "--source-domain",
-        default="physics",
-        help="Source domain for discovery"
-    )
-    parser.add_argument(
-        "--target-domain",
-        default="ml",
-        help="Target domain for discovery"
-    )
-    parser.add_argument(
-        "--pattern",
-        default="conservation_law",
-        help="Pattern to search for"
-    )
-    parser.add_argument(
-        "--export-graph", "-x",
-        help="Export knowledge graph to file"
-    )
+    parser = argparse.ArgumentParser(description="AMOS Neural-Symbolic Integration Engine")
+    parser.add_argument("--discover", "-d", action="store_true", help="Run automated discovery")
+    parser.add_argument("--prove", "-p", help="Prove specific theorem")
+    parser.add_argument("--source-domain", default="physics", help="Source domain for discovery")
+    parser.add_argument("--target-domain", default="ml", help="Target domain for discovery")
+    parser.add_argument("--pattern", default="conservation_law", help="Pattern to search for")
+    parser.add_argument("--export-graph", "-x", help="Export knowledge graph to file")
 
     args = parser.parse_args()
 
@@ -692,19 +673,17 @@ def main():
     if args.discover:
         print("🔍 Running automated equation discovery...")
         discovery = engine.discover_equation(
-            source_domain=args.source_domain,
-            target_domain=args.target_domain,
-            pattern=args.pattern
+            source_domain=args.source_domain, target_domain=args.target_domain, pattern=args.pattern
         )
 
         if discovery:
-            print(f"\n✅ Discovery found!")
+            print("\n✅ Discovery found!")
             print(f"   Pattern: {discovery.pattern}")
             print(f"   Source: {discovery.source_equation} ({discovery.source_domain})")
             print(f"   Target: {discovery.target_equation} ({discovery.target_domain})")
             print(f"   Confidence: {discovery.confidence:.2%}")
             print(f"   Formal Verified: {discovery.formal_verified}")
-            print(f"\n   Proof Sketch:")
+            print("\n   Proof Sketch:")
             for step in discovery.proof_sketch:
                 print(f"   {step}")
         else:
@@ -721,13 +700,13 @@ def main():
 
         if attempt.formal_status != ProofStatus.PROVEN:
             analysis = engine.analyze_proof_failure(attempt)
-            print(f"\n   Failure Analysis:")
+            print("\n   Failure Analysis:")
             print(f"   Mode: {analysis['failure_mode']}")
             print(f"   Suggested Tactics: {analysis['suggested_tactics']}")
 
     elif args.export_graph:
         graph = engine.export_knowledge_graph()
-        with open(args.export_graph, 'w') as f:
+        with open(args.export_graph, "w") as f:
             json.dump(graph, f, indent=2)
         print(f"💾 Knowledge graph exported to: {args.export_graph}")
         print(f"   Nodes: {graph['statistics']['num_equations']}")

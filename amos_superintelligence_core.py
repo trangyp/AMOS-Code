@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 """AMOS Superintelligence Core (Phase 29)
 
@@ -44,8 +44,9 @@ import json
 import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 from enum import Enum, auto
 
 import numpy as np
@@ -114,7 +115,7 @@ class Entity:
 
     entity_id: str
     entity_type: str
-    attributes: Dict[str, Any] = field(default_factory=dict)
+    attributes: dict[str, Any] = field(default_factory=dict)
     confidence: float = 1.0
     timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
@@ -138,12 +139,12 @@ class WorldState:
     Language = Render(WorldState), NOT the reverse.
     """
 
-    entities: Dict[str, Entity] = field(default_factory=dict)
-    relations: Dict[str, Relation] = field(default_factory=dict)
-    dynamics: Dict[str, Any] = field(default_factory=dict)  # Transition functions
-    constraints: List[dict[str, Any]] = field(default_factory=list)
-    goals: Dict[str, float] = field(default_factory=dict)  # Goal -> priority
-    risks: Dict[str, float] = field(default_factory=dict)  # Risk -> probability
+    entities: dict[str, Entity] = field(default_factory=dict)
+    relations: dict[str, Relation] = field(default_factory=dict)
+    dynamics: dict[str, Any] = field(default_factory=dict)  # Transition functions
+    constraints: list[dict[str, Any]] = field(default_factory=list)
+    goals: dict[str, float] = field(default_factory=dict)  # Goal -> priority
+    risks: dict[str, float] = field(default_factory=dict)  # Risk -> probability
     timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
     def to_tensor(self) -> np.ndarray:
@@ -186,7 +187,7 @@ class WorldState:
 class ObjectiveVector:
     """Explicit objective hierarchy."""
 
-    objectives: Dict[ObjectiveType, float] = field(
+    objectives: dict[ObjectiveType, float] = field(
         default_factory=lambda: {
             ObjectiveType.TRUTH: 1.0,
             ObjectiveType.COHERENCE: 1.0,
@@ -233,16 +234,16 @@ class SearchBranch:
     """Candidate branch in search space."""
 
     branch_id: str
-    hypothesis: Dict[str, Any]
-    plan: List[dict[str, Any]]
-    proof: Dict[str, Any]
+    hypothesis: dict[str, Any]
+    plan: list[dict[str, Any]]
+    proof: dict[str, Any]
     cost: float
     risk: float
     utility: float
     proof_strength: float
     reversibility: float
     depth: int = 0
-    parent_id: Optional[str] = None
+    parent_id: str = None
 
     def compute_score(self, objective_weights: ObjectiveVector) -> float:
         """Compute branch score for selection."""
@@ -272,7 +273,7 @@ class VerificationResult:
             and self.failure_mode_check <= tau_failure
         )
 
-    def to_dict(self) -> Dict[str, float]:
+    def to_dict(self) -> dict[str, float]:
         return {
             "consistency": self.consistency,
             "constraint_preservation": self.constraint_preservation,
@@ -293,7 +294,7 @@ class ErrorTensor:
     grounding_error: float = 0.0
     verification_error: float = 0.0
     drift_error: float = 0.0
-    weights: Dict[ErrorType, float] = field(
+    weights: dict[ErrorType, float] = field(
         default_factory=lambda: {
             ErrorType.BINDING_ERROR: 1.0,
             ErrorType.CONSTRAINT_DROP: 2.0,  # High penalty
@@ -336,12 +337,12 @@ class ErrorTensor:
 class MemorySlice:
     """Hierarchical memory slice."""
 
-    episodic: List[dict[str, Any]] = field(default_factory=list)  # Experiences
-    semantic: Dict[str, Any] = field(default_factory=dict)  # Facts/knowledge
-    procedural: Dict[str, Any] = field(default_factory=dict)  # How-to knowledge
-    strategic: Dict[str, Any] = field(default_factory=dict)  # Policies
-    identity: Dict[str, Any] = field(default_factory=dict)  # Self-model
-    error_memory: List[dict[str, Any]] = field(default_factory=list)  # M_error
+    episodic: list[dict[str, Any]] = field(default_factory=list)  # Experiences
+    semantic: dict[str, Any] = field(default_factory=dict)  # Facts/knowledge
+    procedural: dict[str, Any] = field(default_factory=dict)  # How-to knowledge
+    strategic: dict[str, Any] = field(default_factory=dict)  # Policies
+    identity: dict[str, Any] = field(default_factory=dict)  # Self-model
+    error_memory: list[dict[str, Any]] = field(default_factory=list)  # M_error
 
 
 @dataclass
@@ -350,19 +351,19 @@ class SuperIntelligenceState:
 
     world_model: WorldState = field(default_factory=WorldState)
     objectives: ObjectiveVector = field(default_factory=ObjectiveVector)
-    search_branches: List[SearchBranch] = field(default_factory=list)
+    search_branches: list[SearchBranch] = field(default_factory=list)
     verification: VerificationResult = field(default_factory=VerificationResult)
     control_mode: CognitiveMode = CognitiveMode.FAST_PATTERN
     compute_allocation: float = 0.5
     latency_budget: float = 1.0  # seconds
     error_tensor: ErrorTensor = field(default_factory=ErrorTensor)
     memory: MemorySlice = field(default_factory=MemorySlice)
-    self_improvement_pending: List[dict[str, Any]] = field(default_factory=list)
-    policy_scores: Dict[str, float] = field(default_factory=dict)
+    self_improvement_pending: list[dict[str, Any]] = field(default_factory=list)
+    policy_scores: dict[str, float] = field(default_factory=dict)
     rollback_available: bool = True
     timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Serialize to dictionary."""
         return {
             "world_model": {
@@ -410,7 +411,7 @@ class SuperIntelligenceState:
 class PerceptionModel:
     """Perception Model (PM): Transforms raw input into structured state."""
 
-    def perceive(self, raw_input: Any, context: Dict[str, Any] = None) -> WorldState:
+    def perceive(self, raw_input: Any, context: dict[str, Any] = None) -> WorldState:
         """Perceive → Extract entities, relations, dynamics from input.
 
         SII01: World model dominates - this is the PRIMARY representation.
@@ -438,7 +439,7 @@ class PerceptionModel:
 
         return world
 
-    def _perceive_text(self, text: str, world: WorldState, context: Dict[str, Any]) -> WorldState:
+    def _perceive_text(self, text: str, world: WorldState, context: dict[str, Any]) -> WorldState:
         """Perceive text input."""
         # Create text entity
         world.entities["text_input"] = Entity(
@@ -475,7 +476,7 @@ class PerceptionModel:
 
         return world
 
-    def _perceive_structured(self, data: Dict[str, Any], world: WorldState) -> WorldState:
+    def _perceive_structured(self, data: dict[str, Any], world: WorldState) -> WorldState:
         """Perceive structured input."""
         for key, value in data.items():
             eid = f"struct_{key}"
@@ -487,7 +488,7 @@ class PerceptionModel:
         return world
 
     def _perceive_sequence(
-        self, seq: List[Any], world: WorldState, context: Dict[str, Any]
+        self, seq: list[Any], world: WorldState, context: dict[str, Any]
     ) -> WorldState:
         """Perceive sequential input."""
         for i, item in enumerate(seq[:100]):  # Limit to 100 items
@@ -515,8 +516,8 @@ class WorldModel:
 
     def __init__(self, latent_dim: int = 512):
         self.latent_dim = latent_dim
-        self.history: List[WorldState] = []
-        self.transition_model: Dict[str, Callable] = {}
+        self.history: list[WorldState] = []
+        self.transition_model: dict[str, Callable] = {}
 
     def update(self, perception: WorldState, memory: MemorySlice) -> WorldState:
         """Update world model from perception + memory."""
@@ -568,8 +569,8 @@ class WorldModel:
         return world
 
     def predict(
-        self, world: WorldState, action: Dict[str, Any], horizon: int = 1
-    ) -> List[WorldState]:
+        self, world: WorldState, action: dict[str, Any], horizon: int = 1
+    ) -> list[WorldState]:
         """Predict future states given action."""
         predictions = []
         current = world
@@ -582,7 +583,7 @@ class WorldModel:
 
         return predictions
 
-    def _apply_transition(self, state: WorldState, action: Dict[str, Any], step: int) -> WorldState:
+    def _apply_transition(self, state: WorldState, action: dict[str, Any], step: int) -> WorldState:
         """Apply state transition."""
         new_state = WorldState(
             entities=state.entities.copy(),
@@ -615,20 +616,20 @@ class SearchModel:
     def __init__(self, max_branches: int = 10, max_depth: int = 5):
         self.max_branches = max_branches
         self.max_depth = max_depth
-        self.search_history: List[dict[str, Any]] = []
+        self.search_history: list[dict[str, Any]] = []
 
     def search(
         self,
         world: WorldState,
         objectives: ObjectiveVector,
-        query: Dict[str, Any],
-        constraints: Dict[str, Any],
-    ) -> List[SearchBranch]:
+        query: dict[str, Any],
+        constraints: dict[str, Any],
+    ) -> list[SearchBranch]:
         """Search across possible internal states and plans.
 
         S_t = Search(W_t, O_t, Q_t, C_t)
         """
-        branches: List[SearchBranch] = []
+        branches: list[SearchBranch] = []
 
         # Generate candidate hypotheses
         hypotheses = self._generate_hypotheses(world, query)
@@ -649,8 +650,8 @@ class SearchModel:
         return branches
 
     def _generate_hypotheses(
-        self, world: WorldState, query: Dict[str, Any]
-    ) -> List[dict[str, Any]]:
+        self, world: WorldState, query: dict[str, Any]
+    ) -> list[dict[str, Any]]:
         """Generate candidate hypotheses."""
         hypotheses = []
 
@@ -699,10 +700,10 @@ class SearchModel:
 
     def _expand_branch(
         self,
-        hypothesis: Dict[str, Any],
+        hypothesis: dict[str, Any],
         world: WorldState,
         objectives: ObjectiveVector,
-        constraints: Dict[str, Any],
+        constraints: dict[str, Any],
     ) -> SearchBranch:
         """Expand hypothesis into full search branch."""
         # Generate plan
@@ -732,7 +733,7 @@ class SearchModel:
             reversibility=0.8 if hypothesis["type"] != "creative" else 0.4,
         )
 
-    def _generate_plan(self, hypothesis: Dict[str, Any], world: WorldState) -> List[dict[str, Any]]:
+    def _generate_plan(self, hypothesis: dict[str, Any], world: WorldState) -> list[dict[str, Any]]:
         """Generate execution plan for hypothesis."""
         plan = []
 
@@ -766,8 +767,8 @@ class SearchModel:
         return plan
 
     def select_best_branch(
-        self, branches: List[SearchBranch], objectives: ObjectiveVector
-    ) -> Optional[SearchBranch]:
+        self, branches: list[SearchBranch], objectives: ObjectiveVector
+    ) -> SearchBranch:
         """Select optimal branch.
 
         s* = argmax[utility * proof * reversibility - risk - cost]
@@ -948,7 +949,7 @@ class MemoryModel:
         self.max_episodes = 1000
         self.max_errors = 100
 
-    def store_episode(self, state: SuperIntelligenceState, outcome: Dict[str, Any]):
+    def store_episode(self, state: SuperIntelligenceState, outcome: dict[str, Any]):
         """Store episodic memory."""
         episode = {
             "timestamp": datetime.now(timezone.utc).isoformat(),
@@ -962,7 +963,7 @@ class MemoryModel:
             self.memory.episodic = self.memory.episodic[-self.max_episodes :]
 
     def store_error(
-        self, error_type: ErrorType, context: Dict[str, Any], state: SuperIntelligenceState
+        self, error_type: ErrorType, context: dict[str, Any], state: SuperIntelligenceState
     ):
         """Store error in M_error for error-correcting cognition.
 
@@ -981,7 +982,7 @@ class MemoryModel:
         if len(self.memory.error_memory) > self.max_errors:
             self.memory.error_memory = self.memory.error_memory[-self.max_errors :]
 
-    def retrieve_similar_episodes(self, world: WorldState, k: int = 5) -> List[dict[str, Any]]:
+    def retrieve_similar_episodes(self, world: WorldState, k: int = 5) -> list[dict[str, Any]]:
         """Retrieve k most similar past episodes."""
         world.compute_hash()
 
@@ -995,7 +996,7 @@ class MemoryModel:
         scored.sort(key=lambda x: x[1], reverse=True)
         return [ep for ep, _ in scored[:k]]
 
-    def get_error_patterns(self, error_type: Optional[ErrorType] = None) -> List[dict[str, Any]]:
+    def get_error_patterns(self, error_type: ErrorType = None) -> list[dict[str, Any]]:
         """Get error patterns for specific type or all types."""
         if error_type:
             return [e for e in self.memory.error_memory if e["error_type"] == error_type.value]
@@ -1017,11 +1018,11 @@ class SelfImprovementModel:
             "search_depth": {"max_depth": 5, "branch_factor": 4},
             "memory": {"retention_days": 30},
         }
-        self.policy_history: List[dict[str, Any]] = []
-        self.metrics_history: List[dict[str, Any]] = []
+        self.policy_history: list[dict[str, Any]] = []
+        self.metrics_history: list[dict[str, Any]] = []
 
     def compute_error_gradient(
-        self, state: SuperIntelligenceState, feedback: Dict[str, Any]
+        self, state: SuperIntelligenceState, feedback: dict[str, Any]
     ) -> np.ndarray:
         """Compute gradient from error tensor.
 
@@ -1037,10 +1038,10 @@ class SelfImprovementModel:
     def update_policies(
         self,
         state: SuperIntelligenceState,
-        metrics: Dict[str, float],
-        failures: List[dict[str, Any]],
-        outcomes: List[dict[str, Any]],
-    ) -> Dict[str, Any]:
+        metrics: dict[str, float],
+        failures: list[dict[str, Any]],
+        outcomes: list[dict[str, Any]],
+    ) -> dict[str, Any]:
         """Update policies based on experience.
 
         L* = argmax[Accuracy * Speed * Stability * Value - Error - Drift]
@@ -1124,7 +1125,7 @@ class IdentityGovernanceModel:
             "max_error_rate": 0.3,
         }
 
-    def check_bounds(self, state: SuperIntelligenceState) -> Tuple[bool, list[str]]:
+    def check_bounds(self, state: SuperIntelligenceState) -> tuple[bool, list[str]]:
         """Check if state violates governance bounds."""
         violations = []
 
@@ -1162,7 +1163,7 @@ class AMOSSuperintelligenceCore:
     AMOS_SI(t+1) = Improve(Control(Verify(Select(Search(Predict(Model(Perceive(X_t))))))))
     """
 
-    _instance: Optional[AMOSSuperintelligenceCore] = None
+    _instance: AMOSSuperintelligenceCore = None
 
     def __new__(cls) -> AMOSSuperintelligenceCore:
         if cls._instance is None:
@@ -1186,14 +1187,14 @@ class AMOSSuperintelligenceCore:
         self.governance = IdentityGovernanceModel()
 
         # State tracking
-        self.current_state: Optional[SuperIntelligenceState] = None
+        self.current_state: SuperIntelligenceState = None
         self.cycle_count = 0
 
         print("🧠 AMOS Superintelligence Core initialized")
         print("   Architecture: SI_AMOS = (PM, WM, OM, SM, VM, MM, CM, LM, IM)")
         print("   Invariants: SII01-SII07 enforced")
 
-    async def process(self, raw_input: Any, context: Dict[str, Any] = None) -> Dict[str, Any]:
+    async def process(self, raw_input: Any, context: dict[str, Any] = None) -> dict[str, Any]:
         """Process input through complete intelligence loop.
 
         Master Loop:
@@ -1231,7 +1232,7 @@ class AMOSSuperintelligenceCore:
         state.latency_budget = latency_budget
 
         # === STAGE 5: SEARCH (if mode requires deep reasoning) ===
-        branches: List[SearchBranch] = []
+        branches: list[SearchBranch] = []
         if mode in [
             CognitiveMode.DEEP_SEARCH,
             CognitiveMode.FORMAL_VERIFY,
@@ -1243,7 +1244,7 @@ class AMOSSuperintelligenceCore:
             state.search_branches = branches
 
         # === STAGE 6: VERIFY (SII02: No output without verification) ===
-        selected_branch: Optional[SearchBranch] = None
+        selected_branch: SearchBranch = None
         if branches:
             selected_branch = self.search.select_best_branch(branches, self.objectives)
             if selected_branch:
@@ -1322,7 +1323,7 @@ class AMOSSuperintelligenceCore:
         return min(1.0, uncertain_entities / max(len(world.entities), 1))
 
     def _compute_errors(
-        self, state: SuperIntelligenceState, can_commit: bool, context: Dict[str, Any]
+        self, state: SuperIntelligenceState, can_commit: bool, context: dict[str, Any]
     ) -> ErrorTensor:
         """Compute error tensor for state."""
         errors = ErrorTensor()
@@ -1348,7 +1349,7 @@ class AMOSSuperintelligenceCore:
 
         return errors
 
-    def _render_output(self, branch: SearchBranch, state: SuperIntelligenceState) -> Dict[str, Any]:
+    def _render_output(self, branch: SearchBranch, state: SuperIntelligenceState) -> dict[str, Any]:
         """Render verified structure to output."""
         # SII06: Renderer only projects verified structure
         return {
@@ -1360,8 +1361,8 @@ class AMOSSuperintelligenceCore:
         }
 
     def _render_fallback(
-        self, state: SuperIntelligenceState, context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, state: SuperIntelligenceState, context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Render fallback output when verification fails."""
         return {
             "type": "fallback_output",
@@ -1370,7 +1371,7 @@ class AMOSSuperintelligenceCore:
             "suggested_action": "increase_latency_budget_or_reduce_constraints",
         }
 
-    def _collect_metrics(self, state: SuperIntelligenceState, latency: float) -> Dict[str, float]:
+    def _collect_metrics(self, state: SuperIntelligenceState, latency: float) -> dict[str, float]:
         """Collect performance metrics."""
         return {
             "error_rate": state.error_tensor.compute_total_error(),
@@ -1437,8 +1438,8 @@ def get_superintelligence_core() -> AMOSSuperintelligenceCore:
 
 
 async def superintelligence_process(
-    input_data: Any, context: Dict[str, Any] = None
-) -> Dict[str, Any]:
+    input_data: Any, context: dict[str, Any] = None
+) -> dict[str, Any]:
     """Process input through superintelligence core.
 
     This is the main entry point for objective-grounded, search-based,

@@ -15,7 +15,7 @@ Implements verification of all 10 axioms from the 21-tuple specification:
 
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 
 class AxiomID(Enum):
@@ -39,7 +39,7 @@ class AxiomCheckResult:
 
     axiom: AxiomID
     satisfied: bool
-    evidence: Dict[str, Any] = field(default_factory=dict)
+    evidence: dict[str, Any] = field(default_factory=dict)
     message: str = ""
 
 
@@ -47,9 +47,9 @@ class AxiomChecker:
     """Verify all 10 axioms of AMOSL maximal specification."""
 
     def __init__(self):
-        self.check_results: List[AxiomCheckResult] = []
+        self.check_results: list[AxiomCheckResult] = []
 
-    def check_all_axioms(self, system_state: Dict[str, Any]) -> Dict[AxiomID, AxiomCheckResult]:
+    def check_all_axioms(self, system_state: dict[str, Any]) -> dict[AxiomID, AxiomCheckResult]:
         """Check all 10 axioms against system state."""
         results = {}
 
@@ -69,7 +69,7 @@ class AxiomChecker:
         self.check_results = list(results.values())
         return results
 
-    def check_semantic_primacy(self, state: Dict[str, Any]) -> AxiomCheckResult:
+    def check_semantic_primacy(self, state: dict[str, Any]) -> AxiomCheckResult:
         """Axiom 1: Semantic primacy.
         ∃ Enc : O × T × C → S
         Syntax is encoding of typed ontology under law.
@@ -93,7 +93,7 @@ class AxiomChecker:
             else "Missing encoding mapping",
         )
 
-    def check_typed_existence(self, state: Dict[str, Any]) -> AxiomCheckResult:
+    def check_typed_existence(self, state: dict[str, Any]) -> AxiomCheckResult:
         """Axiom 2: Typed existence.
         ∀e, ∃τ ∈ T such that Γ ⊢ e:τ
         Every entity has a type.
@@ -117,7 +117,7 @@ class AxiomChecker:
             else f"Untyped entities: {untyped}",
         )
 
-    def check_stratified_state(self, state: Dict[str, Any]) -> AxiomCheckResult:
+    def check_stratified_state(self, state: dict[str, Any]) -> AxiomCheckResult:
         """Axiom 3: Stratified state.
         X = X_c × X_q × X_b × X_h × X_e × X_t
         State is 6-dimensional product.
@@ -135,7 +135,7 @@ class AxiomChecker:
             + (" ✓" if all_present else ""),
         )
 
-    def check_lawful_evolution(self, state: Dict[str, Any]) -> AxiomCheckResult:
+    def check_lawful_evolution(self, state: dict[str, Any]) -> AxiomCheckResult:
         """Axiom 4: Lawful evolution.
         F : X × U × X_e × Y → X
         Dynamics is total function.
@@ -152,7 +152,7 @@ class AxiomChecker:
             message="Lawful evolution: F defined" if satisfied else "Missing dynamics or domain",
         )
 
-    def check_invariant_gated_commit(self, state: Dict[str, Any]) -> AxiomCheckResult:
+    def check_invariant_gated_commit(self, state: dict[str, Any]) -> AxiomCheckResult:
         """Axiom 5: Invariant-gated commit.
         Commit(x') ⟺ ∀C_i ∈ C, C_i(x') = ⊤
         Commit iff all constraints satisfied.
@@ -175,7 +175,7 @@ class AxiomChecker:
             else "No commit gating",
         )
 
-    def check_observation_non_neutrality(self, state: Dict[str, Any]) -> AxiomCheckResult:
+    def check_observation_non_neutrality(self, state: dict[str, Any]) -> AxiomCheckResult:
         """Axiom 6: Observation non-neutrality.
         M : X → Y × Q × Π × X
         [M, F] ≠ 0
@@ -203,7 +203,7 @@ class AxiomChecker:
             else "Observation may be neutral",
         )
 
-    def check_bridge_explicitness(self, state: Dict[str, Any]) -> AxiomCheckResult:
+    def check_bridge_explicitness(self, state: dict[str, Any]) -> AxiomCheckResult:
         """Axiom 7: Bridge explicitness.
         x_i ↝ x_j ⟹ ∃B_ij ∈ B
         Cross-domain transfers require explicit bridges.
@@ -232,7 +232,7 @@ class AxiomChecker:
             else f"Missing bridges for: {unbridged}",
         )
 
-    def check_admissible_adaptation(self, state: Dict[str, Any]) -> AxiomCheckResult:
+    def check_admissible_adaptation(self, state: dict[str, Any]) -> AxiomCheckResult:
         """Axiom 8: Admissible adaptation.
         A ∈ A, x' = A(x) ⟹ Valid(x') = 1
         Adaptation preserves validity.
@@ -255,7 +255,7 @@ class AxiomChecker:
             else f"Invalid adaptations: {len(invalid_adaptations)}",
         )
 
-    def check_ledger_completeness(self, state: Dict[str, Any]) -> AxiomCheckResult:
+    def check_ledger_completeness(self, state: dict[str, Any]) -> AxiomCheckResult:
         """Axiom 9: Ledger completeness.
         ∀ committed transition x_t → x_{t+1}, ∃ℓ_t ∈ L
         Every transition recorded.
@@ -275,7 +275,7 @@ class AxiomChecker:
             else "Missing ledger entries",
         )
 
-    def check_explainability(self, state: Dict[str, Any]) -> AxiomCheckResult:
+    def check_explainability(self, state: dict[str, Any]) -> AxiomCheckResult:
         """Axiom 10: Explainability.
         ∀ outcome, ∃Λ ⊆ L : Explain(Λ) = outcome
         Every outcome explainable from ledger.
@@ -297,7 +297,7 @@ class AxiomChecker:
             else "Missing explanation mechanism",
         )
 
-    def get_summary(self) -> Dict[str, Any]:
+    def get_summary(self) -> dict[str, Any]:
         """Get summary of all axiom checks."""
         if not self.check_results:
             return {"checked": False}
@@ -314,7 +314,7 @@ class AxiomChecker:
         }
 
 
-def verify_maximal_spec(state: Dict[str, Any]) -> Tuple[bool, dict[str, Any]]:
+def verify_maximal_spec(state: dict[str, Any]) -> tuple[bool, dict[str, Any]]:
     """Verify system satisfies all 10 axioms of maximal specification.
 
     Returns: (all_satisfied, summary_dict)

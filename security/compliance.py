@@ -21,7 +21,6 @@ import subprocess
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import List
 
 
 @dataclass
@@ -42,7 +41,7 @@ class ComplianceReport:
 
     timestamp: str
     framework: str
-    controls: List[ComplianceControl]
+    controls: list[ComplianceControl]
     score: float
     passed: bool
 
@@ -167,7 +166,7 @@ class CISBenchmarkChecker:
             evidence="Encryption enabled in Terraform RDS configuration (storage_encrypted = true)",
         )
 
-    def run_all_checks(self) -> List[ComplianceControl]:
+    def run_all_checks(self) -> list[ComplianceControl]:
         """Run all CIS benchmark checks."""
         checks = [
             self.check_iam_password_policy(),
@@ -276,7 +275,7 @@ class SOC2Checker:
             else None,
         )
 
-    def run_all_checks(self) -> List[ComplianceControl]:
+    def run_all_checks(self) -> list[ComplianceControl]:
         """Run all SOC 2 checks."""
         checks = [
             self.check_access_controls(),
@@ -335,7 +334,7 @@ class GDPRChecker:
             remediation="Implement audit logging for data access and modifications",
         )
 
-    def run_all_checks(self) -> List[ComplianceControl]:
+    def run_all_checks(self) -> list[ComplianceControl]:
         """Run all GDPR checks."""
         checks = [
             self.check_data_encryption(),
@@ -375,7 +374,7 @@ class ComplianceEngine:
             passed=score >= 80,
         )
 
-    def run_all(self) -> List[ComplianceReport]:
+    def run_all(self) -> list[ComplianceReport]:
         """Run all compliance frameworks."""
         reports = []
         for framework in self.checkers.keys():

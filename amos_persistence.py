@@ -3,11 +3,13 @@
 Manages long-term data storage, archival, and retrieval for the AMOS system.
 """
 
+from __future__ import annotations
+
 import gzip
 import json
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from amos_database import get_database
 
@@ -20,7 +22,7 @@ class PersistenceManager:
         self.archive_path = self.base_path / "archives"
         self.archive_path.mkdir(parents=True, exist_ok=True)
 
-    def archive_old_data(self, days: int = 30) -> Dict[str, int]:
+    def archive_old_data(self, days: int = 30) -> dict[str, int]:
         """Archive data older than specified days."""
         db = get_database()
         stats = {"queries": 0, "metrics": 0, "events": 0}
@@ -104,7 +106,7 @@ class PersistenceManager:
 
         return restored
 
-    def get_archive_summary(self) -> Dict[str, Any]:
+    def get_archive_summary(self) -> dict[str, Any]:
         """Get summary of archived data."""
         archives = list(self.archive_path.glob("*.json.gz"))
 
@@ -130,7 +132,7 @@ class PersistenceManager:
 
     def export_data(
         self, start_date: str, end_date: str, data_type: str = "all"
-    ) -> List[dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Export data for a date range."""
         db = get_database()
         results = []
@@ -150,7 +152,7 @@ class PersistenceManager:
 
         return results
 
-    def cleanup_orphaned_data(self) -> Dict[str, int]:
+    def cleanup_orphaned_data(self) -> dict[str, int]:
         """Clean up orphaned or corrupted data."""
         db = get_database()
         stats = {"queries_removed": 0, "events_removed": 0}

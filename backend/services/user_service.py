@@ -5,8 +5,13 @@ Demonstrates how to implement a service using the AMOS BaseService pattern
 for user management operations.
 """
 
-from datetime import datetime
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
+
+import uuid
+from datetime import UTC, datetime
+from typing import Any, Optional
+
+from sqlalchemy import select
 
 from amos_db_sqlalchemy import User
 from amos_error_handling import ValidationError
@@ -65,7 +70,7 @@ class UserService(BaseService[User, str]):
         self, user_id: str, email: str = None, username: str = None, is_active: bool = None
     ) -> User:
         """Update user with partial data."""
-        data: Dict[str, Any] = {}
+        data: dict[str, Any] = {}
 
         if email is not None:
             data["email"] = email
@@ -80,14 +85,8 @@ class UserService(BaseService[User, str]):
         """Soft-delete user by deactivating."""
         return await self.update(user_id, {"is_active": False})
 
-    async def list_active_users(self, skip: int = 0, limit: int = 100) -> List[User]:
+    async def list_active_users(self, skip: int = 0, limit: int = 100) -> list[User]:
         """List all active users."""
         query = select(User).where(User.is_active == True).offset(skip).limit(limit)
         result = await self.repository.session.execute(query)
         return list(result.scalars().all())
-
-
-# Import required at module level
-import uuid
-
-from sqlalchemy import select

@@ -1,6 +1,6 @@
 import pytest
 
-from tool_registry import (
+from clawspring.tool_registry import (
     ToolDef,
     clear_registry,
     execute_tool,

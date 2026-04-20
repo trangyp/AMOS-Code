@@ -22,7 +22,9 @@ This performs:
 
 import json
 import sys
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 
 # Import AMOS components
 from AMOS_MASTER_ORCHESTRATOR import (

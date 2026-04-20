@@ -19,10 +19,12 @@ import hashlib
 import json
 import re
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Optional
 
 # AMOS Brain imports
 from brain_os import BrainOS, Plan, Thought
@@ -88,13 +90,13 @@ class EquationEntry:
     latex_formula: str
     description: str
     language: str  # None for universal
-    invariants: List[str] = field(default_factory=list)
-    preconditions: List[str] = field(default_factory=list)
-    postconditions: List[str] = field(default_factory=list)
-    referenced_by: List[str] = field(default_factory=list)  # Other equation IDs
+    invariants: list[str] = field(default_factory=list)
+    preconditions: list[str] = field(default_factory=list)
+    postconditions: list[str] = field(default_factory=list)
+    referenced_by: list[str] = field(default_factory=list)  # Other equation IDs
     source_section: str = ""  # e.g., "2.1", "5.1"
     complexity_class: str = None  # computational complexity
-    tags: List[str] = field(default_factory=list)
+    tags: list[str] = field(default_factory=list)
 
     def __post_init__(self):
         if not self.id:
@@ -105,7 +107,7 @@ class EquationEntry:
         content = f"{self.name}:{self.latex_formula}:{self.category.value}"
         return hashlib.md5(content.encode()).hexdigest()[:12]
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "id": self.id,
             "name": self.name,
@@ -128,14 +130,14 @@ class LanguageProfile:
     """Formal profile of a programming language."""
 
     name: str
-    paradigms: List[str]
+    paradigms: list[str]
     type_system: str
     memory_model: str
     concurrency_model: str
-    equations: List[str] = field(default_factory=list)  # EquationEntry IDs
-    key_invariants: List[str] = field(default_factory=list)
+    equations: list[str] = field(default_factory=list)  # EquationEntry IDs
+    key_invariants: list[str] = field(default_factory=list)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "name": self.name,
             "paradigms": self.paradigms,
@@ -158,10 +160,10 @@ class EquationKnowledgeGraph:
     """
 
     def __init__(self):
-        self.equations: Dict[str, EquationEntry] = {}
-        self.languages: Dict[str, LanguageProfile] = {}
-        self.invariant_index: Dict[InvariantType, set[str]] = {t: set() for t in InvariantType}
-        self.category_index: Dict[EquationCategory, set[str]] = {c: set() for c in EquationCategory}
+        self.equations: dict[str, EquationEntry] = {}
+        self.languages: dict[str, LanguageProfile] = {}
+        self.invariant_index: dict[InvariantType, set[str]] = {t: set() for t in InvariantType}
+        self.category_index: dict[EquationCategory, set[str]] = {c: set() for c in EquationCategory}
         self._build_time: str = None
 
     def add_equation(self, eq: EquationEntry) -> str:
@@ -181,17 +183,17 @@ class EquationKnowledgeGraph:
         """Add language profile."""
         self.languages[lang.name.lower()] = lang
 
-    def find_equations_by_invariant(self, inv_type: InvariantType) -> List[EquationEntry]:
+    def find_equations_by_invariant(self, inv_type: InvariantType) -> list[EquationEntry]:
         """Find all equations related to a specific invariant type."""
         ids = self.invariant_index.get(inv_type, set())
         return [self.equations[eid] for eid in ids if eid in self.equations]
 
-    def find_equations_by_category(self, category: EquationCategory) -> List[EquationEntry]:
+    def find_equations_by_category(self, category: EquationCategory) -> list[EquationEntry]:
         """Find equations by category."""
         ids = self.category_index.get(category, set())
         return [self.equations[eid] for eid in ids if eid in self.equations]
 
-    def find_related_equations(self, eq_id: str, depth: int = 2) -> List[EquationEntry]:
+    def find_related_equations(self, eq_id: str, depth: int = 2) -> list[EquationEntry]:
         """Find equations related by references (graph traversal)."""
         if eq_id not in self.equations:
             return []
@@ -217,8 +219,8 @@ class EquationKnowledgeGraph:
         return [self.equations[eid] for eid in visited if eid in self.equations]
 
     def validate_invariant_compatibility(
-        self, eq_ids: List[str], target_invariant: InvariantType
-    ) -> Tuple[bool, list[str]]:
+        self, eq_ids: list[str], target_invariant: InvariantType
+    ) -> tuple[bool, list[str]]:
         """
         Check if a set of equations can satisfy a target invariant.
         Returns (is_compatible, violations)
@@ -327,7 +329,7 @@ class EquationParser:
 
         return graph
 
-    def _extract_language_profiles(self) -> List[LanguageProfile]:
+    def _extract_language_profiles(self) -> list[LanguageProfile]:
         """Extract language profiles from section 5."""
         profiles = []
 
@@ -402,7 +404,7 @@ class EquationParser:
 
         return profiles
 
-    def _extract_equations(self) -> List[EquationEntry]:
+    def _extract_equations(self) -> list[EquationEntry]:
         """Extract equations from markdown content."""
         equations = []
 
@@ -643,7 +645,7 @@ class EquationReasoningEngine:
 
     def suggest_equations_for_context(
         self, context: str, language: str = None
-    ) -> List[EquationEntry]:
+    ) -> list[EquationEntry]:
         """Suggest relevant equations based on coding context."""
         suggestions = []
 
@@ -707,7 +709,7 @@ def build_equation_knowledge_base(doc_path: Path, output_path: Path) -> Equation
 
 
 # Integration with existing SuperBrain equation bridge
-def integrate_with_superbrain_bridge(graph: EquationKnowledgeGraph) -> Dict[str, Any]:
+def integrate_with_superbrain_bridge(graph: EquationKnowledgeGraph) -> dict[str, Any]:
     """
     Integrate with amos_superbrain_equation_bridge.py
 
@@ -738,7 +740,7 @@ def integrate_with_superbrain_bridge(graph: EquationKnowledgeGraph) -> Dict[str,
 
 
 # Mathematical Framework Integration
-def integrate_with_math_framework(graph: EquationKnowledgeGraph) -> Dict[str, Any]:
+def integrate_with_math_framework(graph: EquationKnowledgeGraph) -> dict[str, Any]:
     """Integrate equation knowledge graph with AMOS Mathematical Framework.
 
     Cross-references programming language equations with the mathematical
@@ -831,8 +833,8 @@ def integrate_with_math_framework(graph: EquationKnowledgeGraph) -> Dict[str, An
 
 
 def validate_equation_with_invariants(
-    equation: EquationEntry, test_values: Dict[str, float] = None
-) -> Dict[str, Any]:
+    equation: EquationEntry, test_values: dict[str, float] = None
+) -> dict[str, Any]:
     """Validate an equation against mathematical invariants.
 
     Uses the Design Validation Engine to check equation properties
@@ -916,7 +918,7 @@ def validate_equation_with_invariants(
     }
 
 
-def validate_language_invariant(equation: EquationEntry) -> Dict[str, str]:
+def validate_language_invariant(equation: EquationEntry) -> dict[str, str]:
     """Validate language-specific invariants for an equation."""
     # Language-specific validation rules
     lang_rules = {

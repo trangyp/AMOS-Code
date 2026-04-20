@@ -4,13 +4,17 @@ Real-time WebSocket streaming for repo autopsy progress and agent execution.
 Integrates with FastAPI WebSocket endpoints.
 """
 
+from __future__ import annotations
+
 import asyncio
 import json
 import uuid
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class StreamEventType(Enum):
@@ -37,7 +41,7 @@ class StreamEvent:
     event_id: str
     event_type: str
     timestamp: str
-    payload: Dict[str, Any]
+    payload: dict[str, Any]
     session_id: str
 
 
@@ -45,9 +49,9 @@ class AxiomOneStreamManager:
     """Manages WebSocket connections and event streaming for Axiom One."""
 
     def __init__(self):
-        self._connections: Dict[str, Any] = {}
-        self._session_subscribers: Dict[str, set[str]] = {}
-        self._event_history: Dict[str, list[StreamEvent]] = {}
+        self._connections: dict[str, Any] = {}
+        self._session_subscribers: dict[str, set[str]] = {}
+        self._event_history: dict[str, list[StreamEvent]] = {}
         self._lock = asyncio.Lock()
 
     async def connect(self, websocket: Any, session_id: str) -> str:
@@ -127,7 +131,7 @@ class AxiomOneStreamManager:
         step: str,
         status: str,
         progress: float,
-        details: Dict[str, Any] = None,
+        details: dict[str, Any] = None,
     ) -> StreamEvent:
         """Create autopsy step progress event."""
         return StreamEvent(
@@ -146,7 +150,7 @@ class AxiomOneStreamManager:
     def create_autopsy_issue_event(
         self,
         session_id: str,
-        issue: Dict[str, Any],
+        issue: dict[str, Any],
         severity: str,
     ) -> StreamEvent:
         """Create autopsy issue found event."""
@@ -166,7 +170,7 @@ class AxiomOneStreamManager:
         session_id: str,
         total_issues: int,
         duration_ms: float,
-        summary: Dict[str, Any],
+        summary: dict[str, Any],
     ) -> StreamEvent:
         """Create autopsy complete event."""
         return StreamEvent(
@@ -239,7 +243,7 @@ class AxiomOneStreamManager:
             session_id=session_id,
         )
 
-    def get_event_history(self, session_id: str, limit: int = 100) -> List[StreamEvent]:
+    def get_event_history(self, session_id: str, limit: int = 100) -> list[StreamEvent]:
         """Get recent event history for a session."""
         events = self._event_history.get(session_id, [])
         return events[-limit:] if len(events) > limit else events

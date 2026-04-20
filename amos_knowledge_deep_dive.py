@@ -10,11 +10,13 @@ Reads and catalogs all knowledge from:
 Usage: python amos_knowledge_deep_dive.py [--engine <name>] [--list-all]
 """
 
+from __future__ import annotations
+
 import json
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 sys.path.insert(0, str(Path(__file__).parent))
 
@@ -25,10 +27,10 @@ class EngineSpec:
 
     name: str
     version: str
-    domains: List[str]
-    capabilities: List[str]
-    principles: List[str]
-    constraints: List[str]
+    domains: list[str]
+    capabilities: list[str]
+    principles: list[str]
+    constraints: list[str]
     file_path: str
     size_bytes: int
 
@@ -39,10 +41,10 @@ class AMOSKnowledgeDeepDive:
     def __init__(self, root_path: Optional[Path] = None):
         self.root = root_path or Path(__file__).parent
         self.brain_dir = self.root / "_AMOS_BRAIN"
-        self.engines: List[EngineSpec] = []
+        self.engines: list[EngineSpec] = []
         self.total_knowledge_size = 0
 
-    def scan_cognitive_engines(self) -> List[EngineSpec]:
+    def scan_cognitive_engines(self) -> list[EngineSpec]:
         """Scan all 12 cognitive engine specs."""
         cognitive_dir = self.brain_dir / "Cognitive"
         engines = []
@@ -119,7 +121,7 @@ class AMOSKnowledgeDeepDive:
         except Exception:
             return None
 
-    def scan_organism_specs(self) -> Dict[str, Any]:
+    def scan_organism_specs(self) -> dict[str, Any]:
         """Scan Organism OS specifications."""
         organism_dir = self.root / "AMOS_ORGANISM_OS"
         specs = {"subsystems": 0, "total_files": 0, "total_size": 0}
@@ -131,7 +133,7 @@ class AMOSKnowledgeDeepDive:
 
         return specs
 
-    def scan_clawspring_engines(self) -> List[dict[str, Any]]:
+    def scan_clawspring_engines(self) -> list[dict[str, Any]]:
         """Scan ClawSpring engine implementations."""
         clawspring_dir = self.root / "clawspring"
         engines = []
@@ -164,7 +166,7 @@ class AMOSKnowledgeDeepDive:
 
         return engines
 
-    def generate_knowledge_report(self) -> Dict[str, Any]:
+    def generate_knowledge_report(self) -> dict[str, Any]:
         """Generate comprehensive knowledge report."""
         self.engines = self.scan_cognitive_engines()
         organism_specs = self.scan_organism_specs()

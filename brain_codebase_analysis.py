@@ -3,9 +3,10 @@
 Brain-powered codebase analysis - Uses AMOS brain to analyze and prioritize fixes
 """
 
-from amos_brain_working import think
 import ast
 import os
+
+from amos_brain_working import think
 
 
 def scan_python_files(repo_path: str) -> list:
@@ -26,7 +27,7 @@ def scan_python_files(repo_path: str) -> list:
 def check_syntax_errors(filepath: str) -> dict:
     """Check for syntax errors in a Python file."""
     try:
-        with open(filepath, "r", encoding="utf-8") as f:
+        with open(filepath, encoding="utf-8") as f:
             source = f.read()
         ast.parse(source)
         return {"file": filepath, "valid": True, "error": None}

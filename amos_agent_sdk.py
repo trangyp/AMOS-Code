@@ -18,7 +18,7 @@ import uuid
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any, Optional, Protocol
 
 
 class SDKAgentStatus(Enum):
@@ -40,8 +40,8 @@ class AgentConfig:
     version: str = "1.0.0"
 
     # Capabilities
-    skills: List[str] = field(default_factory=list)
-    supported_tasks: List[str] = field(default_factory=list)
+    skills: list[str] = field(default_factory=list)
+    supported_tasks: list[str] = field(default_factory=list)
 
     # Connection
     amos_endpoint: str = "http://localhost:8080"
@@ -66,8 +66,8 @@ class TaskRequest:
     task_type: str
 
     # Input
-    input_data: Dict[str, Any] = field(default_factory=dict)
-    context: Dict[str, Any] = field(default_factory=dict)
+    input_data: dict[str, Any] = field(default_factory=dict)
+    context: dict[str, Any] = field(default_factory=dict)
 
     # Metadata
     priority: int = 5
@@ -83,8 +83,8 @@ class TaskResult:
     success: bool
 
     # Output
-    output_data: Dict[str, Any] = field(default_factory=dict)
-    artifacts: List[dict[str, Any]] = field(default_factory=list)
+    output_data: dict[str, Any] = field(default_factory=dict)
+    artifacts: list[dict[str, Any]] = field(default_factory=list)
 
     # Metadata
     execution_time_ms: float = 0.0
@@ -101,8 +101,8 @@ class ToolDefinition:
     description: str
 
     # Schema
-    input_schema: Dict[str, Any] = field(default_factory=dict)
-    output_schema: Dict[str, Any] = field(default_factory=dict)
+    input_schema: dict[str, Any] = field(default_factory=dict)
+    output_schema: dict[str, Any] = field(default_factory=dict)
 
     # Handler
     handler: Optional[Callable] = None
@@ -119,7 +119,7 @@ class AMOSClient(Protocol):
         """Send heartbeat to AMOS."""
         ...
 
-    async def poll_tasks(self, agent_id: str) -> List[TaskRequest]:
+    async def poll_tasks(self, agent_id: str) -> list[TaskRequest]:
         """Poll for new tasks."""
         ...
 
@@ -146,7 +146,7 @@ class SimpleAMOSClient:
         # Simulate heartbeat
         return True
 
-    async def poll_tasks(self, agent_id: str) -> List[TaskRequest]:
+    async def poll_tasks(self, agent_id: str) -> list[TaskRequest]:
         # Simulate polling (empty for demo)
         return []
 
@@ -194,12 +194,12 @@ class AMOSAgent:
         self.client = SimpleAMOSClient(config.amos_endpoint, config.api_key)
 
         # Handlers
-        self.handlers: Dict[str, Callable[[TaskRequest], Awaitable[TaskResult]]] = {}
-        self.tools: Dict[str, ToolDefinition] = {}
+        self.handlers: dict[str, Callable[[TaskRequest], Awaitable[TaskResult]]] = {}
+        self.tools: dict[str, ToolDefinition] = {}
 
         # State
-        self.current_tasks: Dict[str, TaskRequest] = {}
-        self.task_history: List[TaskResult] = []
+        self.current_tasks: dict[str, TaskRequest] = {}
+        self.task_history: list[TaskResult] = []
         self.max_history = 100
 
         # Metrics
@@ -346,7 +346,7 @@ class AMOSAgent:
             if not self.current_tasks:
                 self.status = SDKAgentStatus.IDLE
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """Get agent performance metrics."""
         return {
             "agent_id": self.agent_id,
@@ -356,7 +356,7 @@ class AMOSAgent:
             **self.metrics,
         }
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get detailed agent status."""
         return {
             "agent_id": self.agent_id,
@@ -470,7 +470,7 @@ async def demo_agent_sdk():
         description="Search the web for information",
         input_schema={"query": "string", "max_results": "integer"},
     )
-    async def web_search(query: str, max_results: int = 5) -> Dict[str, Any]:
+    async def web_search(query: str, max_results: int = 5) -> dict[str, Any]:
         """Simulate web search tool."""
         return {
             "results": [f"Result {i} for: {query}" for i in range(max_results)],
@@ -482,7 +482,7 @@ async def demo_agent_sdk():
         description="Perform mathematical calculations",
         input_schema={"expression": "string"},
     )
-    async def calculate(expression: str) -> Dict[str, Any]:
+    async def calculate(expression: str) -> dict[str, Any]:
         """Simulate calculator tool."""
         try:
             # Safe evaluation for demo

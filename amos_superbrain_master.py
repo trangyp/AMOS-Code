@@ -1,6 +1,6 @@
 """AMOS SuperBrain Master Interface v20.0.0"""
 
-from typing import Any, Dict
+from typing import Any
 
 try:
     from amos_superbrain_equation_bridge import AMOSSuperBrainBridge
@@ -16,14 +16,14 @@ class AMOSSuperBrain:
     def __init__(self):
         self.superbrain = AMOSSuperBrainBridge() if SUPERBRAIN_AVAILABLE else None
 
-    def execute(self, equation: str, inputs: Dict[str, Any]) -> Dict[str, Any]:
+    def execute(self, equation: str, inputs: dict[str, Any]) -> dict[str, Any]:
         """Execute equation."""
         if not self.superbrain:
             return {"error": "SuperBrain not available"}
         result = self.superbrain.compute(equation, inputs)
         return {"equation": equation, "outputs": getattr(result, "outputs", str(result))}
 
-    def status(self) -> Dict[str, Any]:
+    def status(self) -> dict[str, Any]:
         """Get system status."""
         return {"version": "20.0.0", "phases": 19, "superbrain": SUPERBRAIN_AVAILABLE}
 

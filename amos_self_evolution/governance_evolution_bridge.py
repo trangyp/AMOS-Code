@@ -22,9 +22,10 @@ from __future__ import annotations
 
 import time
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
 from enum import Enum, auto
-from typing import Any, Dict, List, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Optional
+
 if TYPE_CHECKING:
     from .evolution_execution_engine import PatchOperation
 
@@ -77,7 +78,7 @@ class BridgeDecision:
     approved: bool
     executed: bool
     mode: BridgeMode
-    timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     notes: str = ""
 
 
@@ -94,7 +95,7 @@ class BridgeMetrics:
     rolled_back: int = 0
     failed: int = 0
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "total_decisions": self.total_decisions,
             "approved_autonomous": self.approved_autonomous,
@@ -138,7 +139,7 @@ class GovernanceEvolutionBridge:
         self._opportunity_detector: Optional[EvolutionOpportunityDetector] = None
 
         # Decision tracking
-        self._decisions: List[BridgeDecision] = []
+        self._decisions: list[BridgeDecision] = []
         self._metrics = BridgeMetrics()
 
         # Initialize if available
@@ -162,7 +163,7 @@ class GovernanceEvolutionBridge:
     def process_governance_decision(
         self,
         governance_decision: Any,  # GovernanceDecision
-        opportunity: Optional["DetectedOpportunity"] = None,
+        opportunity: Optional[DetectedOpportunity] = None,
     ) -> BridgeDecision:
         """Process a governance decision through the bridge.
 
@@ -270,8 +271,8 @@ class GovernanceEvolutionBridge:
             )
 
     def _create_contract_from_opportunity(
-        self, opportunity: "DetectedOpportunity"
-    ) -> "EvolutionContract":
+        self, opportunity: DetectedOpportunity
+    ) -> EvolutionContract:
         """Create an evolution contract from a detected opportunity."""
         evolution_id = f"GOV_{opportunity.opportunity_id}_{int(time.time())}"
 
@@ -293,7 +294,7 @@ class GovernanceEvolutionBridge:
         self._contract_registry.register(contract)
         return contract
 
-    def _generate_patches(self, opportunity: "DetectedOpportunity") -> "List[PatchOperation]":
+    def _generate_patches(self, opportunity: DetectedOpportunity) -> list[PatchOperation]:
         """Generate patch operations for an opportunity.
 
         In production, this would analyze the opportunity and generate
@@ -305,8 +306,8 @@ class GovernanceEvolutionBridge:
 
     def execute_evolution_direct(
         self,
-        contract: "EvolutionContract",
-        patches: "List[PatchOperation]",
+        contract: EvolutionContract,
+        patches: list[PatchOperation],
         auto_commit: bool = False,
     ) -> Optional[ExecutionResult]:
         """Execute evolution directly through the bridge."""
@@ -315,11 +316,11 @@ class GovernanceEvolutionBridge:
 
         return self._evolution_engine.execute_evolution(contract, patches, auto_commit)
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """Get bridge operation metrics."""
         return self._metrics.to_dict()
 
-    def get_decision_history(self) -> List[dict[str, Any]]:
+    def get_decision_history(self) -> list[dict[str, Any]]:
         """Get history of bridge decisions."""
         return [
             {
@@ -335,7 +336,7 @@ class GovernanceEvolutionBridge:
             for d in self._decisions
         ]
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get comprehensive bridge status."""
         return {
             "fully_operational": self.is_fully_operational,

@@ -20,7 +20,6 @@ import sys
 import time
 import urllib.request
 from pathlib import Path
-from typing import List
 
 
 def print_header(text: str) -> None:
@@ -131,7 +130,7 @@ def start_ollama_service() -> bool:
         return False
 
 
-def get_available_models() -> List[str]:
+def get_available_models() -> list[str]:
     """Get list of models already downloaded in Ollama."""
     try:
         result = subprocess.run(["ollama", "list"], capture_output=True, text=True, timeout=10)

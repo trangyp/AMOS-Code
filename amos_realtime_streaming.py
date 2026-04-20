@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any
 
 """AMOS Real-Time Streaming Service
 ======================================
@@ -16,8 +16,10 @@ import json
 import logging
 from collections.abc import AsyncGenerator, Callable
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
 from enum import Enum
+
+UTC = UTC
 from pathlib import Path
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
@@ -41,7 +43,7 @@ class StreamMessage:
     timestamp: str
     data: Any
     message_type: str = "data"
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
     def create(cls, data: Any, message_type: str = "data") -> StreamMessage:
@@ -82,10 +84,10 @@ class AMOSStreamProcessor:
 
     def __init__(self, brain_processor=None):
         self.brain_processor = brain_processor
-        self._active_streams: Dict[str, StreamConfig] = {}
-        self._callbacks: Dict[str, list[Callable]] = {}
+        self._active_streams: dict[str, StreamConfig] = {}
+        self._callbacks: dict[str, list[Callable]] = {}
 
-    async def process_with_brain(self, data: Any, context: Dict[str, Any] = None) -> Dict[str, Any]:
+    async def process_with_brain(self, data: Any, context: dict[str, Any] = None) -> dict[str, Any]:
         """Process data through AMOS brain before streaming."""
         if self.brain_processor is None:
             return {"data": data, "processed": False}
@@ -127,7 +129,7 @@ class WebSocketStreamer:
 
     def __init__(self, processor: AMOSStreamProcessor):
         self.processor = processor
-        self._connections: Dict[str, WebSocket] = {}
+        self._connections: dict[str, WebSocket] = {}
 
     async def connect(self, client_id: str, websocket: WebSocket) -> None:
         """Accept and store WebSocket connection."""
@@ -182,7 +184,7 @@ class WebSocketStreamer:
         self,
         client_id: str,
         data_source: AsyncGenerator[Any, None],
-        context: Dict[str, Any] = None,
+        context: dict[str, Any] = None,
     ) -> AsyncGenerator[str, None]:
         """Stream data from async generator to WebSocket."""
         try:
@@ -219,7 +221,7 @@ class SSEStreamer:
         self.processor = processor
 
     async def stream_response(
-        self, data_source: AsyncGenerator[Any, None], context: Dict[str, Any] = None
+        self, data_source: AsyncGenerator[Any, None], context: dict[str, Any] = None
     ) -> StreamingResponse:
         """Create SSE streaming response."""
 
@@ -372,7 +374,7 @@ def create_streaming_app(brain_processor=None) -> FastAPI:
         return await sse_streamer.stream_response(dummy_data_source())
 
     @app.post("/stream/broadcast")
-    async def broadcast_message(data: Dict[str, Any]) -> Dict[str, Any]:
+    async def broadcast_message(data: dict[str, Any]) -> dict[str, Any]:
         """Broadcast a message to all connected WebSocket clients."""
         message = StreamMessage.create(data.get("payload", {}), data.get("type", "broadcast"))
         count = await ws_streamer.broadcast(message)

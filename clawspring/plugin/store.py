@@ -1,12 +1,12 @@
 """Plugin store: install/uninstall/enable/disable/update + config persistence."""
 
+from __future__ import annotations
+
 import json
 import shutil
 import subprocess
 import sys
 from pathlib import Path
-
-from typing import List, Optional, Tuple
 
 from clawspring.plugin.models import (
     PluginEntry,
@@ -58,9 +58,9 @@ def _plugin_cfg_for(scope: PluginScope) -> Path:
 # ── List ──────────────────────────────────────────────────────────────────────
 
 
-def list_plugins(scope: Optional[PluginScope] = None) -> List[PluginEntry]:
+def list_plugins(scope: Optional[PluginScope] = None) -> list[PluginEntry]:
     """Return all installed plugins (optionally filtered by scope)."""
-    entries: List[PluginEntry] = []
+    entries: list[PluginEntry] = []
     scopes = [PluginScope.USER, PluginScope.PROJECT] if scope is None else [scope]
     for sc in scopes:
         cfg = _read_cfg(_plugin_cfg_for(sc))
@@ -85,7 +85,7 @@ def install_plugin(
     identifier: str,
     scope: PluginScope = PluginScope.USER,
     force: bool = False,
-) -> Tuple[bool, str]:
+) -> tuple[bool, str]:
     """Install a plugin. identifier = 'name' | 'name@git_url' | 'name@local_path'.
     Returns (success, message).
     """
@@ -164,7 +164,7 @@ def _is_git_url(source: str) -> bool:
     )
 
 
-def _clone_plugin(url: str, dest: Path) -> Tuple[bool, str]:
+def _clone_plugin(url: str, dest: Path) -> tuple[bool, str]:
     dest.parent.mkdir(parents=True, exist_ok=True)
     result = subprocess.run(
         ["git", "clone", "--depth", "1", url, str(dest)],
@@ -176,7 +176,7 @@ def _clone_plugin(url: str, dest: Path) -> Tuple[bool, str]:
     return True, "cloned"
 
 
-def _install_dependencies(deps: List[str]) -> Tuple[bool, str]:
+def _install_dependencies(deps: list[str]) -> tuple[bool, str]:
     result = subprocess.run(
         [sys.executable, "-m", "pip", "install", "--quiet"] + deps,
         capture_output=True,
@@ -208,7 +208,7 @@ def uninstall_plugin(
     name: str,
     scope: Optional[PluginScope] = None,
     keep_data: bool = False,
-) -> Tuple[bool, str]:
+) -> tuple[bool, str]:
     entry = get_plugin(name, scope)
     if entry is None:
         return False, f"Plugin '{name}' not found."
@@ -221,7 +221,7 @@ def uninstall_plugin(
 # ── Enable / Disable ──────────────────────────────────────────────────────────
 
 
-def _set_enabled(name: str, scope: PluginScope, enabled: bool) -> Tuple[bool, str]:
+def _set_enabled(name: str, scope: PluginScope, enabled: bool) -> tuple[bool, str]:
     entry = get_plugin(name, scope)
     if entry is None:
         return False, f"Plugin '{name}' not found."
@@ -231,15 +231,15 @@ def _set_enabled(name: str, scope: PluginScope, enabled: bool) -> Tuple[bool, st
     return True, f"Plugin '{name}' {state}."
 
 
-def enable_plugin(name: str, scope: Optional[PluginScope] = None) -> Tuple[bool, str]:
+def enable_plugin(name: str, scope: Optional[PluginScope] = None) -> tuple[bool, str]:
     return _set_enabled(name, scope, True)
 
 
-def disable_plugin(name: str, scope: Optional[PluginScope] = None) -> Tuple[bool, str]:
+def disable_plugin(name: str, scope: Optional[PluginScope] = None) -> tuple[bool, str]:
     return _set_enabled(name, scope, False)
 
 
-def disable_all_plugins(scope: Optional[PluginScope] = None) -> Tuple[bool, str]:
+def disable_all_plugins(scope: Optional[PluginScope] = None) -> tuple[bool, str]:
     entries = list_plugins(scope)
     if not entries:
         return True, "No plugins to disable."
@@ -252,7 +252,7 @@ def disable_all_plugins(scope: Optional[PluginScope] = None) -> Tuple[bool, str]
 # ── Update ────────────────────────────────────────────────────────────────────
 
 
-def update_plugin(name: str, scope: Optional[PluginScope] = None) -> Tuple[bool, str]:
+def update_plugin(name: str, scope: Optional[PluginScope] = None) -> tuple[bool, str]:
     entry = get_plugin(name, scope)
     if entry is None:
         return False, f"Plugin '{name}' not found."

@@ -21,7 +21,7 @@ import math
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 import numpy as np
 
@@ -251,9 +251,9 @@ class EquationMetadata:
     pattern: MathematicalPattern
     formula: str
     description: str
-    parameters: Dict[str, Any] = field(default_factory=dict)
-    invariants: List[str] = field(default_factory=list)
-    references: List[str] = field(default_factory=list)
+    parameters: dict[str, Any] = field(default_factory=dict)
+    invariants: list[str] = field(default_factory=list)
+    references: list[str] = field(default_factory=list)
     phase: int = 1  # Which phase (1-7) this was discovered
 
 
@@ -262,13 +262,13 @@ class ExecutionResult:
     """Result of equation execution with validation"""
 
     equation_name: str
-    inputs: Dict[str, Any]
-    outputs: Dict[str, Any]
+    inputs: dict[str, Any]
+    outputs: dict[str, Any]
     invariants_valid: bool
-    invariant_violations: List[str]
+    invariant_violations: list[str]
     execution_time_ms: float
     pattern_detected: MathematicalPattern
-    cross_domain_links: List[str] = field(default_factory=list)
+    cross_domain_links: list[str] = field(default_factory=list)
 
 
 # ============================================================================
@@ -350,7 +350,7 @@ class DistributedSystemsEquations:
     @staticmethod
     def cap_theorem_consistency(
         consistency_level: str, availability_required: bool, partition_tolerance: bool = True
-    ) -> Dict[str, bool]:
+    ) -> dict[str, bool]:
         """
         CAP Theorem: Consistency, Availability, Partition Tolerance
         Can only guarantee 2 of 3 during network partition
@@ -383,7 +383,7 @@ class DistributedSystemsEquations:
     @staticmethod
     def token_bucket_rate_limit(
         tokens: float, bucket_size: float, refill_rate: float, time_elapsed: float
-    ) -> Tuple[bool, float]:
+    ) -> tuple[bool, float]:
         """
         Token bucket algorithm
         Returns: (allowed, new_token_count)
@@ -459,7 +459,7 @@ class QueueingTheoryEquations:
         return arrival_rate * avg_service_time
 
     @staticmethod
-    def mm1_queue_metrics(arrival_rate: float, service_rate: float) -> Dict[str, float]:
+    def mm1_queue_metrics(arrival_rate: float, service_rate: float) -> dict[str, float]:
         """
         M/M/1 Queue metrics
 
@@ -491,7 +491,7 @@ class FederatedLearningEquations:
     """
 
     @staticmethod
-    def fedavg_aggregate(local_weights: List[np.ndarray], sample_counts: List[int]) -> np.ndarray:
+    def fedavg_aggregate(local_weights: list[np.ndarray], sample_counts: list[int]) -> np.ndarray:
         """
         Federated Averaging (McMahan et al. 2017)
         w_{t+1} = Σ (n_k/n) · w_{t+1}^k
@@ -522,7 +522,7 @@ class FederatedLearningEquations:
         return query_result + noise
 
     @staticmethod
-    def privacy_budget_composition(epsilons: List[float]) -> float:
+    def privacy_budget_composition(epsilons: list[float]) -> float:
         """
         Sequential Composition of Privacy Budgets
         ε_total = Σ ε_t
@@ -539,7 +539,7 @@ class TPUXLASpmdEquations:
     """
 
     @staticmethod
-    def device_mesh_shape(devices: int, mesh_config: List[int]) -> Tuple[int, ...]:
+    def device_mesh_shape(devices: int, mesh_config: list[int]) -> tuple[int, ...]:
         """
         Device Mesh Configuration
         M[d₁, d₂, ..., d_n] where Π d_i = total_devices
@@ -564,8 +564,8 @@ class TPUXLASpmdEquations:
 
     @staticmethod
     def tensor_sharding_spec(
-        tensor_shape: Tuple[int, ...], partition_spec: Tuple[str, ...]
-    ) -> Dict[str, Any]:
+        tensor_shape: tuple[int, ...], partition_spec: tuple[str, ...]
+    ) -> dict[str, Any]:
         """
         XLA SPMD Tensor Sharding
         Maps tensor dimensions to mesh axes
@@ -592,7 +592,7 @@ class EffectSystemEquations:
     """
 
     @staticmethod
-    def compose_handlers(handler_stack: List[dict[str, Callable]]) -> Callable:
+    def compose_handlers(handler_stack: list[dict[str, Callable]]) -> Callable:
         """
         Handler Composition
         Handle (op(v; k)) with H → H_op(v, λx. Handle (k x) with H)
@@ -609,7 +609,7 @@ class EffectSystemEquations:
         return composed_handler
 
     @staticmethod
-    def check_commutativity(op1: Tuple[str, Any], op2: Tuple[str, Any]) -> bool:
+    def check_commutativity(op1: tuple[str, Any], op2: tuple[str, Any]) -> bool:
         """
         Check if effects commute
         op₁; op₂ ≡ op₂; op₁
@@ -627,7 +627,7 @@ class RefinementTypeEquations:
     """
 
     @staticmethod
-    def check_subtyping(base_type: str, pred1: str, pred2: str, context: Dict[str, Any]) -> bool:
+    def check_subtyping(base_type: str, pred1: str, pred2: str, context: dict[str, Any]) -> bool:
         """
         Refinement Subtyping
         Γ ⊢ {v : B | p} <: {v : B | q}  iff  Γ ∧ p ⇒ q
@@ -639,7 +639,7 @@ class RefinementTypeEquations:
         return True  # Placeholder for SMT check
 
     @staticmethod
-    def generate_verification_condition(context: Dict[str, Any], predicate: str) -> str:
+    def generate_verification_condition(context: dict[str, Any], predicate: str) -> str:
         """
         Generate VC from typing derivation
         VC = Γ ∧ p ⇒ q
@@ -696,7 +696,7 @@ class NeuralVerificationEquations:
     """
 
     @staticmethod
-    def relu_encoding(x: float, y: float) -> List[bool]:
+    def relu_encoding(x: float, y: float) -> list[bool]:
         """
         ReLU Encoding for SMT
         y = max(0, x)
@@ -713,7 +713,7 @@ class NeuralVerificationEquations:
     @staticmethod
     def deeppoly_transformer(
         lower: float, upper: float, alpha_low: float, alpha_high: float
-    ) -> Tuple[float, float]:
+    ) -> tuple[float, float]:
         """
         DeepPoly Abstract Transformer
         Concrete bounds: l ≤ x ≤ u
@@ -750,7 +750,7 @@ class CRDTEquations:
         return set1.union(set2)
 
     @staticmethod
-    def check_semilattice_properties(merge_fn: Callable) -> Dict[str, bool]:
+    def check_semilattice_properties(merge_fn: Callable) -> dict[str, bool]:
         """
         Verify CRDT Semi-lattice Properties
         - Commutative: a ⊔ b = b ⊔ a
@@ -767,7 +767,7 @@ class CRDTEquations:
         return {"commutative": commutative, "associative": associative, "idempotent": idempotent}
 
     @staticmethod
-    def pncounter_value(pos_increments: List[int], neg_increments: List[int]) -> int:
+    def pncounter_value(pos_increments: list[int], neg_increments: list[int]) -> int:
         """
         PN-Counter State
         value = Σ pos - Σ neg
@@ -787,7 +787,7 @@ class QuantumComputingEquations:
     """
 
     @staticmethod
-    def vqe_expectation(hamiltonian_terms: List[tuple[str, float]], shots: int = 1024) -> float:
+    def vqe_expectation(hamiltonian_terms: list[tuple[str, float]], shots: int = 1024) -> float:
         """
         Variational Quantum Eigensolver (VQE) Energy Expectation
         E(θ) = ⟨ψ(θ)|H|ψ(θ)⟩ = Σᵢ cᵢ ⟨ψ(θ)|Pᵢ|ψ(θ)⟩
@@ -805,7 +805,7 @@ class QuantumComputingEquations:
         return energy
 
     @staticmethod
-    def qaoa_maxcut_cost(graph_edges: List[tuple[int, int]], bitstring: str) -> float:
+    def qaoa_maxcut_cost(graph_edges: list[tuple[int, int]], bitstring: str) -> float:
         """
         QAOA MaxCut Cost Function
         C(z) = Σ⟨ᵢⱼ∈E⟩ (1 - zᵢzⱼ)/2 where zᵢ ∈ {-1, +1}
@@ -821,7 +821,7 @@ class QuantumComputingEquations:
         return cost
 
     @staticmethod
-    def stabilizer_code_params(n: int, k: int, d: int) -> Dict[str, Any]:
+    def stabilizer_code_params(n: int, k: int, d: int) -> dict[str, Any]:
         """
         Stabilizer Code Parameters [[n, k, d]]
 
@@ -845,7 +845,7 @@ class QuantumComputingEquations:
         }
 
     @staticmethod
-    def surface_code_threshold(p_error: float, lattice_size: int) -> Dict[str, float]:
+    def surface_code_threshold(p_error: float, lattice_size: int) -> dict[str, float]:
         """
         Surface Code Error Threshold
 
@@ -895,7 +895,7 @@ class FundamentalPhysicsEquations:
     """
 
     @staticmethod
-    def noether_conservation(symmetry: str) -> Dict[str, str]:
+    def noether_conservation(symmetry: str) -> dict[str, str]:
         """
         Noether's Theorem - Conservation Laws
 
@@ -927,7 +927,7 @@ class FundamentalPhysicsEquations:
         }
 
     @staticmethod
-    def einstein_field_eqs() -> Dict[str, Any]:
+    def einstein_field_eqs() -> dict[str, Any]:
         """
         Einstein Field Equations
         Gᵤᵛ + Λgᵤᵛ = (8πG/c⁴)Tᵤᵛ
@@ -945,7 +945,7 @@ class FundamentalPhysicsEquations:
         }
 
     @staticmethod
-    def black_hole_thermo(mass_kg: float) -> Dict[str, float]:
+    def black_hole_thermo(mass_kg: float) -> dict[str, float]:
         """
         Black Hole Thermodynamics
 
@@ -988,7 +988,7 @@ class QuantumErrorMitigationEquations:
 
     @staticmethod
     def zne_richardson_extrapolation(
-        noisy_values: List[float], scale_factors: List[float]
+        noisy_values: list[float], scale_factors: list[float]
     ) -> float:
         """
         Zero-Noise Extrapolation using Richardson extrapolation.
@@ -1021,7 +1021,7 @@ class QuantumErrorMitigationEquations:
     @staticmethod
     def cdr_mitigation(
         noisy_expectation: float,
-        training_circuits_results: List[tuple[float, float]],
+        training_circuits_results: list[tuple[float, float]],
         model: str = "linear",
     ) -> float:
         """
@@ -1079,7 +1079,7 @@ class QuantumErrorMitigationEquations:
         return int(np.ceil(gamma**2 / epsilon**2))
 
     @staticmethod
-    def quasi_probability_decomposition(noise_channel: Dict[str, float]) -> Dict[str, float]:
+    def quasi_probability_decomposition(noise_channel: dict[str, float]) -> dict[str, float]:
         """
         Quasi-Probability Decomposition (QPD) for PEC.
 
@@ -1116,10 +1116,10 @@ class VariationalQuantumAlgorithms:
 
     @staticmethod
     def qaoa_expectation(
-        cost_hamiltonian: List[tuple[str, float]],
+        cost_hamiltonian: list[tuple[str, float]],
         p_level: int,
-        beta_params: List[float],
-        gamma_params: List[float],
+        beta_params: list[float],
+        gamma_params: list[float],
     ) -> float:
         """
         QAOA expectation value calculation.
@@ -1150,8 +1150,8 @@ class VariationalQuantumAlgorithms:
 
     @staticmethod
     def vqe_gradient(
-        params: List[float], hamiltonian_terms: List[tuple[str, float]], shift: float = np.pi / 2
-    ) -> List[float]:
+        params: list[float], hamiltonian_terms: list[tuple[str, float]], shift: float = np.pi / 2
+    ) -> list[float]:
         """
         Parameter-Shift Rule for VQE gradients.
 
@@ -1202,7 +1202,7 @@ class VariationalQuantumAlgorithms:
     @staticmethod
     def adaptive_vqe_convergence(
         current_energy: float,
-        previous_energies: List[float],
+        previous_energies: list[float],
         tolerance: float = 1e-6,
         window: int = 5,
     ) -> bool:
@@ -1283,7 +1283,7 @@ class QuantumFieldTheoryEquations:
     @staticmethod
     def wilson_loop_expectation(
         gauge_field: np.ndarray,
-        loop_path: List[tuple[float, float, float]],
+        loop_path: list[tuple[float, float, float]],
         representation_dim: int,
     ) -> complex:
         """
@@ -1380,7 +1380,7 @@ class StateSpaceModelEquations:
     @staticmethod
     def ssm_discretization(
         A: np.ndarray, B: np.ndarray, delta: float
-    ) -> Tuple[np.ndarray, np.ndarray]:
+    ) -> tuple[np.ndarray, np.ndarray]:
         """
         Discretize continuous SSM: (A, B) → (A_bar, B_bar).
 
@@ -1403,7 +1403,7 @@ class StateSpaceModelEquations:
     @staticmethod
     def selective_scan_step(
         h_prev: np.ndarray, x: float, A_bar: np.ndarray, B_bar: np.ndarray, C: np.ndarray, D: float
-    ) -> Tuple[np.ndarray, float]:
+    ) -> tuple[np.ndarray, float]:
         """
         Single step of selective scan (Mamba core).
 
@@ -1468,7 +1468,7 @@ class KANEquations:
 
     @staticmethod
     def kolmogorov_arnold_representation(
-        x: np.ndarray, inner_funcs: List[Callable], outer_weights: np.ndarray
+        x: np.ndarray, inner_funcs: list[Callable], outer_weights: np.ndarray
     ) -> float:
         """
         Kolmogorov-Arnold Representation Theorem implementation.
@@ -1501,7 +1501,7 @@ class MoEEquations:
     """
 
     @staticmethod
-    def top_k_routing(logits: np.ndarray, k: int = 2) -> Tuple[np.ndarray, np.ndarray]:
+    def top_k_routing(logits: np.ndarray, k: int = 2) -> tuple[np.ndarray, np.ndarray]:
         """
         Top-k routing for MoE.
 
@@ -1592,7 +1592,7 @@ class LoRAEquations:
         return h_base + h_lora
 
     @staticmethod
-    def lora_parameter_count(d: int, k: int, r: int) -> Tuple[int, int]:
+    def lora_parameter_count(d: int, k: int, r: int) -> tuple[int, int]:
         """
         Compare parameter counts: full fine-tuning vs LoRA.
 
@@ -1625,7 +1625,7 @@ class QuantizationEquations:
     """
 
     @staticmethod
-    def symmetric_quantize(x: np.ndarray, bits: int) -> Tuple[np.ndarray, float]:
+    def symmetric_quantize(x: np.ndarray, bits: int) -> tuple[np.ndarray, float]:
         """
         Symmetric linear quantization to b bits.
 
@@ -1831,7 +1831,7 @@ class TestTimeComputeEquations:
         return -penalty_factor * (overshoot**2)
 
     @staticmethod
-    def verifier_majority_vote(candidates: List[str], verifier_scores: List[float]) -> str:
+    def verifier_majority_vote(candidates: list[str], verifier_scores: list[float]) -> str:
         """
         Weighted majority voting with verifier scores.
 
@@ -1856,7 +1856,7 @@ class ReasoningSystemsEquations:
     """
 
     @staticmethod
-    def process_reward_model(step_quality: List[float], gamma: float = 0.9) -> float:
+    def process_reward_model(step_quality: list[float], gamma: float = 0.9) -> float:
         """
         Process Reward Model (PRM) for step-by-step verification.
 
@@ -1954,7 +1954,7 @@ class AgenticPlanningEquations:
 
     @staticmethod
     def plan_complexity(
-        num_steps: int, dependencies: List[tuple[int, int]], avg_branching: float
+        num_steps: int, dependencies: list[tuple[int, int]], avg_branching: float
     ) -> float:
         """
         Complexity of an agentic plan.
@@ -1998,7 +1998,7 @@ class ToolUseEquations:
         return tool_accuracy - task_urgency * math.log(tool_latency + 1)
 
     @staticmethod
-    def api_result_confidence(results: List[float], agreement_threshold: float = 0.8) -> float:
+    def api_result_confidence(results: list[float], agreement_threshold: float = 0.8) -> float:
         """
         Confidence in API results from multiple calls.
 
@@ -2022,7 +2022,7 @@ class MultiModalEquations:
 
     @staticmethod
     def cross_modal_attention(
-        text_embedding: List[float], image_embedding: List[float], temperature: float = 1.0
+        text_embedding: list[float], image_embedding: list[float], temperature: float = 1.0
     ) -> float:
         """
         Cross-modal attention score (vision + text, 2025).
@@ -2038,7 +2038,7 @@ class MultiModalEquations:
         return min(max(dot_product / temperature, 0.0), 1.0)
 
     @staticmethod
-    def multi_modal_fusion(modalities: List[float], weights: List[float]) -> float:
+    def multi_modal_fusion(modalities: list[float], weights: list[float]) -> float:
         """
         Weighted fusion of multiple modalities.
 
@@ -2130,7 +2130,7 @@ class EmbodiedAIEquations:
 
     @staticmethod
     def sensor_fusion_confidence(
-        sensor_readings: List[float], sensor_uncertainties: List[float]
+        sensor_readings: list[float], sensor_uncertainties: list[float]
     ) -> float:
         """Weighted sensor fusion with uncertainty."""
         if len(sensor_readings) != len(sensor_uncertainties) or not sensor_readings:
@@ -2284,7 +2284,7 @@ class MultiAgentOrchestrationEquations:
 
     @staticmethod
     def multi_agent_consensus(
-        agent_confidences: List[float], agreement_threshold: float = 0.6
+        agent_confidences: list[float], agreement_threshold: float = 0.6
     ) -> dict:
         """Multi-agent consensus via weighted voting.
 
@@ -2341,7 +2341,7 @@ class MultiAgentOrchestrationEquations:
 
     @staticmethod
     def agent_load_balance(
-        task_complexity: float, agent_capacities: List[float], agent_costs: List[float]
+        task_complexity: float, agent_capacities: list[float], agent_costs: list[float]
     ) -> dict:
         """Optimal agent task allocation minimizing cost while meeting capacity.
 
@@ -2477,7 +2477,7 @@ class AGIWorldModelsEquations:
     """Phase 15: World Models & Simulation (2026-2027)."""
 
     @staticmethod
-    def simulation_accuracy(predicted: List[float], actual: List[float]) -> float:
+    def simulation_accuracy(predicted: list[float], actual: list[float]) -> float:
         """World model prediction accuracy."""
         if len(predicted) != len(actual) or not predicted:
             return 0.0
@@ -2518,7 +2518,7 @@ class PhysicsInformedAIEquations:
         return (1 - lambda_physics) * data_loss + lambda_physics * physics_residual
 
     @staticmethod
-    def constraint_satisfaction(constraint_violations: List[float]) -> float:
+    def constraint_satisfaction(constraint_violations: list[float]) -> float:
         """Measure of physical constraint satisfaction."""
         if not constraint_violations:
             return 1.0
@@ -2548,7 +2548,7 @@ class SovereignAIEquations:
         return domain_accuracy - general_accuracy
 
     @staticmethod
-    def expertise_coverage(domain_tasks: List[str], mastered_tasks: List[str]) -> float:
+    def expertise_coverage(domain_tasks: list[str], mastered_tasks: list[str]) -> float:
         """Coverage of domain expertise."""
         if not domain_tasks:
             return 0.0
@@ -2561,7 +2561,7 @@ class NativeMultimodalityEquations:
     """Phase 15: Native Multimodality (2026-2027)."""
 
     @staticmethod
-    def cross_modal_alignment(text_embedding: List[float], image_embedding: List[float]) -> float:
+    def cross_modal_alignment(text_embedding: list[float], image_embedding: list[float]) -> float:
         """Cross-modal alignment via cosine similarity."""
         if len(text_embedding) != len(image_embedding):
             return 0.0
@@ -2573,7 +2573,7 @@ class NativeMultimodalityEquations:
         return dot_product / (text_norm * image_norm)
 
     @staticmethod
-    def modality_fusion_score(modality_scores: Dict[str, float]) -> float:
+    def modality_fusion_score(modality_scores: dict[str, float]) -> float:
         """Aggregate score from multiple modalities."""
         if not modality_scores:
             return 0.0
@@ -2589,7 +2589,7 @@ class AdvancedReasoningEquations:
         return steps * (1 + verification_rounds)
 
     @staticmethod
-    def reasoning_confidence(step_confidences: List[float]) -> float:
+    def reasoning_confidence(step_confidences: list[float]) -> float:
         """Aggregate confidence across reasoning steps."""
         if not step_confidences:
             return 0.0
@@ -2610,7 +2610,7 @@ class Phase20Equations:
 
     @staticmethod
     def governance_score(
-        compliance_scores: Dict[str, float], principle_weights: Dict[str, float]
+        compliance_scores: dict[str, float], principle_weights: dict[str, float]
     ) -> float:
         """Calculate weighted governance score from principle compliance.
 
@@ -2635,8 +2635,8 @@ class Phase20Equations:
 
     @staticmethod
     def behavioral_drift_metric(
-        baseline_profile: Dict[str, float], current_profile: Dict[str, float]
-    ) -> Dict[str, Any]:
+        baseline_profile: dict[str, float], current_profile: dict[str, float]
+    ) -> dict[str, Any]:
         """Detect behavioral drift between baseline and current behavior.
 
         Returns drift score (0 = aligned, 1 = fully drifted) and dimensions.
@@ -2674,7 +2674,7 @@ class Phase20Equations:
         governance_score: float,
         drift_threshold: float = 0.3,
         correction_threshold: float = 0.6,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Determine if self-correction should be triggered.
 
         Trigger if: G(a) < θ_correction OR drift_detected > θ_drift
@@ -2702,8 +2702,8 @@ class Phase20Equations:
 
     @staticmethod
     def constitutional_compliance_score(
-        principle_violations: Dict[str, float], violation_severities: Dict[str, float]
-    ) -> Dict[str, Any]:
+        principle_violations: dict[str, float], violation_severities: dict[str, float]
+    ) -> dict[str, Any]:
         """Calculate constitutional compliance with violation penalties.
 
         C(a) = Σᵢ wᵢ · Cᵢ(a) · (1 - Vᵢ(a))
@@ -2744,8 +2744,8 @@ class SuperBrainEquationRegistry:
     """
 
     def __init__(self):
-        self.equations: Dict[str, Callable] = {}
-        self.metadata: Dict[str, EquationMetadata] = {}
+        self.equations: dict[str, Callable] = {}
+        self.metadata: dict[str, EquationMetadata] = {}
         self._register_all_equations()
 
     def _register_all_equations(self):
@@ -4352,7 +4352,7 @@ class SuperBrainEquationRegistry:
             self.equations[name] = func
             self.metadata[name] = meta
 
-    def execute(self, equation_name: str, inputs: Dict[str, Any]) -> ExecutionResult:
+    def execute(self, equation_name: str, inputs: dict[str, Any]) -> ExecutionResult:
         """Execute equation with invariant validation"""
         import time
 
@@ -4766,7 +4766,7 @@ class SuperBrainEquationRegistry:
             cross_domain_links=cross_links,
         )
 
-    def _find_cross_domain_links(self, pattern: MathematicalPattern, exclude: str) -> List[str]:
+    def _find_cross_domain_links(self, pattern: MathematicalPattern, exclude: str) -> list[str]:
         """Find equations with same pattern across domains"""
         links = []
         for name, meta in self.metadata.items():
@@ -4774,11 +4774,11 @@ class SuperBrainEquationRegistry:
                 links.append(f"{meta.domain.value}/{name}")
         return links
 
-    def get_by_domain(self, domain: Domain) -> List[str]:
+    def get_by_domain(self, domain: Domain) -> list[str]:
         """Get all equations for a domain"""
         return [name for name, meta in self.metadata.items() if meta.domain == domain]
 
-    def get_by_pattern(self, pattern: MathematicalPattern) -> List[str]:
+    def get_by_pattern(self, pattern: MathematicalPattern) -> list[str]:
         """Get equations by mathematical pattern"""
         return [name for name, meta in self.metadata.items() if meta.pattern == pattern]
 
@@ -4802,9 +4802,9 @@ class AMOSSuperBrainBridge:
 
     def __init__(self):
         self.registry = SuperBrainEquationRegistry()
-        self.execution_history: List[ExecutionResult] = []
+        self.execution_history: list[ExecutionResult] = []
 
-    def compute(self, equation_name: str, inputs: Dict[str, Any]) -> ExecutionResult:
+    def compute(self, equation_name: str, inputs: dict[str, Any]) -> ExecutionResult:
         """
         Unified compute interface
         Validates inputs, executes, checks invariants, logs to AMOS
@@ -4813,15 +4813,15 @@ class AMOSSuperBrainBridge:
         self.execution_history.append(result)
         return result
 
-    def batch_compute(self, computations: List[tuple[str, Dict]]) -> List[ExecutionResult]:
+    def batch_compute(self, computations: list[tuple[str, dict]]) -> list[ExecutionResult]:
         """Execute multiple equations"""
         return [self.compute(name, inputs) for name, inputs in computations]
 
-    def list_all_equations(self) -> List[str]:
+    def list_all_equations(self) -> list[str]:
         """List all available equation names"""
         return list(self.registry.equations.keys())
 
-    def get_pattern_analysis(self) -> Dict[str, Any]:
+    def get_pattern_analysis(self) -> dict[str, Any]:
         """
         Cross-domain pattern analysis
         Returns insights about mathematical pattern usage
@@ -4838,7 +4838,7 @@ class AMOSSuperBrainBridge:
             "cross_domain_isomorphisms": self._find_isomorphisms(),
         }
 
-    def _find_isomorphisms(self) -> List[dict[str, str]]:
+    def _find_isomorphisms(self) -> list[dict[str, str]]:
         """Find structural similarities across domains"""
         isomorphisms = []
 
@@ -4853,7 +4853,7 @@ class AMOSSuperBrainBridge:
 
         return isomorphisms
 
-    def integrate_with_math_framework(self, equation_name: str) -> Dict[str, Any]:
+    def integrate_with_math_framework(self, equation_name: str) -> dict[str, Any]:
         """Integrate SuperBrain equation with AMOS Mathematical Framework.
 
         Cross-references SuperBrain equations with the Mathematical
@@ -4955,7 +4955,7 @@ class AMOSSuperBrainBridge:
         except Exception as e:
             return {"error": f"Integration failed: {str(e)}", "integration_status": "failed"}
 
-    def _generate_cross_refs(self, equation_name: str, metadata: Any) -> List[dict[str, str]]:
+    def _generate_cross_refs(self, equation_name: str, metadata: Any) -> list[dict[str, str]]:
         """Generate cross-references between SuperBrain and Math Framework."""
         cross_refs = []
 
@@ -4995,8 +4995,8 @@ class AMOSSuperBrainBridge:
         return cross_refs
 
     def validate_with_math_framework(
-        self, equation_name: str, inputs: Dict[str, Any], expected_outputs: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, equation_name: str, inputs: dict[str, Any], expected_outputs: dict[str, Any]
+    ) -> dict[str, Any]:
         """Validate SuperBrain equation execution using Math Framework invariants.
 
         Args:
@@ -5076,7 +5076,7 @@ class AMOSSuperBrainBridge:
                 "validation_status": "error",
             }
 
-    def export_to_amos_knowledge(self) -> Dict[str, Any]:
+    def export_to_amos_knowledge(self) -> dict[str, Any]:
         """
         Export all equations in AMOS knowledge format
         Compatible with amos_knowledge_loader.py
@@ -5147,6 +5147,10 @@ def main():
     elif args.export:
         export = bridge.export_to_amos_knowledge()
         print(json.dumps(export, indent=2))
+
+
+# Export alias for easier imports
+EquationBridge = AMOSSuperBrainBridge
 
 
 if __name__ == "__main__":

@@ -19,8 +19,7 @@ import time
 import traceback
 from dataclasses import dataclass, field
 from datetime import datetime
-from pathlib import Path
-from typing import Any, Callable, Dict, List, Protocol
+from typing import Any, Protocol
 
 
 class TestResult:
@@ -32,8 +31,8 @@ class TestResult:
         component: str,
         passed: bool,
         duration_ms: float,
-        error: str  = None,
-        details: Dict[str, Any ] = None
+        error: str = None,
+        details: dict[str, Any] = None,
     ):
         self.test_name = test_name
         self.component = component
@@ -47,16 +46,17 @@ class TestResult:
 @dataclass
 class ValidationReport:
     """Comprehensive validation report."""
+
     timestamp: str
     total_tests: int = 0
     passed: int = 0
     failed: int = 0
     skipped: int = 0
     duration_seconds: float = 0.0
-    results: List[TestResult] = field(default_factory=list)
-    component_status: Dict[str, str] = field(default_factory=dict)
-    critical_issues: List[str] = field(default_factory=list)
-    recommendations: List[str] = field(default_factory=list)
+    results: list[TestResult] = field(default_factory=list)
+    component_status: dict[str, str] = field(default_factory=dict)
+    critical_issues: list[str] = field(default_factory=list)
+    recommendations: list[str] = field(default_factory=list)
 
 
 class TestCase(Protocol):
@@ -83,9 +83,9 @@ class AMOSEcosystemValidator:
     """
 
     def __init__(self):
-        self.test_cases: List[TestCase] = []
+        self.test_cases: list[TestCase] = []
         self.report = ValidationReport(timestamp=datetime.now().isoformat())
-        self._test_registry: Dict[str, list[TestCase]] = {}
+        self._test_registry: dict[str, list[TestCase]] = {}
         self._parallel_limit = 5  # Max concurrent tests
 
     def register_test(self, test: TestCase) -> None:
@@ -144,50 +144,37 @@ class AMOSEcosystemValidator:
             ("amosl_kernel", "Runtime Kernel"),
             ("amosl_ledger", "Ledger System"),
             ("amosl_verification", "Verification Engine"),
-
             # Layer 2: Features
             ("amos_feature_activation", "Feature Activation"),
-
             # Layer 3: Cognitive
             ("amos_knowledge_loader", "Knowledge Loader"),
             ("amos_engine_activator", "Engine Activator"),
             ("amos_cognitive_router", "Cognitive Router"),
-
             # Layer 4: Orchestration
             ("amos_master_cognitive_orchestrator", "Master Orchestrator"),
             ("amos_organism_integration_bridge", "Organism Bridge"),
-
             # Layer 5: Integration
             ("amos_integration_test", "Integration Test"),
             ("amos_unified_execution_engine", "Execution Engine"),
-
             # Layer 6: Interfaces
             ("amos_cli_simple", "CLI Interface"),
             ("amos_http_api", "HTTP API"),
             ("amos_event_bus", "Event Bus"),
-
             # Layer 7: Observability
             ("amos_health_monitor", "Health Monitor"),
             ("amos_system_diagnostics", "System Diagnostics"),
-
             # Layer 8: Configuration
             ("amos_config_manager", "Config Manager"),
-
             # Layer 9: Messaging
             ("amos_event_bus", "Event Bus"),
-
             # Layer 10: Persistence
             ("amos_state_manager", "State Manager"),
-
             # Layer 11: Extensibility
             ("amos_plugin_manager", "Plugin Manager"),
-
             # Layer 12: Operations
             ("amos_live_controller", "Live Controller"),
-
             # Layer 13: Resilience
             ("amos_resilience_engine", "Resilience Engine"),
-
             # Layer 14: Observability
             ("amos_telemetry_engine", "Telemetry Engine"),
         ]
@@ -207,7 +194,7 @@ class AMOSEcosystemValidator:
                     component=description,
                     passed=True,
                     duration_ms=duration,
-                    details={"module": module_name}
+                    details={"module": module_name},
                 )
                 self.report.component_status[description] = "OK"
             except Exception as e:
@@ -218,7 +205,7 @@ class AMOSEcosystemValidator:
                     passed=False,
                     duration_ms=duration,
                     error=str(e),
-                    details={"traceback": traceback.format_exc()}
+                    details={"traceback": traceback.format_exc()},
                 )
                 self.report.component_status[description] = "FAILED"
                 if "master" in module_name or "kernel" in module_name:
@@ -252,7 +239,7 @@ class AMOSEcosystemValidator:
                     test_name=test_fn.__name__,
                     component="Layer Integration",
                     passed=True,
-                    duration_ms=duration
+                    duration_ms=duration,
                 )
                 self.report.passed += 1
             except Exception as e:
@@ -262,7 +249,7 @@ class AMOSEcosystemValidator:
                     component="Layer Integration",
                     passed=False,
                     duration_ms=duration,
-                    error=str(e)
+                    error=str(e),
                 )
                 self.report.failed += 1
 
@@ -309,7 +296,7 @@ class AMOSEcosystemValidator:
                     component="End-to-End",
                     passed=True,
                     duration_ms=duration,
-                    details={"workflow": name}
+                    details={"workflow": name},
                 )
                 self.report.passed += 1
             except Exception as e:
@@ -320,7 +307,7 @@ class AMOSEcosystemValidator:
                     passed=False,
                     duration_ms=duration,
                     error=str(e),
-                    details={"workflow": name}
+                    details={"workflow": name},
                 )
                 self.report.failed += 1
 
@@ -361,7 +348,7 @@ class AMOSEcosystemValidator:
                     test_name=f"contract_{name}",
                     component="Interface Contract",
                     passed=True,
-                    duration_ms=duration
+                    duration_ms=duration,
                 )
                 self.report.passed += 1
             except Exception as e:
@@ -371,7 +358,7 @@ class AMOSEcosystemValidator:
                     component="Interface Contract",
                     passed=False,
                     duration_ms=duration,
-                    error=str(e)
+                    error=str(e),
                 )
                 self.report.failed += 1
 
@@ -416,8 +403,8 @@ class AMOSEcosystemValidator:
                 duration_ms=duration,
                 details={
                     "init_time_ms": init_duration * 1000,
-                    "event_throughput": "1000 events/sec"
-                }
+                    "event_throughput": "1000 events/sec",
+                },
             )
             self.report.passed += 1
         except Exception as e:
@@ -427,7 +414,7 @@ class AMOSEcosystemValidator:
                 component="Performance",
                 passed=False,
                 duration_ms=duration,
-                error=str(e)
+                error=str(e),
             )
             self.report.failed += 1
 
@@ -451,13 +438,9 @@ class AMOSEcosystemValidator:
         readiness_score = passed_checks / total_checks
 
         if readiness_score >= 0.95:
-            self.report.recommendations.append(
-                "✓ System is PRODUCTION READY (95%+ checks passed)"
-            )
+            self.report.recommendations.append("✓ System is PRODUCTION READY (95%+ checks passed)")
         elif readiness_score >= 0.80:
-            self.report.recommendations.append(
-                "⚠ System is STAGING READY (80%+ checks passed)"
-            )
+            self.report.recommendations.append("⚠ System is STAGING READY (80%+ checks passed)")
         else:
             self.report.recommendations.append(
                 "✗ System NOT READY for production (<80% checks passed)"
@@ -477,7 +460,11 @@ class AMOSEcosystemValidator:
         print(f"  ✗ Failed: {self.report.failed}")
         print(f"  ⊘ Skipped: {self.report.skipped}")
 
-        pass_rate = (self.report.passed / self.report.total_tests * 100) if self.report.total_tests > 0 else 0
+        pass_rate = (
+            (self.report.passed / self.report.total_tests * 100)
+            if self.report.total_tests > 0
+            else 0
+        )
         print(f"\nPass Rate: {pass_rate:.1f}%")
         print(f"Duration: {self.report.duration_seconds:.2f}s")
 
@@ -521,7 +508,9 @@ class AMOSEcosystemValidator:
                 "passed": self.report.passed,
                 "failed": self.report.failed,
                 "skipped": self.report.skipped,
-                "pass_rate": self.report.passed / self.report.total_tests if self.report.total_tests > 0 else 0,
+                "pass_rate": self.report.passed / self.report.total_tests
+                if self.report.total_tests > 0
+                else 0,
                 "duration_seconds": self.report.duration_seconds,
             },
             "component_status": self.report.component_status,

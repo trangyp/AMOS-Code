@@ -16,14 +16,13 @@ Usage:
     python amos_meta_cognitive_reflector.py --deep-analysis
 """
 
-
 import re
 import sys
 from collections import defaultdict
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 # Add project to path
 sys.path.insert(0, str(Path(__file__).parent))
@@ -51,7 +50,7 @@ class MetaInsight:
 
     category: str
     insight: str
-    evidence: List[str]
+    evidence: list[str]
     recommendation: str
 
 
@@ -62,9 +61,9 @@ class AnalysisResult:
     total_rounds: int
     total_lines: int
     avg_confidence: float
-    patterns: Dict[str, list[str]]
-    insights: List[MetaInsight]
-    recommendations: List[str]
+    patterns: dict[str, list[str]]
+    insights: list[MetaInsight]
+    recommendations: list[str]
 
 
 class AMOSMetaCognitiveReflector:
@@ -80,8 +79,8 @@ class AMOSMetaCognitiveReflector:
     def __init__(self):
         self.brain = None
         self.root = Path(__file__).parent
-        self.decision_docs: List[Path] = []
-        self.rounds: List[DecisionRound] = []
+        self.decision_docs: list[Path] = []
+        self.rounds: list[DecisionRound] = []
 
     def initialize(self) -> AMOSMetaCognitiveReflector:
         """Initialize the meta-cognitive system."""
@@ -190,7 +189,7 @@ class AMOSMetaCognitiveReflector:
         for r in self.rounds:
             print(f"    Round {r.round_number}: {r.tool_built} ({r.lines_of_code} lines)")
 
-    def _identify_patterns(self) -> Dict[str, list[str]]:
+    def _identify_patterns(self) -> dict[str, list[str]]:
         """Identify patterns across decision rounds."""
         print("\n🧩 Pattern Identification")
         print("─" * 70)
@@ -242,7 +241,7 @@ class AMOSMetaCognitiveReflector:
 
         return dict(patterns)
 
-    def _measure_effectiveness(self) -> Dict[str, Any]:
+    def _measure_effectiveness(self) -> dict[str, Any]:
         """Measure decision effectiveness."""
         print("\n📈 Effectiveness Measurement")
         print("─" * 70)
@@ -266,7 +265,7 @@ class AMOSMetaCognitiveReflector:
 
         return metrics
 
-    def _generate_insights(self, patterns: dict, metrics: dict) -> List[MetaInsight]:
+    def _generate_insights(self, patterns: dict, metrics: dict) -> list[MetaInsight]:
         """Generate meta-cognitive insights."""
         print("\n💡 Meta-Cognitive Insights")
         print("─" * 70)
@@ -349,7 +348,7 @@ class AMOSMetaCognitiveReflector:
 
         return insights
 
-    def _create_recommendations(self, insights: List[MetaInsight]) -> List[str]:
+    def _create_recommendations(self, insights: list[MetaInsight]) -> list[str]:
         """Create recommendations for improved decision-making."""
         print("\n🎯 Improved Decision-Making Playbook")
         print("─" * 70)

@@ -13,7 +13,6 @@ import re
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Dict, List, Optional, Set
 
 
 class KnowledgeDomain(Enum):
@@ -42,8 +41,8 @@ class EquationKnowledge:
     description: str
     domain: KnowledgeDomain
     section: str
-    invariants: List[str]
-    parameters: List[str]
+    invariants: list[str]
+    parameters: list[str]
     status: str  # "documented", "implemented", "tested"
     implementation_ref: str = None
     test_ref: str = None
@@ -63,8 +62,8 @@ class EquationKnowledgeManager:
 
     def __init__(self, docs_path: str = "."):
         self.docs_path = Path(docs_path)
-        self.knowledge_db: Dict[str, EquationKnowledge] = {}
-        self.implemented_equations: Set[str] = set()
+        self.knowledge_db: dict[str, EquationKnowledge] = {}
+        self.implemented_equations: set[str] = set()
         self._load_implemented_equations()
 
     def _load_implemented_equations(self):
@@ -79,7 +78,7 @@ class EquationKnowledgeManager:
             print(f"Warning: Could not load implemented equations: {e}")
             self.implemented_equations = set()
 
-    def parse_markdown_document(self, filepath: str) -> List[EquationKnowledge]:
+    def parse_markdown_document(self, filepath: str) -> list[EquationKnowledge]:
         """
         Parse a markdown document and extract equation definitions.
 
@@ -106,7 +105,7 @@ class EquationKnowledgeManager:
 
         return equations
 
-    def get_implementation_status(self) -> Dict[str, any]:
+    def get_implementation_status(self) -> dict[str, any]:
         """
         Get comprehensive status of equation implementation.
 
@@ -161,7 +160,7 @@ class EquationKnowledgeManager:
             Python code template
         """
         template = f'''    @staticmethod
-    def {equation_name}(params: Dict[str, float]) -> Dict[str, float]:
+    def {equation_name}(params: dict[str, float]) -> dict[str, float]:
         """
         TODO: Implement {equation_name}
 
@@ -178,7 +177,7 @@ class EquationKnowledgeManager:
 
     def query_equations(
         self, domain: Optional[KnowledgeDomain] = None, status: str = None, pattern: str = None
-    ) -> List[EquationKnowledge]:
+    ) -> list[EquationKnowledge]:
         """
         Query equations by domain, status, or pattern.
 
@@ -218,9 +217,9 @@ class EquationKnowledgeManager:
 
 | Metric | Value |
 |--------|-------|
-| **Total Implemented** | {status['total_implemented']} |
-| **Total Documented** | {status['total_documented']} |
-| **Coverage** | {status['coverage_percentage']:.1f}% |
+| **Total Implemented** | {status["total_implemented"]} |
+| **Total Documented** | {status["total_documented"]} |
+| **Coverage** | {status["coverage_percentage"]:.1f}% |
 
 ## Phase Breakdown
 

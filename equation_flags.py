@@ -57,17 +57,21 @@ Environment Variables:
     FEATURE_FLAGS_DEFAULT: Default flag state when unknown (default: false)
 """
 
+from __future__ import annotations
+
 import hashlib
 import json
 import logging
 import os
 import random
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
 from enum import Enum
+
+UTC = UTC
 from functools import wraps
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 # Redis imports
 try:
@@ -193,10 +197,10 @@ class FeatureFlag:
     rollout_percentage: int = 0  # 0-100
 
     # For targeted flags
-    conditions: List[FlagCondition] = field(default_factory=list)
+    conditions: list[FlagCondition] = field(default_factory=list)
 
     # For variant/A-B testing
-    variants: List[FlagVariant] = field(default_factory=list)
+    variants: list[FlagVariant] = field(default_factory=list)
     default_variant: str = "control"
 
     # Scheduling
@@ -207,9 +211,9 @@ class FeatureFlag:
     created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
     updated_at: datetime = field(default_factory=lambda: datetime.now(UTC))
     created_by: str = ""
-    tags: List[str] = field(default_factory=list)
+    tags: list[str] = field(default_factory=list)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "key": self.key,
@@ -245,7 +249,7 @@ class EvaluationContext:
     user_plan: str = None
     session_id: str = None
     ip_address: str = None
-    custom_attributes: Dict[str, Any] = field(default_factory=dict)
+    custom_attributes: dict[str, Any] = field(default_factory=dict)
 
     def get_attribute(self, name: str) -> Any:
         """Get attribute value by name."""
@@ -270,7 +274,7 @@ class FlagStorage:
         """Get flag by key."""
         raise NotImplementedError
 
-    async def get_all(self) -> Dict[str, FeatureFlag]:
+    async def get_all(self) -> dict[str, FeatureFlag]:
         """Get all flags."""
         raise NotImplementedError
 
@@ -288,7 +292,7 @@ class FileFlagStorage(FlagStorage):
 
     def __init__(self, file_path: str = FLAGS_FILE_PATH):
         self.file_path = Path(file_path)
-        self._flags: Dict[str, FeatureFlag] = {}
+        self._flags: dict[str, FeatureFlag] = {}
         self._last_modified: float = 0
         self.logger = get_logger("flags") if LOGGING_AVAILABLE else logger
 
@@ -331,7 +335,7 @@ class FileFlagStorage(FlagStorage):
 
         self._last_modified = self.file_path.stat().st_mtime
 
-    def _dict_to_flag(self, data: Dict[str, Any]) -> FeatureFlag:
+    def _dict_to_flag(self, data: dict[str, Any]) -> FeatureFlag:
         """Convert dictionary to FeatureFlag."""
         conditions = [FlagCondition(**c) for c in data.get("conditions", [])]
 
@@ -355,7 +359,7 @@ class FileFlagStorage(FlagStorage):
         await self._reload_if_changed()
         return self._flags.get(key)
 
-    async def get_all(self) -> Dict[str, FeatureFlag]:
+    async def get_all(self) -> dict[str, FeatureFlag]:
         await self._reload_if_changed()
         return self._flags.copy()
 
@@ -398,7 +402,7 @@ class RedisFlagStorage(FlagStorage):
             self.logger.error(f"Failed to get flag from Redis: {e}")
             return None
 
-    async def get_all(self) -> Dict[str, FeatureFlag]:
+    async def get_all(self) -> dict[str, FeatureFlag]:
         try:
             redis = await self._get_redis()
             keys = await redis.keys("flag:*")
@@ -434,7 +438,7 @@ class RedisFlagStorage(FlagStorage):
         except Exception as e:
             self.logger.error(f"Failed to delete flag from Redis: {e}")
 
-    def _dict_to_flag(self, data: Dict[str, Any]) -> FeatureFlag:
+    def _dict_to_flag(self, data: dict[str, Any]) -> FeatureFlag:
         """Convert dictionary to FeatureFlag."""
         conditions = [FlagCondition(**c) for c in data.get("conditions", [])]
 
@@ -466,7 +470,7 @@ class FlagManager:
     def __init__(self, storage: Optional[FlagStorage] = None):
         self.storage = storage or self._create_default_storage()
         self.logger = get_logger("flags") if LOGGING_AVAILABLE else logger
-        self._local_cache: Dict[str, FeatureFlag] = {}
+        self._local_cache: dict[str, FeatureFlag] = {}
         self._cache_timestamp: float = 0
         self._cache_ttl = DEFAULT_REFRESH_INTERVAL
 
@@ -616,7 +620,7 @@ class FlagManager:
 
         return flag.default_variant
 
-    async def get_all_flags(self) -> Dict[str, FeatureFlag]:
+    async def get_all_flags(self) -> dict[str, FeatureFlag]:
         """Get all flags."""
         return await self.storage.get_all()
 
@@ -625,7 +629,7 @@ class FlagManager:
         await self.storage.set(flag)
         self.logger.info(f"Created flag: {flag.key}")
 
-    async def update_flag(self, key: str, updates: Dict[str, Any]) -> None:
+    async def update_flag(self, key: str, updates: dict[str, Any]) -> None:
         """Update existing flag."""
         flag = await self._get_flag(key)
         if not flag:
@@ -657,9 +661,7 @@ class FlagManager:
 
 # ============================================================================
 # Global Manager Instance
-# ============================================================================
-
-_flag_manager: Optional[FlagManager] = None
+# ============================================================================_flag_manager: Optional[FlagManager] = None
 
 
 def get_flag_manager() -> FlagManager:

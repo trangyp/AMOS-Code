@@ -1,4 +1,6 @@
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
+
+from typing import Any, Optional
 
 """AMOS Brain v2 API - Production brain-powered endpoints.
 
@@ -10,6 +12,7 @@ Real cognitive task processing via:
 Owner: Trang Phan
 """
 
+
 import sys
 from pathlib import Path
 
@@ -19,9 +22,8 @@ from pydantic import BaseModel
 # Add project root and clawspring to path
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 if str(PROJECT_ROOT) not in sys.path:
-    sys.path.insert(0, str(PROJECT_ROOT))
+
 if str(PROJECT_ROOT / "clawspring") not in sys.path:
-    sys.path.insert(0, str(PROJECT_ROOT / "clawspring"))
 
 try:
     from amos_brain.api_integration import (
@@ -65,12 +67,12 @@ class TaskResponse(BaseModel):
     """Response from brain task processing."""
 
     task_id: str
-    status: str
+    status:str
     domain: Optional[str] = None
     success: bool = False
     duration_ms: float = 0.0
-    engines_used: List[str] = []
-    result: Dict[str, Any] = {}
+    engines_used: list[str] = []
+    result: dict[str, Any] = {}
 
 
 class TaskStatusResponse(BaseModel):
@@ -79,11 +81,11 @@ class TaskStatusResponse(BaseModel):
     task_id: str
     status: str
     description: str
-    priority: str
-    created_at: Optional[str] = None
-    started_at: Optional[str] = None
+    priority:str
+    created_at: Optional[str] =None
+    started_at: Optional[str] =None
     completed_at: Optional[str] = None
-    result: Dict[str, Any] = None
+    result: dict[str, Any] =None
     error: Optional[str] = None
 
 
@@ -183,7 +185,7 @@ class IntegratedQueryRequest(BaseModel):
 
     query: str
     mode: str = "auto"
-    context: Dict[str, Any] = {}
+    context: dict[str, Any] = {}
 
 
 class IntegratedQueryResponse(BaseModel):
@@ -193,7 +195,7 @@ class IntegratedQueryResponse(BaseModel):
     latency_ms: float
     mode: str
     confidence: float
-    components_used: List[str]
+    components_used: list[str]
 
 
 @router.post("/query", response_model=IntegratedQueryResponse)
@@ -217,7 +219,7 @@ async def integrated_query(request: IntegratedQueryRequest) -> IntegratedQueryRe
 
 
 @router.post("/think-fast")
-async def brain_think_fast(request: IntegratedQueryRequest) -> Dict[str, Any]:
+async def brain_think_fast(request: IntegratedQueryRequest) -> dict[str, Any]:
     """Fast thinking using dual-process brain (<100ms target)."""
     import time
 
@@ -265,7 +267,7 @@ async def brain_think_fast(request: IntegratedQueryRequest) -> Dict[str, Any]:
 
 
 @router.get("/stats")
-async def brain_stats() -> Dict[str, Any]:
+async def brain_stats() -> dict[str, Any]:
     """Get brain system statistics."""
     if not INTEGRATED_BRAIN_AVAILABLE:
         return {"error": "Integrated brain not available"}

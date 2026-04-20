@@ -17,10 +17,11 @@ import hashlib
 import json
 import re
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 
 @dataclass
@@ -99,7 +100,7 @@ class Decision:
     context_summary: str  # Key context (not full log)
     outcome: str  # "success" or "failure"
     outcome_reason: str  # Why it succeeded or failed
-    procedure_used: str = None  # Which procedure was applied
+    procedure_used: Optional[str] = None  # Which procedure was applied
     created_at: str = ""
 
     def __post_init__(self):
@@ -117,7 +118,7 @@ class FailurePattern:
     what_was_tried: str  # Brief description of the failed approach
     why_it_failed: str  # Root cause analysis
     conditions: dict[str, Any]  # When this failure occurs
-    avoidance_procedure: str = None  # Procedure to use instead
+    avoidance_procedure: Optional[str] = None  # Procedure to use instead
     created_at: str = ""
 
     def __post_init__(self):
@@ -134,8 +135,8 @@ class TaskClassification:
     key_indicators: list[str]  # Extracted from task description
     complexity: str  # "simple", "medium", "complex"
     domain: str  # e.g., "api", "database", "frontend"
-    matched_pattern: str = None
-    matched_procedure: str = None
+    matched_pattern: Optional[str] = None
+    matched_procedure: Optional[str] = None
     classification_time_ms: float = 0.0
 
 
@@ -151,7 +152,7 @@ class ProcedureExtractor:
         solution_steps: list[str],
         outcome: dict[str, Any],
         execution_time_ms: float,
-    ) -> Optional[Procedure]:
+    ) -> Procedure:
         """Extract a reusable procedure from a successful task.
 
         Called automatically after EVERY successful task.
@@ -256,7 +257,7 @@ class PatternDetector:
     def __init__(self, learning_engine: RealLearningEngine):
         self.engine = learning_engine
 
-    def detect_pattern(self, task_description: str, context: dict[str, Any]) -> Optional[Pattern]:
+    def detect_pattern(self, task_description: str, context: dict[str, Any]) -> Pattern:
         """Detect what pattern a task matches."""
         desc_lower = task_description.lower()
 
@@ -404,7 +405,7 @@ class AutoReuseEngine:
             "bypass_analysis": True,  # Skip re-analysis
         }
 
-    def _find_matching_procedure(self, pattern: Pattern, task_desc: str) -> Optional[Procedure]:
+    def _find_matching_procedure(self, pattern: Pattern, task_desc: str) -> Procedure:
         """Find best matching procedure for a pattern."""
         candidates = []
 
@@ -560,7 +561,7 @@ class ProcedureEvolutionEngine:
 
     def evolve_procedure(
         self, procedure_id: str, improved_steps: list[str], improvement_rationale: str
-    ) -> Optional[Procedure]:
+    ) -> Procedure:
         """Evolve an existing procedure with improved steps."""
         if procedure_id not in self.engine.procedures:
             return None
@@ -600,7 +601,7 @@ class ProcedureEvolutionEngine:
 
         return new_proc
 
-    def merge_procedures(self, procedure_ids: list[str]) -> Optional[Procedure]:
+    def merge_procedures(self, procedure_ids: list[str]) -> Procedure:
         """Merge multiple similar procedures into one optimized version."""
         if len(procedure_ids) < 2:
             return None
@@ -825,7 +826,7 @@ class RealLearningEngine:
         solution_steps: list[str],
         outcome: dict[str, Any],
         execution_time_ms: float = 0,
-        context: dict[str, Any] = None,
+        context: Optional[dict[str, Any]] = None,
     ) -> Optional[Procedure]:
         """Learn from a successful task execution.
 
@@ -856,7 +857,9 @@ class RealLearningEngine:
 
         return procedure
 
-    def attempt_reuse(self, task_description: str, context: dict[str, Any] = None) -> dict:
+    def attempt_reuse(
+        self, task_description: str, context: Optional[dict[str, Any]] = None
+    ) -> dict:
         """Attempt to reuse known procedure for this task.
 
         BEFORE solving any task, call this.
@@ -937,7 +940,7 @@ class RealLearningEngine:
 
     def evolve_procedure(
         self, procedure_id: str, improved_steps: list[str], improvement_rationale: str
-    ) -> Optional[Procedure]:
+    ) -> Procedure:
         """Evolve a procedure with a better solution."""
         evolved = self.procedure_evolution.evolve_procedure(
             procedure_id, improved_steps, improvement_rationale
@@ -1022,7 +1025,7 @@ class RealLearningEngine:
 
 
 # Global learning engine instance
-_learning_engine: Optional[RealLearningEngine] = None
+_learning_engine: RealLearningEngine = None
 
 
 def get_learning_engine(storage_path: str = "./amos_learning") -> RealLearningEngine:
@@ -1038,7 +1041,7 @@ def learn_from_task(
     solution_steps: list[str],
     outcome: dict[str, Any],
     execution_time_ms: float = 0,
-    context: dict[str, Any] = None,
+    context: Optional[dict[str, Any]] = None,
 ) -> Optional[Procedure]:
     """Convenience function: learn from a successful task."""
     engine = get_learning_engine()
@@ -1047,7 +1050,9 @@ def learn_from_task(
     )
 
 
-def attempt_procedure_reuse(task_description: str, context: dict[str, Any] = None) -> dict:
+def attempt_procedure_reuse(
+    task_description: str, context: Optional[dict[str, Any]] = None
+) -> dict:
     """Convenience function: attempt to reuse a procedure."""
     engine = get_learning_engine()
     return engine.attempt_reuse(task_description, context)

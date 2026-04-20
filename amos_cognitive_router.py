@@ -13,9 +13,10 @@ Version: 2.0.0
 import re
 import threading
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
-from typing import Any, Dict, List
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
+from typing import Any
 
 # SuperBrain integration
 try:
@@ -35,7 +36,7 @@ class RouteDecision:
     engine_category: str
     confidence: float
     reasoning: str
-    alternatives: List[str] = field(default_factory=list)
+    alternatives: list[str] = field(default_factory=list)
     route_time: str = ""
 
 
@@ -46,7 +47,7 @@ class EngineScore:
     engine_name: str
     category: str
     score: float
-    matched_keywords: List[str] = field(default_factory=list)
+    matched_keywords: list[str] = field(default_factory=list)
 
 
 class CognitiveRouter:
@@ -54,14 +55,14 @@ class CognitiveRouter:
 
     def __init__(self, engine_activator=None):
         self.engine_activator = engine_activator
-        self.route_history: List[RouteDecision] = []
+        self.route_history: list[RouteDecision] = []
         self.keyword_mappings = self._build_keyword_mappings()
         self.route_count = 0
         self._brain = None
         self._brain_lock = threading.Lock()
         self._init_superbrain()
 
-    def _build_keyword_mappings(self) -> Dict[str, list[str]]:
+    def _build_keyword_mappings(self) -> dict[str, list[str]]:
         """Build keyword-to-category mappings for routing."""
         return {
             "consulting": [
@@ -228,7 +229,7 @@ class CognitiveRouter:
             except Exception:
                 pass  # Fail open
 
-    def route_task(self, task: str, context: Dict[str, Any] = None) -> RouteDecision:
+    def route_task(self, task: str, context: dict[str, Any] = None) -> RouteDecision:
         """Route a task to the optimal engine."""
         context = context or {}
         task_lower = task.lower()
@@ -283,7 +284,7 @@ class CognitiveRouter:
 
         return decision
 
-    def _score_categories(self, task_lower: str) -> Dict[str, float]:
+    def _score_categories(self, task_lower: str) -> dict[str, float]:
         """Score each category based on keyword matches."""
         scores = {}
 
@@ -322,7 +323,7 @@ class CognitiveRouter:
 
     def _find_alternatives(
         self, primary_category: str, selected_engine: str, task_lower: str
-    ) -> List[str]:
+    ) -> list[str]:
         """Find alternative engines for the task."""
         alternatives = []
 
@@ -350,11 +351,11 @@ class CognitiveRouter:
             f"Selected based on keyword matching and category relevance."
         )
 
-    def batch_route(self, tasks: List[str]) -> List[RouteDecision]:
+    def batch_route(self, tasks: list[str]) -> list[RouteDecision]:
         """Route multiple tasks."""
         return [self.route_task(task) for task in tasks]
 
-    def get_route_stats(self) -> Dict[str, Any]:
+    def get_route_stats(self) -> dict[str, Any]:
         """Get routing statistics."""
         if not self.route_history:
             return {"total_routes": 0}
@@ -375,7 +376,7 @@ class CognitiveRouter:
             else None,
         }
 
-    def get_engine_recommendation(self, task_type: str) -> Dict[str, Any]:
+    def get_engine_recommendation(self, task_type: str) -> dict[str, Any]:
         """Get engine recommendation for a task type."""
         decision = self.route_task(f"Example {task_type} task")
 

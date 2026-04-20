@@ -19,15 +19,15 @@ Model string formats:
   "custom/my-model"          uses CUSTOM_BASE_URL from config
 """
 
+from __future__ import annotations
 
 import json
 import urllib.request
 from collections.abc import Generator
-from typing import Any, Dict, List
 
 # ── Provider registry ──────────────────────────────────────────────────────
 
-PROVIDERS: Dict[str, dict] = {
+PROVIDERS: dict[str, dict] = {
     "anthropic": {
         "type": "anthropic",
         "api_key_env": "ANTHROPIC_API_KEY",
@@ -327,6 +327,7 @@ def messages_to_openai(messages: list, pass_images: bool = False) -> list:
         pass_images: if True, forward the 'images' list in user messages
                      (Ollama /api/chat native format). Must be False for
                      OpenAI/Gemini/Qwen/etc. which use a different image schema.
+
     """
     result = []
     for m in messages:
@@ -648,7 +649,7 @@ def stream(
 ) -> Generator:
     """Unified streaming entry point.
     Auto-detects provider from model string.
-    Yields: TextChunk | ThinkingChunk | AssistantTurn
+    Yields: Union[TextChunk, ThinkingChunk] | AssistantTurn
     """
     provider_name = detect_provider(model)
     model_name = bare_model(model)
@@ -677,7 +678,7 @@ def stream(
         )
 
 
-def list_ollama_models(base_url: str) -> List[str]:
+def list_ollama_models(base_url: str) -> list[str]:
     """Fetch locally available model tags from Ollama server."""
     try:
         url = f"{base_url.rstrip('/')}/api/tags"

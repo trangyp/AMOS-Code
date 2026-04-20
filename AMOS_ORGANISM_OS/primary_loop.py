@@ -15,16 +15,11 @@ Usage:
     result = loop.execute_cycle(task="Design a system")
 """
 
-import sys
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from pathlib import Path
-from typing import Any, Dict, List, Optional
+from datetime import UTC, datetime
+from typing import Any, Optional
 
-UTC = timezone.utc
-
-# Add parent to path
-sys.path.insert(0, str(Path(__file__).parent))
+UTC = UTC
 
 from amos_brain import get_amos_integration
 
@@ -37,8 +32,8 @@ class CycleResult:
     started_at: str
     completed_at: str
     task: str
-    subsystem_results: Dict[str, Any] = field(default_factory=dict)
-    errors: List[str] = field(default_factory=list)
+    subsystem_results: dict[str, Any] = field(default_factory=dict)
+    errors: list[str] = field(default_factory=list)
     success: bool = True
 
 
@@ -65,7 +60,7 @@ class PrimaryLoop:
     def __init__(self):
         self.brain = get_amos_integration()
         self.cycle_count = 0
-        self._subsystems: Dict[str, Any] = {}
+        self._subsystems: dict[str, Any] = {}
 
     def _get_subsystem(self, code: str) -> Optional[Any]:
         """Lazy-load a subsystem by code."""
@@ -178,7 +173,7 @@ class PrimaryLoop:
 
     def _execute_subsystem(
         self, code: str, subsystem: Any, task: str, context: dict
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Execute a single subsystem in the loop."""
         result = {
             "status": "executed",
@@ -249,7 +244,7 @@ class PrimaryLoop:
 
         return result
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get current primary loop status."""
         loaded = [code for code in self.PRIMARY_SEQUENCE if code in self._subsystems]
 

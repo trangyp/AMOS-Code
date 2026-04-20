@@ -4,13 +4,15 @@ Manages the organism lifecycle from initialization through growth
 to maturity and evolution. Tracks lifecycle stages and events.
 """
 
+from __future__ import annotations
+
 import json
 import uuid
 from dataclasses import asdict, dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class LifecycleStage(Enum):
@@ -44,10 +46,10 @@ class LifecycleEvent:
     event_type: LifecycleEventType = LifecycleEventType.MILESTONE
     description: str = ""
     stage_at_event: LifecycleStage = LifecycleStage.SEED
-    data: Dict[str, Any] = field(default_factory=dict)
+    data: dict[str, Any] = field(default_factory=dict)
     timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "event_type": self.event_type.value,
@@ -62,12 +64,12 @@ class LifecycleMilestone:
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     name: str = ""
     description: str = ""
-    criteria: Dict[str, Any] = field(default_factory=dict)
+    criteria: dict[str, Any] = field(default_factory=dict)
     achieved: bool = False
     achieved_at: str = None
     created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
@@ -86,9 +88,9 @@ class LifecycleManager:
 
         self.current_stage: LifecycleStage = LifecycleStage.SEED
         self.stage_entry_time: str = datetime.now(UTC).isoformat()
-        self.events: List[LifecycleEvent] = []
-        self.milestones: Dict[str, LifecycleMilestone] = {}
-        self.history: List[dict[str, Any]] = []
+        self.events: list[LifecycleEvent] = []
+        self.milestones: dict[str, LifecycleMilestone] = {}
+        self.history: list[dict[str, Any]] = []
 
         self._init_default_milestones()
         self._record_birth()
@@ -175,7 +177,7 @@ class LifecycleManager:
         self,
         event_type: LifecycleEventType,
         description: str,
-        data: Dict[str, Any],
+        data: dict[str, Any],
     ) -> LifecycleEvent:
         """Record a lifecycle event."""
         event = LifecycleEvent(
@@ -207,7 +209,7 @@ class LifecycleManager:
         self._save_lifecycle()
         return True
 
-    def check_milestone_criteria(self, milestone_name: str, current_state: Dict[str, Any]) -> bool:
+    def check_milestone_criteria(self, milestone_name: str, current_state: dict[str, Any]) -> bool:
         """Check if milestone criteria are met."""
         milestone = self.milestones.get(milestone_name)
         if not milestone:
@@ -233,7 +235,7 @@ class LifecycleManager:
         duration = current_time - entry_time
         return duration.total_seconds() / 3600
 
-    def get_lifecycle_summary(self) -> Dict[str, Any]:
+    def get_lifecycle_summary(self) -> dict[str, Any]:
         """Get summary of organism lifecycle."""
         achieved_milestones = sum(1 for m in self.milestones.values() if m.achieved)
         total_milestones = len(self.milestones)
@@ -263,7 +265,7 @@ class LifecycleManager:
         }
         lifecycle_file.write_text(json.dumps(data, indent=2))
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get lifecycle manager status."""
         return {
             **self.get_lifecycle_summary(),

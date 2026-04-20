@@ -14,12 +14,14 @@ Version: 1.0.0
 Date: April 2026
 """
 
+from __future__ import annotations
+
 import asyncio
 import os
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum, auto
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 # Try to import E2B
 try:
@@ -51,8 +53,8 @@ class SandboxResult:
     stderr: str
     exit_code: int
     execution_time_ms: float
-    files_created: List[str]
-    network_requests: List[dict[str, Any]]
+    files_created: list[str]
+    network_requests: list[dict[str, Any]]
     memory_peak_mb: float
     cpu_time_ms: float
     timestamp: str
@@ -103,8 +105,8 @@ class AMOSSandboxExecutor:
         self.cpu_limit_percent = cpu_limit_percent
         self.allow_network = allow_network
 
-        self._sandbox: Optional[Sandbox] = None
-        self._history: List[SandboxResult] = []
+        self._sandbox: Sandbox | None = None
+        self._history: list[SandboxResult] = []
 
         if not E2B_AVAILABLE:
             raise ImportError(
@@ -131,8 +133,8 @@ class AMOSSandboxExecutor:
         self,
         code: str,
         language: str = "python",
-        context_files: Dict[str, str] = None,
-        environment_vars: Dict[str, str] = None,
+        context_files: dict[str, str] = None,
+        environment_vars: dict[str, str] = None,
     ) -> SandboxResult:
         """
         Execute code in secure sandbox.
@@ -223,13 +225,13 @@ class AMOSSandboxExecutor:
                 timestamp=datetime.now().isoformat(),
             )
 
-    async def _execute_python(self, code: str) -> Dict[str, Any]:
+    async def _execute_python(self, code: str) -> dict[str, Any]:
         """Execute Python code in sandbox."""
         # Write code to file
         await self._upload_file("/tmp/execution_script.py", code)
 
         # Run with resource limits
-        cmd = f"timeout {self.timeout_ms // 1000} " f"python3 /tmp/execution_script.py"
+        cmd = f"timeout {self.timeout_ms // 1000} python3 /tmp/execution_script.py"
 
         process = await self._sandbox.process.start(cmd)
         output = await process.wait()
@@ -244,7 +246,7 @@ class AMOSSandboxExecutor:
             "cpu_time_ms": await self._get_cpu_time(),
         }
 
-    async def _execute_javascript(self, code: str) -> Dict[str, Any]:
+    async def _execute_javascript(self, code: str) -> dict[str, Any]:
         """Execute JavaScript/Node code in sandbox."""
         await self._upload_file("/tmp/execution_script.js", code)
 
@@ -262,7 +264,7 @@ class AMOSSandboxExecutor:
             "cpu_time_ms": await self._get_cpu_time(),
         }
 
-    async def _execute_bash(self, code: str) -> Dict[str, Any]:
+    async def _execute_bash(self, code: str) -> dict[str, Any]:
         """Execute bash/shell code in sandbox."""
         await self._upload_file("/tmp/execution_script.sh", code)
         await self._sandbox.filesystem.chmod("/tmp/execution_script.sh", "+x")
@@ -281,7 +283,7 @@ class AMOSSandboxExecutor:
             "cpu_time_ms": await self._get_cpu_time(),
         }
 
-    async def _execute_generic(self, code: str, language: str) -> Dict[str, Any]:
+    async def _execute_generic(self, code: str, language: str) -> dict[str, Any]:
         """Execute generic code (fallback)."""
         await self._upload_file(f"/tmp/execution_script.{language}", code)
 
@@ -309,12 +311,12 @@ class AMOSSandboxExecutor:
         if self._sandbox:
             await self._sandbox.process.start(f"export {key}={value}")
 
-    async def _list_new_files(self) -> List[str]:
+    async def _list_new_files(self) -> list[str]:
         """List files created during execution."""
         # Implementation depends on E2B capabilities
         return []
 
-    async def _get_network_activity(self) -> List[dict[str, Any]]:
+    async def _get_network_activity(self) -> list[dict[str, Any]]:
         """Get network requests made during execution."""
         # Implementation depends on E2B monitoring
         return []
@@ -329,7 +331,7 @@ class AMOSSandboxExecutor:
         # Implementation depends on E2B metrics
         return 0.0
 
-    async def install_packages(self, packages: List[str], language: str = "python") -> bool:
+    async def install_packages(self, packages: list[str], language: str = "python") -> bool:
         """Install packages in sandbox."""
         try:
             if language == "python":
@@ -361,11 +363,11 @@ class AMOSSandboxExecutor:
             await self._sandbox.close()
             self._sandbox = None
 
-    def get_history(self) -> List[SandboxResult]:
+    def get_history(self) -> list[SandboxResult]:
         """Get execution history."""
         return self._history.copy()
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get execution statistics."""
         if not self._history:
             return {}
@@ -407,10 +409,10 @@ class CodeSecurityScanner:
     ]
 
     def __init__(self):
-        self.warnings: List[str] = []
-        self.dangerous_imports: List[str] = []
+        self.warnings: list[str] = []
+        self.dangerous_imports: list[str] = []
 
-    def scan(self, code: str, language: str = "python") -> Dict[str, Any]:
+    def scan(self, code: str, language: str = "python") -> dict[str, Any]:
         """
         Scan code for security issues.
 
@@ -514,7 +516,7 @@ async def main():
         print("\n🧪 Test 1: Safe Python code")
         safe_code = """
 import math
-from typing import Dict, List, Set
+from typing import Dict, List, Set, Optional
 print("Hello from sandbox!")
 print(f"Pi = {math.pi}")
 result = sum(range(100))

@@ -12,16 +12,19 @@ Implements 2025 feature flag and experimentation patterns:
 Component #69 - Experimentation & Rollout Layer
 """
 
+from __future__ import annotations
+
 import asyncio
 import hashlib
 import random
 import time
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 from enum import Enum
-from typing import Any, Protocol
+from typing import Any, Optional, Protocol
 
 
 class FlagType(Enum):
@@ -98,7 +101,7 @@ class FeatureFlag:
     targeting_rules: list[TargetingRule] = field(default_factory=list)
 
     # Component scope
-    component_whitelist: Optional[set[str] ] = None
+    component_whitelist: set[Optional[str]] = None
     component_blacklist: set[str] = field(default_factory=set)
 
     # Metadata
@@ -201,7 +204,7 @@ class MetricsCollector(Protocol):
     """Protocol for metrics collection."""
 
     async def record_exposure(
-        self, experiment_id: str, variant: str, context: Dict[str, Any]
+        self, experiment_id: str, variant: str, context: dict[str, Any]
     ) -> None:
         """Record user exposure to experiment variant."""
         ...
@@ -219,7 +222,7 @@ class InMemoryMetricsCollector:
         self.conversions: dict[str, list[dict[str, Any]]] = {}
 
     async def record_exposure(
-        self, experiment_id: str, variant: str, context: Dict[str, Any]
+        self, experiment_id: str, variant: str, context: dict[str, Any]
     ) -> None:
         if experiment_id not in self.exposures:
             self.exposures[experiment_id] = {}
@@ -288,7 +291,7 @@ class AMOSFeatureFlags:
         hypothesis: str,
         flag_id: str,
         variants: list[str],
-        weights: Optional[list[float] ] = None,
+        weights: list[Optional[float]] = None,
         primary_metric: str = "conversion",
     ) -> Experiment:
         """Create a new A/B test experiment."""

@@ -24,10 +24,13 @@ jobs:
           cache: 'pip'
       - run: |
           pip install ruff mypy black isort
-          pip install -r requirements.txt
-      - run: ruff check amos_meta_architecture.py amos_meta_ontological.py amos_formal_core.py || true
-      - run: black --check amos_meta_architecture.py amos_meta_ontological.py amos_formal_core.py || true
-      - run: mypy amos_meta_architecture.py amos_meta_ontological.py --ignore-missing-imports || true
+          pip install -e ".[all,dev]"
+      - name: Run Ruff linting on published packages
+        run: ruff check amos_brain amosl amos_model_fabric amos_self_evolution amos_platform
+      - name: Run Black format check on published packages
+        run: black --check amos_brain amosl amos_model_fabric amos_self_evolution amos_platform
+      - name: Run MyPy type check on published packages
+        run: mypy amos_brain amosl --ignore-missing-imports
 
   test-57-complete:
     name: Test All 57 Components
@@ -41,12 +44,27 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
       - run: |
-          pip install -r requirements.txt
+          pip install -e ".[all,dev]"
           pip install pytest pytest-cov
-      - name: Run Complete System
-        run: python3 amos_complete_system.py
-      - name: Run 57-Component Test Suite
-        run: python3 test_amos_complete_57.py -v
+      - name: Import smoke test - all published packages
+        run: |
+          python3 -c "
+          import amos_brain
+          import amosl
+          import amos_model_fabric
+          import amos_self_evolution
+          import amos_platform
+          import multi_agent
+          import skill
+          import search
+          import streaming
+          import memory
+          import analytics
+          import repo_doctor
+          print('All published packages import successfully')
+          "
+      - name: Run package tests
+        run: pytest tests/ -v --tb=short
 
   deployment-readiness:
     name: Deployment Readiness
@@ -59,11 +77,30 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
-      - run: pip install -r requirements.txt
-      - name: Validate All Components
-        run: python3 validate_deployment.py
+      - run: pip install -e ".[all]"
+      - name: Validate published packages
+        run: |
+          python3 -c "
+          import sys
+          packages = [
+              'amos_brain', 'amosl', 'amos_model_fabric', 'amos_self_evolution',
+              'amos_platform', 'multi_agent', 'skill', 'search', 'streaming',
+              'memory', 'analytics', 'repo_doctor'
+          ]
+          failed = []
+          for pkg in packages:
+              try:
+                  __import__(pkg)
+                  print(f'✓ {pkg}')
+              except Exception as e:
+                  print(f'✗ {pkg}: {e}')
+                  failed.append(pkg)
+          if failed:
+              sys.exit(1)
+          print('All packages validated successfully')
+          "
       - name: Generate Report
-        run: echo "57-COMPONENT SYSTEM READY FOR DEPLOYMENT" > DEPLOYMENT_REPORT.txt
+        run: echo "PUBLISHED PACKAGES VALIDATED - READY FOR DEPLOYMENT" > DEPLOYMENT_REPORT.txt
       - uses: actions/upload-artifact@v4
         with:
           name: deployment-report
@@ -80,7 +117,7 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
-      - run: pip install -r requirements.txt
+      - run: pip install -e ".[all]"
       - name: Run Performance Benchmarks
         run: python3 benchmark_57_components.py
       - name: Upload Benchmark Report

@@ -5,12 +5,14 @@ Dynamic configuration with hot-reload, environment-specific
 settings, and validation for all AMOS components.
 """
 
+from __future__ import annotations
+
 import json
 import os
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import yaml
 
@@ -20,7 +22,7 @@ class ComponentConfig:
     """Configuration for a single component."""
 
     enabled: bool
-    settings: Dict[str, Any]
+    settings: dict[str, Any]
     last_updated: datetime
 
 
@@ -31,8 +33,8 @@ class ConfigManager:
     ENV_PREFIX = "AMOS_"
 
     def __init__(self):
-        self.configs: Dict[str, ComponentConfig] = {}
-        self.global_settings: Dict[str, Any] = {}
+        self.configs: dict[str, ComponentConfig] = {}
+        self.global_settings: dict[str, Any] = {}
         self._config_path = Path(self.CONFIG_FILE)
         self._load_default_config()
 
@@ -206,7 +208,7 @@ class ConfigManager:
             return True
         return False
 
-    def get_all_configs(self) -> Dict[str, Any]:
+    def get_all_configs(self) -> dict[str, Any]:
         """Get all configurations."""
         return {
             "global": self.global_settings,
@@ -220,7 +222,7 @@ class ConfigManager:
             },
         }
 
-    def validate(self) -> List[str]:
+    def validate(self) -> list[str]:
         """Validate configuration and return any issues."""
         issues = []
 
@@ -245,7 +247,7 @@ class ConfigManager:
 
 
 # Global instance
-_config_manager: Optional[ConfigManager] = None
+_config_manager: ConfigManager | None = None
 
 
 def get_config() -> ConfigManager:

@@ -7,27 +7,28 @@ Provides cognitive query capabilities using AMOS kernel:
 - Cognitive confidence scoring
 """
 
+from __future__ import annotations
 
 import asyncio
 import sys
+import time
 import uuid
 from collections.abc import AsyncIterator
 from datetime import datetime, timezone
-
-UTC = timezone.utc
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
+UTC = timezone.utc
+
 # Setup paths
 AMOS_ROOT = Path(__file__).parent.parent.parent.resolve()
 for p in [AMOS_ROOT, AMOS_ROOT / "clawspring", AMOS_ROOT / "clawspring" / "amos_brain"]:
     if str(p) not in sys.path:
-        sys.path.insert(0, str(p))
 
 # Import AMOS brain components
 try:
@@ -59,7 +60,7 @@ class CognitiveQuery(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4())[:12])
     query: str = Field(..., min_length=1, max_length=5000)
     query_type: QueryType = QueryType.ANALYTICAL
-    context: Dict[str, Any] = Field(default_factory=dict)
+    context: dict[str, Any] = Field(default_factory=dict)
     depth: int = Field(default=3, ge=1, le=5, description="Reasoning depth (1-5)")
     include_reasoning: bool = Field(default=True, description="Include reasoning steps")
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
@@ -83,18 +84,18 @@ class CognitiveResponse(BaseModel):
     response: str
     query_type: QueryType
     confidence_score: float = Field(ge=0.0, le=1.0)
-    reasoning_steps: List[ReasoningStep] = Field(default_factory=list)
+    reasoning_steps: list[ReasoningStep] = Field(default_factory=list)
     processing_time_ms: float
-    cognitive_engines_used: List[str] = Field(default_factory=list)
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    cognitive_engines_used: list[str] = Field(default_factory=list)
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class CognitiveQueryEngine:
     """Real cognitive query engine using AMOS brain."""
 
     def __init__(self) -> None:
-        self.query_history: Dict[str, CognitiveQuery] = {}
-        self.response_cache: Dict[str, CognitiveResponse] = {}
+        self.query_history: dict[str, CognitiveQuery] = {}
+        self.response_cache: dict[str, CognitiveResponse] = {}
         self._lock = asyncio.Lock()
         self._amos_kernel = None
         self._orchestrator = None
@@ -172,8 +173,8 @@ class CognitiveQueryEngine:
         orchestrator = await self._get_orchestrator()
 
         # Build reasoning steps
-        steps: List[ReasoningStep] = []
-        engines_used: List[str] = []
+        steps: list[ReasoningStep] = []
+        engines_used: list[str] = []
 
         # Step 1: Query Analysis
         step1_start = time.time()
@@ -333,13 +334,13 @@ class CognitiveQueryEngine:
             duration_ms=(time.time() - step_start) * 1000,
         )
 
-    def get_query_history(self, limit: int = 100) -> List[CognitiveQuery]:
+    def get_query_history(self, limit: int = 100) -> list[CognitiveQuery]:
         """Get recent query history."""
         queries = list(self.query_history.values())
         queries.sort(key=lambda q: q.created_at, reverse=True)
         return queries[:limit]
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get engine statistics."""
         total_queries = len(self.query_history)
         cached_responses = len(self.response_cache)
@@ -351,7 +352,7 @@ class CognitiveQueryEngine:
         }
 
 
-# Global engine instance
+#Global engine instance
 _cognitive_engine: Optional[CognitiveQueryEngine] = None
 
 
@@ -402,21 +403,21 @@ async def get_cached_response(query_id: str) -> CognitiveResponse:
 
 
 @router.get("/history")
-async def get_query_history(limit: int = 100) -> List[CognitiveQuery]:
+async def get_query_history(limit: int = 100) -> list[CognitiveQuery]:
     """Get recent cognitive query history."""
     engine = get_cognitive_engine()
     return engine.get_query_history(limit)
 
 
 @router.get("/stats")
-async def get_stats() -> Dict[str, Any]:
+async def get_stats() -> dict[str, Any]:
     """Get cognitive query engine statistics."""
     engine = get_cognitive_engine()
     return engine.get_stats()
 
 
 @router.get("/health")
-async def health_check() -> Dict[str, Any]:
+async def health_check() -> dict[str, Any]:
     """Health check for cognitive query engine."""
     engine = get_cognitive_engine()
     stats = engine.get_stats()

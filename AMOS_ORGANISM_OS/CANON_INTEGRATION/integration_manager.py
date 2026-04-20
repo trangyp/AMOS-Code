@@ -8,9 +8,11 @@ Version: 1.0.0
 """
 
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class IntegrationStatus(Enum):
@@ -39,10 +41,10 @@ class IntegrationConfig:
 
     endpoint: str
     auth_method: str
-    credentials: Dict[str, str]
+    credentials: dict[str, str]
     timeout_seconds: int = 30
     retry_attempts: int = 3
-    headers: Dict[str, str] = field(default_factory=dict)
+    headers: dict[str, str] = field(default_factory=dict)
 
 
 @dataclass
@@ -65,7 +67,7 @@ class IntegrationEvent:
     system_id: str
     timestamp: datetime
     event_type: str
-    data: Dict[str, Any]
+    data: dict[str, Any]
     processed: bool = False
 
 
@@ -77,9 +79,9 @@ class IntegrationManager:
     """
 
     def __init__(self):
-        self.systems: Dict[str, ExternalSystem] = {}
-        self.events: List[IntegrationEvent] = []
-        self.connection_pool: Dict[str, Any] = {}
+        self.systems: dict[str, ExternalSystem] = {}
+        self.events: list[IntegrationEvent] = []
+        self.connection_pool: dict[str, Any] = {}
 
     def register_system(self, system: ExternalSystem) -> bool:
         """Register a new external system."""
@@ -132,7 +134,7 @@ class IntegrationManager:
         # Simulate health check
         return True
 
-    def send_data(self, system_id: str, data: Dict[str, Any]) -> bool:
+    def send_data(self, system_id: str, data: dict[str, Any]) -> bool:
         """Send data to an external system."""
         if system_id not in self.systems:
             return False
@@ -145,7 +147,7 @@ class IntegrationManager:
         # Simulate sending data
         return True
 
-    def receive_data(self, system_id: str) -> Dict[str, Any]:
+    def receive_data(self, system_id: str) -> dict[str, Any]:
         """Receive data from an external system."""
         if system_id not in self.systems:
             return None
@@ -164,14 +166,16 @@ class IntegrationManager:
             return None
         return self.systems[system_id].status
 
-    def list_systems(self, status_filter: Optional[IntegrationStatus] = None) -> List[ExternalSystem]:
+    def list_systems(
+        self, status_filter: Optional[IntegrationStatus] = None
+    ) -> list[ExternalSystem]:
         """List all registered systems, optionally filtered by status."""
         systems = list(self.systems.values())
         if status_filter:
             systems = [s for s in systems if s.status == status_filter]
         return systems
 
-    def get_connected_systems(self) -> List[ExternalSystem]:
+    def get_connected_systems(self) -> list[ExternalSystem]:
         """Get all currently connected systems."""
         return self.list_systems(IntegrationStatus.CONNECTED)
 
@@ -181,7 +185,7 @@ class IntegrationManager:
 
     def get_events(
         self, system_id: str = None, unprocessed_only: bool = False
-    ) -> List[IntegrationEvent]:
+    ) -> list[IntegrationEvent]:
         """Get integration events, optionally filtered."""
         events = self.events
 

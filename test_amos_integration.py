@@ -19,7 +19,6 @@ Tests:
 import argparse
 import sys
 from pathlib import Path
-from typing import List
 
 # Add paths
 sys.path.insert(0, str(Path(__file__).parent / "clawspring"))
@@ -33,7 +32,7 @@ class TestRunner:
         self.verbose = verbose
         self.passed = 0
         self.failed = 0
-        self.results: List[tuple[str, bool, str]] = []
+        self.results: list[tuple[str, bool, str]] = []
 
     def run(self) -> bool:
         """Run all tests. Returns True if all passed."""
@@ -220,9 +219,9 @@ class TestRunner:
             # Just verify the function works and returns a dict
             status = get_amos_status()
             assert isinstance(status, dict), "Status should be a dict"
-            assert (
-                "enabled" in status or "error" in status
-            ), "Status should have enabled or error key"
+            assert "enabled" in status or "error" in status, (
+                "Status should have enabled or error key"
+            )
 
         self._test("Status", test)
 

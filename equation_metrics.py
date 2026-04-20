@@ -24,6 +24,8 @@ Environment Variables:
     METRICS_PORT: Port for metrics endpoint (default: 8000)
 """
 
+from __future__ import annotations
+
 import os
 import time
 from typing import Any, Optional
@@ -537,7 +539,7 @@ class PrometheusInstrumentator:
         """Initialize instrumentator."""
         self.metrics = None
 
-    def instrument(self, app: Any) -> "PrometheusInstrumentator":
+    def instrument(self, app: Any) -> PrometheusInstrumentator:
         """Instrument a FastAPI application.
 
         Args:
@@ -552,7 +554,7 @@ class PrometheusInstrumentator:
             app.add_middleware(MetricsMiddleware)
         return self
 
-    def expose(self, app: Any, path: str = "/metrics") -> "PrometheusInstrumentator":
+    def expose(self, app: Any, path: str = "/metrics") -> PrometheusInstrumentator:
         """Expose metrics endpoint.
 
         Args:
@@ -563,7 +565,6 @@ class PrometheusInstrumentator:
             Self for chaining
         """
         if PROMETHEUS_AVAILABLE and FASTAPI_AVAILABLE:
-            from fastapi import Response
             from fastapi.responses import PlainTextResponse
 
             @app.get(path)

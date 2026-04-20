@@ -18,9 +18,11 @@ import asyncio
 import sys
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
 
 # Add paths
 _AMOS_ROOT = Path(__file__).parent.resolve()
@@ -39,7 +41,7 @@ class MCPProductionRequest:
 
     request_id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     tool_name: str = ""
-    arguments: Dict[str, Any] = field(default_factory=dict)
+    arguments: dict[str, Any] = field(default_factory=dict)
     timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     session_id: str = ""
     trace_id: str = ""
@@ -51,7 +53,7 @@ class MCPProductionResponse:
 
     request_id: str = ""
     success: bool = False
-    result: Dict[str, Any] = field(default_factory=dict)
+    result: dict[str, Any] = field(default_factory=dict)
     execution_time_ms: float = 0.0
     timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     health_score: float = 0.0
@@ -73,7 +75,7 @@ class AMOSMCPProductionInterface:
         response = await interface.execute_tool("brain_think", {...})
     """
 
-    _instance: Optional[AMOSMCPProductionInterface] = None
+    _instance: AMOSMCPProductionInterface = None
 
     def __new__(cls) -> AMOSMCPProductionInterface:
         if cls._instance is None:
@@ -84,8 +86,8 @@ class AMOSMCPProductionInterface:
         if hasattr(self, "_initialized"):
             return
         self._initialized = False
-        self._runtime: Optional[AMOSProductionRuntime] = None
-        self._bridge: Optional[AMOSCognitiveBridge] = None
+        self._runtime: AMOSProductionRuntime = None
+        self._bridge: AMOSCognitiveBridge = None
         self._request_count = 0
         self._error_count = 0
 
@@ -143,7 +145,7 @@ class AMOSMCPProductionInterface:
         return True
 
     async def execute_tool(
-        self, tool_name: str, arguments: Dict[str, Any]
+        self, tool_name: str, arguments: dict[str, Any]
     ) -> MCPProductionResponse:
         """Execute an MCP tool with full production integration.
 
@@ -223,7 +225,7 @@ class AMOSMCPProductionInterface:
             equations_available=runtime_status.get("equations_loaded", 0),
         )
 
-    def _get_runtime_status(self) -> Dict[str, Any]:
+    def _get_runtime_status(self) -> dict[str, Any]:
         """Get production runtime status."""
         if not self._runtime:
             return {}
@@ -245,7 +247,7 @@ class AMOSMCPProductionInterface:
         """Compute elapsed milliseconds."""
         return (datetime.now(UTC) - start).total_seconds() * 1000
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get interface statistics."""
         runtime_status = self._get_runtime_status()
 
@@ -260,7 +262,7 @@ class AMOSMCPProductionInterface:
 
 
 # Singleton getter
-_interface_instance: Optional[AMOSMCPProductionInterface] = None
+_interface_instance: AMOSMCPProductionInterface = None
 
 
 async def get_mcp_production_interface() -> AMOSMCPProductionInterface:

@@ -1,12 +1,15 @@
 """AMOS UBI Stack Engine - Universal Biological Intelligence."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class BrainRegion(Enum):
     """Key brain regions for neurobiological analysis."""
+
     PREFRONTAL_CORTEX = "prefrontal_cortex"
     AMYGDALA = "amygdala"
     HIPPOCAMPUS = "hippocampus"
@@ -17,6 +20,7 @@ class BrainRegion(Enum):
 
 class Neurotransmitter(Enum):
     """Major neurotransmitters."""
+
     DOPAMINE = "dopamine"
     SEROTONIN = "serotonin"
     NOREPINEPHRINE = "norepinephrine"
@@ -29,6 +33,7 @@ class Neurotransmitter(Enum):
 
 class ANSState(Enum):
     """Autonomic Nervous System states."""
+
     SYMPATHETIC_AROUSAL = "sympathetic_arousal"
     PARASYMPATHETIC_REST = "parasympathetic_rest"
     VENTRAL_VAGAL_SAFE = "ventral_vagal_safe"
@@ -43,7 +48,7 @@ class BiologicalState:
     ans_state: ANSState
     threat_index: float  # 0-1
     safety_index: float  # 0-1
-    neurotransmitter_levels: Dict[str, float] = field(default_factory=dict)
+    neurotransmitter_levels: dict[str, float] = field(default_factory=dict)
 
 
 class NeurobiologyKernel:
@@ -62,7 +67,7 @@ class NeurobiologyKernel:
             Neurotransmitter.CORTISOL: 0.2,
         }
 
-    def simulate_stress_response(self, stressor_intensity: float) -> Dict[str, Any]:
+    def simulate_stress_response(self, stressor_intensity: float) -> dict[str, Any]:
         """Simulate neurobiological stress response."""
         # Amygdala detects threat
         amygdala_activation = min(1.0, 0.3 + stressor_intensity * 0.7)
@@ -82,7 +87,7 @@ class NeurobiologyKernel:
             "ans_state": ANSState.SYMPATHETIC_AROUSAL.value,
         }
 
-    def simulate_calm_response(self, safety_signals: float) -> Dict[str, Any]:
+    def simulate_calm_response(self, safety_signals: float) -> dict[str, Any]:
         """Simulate neurobiological calm/safety response."""
         # Oxytocin release ( social bonding/safety)
         oxytocin = min(1.0, 0.3 + safety_signals * 0.5)
@@ -118,7 +123,7 @@ class AutonomicNervousSystemKernel:
         self.arousal_level = 0.5
         self.heart_rate_variability = 0.6  # Higher is better
 
-    def assess_vagal_tone(self, hrv: float, respiratory_rate: float) -> Dict[str, Any]:
+    def assess_vagal_tone(self, hrv: float, respiratory_rate: float) -> dict[str, Any]:
         """Assess vagal tone (parasympathetic capacity)."""
         # Higher HRV indicates better vagal tone
         vagal_tone = min(1.0, hrv * 1.2)
@@ -160,14 +165,16 @@ class StressPhysiologyKernel:
         self.cortisol_cycle = {"morning": 0.9, "afternoon": 0.5, "evening": 0.3}
         self.allostatic_load = 0.0  # Cumulative wear and tear
 
-    def calculate_allostatic_load(self, stressors: List[float]) -> float:
+    def calculate_allostatic_load(self, stressors: list[float]) -> float:
         """Calculate cumulative allostatic load."""
         # Sum of stressor magnitudes with time decay
-        load = sum(s * (0.9 ** i) for i, s in enumerate(stressors[-10:]))
+        load = sum(s * (0.9**i) for i, s in enumerate(stressors[-10:]))
         self.allostatic_load = min(1.0, load / 5)
         return self.allostatic_load
 
-    def hpa_axis_response(self, threat_perception: float, time_of_day: str = "morning") -> Dict[str, Any]:
+    def hpa_axis_response(
+        self, threat_perception: float, time_of_day: str = "morning"
+    ) -> dict[str, Any]:
         """Simulate HPA axis cortisol response."""
         baseline = self.cortisol_cycle.get(time_of_day, 0.5)
         # Cortisol rises with threat, peaks at 20-30 minutes
@@ -191,9 +198,9 @@ class SocialEngagementSystem:
 
     def __init__(self):
         self.engagement_capacity = 0.7
-        self.recent_social_signals: List[dict] = []
+        self.recent_social_signals: list[dict] = []
 
-    def detect_safety_cues(self, input_text: str) -> Dict[str, Any]:
+    def detect_safety_cues(self, input_text: str) -> dict[str, Any]:
         """Detect prosodic and linguistic safety cues."""
         safety_markers = ["welcome", "safe", "together", "connection", "trust", "gentle"]
         threat_markers = ["danger", "attack", "alone", "abandon", "reject"]
@@ -206,7 +213,7 @@ class SocialEngagementSystem:
             "can_socially_engage": safety_count > threat_count,
         }
 
-    def assess_facial_vocal_cues(self, prosody: str = "neutral") -> Dict[str, Any]:
+    def assess_facial_vocal_cues(self, prosody: str = "neutral") -> dict[str, Any]:
         """Assess facial and vocal prosody (simulated)."""
         cues = {
             "warm": {"engagement": 0.8, "safety": 0.9},
@@ -229,11 +236,11 @@ class UBIStackEngine:
         self.stress = StressPhysiologyKernel()
         self.social = SocialEngagementSystem()
 
-    def analyze(self, scenario: str, context: Dict[str, Any]  = None) -> Dict[str, Any]:
+    def analyze(self, scenario: str, context: dict[str, Any] = None) -> dict[str, Any]:
         """Run UBI neurobiological analysis."""
         context = context or {}
         scenario_lower = scenario.lower()
-        results: Dict[str, Any] = {
+        results: dict[str, Any] = {
             "scenario": scenario[:100],
             "neurobiology": {},
             "ans_analysis": {},
@@ -244,7 +251,9 @@ class UBIStackEngine:
         # Detect stress vs calm in scenario
         stress_keywords = ["stress", "anxiety", "fear", "panic", "overwhelm", "threat", "danger"]
         calm_keywords = ["calm", "safe", "relaxed", "peaceful", "rest", "breathe", "gentle"]
-        stress_level = sum(1 for kw in stress_keywords if kw in scenario_lower) / len(stress_keywords)
+        stress_level = sum(1 for kw in stress_keywords if kw in scenario_lower) / len(
+            stress_keywords
+        )
         calm_level = sum(1 for kw in calm_keywords if kw in scenario_lower) / len(calm_keywords)
         # Neurobiology analysis
         if stress_level > calm_level:
@@ -277,7 +286,8 @@ class UBIStackEngine:
         results["social_engagement"] = {
             "safety_cues": safety_cues,
             "prosodic_assessment": prosody,
-            "can_socially_engage": safety_cues["can_socially_engage"] and prosody["engagement"] > 0.5,
+            "can_socially_engage": safety_cues["can_socially_engage"]
+            and prosody["engagement"] > 0.5,
         }
         # Generate recommendations
         recommendations = []
@@ -312,99 +322,115 @@ class UBIStackEngine:
             "## Neurobiological Analysis",
         ]
         neuro = results.get("neurobiology", {})
-        lines.extend([
-            f"- **State**: {neuro.get('state', 'N/A')}",
-            f"- **Amygdala Activation**: {neuro.get('amygdala_activation', 'N/A')}",
-            f"- **Prefrontal Cortex**: {neuro.get('pfc_activation', 'N/A')}",
-            f"- **Cortisol Level**: {neuro.get('cortisol_level', 'N/A')}",
-        ])
+        lines.extend(
+            [
+                f"- **State**: {neuro.get('state', 'N/A')}",
+                f"- **Amygdala Activation**: {neuro.get('amygdala_activation', 'N/A')}",
+                f"- **Prefrontal Cortex**: {neuro.get('pfc_activation', 'N/A')}",
+                f"- **Cortisol Level**: {neuro.get('cortisol_level', 'N/A')}",
+            ]
+        )
         if "oxytocin" in neuro:
             lines.append(f"- **Oxytocin**: {neuro.get('oxytocin')}")
         if "gaba" in neuro:
             lines.append(f"- **GABA**: {neuro.get('gaba')}")
         ans = results.get("ans_analysis", {})
-        lines.extend([
-            "",
-            "## Autonomic Nervous System",
-            f"- **Current State**: {ans.get('current_state', 'N/A')}",
-            f"- **Arousal Level**: {ans.get('arousal_level', 0):.2f}",
-            f"- **Window of Tolerance**: {ans.get('window_of_tolerance', 'N/A')}",
-        ])
-        lines.extend([
-            "",
-            "### Polyvagal Theory States",
-            "- **Ventral Vagal (Safe/Social)**: Social engagement, connectedness",
-            "- **Sympathetic (Arousal)**: Fight/flight, mobilization",
-            "- **Dorsal Vagal (Shutdown)**: Freeze, immobilization, conservation",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Autonomic Nervous System",
+                f"- **Current State**: {ans.get('current_state', 'N/A')}",
+                f"- **Arousal Level**: {ans.get('arousal_level', 0):.2f}",
+                f"- **Window of Tolerance**: {ans.get('window_of_tolerance', 'N/A')}",
+            ]
+        )
+        lines.extend(
+            [
+                "",
+                "### Polyvagal Theory States",
+                "- **Ventral Vagal (Safe/Social)**: Social engagement, connectedness",
+                "- **Sympathetic (Arousal)**: Fight/flight, mobilization",
+                "- **Dorsal Vagal (Shutdown)**: Freeze, immobilization, conservation",
+            ]
+        )
         stress = results.get("stress_physiology", {})
-        lines.extend([
-            "",
-            "## Stress Physiology",
-            f"- **Allostatic Load**: {stress.get('allostatic_load', 0):.2f} (cumulative wear)",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Stress Physiology",
+                f"- **Allostatic Load**: {stress.get('allostatic_load', 0):.2f} (cumulative wear)",
+            ]
+        )
         hpa = stress.get("hpa_axis", {})
         if hpa:
-            lines.extend([
-                "",
-                "### HPA Axis Response",
-                f"- **Baseline Cortisol**: {hpa.get('baseline_cortisol', 0):.2f}",
-                f"- **Peak Cortisol**: {hpa.get('peak_cortisol', 0):.2f}",
-                f"- **Recovery Time**: {hpa.get('recovery_time_minutes', 0)} min",
-                f"- **HPA Active**: {hpa.get('hpa_active', False)}",
-            ])
+            lines.extend(
+                [
+                    "",
+                    "### HPA Axis Response",
+                    f"- **Baseline Cortisol**: {hpa.get('baseline_cortisol', 0):.2f}",
+                    f"- **Peak Cortisol**: {hpa.get('peak_cortisol', 0):.2f}",
+                    f"- **Recovery Time**: {hpa.get('recovery_time_minutes', 0)} min",
+                    f"- **HPA Active**: {hpa.get('hpa_active', False)}",
+                ]
+            )
         social = results.get("social_engagement", {})
         safety = social.get("safety_cues", {})
         prosody = social.get("prosodic_assessment", {})
-        lines.extend([
-            "",
-            "## Social Engagement System",
-            f"- **Safety Cues Detected**: {safety.get('safety_cues', 0)}",
-            f"- **Threat Cues Detected**: {safety.get('threat_cues', 0)}",
-            f"- **Net Safety Score**: {safety.get('net_safety', 0)}",
-            f"- **Can Socially Engage**: {social.get('can_socially_engage', False)}",
-            f"- **Engagement Capacity**: {prosody.get('engagement', 0):.2f}",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Social Engagement System",
+                f"- **Safety Cues Detected**: {safety.get('safety_cues', 0)}",
+                f"- **Threat Cues Detected**: {safety.get('threat_cues', 0)}",
+                f"- **Net Safety Score**: {safety.get('net_safety', 0)}",
+                f"- **Can Socially Engage**: {social.get('can_socially_engage', False)}",
+                f"- **Engagement Capacity**: {prosody.get('engagement', 0):.2f}",
+            ]
+        )
         recommendations = results.get("recommendations", [])
         if recommendations:
-            lines.extend([
-                "",
-                "## Neurobiological Recommendations",
-            ])
+            lines.extend(
+                [
+                    "",
+                    "## Neurobiological Recommendations",
+                ]
+            )
             for i, rec in enumerate(recommendations, 1):
                 lines.append(f"{i}. {rec}")
-        lines.extend([
-            "",
-            "## Key Neurotransmitters",
-            "- **Dopamine**: Reward, motivation, prediction error",
-            "- **Serotonin**: Mood stabilization, well-being",
-            "- **Norepinephrine**: Arousal, alertness, attention",
-            "- **GABA**: Inhibition, anxiety reduction",
-            "- **Oxytocin**: Social bonding, trust, safety",
-            "- **Cortisol**: Stress response, energy mobilization",
-            "",
-            "## Brain Regions",
-            "- **Prefrontal Cortex**: Executive function, decision-making",
-            "- **Amygdala**: Threat detection, emotional salience",
-            "- **Hippocampus**: Memory, context, time perception",
-            "- **Insula**: Interoception, emotional awareness",
-            "",
-            "## Safety and Constraints",
-            "- Does not replace medical or therapeutic advice",
-            "- Simplified neurobiological modeling",
-            "- Not for diagnosing medical conditions",
-            "- Focus on educational and self-regulation support",
-            "",
-            "## Integration with Species Interaction Core",
-            "The UBI Stack provides biological foundation for the Species",
-            "Interaction Core's nervous system monitoring and safety",
-            "assessment capabilities.",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Key Neurotransmitters",
+                "- **Dopamine**: Reward, motivation, prediction error",
+                "- **Serotonin**: Mood stabilization, well-being",
+                "- **Norepinephrine**: Arousal, alertness, attention",
+                "- **GABA**: Inhibition, anxiety reduction",
+                "- **Oxytocin**: Social bonding, trust, safety",
+                "- **Cortisol**: Stress response, energy mobilization",
+                "",
+                "## Brain Regions",
+                "- **Prefrontal Cortex**: Executive function, decision-making",
+                "- **Amygdala**: Threat detection, emotional salience",
+                "- **Hippocampus**: Memory, context, time perception",
+                "- **Insula**: Interoception, emotional awareness",
+                "",
+                "## Safety and Constraints",
+                "- Does not replace medical or therapeutic advice",
+                "- Simplified neurobiological modeling",
+                "- Not for diagnosing medical conditions",
+                "- Focus on educational and self-regulation support",
+                "",
+                "## Integration with Species Interaction Core",
+                "The UBI Stack provides biological foundation for the Species",
+                "Interaction Core's nervous system monitoring and safety",
+                "assessment capabilities.",
+            ]
+        )
         return "\n".join(lines)
 
 
 # Singleton instance
-_ubi_engine: Optional[UBIStackEngine] = None
+_ubi_engine: UBIStackEngine | None = None
 
 
 def get_ubi_stack_engine() -> UBIStackEngine:

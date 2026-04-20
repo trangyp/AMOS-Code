@@ -6,17 +6,12 @@ Provides tools for the agent to leverage AMOS brain capabilities.
 
 from __future__ import annotations
 
-
-
 import json
-import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 # Add the repo root to path for imports
 REPO_ROOT = Path(__file__).parent
-sys.path.insert(0, str(REPO_ROOT))
-
 
 from amos_cognitive_runtime import AMOSCognitiveRuntime
 
@@ -44,7 +39,7 @@ class AMOSAgentBridge:
         """Access the underlying AMOS runtime."""
         return self._runtime
 
-    def think(self, question: str, mode: str = "exploratory_mapping") -> Dict[str, Any]:
+    def think(self, question: str, mode: str = "exploratory_mapping") -> dict[str, Any]:
         """Process a question through AMOS cognitive layers.
 
         Args:
@@ -57,7 +52,7 @@ class AMOSAgentBridge:
         """
         return self._runtime.think(question, mode)
 
-    def analyze_task(self, task_description: str, context: dict = None) -> Dict[str, Any]:
+    def analyze_task(self, task_description: str, context: dict = None) -> dict[str, Any]:
         """Analyze a coding/design task using AMOS cognitive architecture.
 
         Args:
@@ -92,8 +87,8 @@ class AMOSAgentBridge:
         return result
 
     def design_architecture(
-        self, requirements: str, constraints: List[str] = None
-    ) -> Dict[str, Any]:
+        self, requirements: str, constraints: list[str] = None
+    ) -> dict[str, Any]:
         """Generate architecture design using AMOS design engine principles.
 
         Args:
@@ -129,7 +124,7 @@ class AMOSAgentBridge:
         result["architecture_recommendations"] = arch_recommendations
         return result
 
-    def audit_decision(self, decision: str, rationale: str) -> Dict[str, Any]:
+    def audit_decision(self, decision: str, rationale: str) -> dict[str, Any]:
         """Audit a decision against AMOS global laws and constraints.
 
         Args:
@@ -163,11 +158,11 @@ class AMOSAgentBridge:
         """Get information about a specific cognitive engine."""
         return self._runtime.get_engine_info(engine_name)
 
-    def list_engines(self) -> List[str]:
+    def list_engines(self) -> list[str]:
         """List all available cognitive engines."""
         return self._runtime.list_available_engines()
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get AMOS runtime status."""
         return self._runtime.get_status()
 
@@ -345,7 +340,6 @@ AMOS_TOOLS = {
     "amos_list_engines": amos_list_engines,
     "amos_status": amos_status,
 }
-
 
 if __name__ == "__main__":
     # Test the bridge

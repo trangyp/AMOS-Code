@@ -19,12 +19,11 @@ Version: 3.0.0
 
 from __future__ import annotations
 
-
 import os
 import subprocess
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 from .execution_slot import (
     ExecutionSlot,
@@ -205,9 +204,13 @@ class Operator:
     def _tool_bash(self, command: str, timeout: int = 30) -> dict[str, Any]:
         """Execute a bash command."""
         try:
+            # SECURITY: Use shlex.split() and shell=False to prevent injection
+            import shlex
+
+            cmd_parts = shlex.split(command)
             result = subprocess.run(
-                command,
-                shell=True,
+                cmd_parts,
+                shell=False,
                 capture_output=True,
                 text=True,
                 timeout=timeout,

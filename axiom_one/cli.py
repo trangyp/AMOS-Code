@@ -14,7 +14,6 @@ import argparse
 import json
 import sys
 from pathlib import Path
-from typing import List
 
 from .brain_integration import BrainExecutionConfig, BrainPoweredOrchestrator
 from .execution_slot import SlotMode
@@ -143,7 +142,7 @@ def cmd_twin(args: argparse.Namespace) -> int:
     return 0
 
 
-def main(argv: List[str] = None) -> int:
+def main(argv: list[str] = None) -> int:
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(
         prog="axiom",

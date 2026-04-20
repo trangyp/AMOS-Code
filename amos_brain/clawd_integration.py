@@ -8,11 +8,14 @@ Unable to self-govern tools, memory, or policy.
 Unable to disconnect itself from the brain.
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
 from threading import Lock
-from typing import Any, Dict, List
+from typing import Any, Optional
+
+UTC = UTC
 
 
 @dataclass
@@ -21,7 +24,7 @@ class ClawdTask:
 
     task_id: str
     description: str
-    tool_calls: List[dict[str, Any]]
+    tool_calls: list[dict[str, Any]]
     timestamp: str
     agent_id: str
 
@@ -50,7 +53,9 @@ class ClawdExecutionLayer:
         self._execution_count = 0
         self._status = "absorbed"
 
-    def interpret_and_execute(self, task_description: str, agent_id: str = None) -> Dict[str, Any]:
+    def interpret_and_execute(
+        self, task_description: str, agent_id: Optional[str] = None
+    ) -> dict[str, Any]:
         """Interpret a task and execute through canonical path.
 
         This method demonstrates Clawd's absorbed state:
@@ -110,7 +115,7 @@ class ClawdExecutionLayer:
             "results": results,
         }
 
-    def _interpret_task(self, task_description: str) -> List[dict[str, Any]]:
+    def _interpret_task(self, task_description: str) -> list[dict[str, Any]]:
         """Interpret task into tool calls (Clawd's core capability).
 
         This is where Clawd's intelligence lives - interpreting

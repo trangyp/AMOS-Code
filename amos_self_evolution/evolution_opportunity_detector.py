@@ -8,14 +8,15 @@ Version: 1.0.0
 Evolution ID: E002
 """
 
+from __future__ import annotations
+
 import re
 import subprocess
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from .evolution_contract_registry import EvolutionContract
 
@@ -43,12 +44,12 @@ class DetectedOpportunity:
     opportunity_type: OpportunityType
 
     # Location
-    target_files: List[str] = field(default_factory=list)
-    target_modules: List[str] = field(default_factory=list)
+    target_files: list[str] = field(default_factory=list)
+    target_modules: list[str] = field(default_factory=list)
 
     # Evidence
     pattern_description: str = ""
-    evidence_instances: List[dict[str, Any]] = field(default_factory=list)
+    evidence_instances: list[dict[str, Any]] = field(default_factory=list)
     recurrence_count: int = 0
     first_seen: str = ""
     last_seen: str = ""
@@ -63,10 +64,10 @@ class DetectedOpportunity:
     suggested_contract: Optional[EvolutionContract] = None
 
     # State
-    detected_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    detected_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     status: str = "open"  # open, investigating, contracted, resolved, rejected
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Serialize to dictionary."""
         return {
             "opportunity_id": self.opportunity_id,
@@ -93,10 +94,10 @@ class EvolutionOpportunityDetector:
 
     def __init__(self, repo_root: str = "."):
         self.repo_root = Path(repo_root)
-        self._opportunities: Dict[str, DetectedOpportunity] = {}
-        self._detection_history: List[dict[str, Any]] = []
+        self._opportunities: dict[str, DetectedOpportunity] = {}
+        self._detection_history: list[dict[str, Any]] = []
 
-    def detect_all(self) -> List[DetectedOpportunity]:
+    def detect_all(self) -> list[DetectedOpportunity]:
         """Run all detection methods and return found opportunities."""
         self._opportunities.clear()
 
@@ -313,7 +314,7 @@ class EvolutionOpportunityDetector:
                     recommended_evolution_type="patch",
                 )
 
-    def _get_python_files(self, limit: int = 100) -> List[Path]:
+    def _get_python_files(self, limit: int = 100) -> list[Path]:
         """Get Python files for analysis."""
         files = []
         for py_file in self.repo_root.rglob("*.py"):
@@ -324,7 +325,7 @@ class EvolutionOpportunityDetector:
                 break
         return files
 
-    def get_summary(self) -> Dict[str, Any]:
+    def get_summary(self) -> dict[str, Any]:
         """Get detection summary."""
         by_type = {}
         for opp in self._opportunities.values():
@@ -342,7 +343,7 @@ class EvolutionOpportunityDetector:
             "open": len([o for o in self._opportunities.values() if o.status == "open"]),
         }
 
-    def prioritize(self) -> List[DetectedOpportunity]:
+    def prioritize(self) -> list[DetectedOpportunity]:
         """Prioritize opportunities by severity and impact."""
         severity_order = {"critical": 0, "high": 1, "medium": 2, "low": 3}
 

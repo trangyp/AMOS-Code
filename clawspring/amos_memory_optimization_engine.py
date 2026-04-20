@@ -1,14 +1,17 @@
 """AMOS Memory Optimization Engine - Advanced memory management and caching."""
 
+from __future__ import annotations
+
 import time
 from collections import OrderedDict
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 
 class CacheStrategy(Enum):
     """Cache replacement strategies."""
+
     LRU = "lru"  # Least Recently Used
     LFU = "lfu"  # Least Frequently Used
     FIFO = "fifo"  # First In First Out
@@ -17,6 +20,7 @@ class CacheStrategy(Enum):
 
 class MemoryTier(Enum):
     """Memory hierarchy tiers."""
+
     L1_CACHE = "l1"  # CPU cache
     L2_CACHE = "l2"
     RAM = "ram"
@@ -42,12 +46,12 @@ class LRUCache:
     def __init__(self, capacity: int, max_size_bytes: int = 100 * 1024 * 1024):
         self.capacity = capacity
         self.max_size_bytes = max_size_bytes
-        self.cache: OrderedDict[str, CacheEntry] = OrderedDict()
+        self.cache: Ordereddict[str, CacheEntry] = OrderedDict()
         self.current_size = 0
         self.hits = 0
         self.misses = 0
 
-    def get(self, key: str) -> Optional[Any]:
+    def get(self, key: str) -> Any | None:
         """Get item from cache."""
         if key in self.cache:
             entry = self.cache.pop(key)
@@ -76,7 +80,7 @@ class LRUCache:
         self.current_size += size
         return True
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get cache statistics."""
         total = self.hits + self.misses
         hit_rate = self.hits / total if total > 0 else 0
@@ -96,12 +100,12 @@ class LFUCache:
     def __init__(self, capacity: int, max_size_bytes: int = 100 * 1024 * 1024):
         self.capacity = capacity
         self.max_size_bytes = max_size_bytes
-        self.cache: Dict[str, CacheEntry] = {}
+        self.cache: dict[str, CacheEntry] = {}
         self.current_size = 0
         self.hits = 0
         self.misses = 0
 
-    def get(self, key: str) -> Optional[Any]:
+    def get(self, key: str) -> Any | None:
         """Get item from cache."""
         if key in self.cache:
             entry = self.cache[key]
@@ -131,7 +135,7 @@ class LFUCache:
         self.current_size += size
         return True
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         total = self.hits + self.misses
         hit_rate = self.hits / total if total > 0 else 0
         return {
@@ -149,8 +153,8 @@ class WorkingSetManager:
 
     def __init__(self, max_working_set: int = 1000):
         self.max_working_set = max_working_set
-        self.working_set: Set[str] = set()
-        self.access_history: List[tuple[str, float]] = []
+        self.working_set: set[str] = set()
+        self.access_history: list[tuple[str, float]] = []
 
     def access_page(self, page_id: str) -> bool:
         """Record page access."""
@@ -160,7 +164,7 @@ class WorkingSetManager:
         cutoff = timestamp - 30
         self.access_history = [(p, t) for p, t in self.access_history if t > cutoff]
         # Update working set
-        page_counts: Dict[str, int] = {}
+        page_counts: dict[str, int] = {}
         for p, _ in self.access_history:
             page_counts[p] = page_counts.get(p, 0) + 1
         # Keep top pages by frequency
@@ -195,8 +199,8 @@ class TieredStorageManager:
     }
 
     def __init__(self):
-        self.data_locations: Dict[str, str] = {}  # key -> tier
-        self.tier_usage: Dict[str, int] = {tier: 0 for tier in self.TIER_CAPACITIES}
+        self.data_locations: dict[str, str] = {}  # key -> tier
+        self.tier_usage: dict[str, int] = dict.fromkeys(self.TIER_CAPACITIES, 0)
 
     def place_data(self, key: str, size: int, access_frequency: float) -> str:
         """Determine optimal tier for data."""
@@ -229,7 +233,7 @@ class TieredStorageManager:
         tier = self.data_locations.get(key, "disk")
         return self.TIER_LATENCIES.get(tier, 10e-3)
 
-    def get_tier_stats(self) -> Dict[str, Any]:
+    def get_tier_stats(self) -> dict[str, Any]:
         """Get tier utilization statistics."""
         stats = {}
         for tier, capacity in self.TIER_CAPACITIES.items():
@@ -247,8 +251,8 @@ class PrefetchEngine:
     """Predicts and prefetches likely-needed data."""
 
     def __init__(self):
-        self.access_patterns: Dict[str, list[str]] = {}
-        self.prediction_cache: Dict[str, list[str]] = {}
+        self.access_patterns: dict[str, list[str]] = {}
+        self.prediction_cache: dict[str, list[str]] = {}
 
     def record_access(self, key: str) -> None:
         """Record data access for pattern analysis."""
@@ -267,7 +271,7 @@ class PrefetchEngine:
         # Limit history
         self.access_patterns[key] = self.access_patterns[key][-10:]
 
-    def _is_sequential(self, keys: List[str]) -> bool:
+    def _is_sequential(self, keys: list[str]) -> bool:
         """Check if keys follow sequential pattern."""
         if len(keys) < 2:
             return False
@@ -280,11 +284,11 @@ class PrefetchEngine:
             pass
         return False
 
-    def predict_next(self, current_key: str) -> List[str]:
+    def predict_next(self, current_key: str) -> list[str]:
         """Predict likely next accesses."""
         return self.prediction_cache.get(current_key, [])
 
-    def get_prefetch_candidates(self, recent_accesses: List[str]) -> List[str]:
+    def get_prefetch_candidates(self, recent_accesses: list[str]) -> list[str]:
         """Get candidates for prefetching."""
         candidates = []
         for key in recent_accesses[-3:]:
@@ -306,13 +310,11 @@ class MemoryOptimizationEngine:
         self.tiered_storage = TieredStorageManager()
         self.prefetcher = PrefetchEngine()
 
-    def analyze(
-        self, scenario: str, context: Dict[str, Any]  = None
-    ) -> Dict[str, Any]:
+    def analyze(self, scenario: str, context: dict[str, Any] = None) -> dict[str, Any]:
         """Run memory optimization analysis."""
         context = context or {}
         scenario_lower = scenario.lower()
-        results: Dict[str, Any] = {
+        results: dict[str, Any] = {
             "scenario": scenario[:100],
             "memory_strategy": self._detect_strategy(scenario_lower),
             "cache_stats": {},
@@ -445,7 +447,9 @@ class MemoryOptimizationEngine:
             for cache_type, stats in cache_stats.items():
                 lines.append(f"\n### {cache_type.upper()} Cache")
                 lines.append(f"- **Size**: {stats['size']} entries")
-                lines.append(f"- **Memory**: {stats['current_bytes'] / 1024 / 1024:.1f} MB / {stats['max_bytes'] / 1024 / 1024:.1f} MB")
+                lines.append(
+                    f"- **Memory**: {stats['current_bytes'] / 1024 / 1024:.1f} MB / {stats['max_bytes'] / 1024 / 1024:.1f} MB"
+                )
                 lines.append(f"- **Hit Rate**: {stats['hit_rate'] * 100:.1f}%")
                 lines.append(f"- **Hits**: {stats['hits']}, Misses: {stats['misses']}")
         # Working set
@@ -454,67 +458,71 @@ class MemoryOptimizationEngine:
             lines.extend(["", "## Working Set Analysis"])
             lines.append(f"- **Current Size**: {working.get('size', 0)} pages")
             lines.append(f"- **Max Size**: {working.get('max_size', 0)} pages")
-            utilization = working.get('size', 0) / working.get('max_size', 1) * 100
+            utilization = working.get("size", 0) / working.get("max_size", 1) * 100
             lines.append(f"- **Utilization**: {utilization:.1f}%")
         # Tiered storage
         tiers = results.get("tiered_storage", {})
         if tiers:
             lines.extend(["", "## Tiered Storage Distribution"])
             for tier_name, tier_stats in tiers.items():
-                util = tier_stats['utilization'] * 100
-                capacity_gb = tier_stats['capacity'] / (1024 ** 3)
-                used_gb = tier_stats['used'] / (1024 ** 3)
-                lines.append(f"- **{tier_name.upper()}**: {used_gb:.2f} / {capacity_gb:.2f} GB ({util:.1f}%)")
+                util = tier_stats["utilization"] * 100
+                capacity_gb = tier_stats["capacity"] / (1024**3)
+                used_gb = tier_stats["used"] / (1024**3)
+                lines.append(
+                    f"- **{tier_name.upper()}**: {used_gb:.2f} / {capacity_gb:.2f} GB ({util:.1f}%)"
+                )
         # Prefetch
         prefetch = results.get("prefetch", {})
         if prefetch:
             lines.extend(["", "## Prefetch Analysis"])
-            candidates = prefetch.get('candidates', [])
+            candidates = prefetch.get("candidates", [])
             lines.append(f"- **Candidates**: {len(candidates)}")
             if candidates:
                 lines.append(f"- **Predicted**: {', '.join(candidates[:5])}")
             lines.append(f"- **Patterns Tracked**: {prefetch.get('patterns_tracked', 0)}")
-        lines.extend([
-            "",
-            "## Memory Hierarchy",
-            "```",
-            "CPU L1 Cache  (< 1 MB)     - 1 ns access",
-            "CPU L2 Cache  (few MB)     - 4 ns access",
-            "RAM           (16+ GB)     - 100 ns access",
-            "SSD           (512+ GB)    - 100 μs access",
-            "Disk          (2+ TB)      - 10 ms access",
-            "```",
-            "",
-            "## Optimization Strategies",
-            "1. **Temporal Locality**: Recently accessed items likely to be accessed again",
-            "2. **Spatial Locality**: Nearby memory addresses likely to be accessed",
-            "3. **Working Set**: Keep actively used pages in fast memory",
-            "4. **Prefetching**: Load data before it's requested",
-            "5. **Compression**: Reduce memory footprint",
-            "",
-            "## Cache Replacement Policies",
-            "- **LRU**: Good for temporal locality",
-            "- **LFU**: Good for frequently accessed items",
-            "- **FIFO**: Simple but can suffer from Belady's anomaly",
-            "- **ARC**: Self-tuning balance of LRU and LFU",
-            "",
-            "## Safety and Constraints",
-            "- Memory limits enforced to prevent overflow",
-            "- Working set size prevents thrashing",
-            "- Tier placement respects capacity constraints",
-            "- Prefetching limited to avoid bandwidth exhaustion",
-            "",
-            "## Limitations",
-            "- Simulated cache (not actual system cache)",
-            "- Simplified prefetching (no complex pattern detection)",
-            "- Static tier capacities",
-            "- No actual memory compression modeled",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Memory Hierarchy",
+                "```",
+                "CPU L1 Cache  (< 1 MB)     - 1 ns access",
+                "CPU L2 Cache  (few MB)     - 4 ns access",
+                "RAM           (16+ GB)     - 100 ns access",
+                "SSD           (512+ GB)    - 100 μs access",
+                "Disk          (2+ TB)      - 10 ms access",
+                "```",
+                "",
+                "## Optimization Strategies",
+                "1. **Temporal Locality**: Recently accessed items likely to be accessed again",
+                "2. **Spatial Locality**: Nearby memory addresses likely to be accessed",
+                "3. **Working Set**: Keep actively used pages in fast memory",
+                "4. **Prefetching**: Load data before it's requested",
+                "5. **Compression**: Reduce memory footprint",
+                "",
+                "## Cache Replacement Policies",
+                "- **LRU**: Good for temporal locality",
+                "- **LFU**: Good for frequently accessed items",
+                "- **FIFO**: Simple but can suffer from Belady's anomaly",
+                "- **ARC**: Self-tuning balance of LRU and LFU",
+                "",
+                "## Safety and Constraints",
+                "- Memory limits enforced to prevent overflow",
+                "- Working set size prevents thrashing",
+                "- Tier placement respects capacity constraints",
+                "- Prefetching limited to avoid bandwidth exhaustion",
+                "",
+                "## Limitations",
+                "- Simulated cache (not actual system cache)",
+                "- Simplified prefetching (no complex pattern detection)",
+                "- Static tier capacities",
+                "- No actual memory compression modeled",
+            ]
+        )
         return "\n".join(lines)
 
 
 # Singleton instance
-_memory_engine: Optional[MemoryOptimizationEngine] = None
+_memory_engine: MemoryOptimizationEngine | None = None
 
 
 def get_memory_optimization_engine() -> MemoryOptimizationEngine:

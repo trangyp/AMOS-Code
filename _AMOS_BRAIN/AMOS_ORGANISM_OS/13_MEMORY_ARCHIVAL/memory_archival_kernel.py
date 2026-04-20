@@ -16,7 +16,9 @@ import logging
 import zlib
 from collections import defaultdict
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import UTC, datetime
+
+UTC = UTC, timedelta
 from enum import Enum, auto
 from pathlib import Path
 from typing import Any
@@ -62,13 +64,13 @@ class MemoryEntry:
 
     memory_id: str
     memory_type: MemoryType
-    content: Dict[str, Any]
+    content: dict[str, Any]
     priority: MemoryPriority
     created_at: str
     last_accessed: str
     access_count: int = 0
-    tags: List[str] = field(default_factory=list)
-    associations: List[str] = field(default_factory=list)
+    tags: list[str] = field(default_factory=list)
+    associations: list[str] = field(default_factory=list)
     embedding: list[float] = None
 
     def __post_init__(self):
@@ -77,7 +79,7 @@ class MemoryEntry:
         if not self.last_accessed:
             self.last_accessed = self.created_at
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "memory_id": self.memory_id,
@@ -93,7 +95,7 @@ class MemoryEntry:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> MemoryEntry:
+    def from_dict(cls, data: dict[str, Any]) -> MemoryEntry:
         """Create from dictionary."""
         return cls(
             memory_id=data["memory_id"],
@@ -144,8 +146,8 @@ class MemoryArchivalKernel:
         self.index_path.mkdir(parents=True, exist_ok=True)
 
         # Memory stores
-        self.hot_memories: Dict[str, MemoryEntry] = {}
-        self.memory_index: Dict[str, MemoryIndex] = {}
+        self.hot_memories: dict[str, MemoryEntry] = {}
+        self.memory_index: dict[str, MemoryIndex] = {}
 
         # Tag index for fast lookup
         self.tag_index: dict[str, set[str]] = defaultdict(set)
@@ -239,7 +241,7 @@ class MemoryArchivalKernel:
     def store_memory(
         self,
         memory_type: MemoryType,
-        content: Dict[str, Any],
+        content: dict[str, Any],
         priority: MemoryPriority = MemoryPriority.MEDIUM,
         tags: list[str] = None,
         associations: list[str] = None,
@@ -307,7 +309,7 @@ class MemoryArchivalKernel:
         except Exception as e:
             logger.error(f"Failed to persist memory {entry.memory_id}: {e}")
 
-    def retrieve_memory(self, memory_id: str) -> Optional[MemoryEntry]:
+    def retrieve_memory(self, memory_id: str) -> MemoryEntry:
         """Retrieve a memory by ID."""
         # Check hot cache first
         if memory_id in self.hot_memories:
@@ -345,7 +347,7 @@ class MemoryArchivalKernel:
         self.stats["cache_misses"] += 1
         return None
 
-    def search_by_tags(self, tags: List[str]) -> List[MemoryEntry]:
+    def search_by_tags(self, tags: list[str]) -> list[MemoryEntry]:
         """Search memories by tags."""
         # Find intersection of all tag sets
         matching_ids = None
@@ -373,7 +375,7 @@ class MemoryArchivalKernel:
 
         return results
 
-    def search_by_type(self, memory_type: MemoryType, limit: int = 100) -> List[MemoryEntry]:
+    def search_by_type(self, memory_type: MemoryType, limit: int = 100) -> list[MemoryEntry]:
         """Search memories by type."""
         memory_ids = list(self.type_index[memory_type])[:limit]
 
@@ -389,12 +391,12 @@ class MemoryArchivalKernel:
         return results
 
     def semantic_search(
-        self, query_embedding: List[float], top_k: int = 10
+        self, query_embedding: list[float], top_k: int = 10
     ) -> list[tuple[MemoryEntry, float]]:
         """Search memories by semantic similarity."""
 
         # Simple cosine similarity (in production, use vector DB)
-        def cosine_similarity(a: List[float], b: List[float]) -> float:
+        def cosine_similarity(a: list[float], b: list[float]) -> float:
             dot = sum(x * y for x, y in zip(a, b))
             norm_a = sum(x * x for x in a) ** 0.5
             norm_b = sum(x * x for x in b) ** 0.5
@@ -533,7 +535,7 @@ class MemoryArchivalKernel:
         except Exception as e:
             logger.error(f"Failed to archive memory {memory_id}: {e}")
 
-    def get_memory_stats(self) -> Dict[str, Any]:
+    def get_memory_stats(self) -> dict[str, Any]:
         """Get memory statistics."""
         tier_counts = defaultdict(int)
         type_counts = defaultdict(int)
@@ -559,7 +561,7 @@ class MemoryArchivalKernel:
             "memories_archived": self.stats["memories_archived"],
         }
 
-    def get_state(self) -> Dict[str, Any]:
+    def get_state(self) -> dict[str, Any]:
         """Get current memory archival state."""
         return {
             "total_memories": len(self.memory_index),

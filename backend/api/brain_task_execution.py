@@ -8,15 +8,16 @@ Executes tasks using the real AMOS brain with:
 - Simulation Engine for prediction
 """
 
+from __future__ import annotations
 
 import sys
 import time
 import uuid
 from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any, Optional
 
 UTC = timezone.utc
-from pathlib import Path
-from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
@@ -25,7 +26,6 @@ from pydantic import BaseModel, Field
 AMOS_ROOT = Path(__file__).parent.parent.parent.resolve()
 for p in [AMOS_ROOT, AMOS_ROOT / "clawspring", AMOS_ROOT / "amos_brain"]:
     if str(p) not in sys.path:
-        sys.path.insert(0, str(p))
 
 # Import real brain components
 try:
@@ -56,8 +56,8 @@ except ImportError:
 
 router = APIRouter(prefix="/brain-tasks", tags=["Brain Task Execution"])
 
-# Global instances
-_brain_client: Optional[BrainClient] = None
+#Global instances
+_brain_client: Optional[BrainClient] =None
 _orchestrator: Optional[MasterOrchestrator] = None
 
 
@@ -82,7 +82,7 @@ class BrainTaskRequest(BaseModel):
     """Request for brain-powered task execution."""
 
     task: str = Field(..., min_length=1, description="Task description")
-    context: Dict[str, Any] = Field(default_factory=dict)
+    context: dict[str, Any] = Field(default_factory=dict)
     mode: str = Field(default="think", pattern="think|decide|validate|execute")
     priority: str = Field(default="MEDIUM", pattern="LOW|MEDIUM|HIGH|CRITICAL")
 
@@ -92,7 +92,7 @@ class BrainTaskResult(BaseModel):
 
     task_id: str
     status: str
-    result: Dict[str, Any]
+    result: dict[str, Any]
     brain_used: bool
     processing_time_ms: float
     timestamp: str
@@ -102,7 +102,7 @@ class ComplexWorkflowRequest(BaseModel):
     """Request for complex workflow execution."""
 
     workflow_description: str = Field(..., min_length=1)
-    steps: List[dict[str, Any]] = Field(default_factory=list)
+    steps: list[dict[str, Any]] = Field(default_factory=list)
     require_approval: bool = Field(default=False)
 
 
@@ -112,7 +112,7 @@ class AgentSpawnRequest(BaseModel):
     objective: str = Field(..., min_length=1)
     agent_class: str = Field(default="explorer")
     budget: float = Field(default=1.0, ge=0.0)
-    context: Dict[str, Any] = Field(default_factory=dict)
+    context: dict[str, Any] = Field(default_factory=dict)
 
 
 class AgentSpawnResult(BaseModel):
@@ -131,18 +131,18 @@ class RepoAutopsyRequest(BaseModel):
     error_message: str = Field(..., min_length=1)
     error_type: str = Field(default="runtime_exception")
     stack_trace: str = None
-    files_involved: List[str] = Field(default_factory=list)
+    files_involved: list[str] = Field(default_factory=list)
 
 
 class SimulationRequest(BaseModel):
     """Request for deployment simulation."""
 
     target: str = Field(..., min_length=1, description="PR or commit to simulate")
-    scenarios: List[str] = Field(default_factory=lambda: ["normal", "peak"])
+    scenarios: list[str] = Field(default_factory=lambda: ["normal", "peak"])
 
 
 # Store for task results
-_task_results: Dict[str, dict[str, Any]] = {}
+_task_results: dict[str, dict[str, Any]] = {}
 
 
 @router.post("/think", response_model=BrainTaskResult)
@@ -356,7 +356,7 @@ async def brain_spawn_agent(request: AgentSpawnRequest) -> AgentSpawnResult:
 
 
 @router.post("/autopsy", response_model=dict[str, Any])
-async def brain_autopsy(request: RepoAutopsyRequest) -> Dict[str, Any]:
+async def brain_autopsy(request: RepoAutopsyRequest) -> dict[str, Any]:
     """Run repo autopsy using Repo Autopsy Engine.
 
     Uses BrainClient.autopsy_repo() for automatic debugging.
@@ -390,7 +390,7 @@ async def brain_autopsy(request: RepoAutopsyRequest) -> Dict[str, Any]:
 
 
 @router.post("/simulate", response_model=dict[str, Any])
-async def brain_simulate(request: SimulationRequest) -> Dict[str, Any]:
+async def brain_simulate(request: SimulationRequest) -> dict[str, Any]:
     """Run deployment simulation using Simulation Engine.
 
     Uses BrainClient.simulate_deployment() for pre-runtime prediction.
@@ -428,7 +428,7 @@ async def brain_simulate(request: SimulationRequest) -> Dict[str, Any]:
 
 
 @router.get("/result/{task_id}")
-async def get_task_result(task_id: str) -> Dict[str, Any]:
+async def get_task_result(task_id: str) -> dict[str, Any]:
     """Get result of a previous brain task."""
     if task_id not in _task_results:
         raise HTTPException(status_code=404, detail="Task not found")
@@ -437,7 +437,7 @@ async def get_task_result(task_id: str) -> Dict[str, Any]:
 
 
 @router.get("/health")
-async def brain_tasks_health() -> Dict[str, Any]:
+async def brain_tasks_health() -> dict[str, Any]:
     """Check brain task execution health."""
     return {
         "brain_available": _BRAIN_AVAILABLE,

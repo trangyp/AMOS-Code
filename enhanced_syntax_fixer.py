@@ -4,10 +4,9 @@
 import ast
 import re
 from pathlib import Path
-from typing import List, Tuple
 
 
-def scan_syntax_errors(repo_path: str) -> List[Tuple[Path, str]]:
+def scan_syntax_errors(repo_path: str) -> list[tuple[Path, str]]:
     """Scan all Python files for syntax errors."""
     errors = []
     root = Path(repo_path).resolve()
@@ -35,7 +34,7 @@ def scan_syntax_errors(repo_path: str) -> List[Tuple[Path, str]]:
     return sorted(errors)
 
 
-def fix_file(filepath: Path) -> Tuple[bool, str]:
+def fix_file(filepath: Path) -> tuple[bool, str]:
     """Attempt to fix a file with syntax errors."""
     try:
         content = filepath.read_text(encoding="utf-8")
@@ -138,7 +137,7 @@ def main():
             try:
                 content = filepath.read_text(encoding="utf-8", errors="ignore")
                 ast.parse(content)
-                print(f"  ✓ Syntax now valid")
+                print("  ✓ Syntax now valid")
             except SyntaxError as e:
                 print(f"  ✗ Still has syntax error: Line {e.lineno}: {e.msg}")
         else:

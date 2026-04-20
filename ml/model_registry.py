@@ -8,8 +8,9 @@ Version: 2.0.0
 
 import os
 from dataclasses import dataclass
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 from enum import Enum
 from typing import Any
 from uuid import uuid4
@@ -20,6 +21,7 @@ from mlflow.tracking import MlflowClient
 
 class ModelStage(Enum):
     """Model lifecycle stages."""
+
     NONE = "None"
     STAGING = "Staging"
     PRODUCTION = "Production"
@@ -28,6 +30,7 @@ class ModelStage(Enum):
 
 class ModelFramework(Enum):
     """Supported ML frameworks."""
+
     PYTORCH = "pytorch"
     TENSORFLOW = "tensorflow"
     SKLEARN = "sklearn"
@@ -38,13 +41,14 @@ class ModelFramework(Enum):
 @dataclass
 class ModelVersion:
     """Model version metadata."""
+
     name: str
     version: int
     stage: ModelStage
     framework: ModelFramework
-    metrics: Dict[str, float]
-    parameters: Dict[str, Any]
-    tags: Dict[str, str]
+    metrics: dict[str, float]
+    parameters: dict[str, Any]
+    tags: dict[str, str]
     run_id: str
     created_at: datetime
     artifact_uri: str
@@ -54,6 +58,7 @@ class ModelVersion:
 @dataclass
 class Experiment:
     """ML experiment metadata."""
+
     experiment_id: str
     name: str
     artifact_location: str
@@ -66,8 +71,8 @@ class ModelRegistry:
 
     def __init__(
         self,
-        tracking_uri: str  = None,
-        registry_uri: str  = None,
+        tracking_uri: str = None,
+        registry_uri: str = None,
     ):
         """Initialize model registry.
 
@@ -76,12 +81,10 @@ class ModelRegistry:
             registry_uri: MLflow model registry URI
         """
         self.tracking_uri = tracking_uri or os.getenv(
-            "MLFLOW_TRACKING_URI",
-            "http://localhost:5000"
+            "MLFLOW_TRACKING_URI", "http://localhost:5000"
         )
         self.registry_uri = registry_uri or os.getenv(
-            "MLFLOW_REGISTRY_URI",
-            "postgresql://mlflow:mlflow@localhost:5432/mlflow"
+            "MLFLOW_REGISTRY_URI", "postgresql://mlflow:mlflow@localhost:5432/mlflow"
         )
 
         mlflow.set_tracking_uri(self.tracking_uri)
@@ -91,8 +94,8 @@ class ModelRegistry:
     def create_experiment(
         self,
         name: str,
-        artifact_location: str  = None,
-        tags: dict[str, Any ] = None,
+        artifact_location: str = None,
+        tags: dict[str, Any] = None,
     ) -> str:
         """Create new ML experiment.
 
@@ -111,7 +114,7 @@ class ModelRegistry:
         )
         return experiment_id
 
-    def get_experiment(self, experiment_id: str) -> Optional[Experiment]:
+    def get_experiment(self, experiment_id: str) -> Experiment:
         """Get experiment by ID."""
         try:
             exp = self.client.get_experiment(experiment_id)
@@ -120,19 +123,18 @@ class ModelRegistry:
                 name=exp.name,
                 artifact_location=exp.artifact_location,
                 lifecycle_stage=exp.lifecycle_stage,
-                created_at=datetime.fromtimestamp(
-                    exp.creation_time / 1000,
-                    tz=timezone.utc
-                ) if exp.creation_time else datetime.now(timezone.utc),
+                created_at=datetime.fromtimestamp(exp.creation_time / 1000, tz=timezone.utc)
+                if exp.creation_time
+                else datetime.now(timezone.utc),
             )
         except Exception:
             return None
 
     def start_run(
         self,
-        experiment_id: str  = None,
-        run_name: str  = None,
-        tags: dict[str, Any ] = None,
+        experiment_id: str = None,
+        run_name: str = None,
+        tags: dict[str, Any] = None,
     ) -> str:
         """Start ML training run.
 
@@ -146,17 +148,17 @@ class ModelRegistry:
         )
         return run.info.run_id
 
-    def log_metrics(self, run_id: str, metrics: Dict[str, float]) -> None:
+    def log_metrics(self, run_id: str, metrics: dict[str, float]) -> None:
         """Log metrics for run."""
         for key, value in metrics.items():
             self.client.log_metric(run_id, key, value)
 
-    def log_params(self, run_id: str, params: Dict[str, Any]) -> None:
+    def log_params(self, run_id: str, params: dict[str, Any]) -> None:
         """Log parameters for run."""
         for key, value in params.items():
             self.client.log_param(run_id, key, value)
 
-    def log_artifact(self, run_id: str, local_path: str, artifact_path: str  = None) -> None:
+    def log_artifact(self, run_id: str, local_path: str, artifact_path: str = None) -> None:
         """Upload artifact to run."""
         self.client.log_artifact(run_id, local_path, artifact_path)
 
@@ -166,9 +168,9 @@ class ModelRegistry:
         model_path: str,
         model_name: str,
         framework: ModelFramework,
-        signature: Optional[Any] = None,
-        input_example: Optional[Any] = None,
-        code_paths: list[str ] = None,
+        signature: Any = None,
+        input_example: Any = None,
+        code_paths: list[str] = None,
     ) -> None:
         """Log and register model.
 
@@ -184,6 +186,7 @@ class ModelRegistry:
         # Log model with framework-specific flavor
         if framework == ModelFramework.SKLEARN:
             import mlflow.sklearn
+
             mlflow.sklearn.log_model(
                 sk_model=model_path,
                 artifact_path="model",
@@ -194,6 +197,7 @@ class ModelRegistry:
             )
         elif framework == ModelFramework.PYTORCH:
             import mlflow.pytorch
+
             mlflow.pytorch.log_model(
                 pytorch_model=model_path,
                 artifact_path="model",
@@ -203,6 +207,7 @@ class ModelRegistry:
             )
         elif framework == ModelFramework.HUGGINGFACE:
             import mlflow.transformers
+
             mlflow.transformers.log_model(
                 transformers_model=model_path,
                 artifact_path="model",
@@ -225,7 +230,7 @@ class ModelRegistry:
         self,
         model_uri: str,
         name: str,
-        tags: dict[str, Any ] = None,
+        tags: dict[str, Any] = None,
         description: str = "",
     ) -> ModelVersion:
         """Register model from run artifacts."""
@@ -287,7 +292,7 @@ class ModelRegistry:
             description=description or mv.description,
         )
 
-    def get_model_version(self, name: str, version: int) -> Optional[ModelVersion]:
+    def get_model_version(self, name: str, version: int) -> ModelVersion:
         """Get specific model version."""
         try:
             mv = self.client.get_model_version(name, version)
@@ -307,7 +312,7 @@ class ModelRegistry:
         except Exception:
             return None
 
-    def get_production_model(self, name: str) -> Optional[ModelVersion]:
+    def get_production_model(self, name: str) -> ModelVersion:
         """Get current production model."""
         try:
             latest_versions = self.client.get_latest_versions(name, stages=["Production"])
@@ -331,9 +336,8 @@ class ModelRegistry:
         except Exception:
             return None
 
-    def list_models(self, name: str  = None) -> List[ModelVersion]:
+    def list_models(self, name: str = None) -> list[ModelVersion]:
         """List all model versions."""
-        from mlflow.entities.model_registry import ModelVersion as MLflowModelVersion
 
         models = []
         registered_models = self.client.search_registered_models(
@@ -342,19 +346,23 @@ class ModelRegistry:
 
         for rm in registered_models:
             for mv in rm.latest_versions:
-                models.append(ModelVersion(
-                    name=rm.name,
-                    version=mv.version,
-                    stage=ModelStage(mv.current_stage),
-                    framework=ModelFramework.SKLEARN,
-                    metrics={},
-                    parameters={},
-                    tags=dict(mv.tags) if mv.tags else {},
-                    run_id=mv.run_id,
-                    created_at=datetime.fromtimestamp(mv.creation_timestamp / 1000, tz=timezone.utc),
-                    artifact_uri=mv.source,
-                    description=mv.description,
-                ))
+                models.append(
+                    ModelVersion(
+                        name=rm.name,
+                        version=mv.version,
+                        stage=ModelStage(mv.current_stage),
+                        framework=ModelFramework.SKLEARN,
+                        metrics={},
+                        parameters={},
+                        tags=dict(mv.tags) if mv.tags else {},
+                        run_id=mv.run_id,
+                        created_at=datetime.fromtimestamp(
+                            mv.creation_timestamp / 1000, tz=timezone.utc
+                        ),
+                        artifact_uri=mv.source,
+                        description=mv.description,
+                    )
+                )
 
         return models
 
@@ -378,7 +386,7 @@ class ModelRegistry:
         name: str,
         version1: int,
         version2: int,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Compare two model versions."""
         mv1 = self.get_model_version(name, version1)
         mv2 = self.get_model_version(name, version2)
@@ -402,7 +410,7 @@ class ModelRegistry:
             },
         }
 
-    def health_check(self) -> Dict[str, Any]:
+    def health_check(self) -> dict[str, Any]:
         """Check registry connectivity."""
         try:
             # Try to list experiments
@@ -429,9 +437,9 @@ class ModelPromoter:
     def auto_promote(
         self,
         model_name: str,
-        metric_thresholds: Dict[str, float],
-        required_metrics: List[str],
-    ) -> Optional[ModelVersion]:
+        metric_thresholds: dict[str, float],
+        required_metrics: list[str],
+    ) -> ModelVersion:
         """Auto-promote model to production if metrics meet thresholds.
 
         Args:

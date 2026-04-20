@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """Repo Doctor Ω∞∞∞ - Command Line Interface.
 
 Commands:
@@ -175,7 +177,7 @@ def cmd_repair_plan(args: argparse.Namespace) -> int:
     return 0
 
 
-def main(argv: List[str] = None) -> int:
+def main(argv: Optional[list[str]] = None) -> int:
     """Main entry point."""
     parser = argparse.ArgumentParser(
         prog="repo-doctor",

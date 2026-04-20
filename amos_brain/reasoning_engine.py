@@ -4,13 +4,11 @@ Provides reasoning capabilities for the AMOS brain with step-by-step
 explanation generation.
 """
 
-
 from dataclasses import dataclass
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
 
+UTC = UTC
 from .facade import BrainClient
-from typing import List, Optional
 
 
 @dataclass
@@ -18,7 +16,7 @@ class ReasoningResult:
     """Result of reasoning process."""
 
     conclusion: str
-    steps: List[str]
+    steps: list[str]
     confidence: str
     domain: str
     timestamp: str

@@ -26,13 +26,12 @@ import functools
 import hashlib
 import json
 import os
-import pickle
 from collections.abc import Awaitable, Callable
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional, TypeVar, cast
+from typing import Any, Optional, TypeVar, cast
 
 # Redis imports
 try:
@@ -139,7 +138,7 @@ class CacheEntry:
     value: Any
     created_at: datetime = field(default_factory=datetime.now)
     expires_at: datetime = None
-    tags: List[str] = field(default_factory=list)
+    tags: list[str] = field(default_factory=list)
     tenant_id: str = None
 
     def is_expired(self) -> bool:
@@ -173,7 +172,7 @@ class AMOSCache:
 
         self._redis: Optional[Redis] = None
         self._stats = CacheStats()
-        self._local_cache: Dict[str, CacheEntry] = {}
+        self._local_cache: dict[str, CacheEntry] = {}
         self._initialized = True
         self._enabled = CACHE_ENABLED
 
@@ -247,11 +246,8 @@ class AMOSCache:
                 value = await self._redis.get(full_key)
                 if value is not None:
                     self._stats.record_hit()
-                    # Deserialize
-                    try:
-                        return json.loads(value)
-                    except json.JSONDecodeError:
-                        return pickle.loads(value)
+                    # SECURITY: Only deserialize JSON (pickle removed for safety)
+                    return json.loads(value)
             except Exception as e:
                 logger.warning(f"Redis get error: {e}")
 
@@ -265,7 +261,7 @@ class AMOSCache:
         ttl: int = DEFAULT_TTL,
         tenant_id: str = None,
         namespace: str = None,
-        tags: List[str] = None,
+        tags: list[str] = None,
     ) -> bool:
         """
         Set value in cache.
@@ -286,11 +282,12 @@ class AMOSCache:
 
         full_key = self._build_key(key, tenant_id, namespace)
 
-        # Serialize
+        # SECURITY: Only serialize JSON (pickle removed for safety)
         try:
             serialized = json.dumps(value, default=str)
         except (TypeError, ValueError):
-            serialized = pickle.dumps(value)
+            # Skip caching non-JSON-serializable values
+            return False
 
         # Store in L1 (local) cache
         entry = CacheEntry(
@@ -425,7 +422,7 @@ class AMOSCache:
 def cached(
     ttl: int = DEFAULT_TTL,
     namespace: str = None,
-    tags: List[str] = None,
+    tags: list[str] = None,
     key_func: Callable[..., str] = None,
 ):
     """
@@ -480,7 +477,7 @@ if FASTAPI_AVAILABLE:
         FastAPI middleware for response caching.
         """
 
-        def __init__(self, app, ttl: int = API_TTL, exclude_paths: List[str] = None):
+        def __init__(self, app, ttl: int = API_TTL, exclude_paths: list[str] = None):
             super().__init__(app)
             self.ttl = ttl
             self.exclude_paths = exclude_paths or ["/health", "/metrics"]
@@ -589,13 +586,13 @@ class CacheWarmer:
 
     def __init__(self):
         self._cache = AMOSCache()
-        self._warmers: List[Callable[[], Awaitable[dict]]] = []
+        self._warmers: list[Callable[[], Awaitable[dict]]] = []
 
     def register_warmer(self, func: Callable[[], Awaitable[dict]]) -> None:
         """Register a cache warming function."""
         self._warmers.append(func)
 
-    async def warm_cache(self) -> Dict[str, Any]:
+    async def warm_cache(self) -> dict[str, Any]:
         """Execute all cache warmers."""
         results = {}
 

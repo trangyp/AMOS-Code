@@ -9,9 +9,10 @@ Provides API for:
 - Invariant violation forecasting
 """
 
+from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 # Import digital twin
 try:
@@ -42,11 +43,11 @@ class DigitalTwinBridge:
 
     def capture_architecture_state(
         self,
-        components: List[dict[str, Any]],
-        dependencies: List[dict[str, Any]],
-        interfaces: List[dict[str, Any]],
-        invariant_status: Dict[str, bool],
-    ) -> Dict[str, Any]:
+        components: list[dict[str, Any]],
+        dependencies: list[dict[str, Any]],
+        interfaces: list[dict[str, Any]],
+        invariant_status: dict[str, bool],
+    ) -> dict[str, Any]:
         """Capture current architecture state into digital twin."""
         if not TWIN_AVAILABLE or self.twin is None:
             return {"error": "digital_twin not available"}
@@ -62,8 +63,8 @@ class DigitalTwinBridge:
         }
 
     def simulate_architectural_change(
-        self, change_type: str, target: str, description: str, details: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, change_type: str, target: str, description: str, details: dict[str, Any]
+    ) -> dict[str, Any]:
         """Simulate impact of an architectural change."""
         if not TWIN_AVAILABLE or self.twin is None:
             return {"error": "digital_twin not available"}
@@ -85,7 +86,7 @@ class DigitalTwinBridge:
         result = self.twin.simulate_change(change)
         return result.to_dict()
 
-    def forecast_invariant_violations(self, steps: int = 5) -> Dict[str, Any]:
+    def forecast_invariant_violations(self, steps: int = 5) -> dict[str, Any]:
         """Forecast future invariant violations."""
         if not TWIN_AVAILABLE or self.twin is None:
             return {"error": "digital_twin not available"}
@@ -100,7 +101,7 @@ class DigitalTwinBridge:
             "medium_risk_count": len(forecast.medium_risk_invariants),
         }
 
-    def evaluate_what_if_scenario(self, changes: List[dict[str, Any]]) -> Dict[str, Any]:
+    def evaluate_what_if_scenario(self, changes: list[dict[str, Any]]) -> dict[str, Any]:
         """Evaluate what-if scenario with multiple changes."""
         if not TWIN_AVAILABLE or self.twin is None:
             return {"error": "digital_twin not available"}
@@ -125,7 +126,7 @@ class DigitalTwinBridge:
 
         return self.twin.get_what_if_recommendations(arch_changes)
 
-    def get_twin_status(self) -> Dict[str, Any]:
+    def get_twin_status(self) -> dict[str, Any]:
         """Get digital twin status."""
         if not TWIN_AVAILABLE or self.twin is None:
             return {"error": "digital_twin not available"}

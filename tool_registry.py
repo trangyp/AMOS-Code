@@ -3,8 +3,10 @@
 Provides tool registration and lookup functionality.
 """
 
+from __future__ import annotations
+
 from collections.abc import Callable
-from typing import Dict, List, Optional
+from typing import Optional
 
 
 class Tool:
@@ -20,7 +22,7 @@ class ToolRegistry:
     """Registry for AMOS tools."""
 
     def __init__(self):
-        self._tools: Dict[str, Tool] = {}
+        self._tools: dict[str, Tool] = {}
 
     def register(self, name: str, func: Callable, description: str = "") -> None:
         """Register a tool."""
@@ -30,7 +32,7 @@ class ToolRegistry:
         """Get a tool by name."""
         return self._tools.get(name)
 
-    def list_tools(self) -> List[str]:
+    def list_tools(self) -> list[str]:
         """List all registered tool names."""
         return list(self._tools.keys())
 

@@ -19,7 +19,9 @@ Access:
 """
 
 import sys
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))

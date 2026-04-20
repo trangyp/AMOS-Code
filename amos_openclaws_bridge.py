@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from typing import Any, Dict, List
+from typing import Any
 
 """AMOS OpenClaws Bridge - Activates BrainClawSpringBridge and Local LLM
 
@@ -21,16 +21,13 @@ import asyncio
 import logging
 import os
 import sys
-from pathlib import Path
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("amos_openclaws")
 
-# Add paths for imports
-REPO_ROOT = Path(__file__).parent
-sys.path.insert(0, str(REPO_ROOT))
-sys.path.insert(0, str(REPO_ROOT / "clawspring"))
+# Import alias modules to set up paths
+import clawspring  # noqa: F401
 
 
 class AMOSOpenClawsBridge:
@@ -41,10 +38,10 @@ class AMOSOpenClawsBridge:
         self.ollama_enabled = os.getenv("OLLAMA_ENABLED", "true").lower() == "true"
         self.clawspring_enabled = os.getenv("CLAWSPRING_ENABLED", "true").lower() == "true"
         self.brain_bridge = None
-        self.ollama_models: List[str] = []
+        self.ollama_models: list[str] = []
         self._initialized = False
 
-    async def initialize(self) -> Dict[str, Any]:
+    async def initialize(self) -> dict[str, Any]:
         """Initialize all connections."""
         results = {
             "ollama": {"connected": False, "models": [], "error": None, "url": self.ollama_url},
@@ -80,7 +77,7 @@ class AMOSOpenClawsBridge:
         self._initialized = True
         return results
 
-    async def _check_ollama(self) -> List[str]:
+    async def _check_ollama(self) -> list[str]:
         """Check Ollama connection and return available models."""
         import aiohttp
 
@@ -108,7 +105,7 @@ class AMOSOpenClawsBridge:
         bridge.init_agent("AMOS-OpenClaws-Agent", goal)
         return bridge
 
-    def get_available_models(self) -> List[str]:
+    def get_available_models(self) -> list[str]:
         """Return list of available Ollama models."""
         return self.ollama_models
 
@@ -128,13 +125,13 @@ class AMOSOpenClawsBridge:
                 data = await resp.json()
                 return data.get("response", "")
 
-    async def think_with_brain(self, query: str, domain: str = "general") -> Dict[str, Any]:
+    async def think_with_brain(self, query: str, domain: str = "general") -> dict[str, Any]:
         """Use BrainClawSpringBridge for cognitive processing."""
         if not self.brain_bridge:
             raise RuntimeError("Brain bridge not initialized")
         return self.brain_bridge.think(query, domain)
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get current connection status."""
         return {
             "initialized": self._initialized,

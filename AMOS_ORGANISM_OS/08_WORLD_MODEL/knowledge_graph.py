@@ -1,10 +1,12 @@
+from __future__ import annotations
+
 """Knowledge Graph — Semantic knowledge representation for AMOS."""
 
 import json
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class EntityType(Enum):
@@ -35,7 +37,7 @@ class Entity:
     id: str
     name: str
     entity_type: EntityType
-    properties: Dict[str, Any] = field(default_factory=dict)
+    properties: dict[str, Any] = field(default_factory=dict)
     created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
 
@@ -46,7 +48,7 @@ class Relation:
     source_id: str
     target_id: str
     relation_type: RelationType
-    properties: Dict[str, Any] = field(default_factory=dict)
+    properties: dict[str, Any] = field(default_factory=dict)
     created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
 
@@ -61,10 +63,10 @@ class KnowledgeGraph:
     """
 
     def __init__(self):
-        self._entities: Dict[str, Entity] = {}
-        self._relations: List[Relation] = []
-        self._index_by_type: Dict[EntityType, set[str]] = {}
-        self._index_by_name: Dict[str, set[str]] = {}
+        self._entities: dict[str, Entity] = {}
+        self._relations: list[Relation] = []
+        self._index_by_type: dict[EntityType, set[str]] = {}
+        self._index_by_name: dict[str, set[str]] = {}
 
     def add_entity(self, entity: Entity) -> str:
         """Add an entity to the graph."""
@@ -90,7 +92,7 @@ class KnowledgeGraph:
         """Get entity by ID."""
         return self._entities.get(entity_id)
 
-    def find_entities(self, name: str = None, entity_type: EntityType = None) -> List[Entity]:
+    def find_entities(self, name: str = None, entity_type: EntityType = None) -> list[Entity]:
         """Find entities by name and/or type."""
         results = []
 
@@ -117,7 +119,7 @@ class KnowledgeGraph:
 
         return results
 
-    def get_related(self, entity_id: str, relation_type: RelationType = None) -> List[Entity]:
+    def get_related(self, entity_id: str, relation_type: RelationType = None) -> list[Entity]:
         """Get entities related to given entity."""
         related_ids = []
 
@@ -197,7 +199,7 @@ class KnowledgeGraph:
 
         return count
 
-    def query(self, entity_type: EntityType = None, limit: int = 100) -> List[Entity]:
+    def query(self, entity_type: EntityType = None, limit: int = 100) -> list[Entity]:
         """Query entities."""
         if entity_type:
             return [self._entities[eid] for eid in self._index_by_type.get(entity_type, set())][
@@ -228,7 +230,7 @@ class KnowledgeGraph:
         }
         return json.dumps(data, indent=2)
 
-    def status(self) -> Dict[str, Any]:
+    def status(self) -> dict[str, Any]:
         """Get graph status."""
         return {
             "total_entities": len(self._entities),

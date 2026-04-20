@@ -81,7 +81,7 @@ Architecture:
 import time
 from dataclasses import dataclass
 from enum import Enum, auto
-from typing import Any, Dict, List
+from typing import Any
 
 
 class HorizonStrategy(Enum):
@@ -97,7 +97,7 @@ class HorizonStrategy(Enum):
 class SimulatedState:
     """A simulated future state."""
 
-    state: Dict[str, Any]  # Phase 16 substrate state snapshot
+    state: dict[str, Any]  # Phase 16 substrate state snapshot
     step: int  # Future step t+H
     confidence: float  # Confidence in this prediction
     uncertainty: float  # Uncertainty estimate
@@ -108,7 +108,7 @@ class SimulatedState:
 class SimulationResult:
     """Result of world model simulation."""
 
-    trajectory: List[SimulatedState]  # Sequence of predicted states
+    trajectory: list[SimulatedState]  # Sequence of predicted states
     horizon: int  # How many steps ahead
     final_confidence: float  # Confidence at end of simulation
     avg_uncertainty: float  # Average uncertainty across trajectory
@@ -119,9 +119,9 @@ class SimulationResult:
 class SimulationError:
     """Error from comparing predicted vs actual."""
 
-    predicted: Dict[str, Any]
-    actual: Dict[str, Any]
-    error_metrics: Dict[str, float]
+    predicted: dict[str, Any]
+    actual: dict[str, Any]
+    error_metrics: dict[str, float]
     timestep: int
     severity: str  # "low", "medium", "high", "critical"
 
@@ -141,11 +141,11 @@ class Reflection:
 
     # Understanding
     what_went_wrong: str
-    what_was_missing: List[str]
-    what_worked_well: List[str]
+    what_was_missing: list[str]
+    what_worked_well: list[str]
 
     # Actionable insights
-    recommended_adjustments: List[str]
+    recommended_adjustments: list[str]
     confidence_delta: float  # How much to adjust confidence by
 
 
@@ -179,10 +179,10 @@ class PredictiveWorldModel:
 
         # State tracking
         self.current_substrate = None
-        self.simulation_history: List[SimulationResult] = []
-        self.errors: List[SimulationError] = []
-        self.reflections: List[Reflection] = []
-        self.improvements: List[ModelImprovement] = []
+        self.simulation_history: list[SimulationResult] = []
+        self.errors: list[SimulationError] = []
+        self.reflections: list[Reflection] = []
+        self.improvements: list[ModelImprovement] = []
 
         # Model parameters (improvable)
         self.transition_weights = {"substrate": 0.6, "external": 0.4}
@@ -195,7 +195,7 @@ class PredictiveWorldModel:
         self.current_substrate = substrate
 
     def simulate_future(
-        self, initial_state: Dict[str, Any], actions: List[dict[str, Any]], target_horizon: int = 5
+        self, initial_state: dict[str, Any], actions: list[dict[str, Any]], target_horizon: int = 5
     ) -> SimulationResult:
         """Simulate future states using adaptive lookahead.
 
@@ -204,7 +204,7 @@ class PredictiveWorldModel:
         """
         start_time = time.time()
 
-        trajectory: List[SimulatedState] = []
+        trajectory: list[SimulatedState] = []
         current = initial_state.copy()
 
         # Determine actual horizon based on strategy
@@ -252,8 +252,8 @@ class PredictiveWorldModel:
         return result
 
     def evaluate_simulation(
-        self, simulation: SimulationResult, actual_future: List[dict[str, Any]]
-    ) -> List[SimulationError]:
+        self, simulation: SimulationResult, actual_future: list[dict[str, Any]]
+    ) -> list[SimulationError]:
         """Evaluate simulation accuracy against actual outcomes."""
         errors = []
 
@@ -277,7 +277,7 @@ class PredictiveWorldModel:
         return errors
 
     def reflect_on_simulation(
-        self, simulation: SimulationResult, errors: List[SimulationError]
+        self, simulation: SimulationResult, errors: list[SimulationError]
     ) -> Reflection:
         """Meta-cognitive reflection on why simulation errors occurred.
 
@@ -325,7 +325,7 @@ class PredictiveWorldModel:
         self.reflections.append(reflection)
         return reflection
 
-    def improve_world_model(self, reflection: Reflection) -> List[ModelImprovement]:
+    def improve_world_model(self, reflection: Reflection) -> list[ModelImprovement]:
         """Self-improvement: adjust world model based on reflection.
 
         Implements the recursive self-improvement loop from Hyperagents research.
@@ -387,9 +387,9 @@ class PredictiveWorldModel:
 
     def validate_improvements(
         self,
-        improvements: List[ModelImprovement],
-        test_data: List[tuple[dict, list[dict]]],  # (initial, actions) -> actual outcomes
-    ) -> Dict[str, float]:
+        improvements: list[ModelImprovement],
+        test_data: list[tuple[dict, list[dict]]],  # (initial, actions) -> actual outcomes
+    ) -> dict[str, float]:
         """Validate improvements on held-out test data."""
         validation_scores = {}
 
@@ -416,10 +416,10 @@ class PredictiveWorldModel:
 
     def full_recursive_loop(
         self,
-        initial_state: Dict[str, Any],
-        actions: List[dict[str, Any]],
-        actual_future: List[dict[str, Any]],
-    ) -> Dict[str, Any]:
+        initial_state: dict[str, Any],
+        actions: list[dict[str, Any]],
+        actual_future: list[dict[str, Any]],
+    ) -> dict[str, Any]:
         """Execute one full loop: Simulate → Evaluate → Reflect → Improve."""
         # 1. Simulate
         simulation = self.simulate_future(initial_state, actions)
@@ -455,7 +455,7 @@ class PredictiveWorldModel:
             },
         }
 
-    def get_learning_statistics(self) -> Dict[str, Any]:
+    def get_learning_statistics(self) -> dict[str, Any]:
         """Get statistics on model learning progress."""
         if not self.improvements:
             return {"status": "no_improvements_yet"}
@@ -502,8 +502,8 @@ class PredictiveWorldModel:
         return min(target, self.max_horizon)
 
     def _simulate_step(
-        self, current: Dict[str, Any], action: Dict[str, Any], step: int
-    ) -> Dict[str, Any]:
+        self, current: dict[str, Any], action: dict[str, Any], step: int
+    ) -> dict[str, Any]:
         """Simulate one step of state evolution."""
         if self.current_substrate:
             # Use Phase 16 substrate for state evolution
@@ -535,8 +535,8 @@ class PredictiveWorldModel:
         return min(0.9, base_uncertainty + (step * growth_rate))
 
     def _compute_error_metrics(
-        self, predicted: Dict[str, Any], actual: Dict[str, Any]
-    ) -> Dict[str, float]:
+        self, predicted: dict[str, Any], actual: dict[str, Any]
+    ) -> dict[str, float]:
         """Compute error metrics between predicted and actual states."""
         # Simple state difference metric
         diff_keys = set(predicted.keys()) ^ set(actual.keys())
@@ -552,7 +552,7 @@ class PredictiveWorldModel:
 
         return {"state_diff": state_diff, "missing_keys": len(diff_keys)}
 
-    def _determine_severity(self, error_metrics: Dict[str, float]) -> str:
+    def _determine_severity(self, error_metrics: dict[str, float]) -> str:
         """Determine severity of error."""
         state_diff = error_metrics.get("state_diff", 0)
 
@@ -565,7 +565,7 @@ class PredictiveWorldModel:
         else:
             return "critical"
 
-    def _categorize_errors(self, errors: List[SimulationError]) -> List[str]:
+    def _categorize_errors(self, errors: list[SimulationError]) -> list[str]:
         """Categorize types of errors."""
         categories = set()
         for error in errors:
@@ -576,7 +576,7 @@ class PredictiveWorldModel:
         return list(categories) if categories else ["unknown"]
 
     def _assess_confidence_calibration(
-        self, simulation: SimulationResult, errors: List[SimulationError]
+        self, simulation: SimulationResult, errors: list[SimulationError]
     ) -> str:
         """Assess if confidence was well-calibrated."""
         # If confidence was high but errors were many = overconfident
@@ -594,7 +594,7 @@ class PredictiveWorldModel:
         else:
             return "calibrated"
 
-    def _generate_recommendations(self, error_types: List[str], root_cause: str) -> List[str]:
+    def _generate_recommendations(self, error_types: list[str], root_cause: str) -> list[str]:
         """Generate actionable recommendations."""
         recommendations = []
 
@@ -607,7 +607,7 @@ class PredictiveWorldModel:
 
         return recommendations if recommendations else ["continue_monitoring"]
 
-    def _describe_failure(self, error_types: List[str]) -> str:
+    def _describe_failure(self, error_types: list[str]) -> str:
         """Describe what went wrong."""
         if "transition_error" in error_types:
             return "State transition function did not match reality"
@@ -616,7 +616,7 @@ class PredictiveWorldModel:
         else:
             return "Unknown failure mode"
 
-    def _identify_gaps(self, errors: List[SimulationError]) -> List[str]:
+    def _identify_gaps(self, errors: list[SimulationError]) -> list[str]:
         """Identify what was missing."""
         gaps = []
 
@@ -629,8 +629,8 @@ class PredictiveWorldModel:
         return list(set(gaps)) if gaps else ["none_identified"]
 
     def _identify_successes(
-        self, simulation: SimulationResult, errors: List[SimulationError]
-    ) -> List[str]:
+        self, simulation: SimulationResult, errors: list[SimulationError]
+    ) -> list[str]:
         """Identify what worked well."""
         successes = []
 
@@ -641,7 +641,7 @@ class PredictiveWorldModel:
 
         return successes if successes else ["simulation_completed"]
 
-    def _compute_confidence_adjustment(self, errors: List[SimulationError]) -> float:
+    def _compute_confidence_adjustment(self, errors: list[SimulationError]) -> float:
         """Compute how much to adjust confidence by."""
         avg_severity = (
             sum(

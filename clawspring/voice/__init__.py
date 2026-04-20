@@ -13,10 +13,9 @@ from collections.abc import Callable
 from .keyterms import get_voice_keyterms
 from .recorder import check_recording_availability, record_until_silence
 from .stt import check_stt_availability, transcribe
-from typing import Optional, Tuple
 
 
-def check_voice_deps() -> Tuple[bool, str]:
+def check_voice_deps() -> tuple[bool, str]:
     """Return (available, reason_if_not)."""
     rec_ok, rec_reason = check_recording_availability()
     if not rec_ok:

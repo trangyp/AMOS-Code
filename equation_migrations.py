@@ -43,6 +43,8 @@ Environment Variables:
     MIGRATION_AUTO_GENERATE: Auto-generate on model changes
 """
 
+from __future__ import annotations
+
 import argparse
 import asyncio
 import logging
@@ -50,7 +52,7 @@ import os
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 # Alembic imports
 try:
@@ -150,7 +152,7 @@ class MigrationConfig:
         # Default
         return "postgresql+asyncpg://amos:amos@localhost:5432/amos_equations"
 
-    def create_alembic_config(self) -> Optional[Config]:
+    def create_alembic_config(self) -> Config | None:
         """Create Alembic configuration."""
         if not ALEMBIC_AVAILABLE or not Config:
             return None
@@ -176,7 +178,7 @@ class MigrationConfig:
 class MigrationManager:
     """Manages database migrations."""
 
-    def __init__(self, config: Optional[MigrationConfig] = None):
+    def __init__(self, config: MigrationConfig | None = None):
         self.config = config or MigrationConfig()
         self.alembic_cfg = self.config.create_alembic_config()
         self.logger = get_logger("migrations") if LOGGING_AVAILABLE else logger
@@ -439,7 +441,7 @@ else:
 
     def history(
         self, verbose: bool = False, indicate_current: bool = False
-    ) -> List[dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Get migration history.
 
         Args:
@@ -498,7 +500,7 @@ else:
             self.logger.error(f"Failed to stamp: {e}")
             return False
 
-    def check(self) -> Dict[str, Any]:
+    def check(self) -> dict[str, Any]:
         """Check migration status.
 
         Returns:
@@ -565,7 +567,7 @@ class DataMigration:
 
     @staticmethod
     def batch_update(
-        op: Any, table_name: str, updates: List[dict[str, Any]], batch_size: int = 1000
+        op: Any, table_name: str, updates: list[dict[str, Any]], batch_size: int = 1000
     ) -> None:
         """Perform batch update during migration.
 
@@ -592,9 +594,9 @@ class DataMigration:
         op: Any,
         table_name: str,
         column_name: str,
-        old_values: List[str],
-        new_values: List[str],
-        value_mapping: Dict[str, str] = None,
+        old_values: list[str],
+        new_values: list[str],
+        value_mapping: dict[str, str] = None,
     ) -> None:
         """Migrate enum values during migration.
 

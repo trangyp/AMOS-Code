@@ -9,11 +9,7 @@ import sys
 import time
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, List
-
-sys.path.insert(0, ".")
-sys.path.insert(0, "clawspring")
-sys.path.insert(0, "clawspring/amos_brain")
+from typing import Any
 
 
 @dataclass
@@ -24,19 +20,19 @@ class HealthCheckResult:
     status: str  # "healthy", "degraded", "unhealthy"
     load_time_ms: float
     error: str = ""
-    details: Dict[str, Any] = None
+    details: dict[str, Any] = None
 
 
 class SystemHealthValidator:
     """Validates complete system health for production readiness."""
 
     def __init__(self):
-        self.results: List[HealthCheckResult] = []
+        self.results: list[HealthCheckResult] = []
         self.checks_passed = 0
         self.checks_failed = 0
         self.start_time = time.time()
 
-    def run_full_validation(self) -> Dict[str, Any]:
+    def run_full_validation(self) -> dict[str, Any]:
         """Execute complete system health validation."""
         print("\n" + "=" * 78)
         print(" " * 20 + "AMOS ECOSYSTEM v2.8")
@@ -111,7 +107,7 @@ class SystemHealthValidator:
 
         return self._generate_report()
 
-    def _validate_phase(self, phase_name: str, checks: List[tuple[str, callable]]) -> None:
+    def _validate_phase(self, phase_name: str, checks: list[tuple[str, callable]]) -> None:
         """Validate a phase of components."""
         print(f"\n{'─' * 78}")
         print(f"PHASE: {phase_name}")
@@ -289,7 +285,7 @@ class SystemHealthValidator:
         suite = IntegrationTestSuite()
         return suite is not None
 
-    def _generate_report(self) -> Dict[str, Any]:
+    def _generate_report(self) -> dict[str, Any]:
         """Generate final health report."""
         duration = time.time() - self.start_time
 

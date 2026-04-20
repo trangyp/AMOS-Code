@@ -10,7 +10,7 @@ Implements the information-geometric regime:
 
 import math
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 
 @dataclass
@@ -38,9 +38,9 @@ class UncertaintyBundle:
 class BeliefState:
     """Belief state p(x) ∈ P(X)."""
 
-    distribution: Dict[str, float] = field(default_factory=dict)
+    distribution: dict[str, float] = field(default_factory=dict)
     timestamp: float = 0.0
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     def normalize(self) -> None:
         """Normalize to valid probability distribution."""
@@ -48,7 +48,7 @@ class BeliefState:
         if total > 0:
             self.distribution = {k: v / total for k, v in self.distribution.items()}
 
-    def expectation(self, values: Dict[str, float]) -> float:
+    def expectation(self, values: dict[str, float]) -> float:
         """Compute E[value] under belief."""
         return sum(self.distribution.get(k, 0) * v for k, v in values.items())
 
@@ -61,12 +61,12 @@ class InformationGeometry:
     """Information-geometric operations on belief manifold."""
 
     def __init__(self):
-        self.beliefs: Dict[str, BeliefState] = {}
-        self.history: List[tuple[str, BeliefState]] = []
+        self.beliefs: dict[str, BeliefState] = {}
+        self.history: list[tuple[str, BeliefState]] = []
 
     def fisher_metric(
-        self, params: List[float], log_likelihood_derivatives: List[list[float]]
-    ) -> List[list[float]]:
+        self, params: list[float], log_likelihood_derivatives: list[list[float]]
+    ) -> list[list[float]]:
         """Compute Fisher information metric g_ij(θ).
 
         g_ij(θ) = E[∂log p/∂θ_i · ∂log p/∂θ_j]
@@ -95,7 +95,7 @@ class InformationGeometry:
 
     def check_bridge_legality(
         self, source_belief: BeliefState, target_belief: BeliefState, epsilon: float = 0.5
-    ) -> Tuple[bool, float]:
+    ) -> tuple[bool, float]:
         """Check if bridge information loss is within bounds.
 
         D_ij <= ε_ij (legal bridge condition)
@@ -105,7 +105,7 @@ class InformationGeometry:
         return legal, divergence
 
     def bayesian_update(
-        self, prior: BeliefState, likelihood: Dict[str, float], observation: str
+        self, prior: BeliefState, likelihood: dict[str, float], observation: str
     ) -> BeliefState:
         """Bayesian update: p(x|y) = p(y|x)p(x)/p(y)."""
         posterior = BeliefState(
@@ -151,7 +151,7 @@ class InformationGeometry:
         )
 
     def gradient_flow(
-        self, belief: BeliefState, potential: Dict[str, float], step_size: float = 0.1
+        self, belief: BeliefState, potential: dict[str, float], step_size: float = 0.1
     ) -> BeliefState:
         """Natural gradient flow on belief manifold.
 
@@ -173,7 +173,7 @@ class InformationGeometry:
         return new_belief
 
     def projection_onto_constraints(
-        self, belief: BeliefState, constraints: List[callable]
+        self, belief: BeliefState, constraints: list[callable]
     ) -> BeliefState:
         """Project belief onto constraint manifold.
 
@@ -198,9 +198,9 @@ class BeliefManifold:
     def __init__(self):
         self.geometry = InformationGeometry()
         self.current_belief: Optional[BeliefState] = None
-        self.trajectory: List[BeliefState] = []
+        self.trajectory: list[BeliefState] = []
 
-    def initialize_uniform(self, states: List[str]) -> BeliefState:
+    def initialize_uniform(self, states: list[str]) -> BeliefState:
         """Initialize uniform belief over given states."""
         n = len(states)
         belief = BeliefState(
@@ -210,7 +210,7 @@ class BeliefManifold:
         self.trajectory.append(belief)
         return belief
 
-    def update(self, observation: str, likelihood: Dict[str, float]) -> BeliefState:
+    def update(self, observation: str, likelihood: dict[str, float]) -> BeliefState:
         """Update belief with observation."""
         if self.current_belief is None:
             raise ValueError("No current belief to update")
@@ -229,7 +229,7 @@ class BeliefManifold:
 
         return self.geometry.compute_uncertainty_bundle(self.current_belief)
 
-    def verify_geodesic(self, path: List[BeliefState]) -> bool:
+    def verify_geodesic(self, path: list[BeliefState]) -> bool:
         """Verify if path is approximately a geodesic on manifold."""
         if len(path) < 2:
             return True

@@ -11,8 +11,10 @@ Owner: Trang Phan
 Version: 2.0.0
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from amos_cognitive_router import CognitiveRouter
 from amos_engine_activator import EngineActivator
@@ -43,7 +45,7 @@ class OrchestratorResult:
     status: str
     engine_used: str
     category: str
-    result_data: Dict[str, Any] = field(default_factory=dict)
+    result_data: dict[str, Any] = field(default_factory=dict)
     processing_time_ms: int = 0
     ledger_entry_id: str = None
 
@@ -123,7 +125,7 @@ class MasterCognitiveOrchestrator:
         except Exception:
             pass
 
-    def initialize(self) -> Dict[str, Any]:
+    def initialize(self) -> dict[str, Any]:
         """Initialize all AMOS components."""
         print("\n" + "=" * 70)
         print("AMOS MASTER COGNITIVE ORCHESTRATOR - INITIALIZATION")
@@ -177,7 +179,7 @@ class MasterCognitiveOrchestrator:
             "ready": True,
         }
 
-    def process(self, task: str, context: Dict[str, Any] = None) -> OrchestratorResult:
+    def process(self, task: str, context: dict[str, Any] = None) -> OrchestratorResult:
         """Process a task through the complete AMOS pipeline.
 
         Pipeline:
@@ -268,11 +270,11 @@ class MasterCognitiveOrchestrator:
             ledger_entry_id=ledger_entry.hash if ledger_entry else None,
         )
 
-    def process_batch(self, tasks: List[str]) -> List[OrchestratorResult]:
+    def process_batch(self, tasks: list[str]) -> list[OrchestratorResult]:
         """Process multiple tasks."""
         return [self.process(task) for task in tasks]
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get orchestrator status."""
         return {
             "initialized": self.initialized,
@@ -287,7 +289,7 @@ class MasterCognitiveOrchestrator:
             "ready": self.initialized,
         }
 
-    def query(self, question: str) -> Dict[str, Any]:
+    def query(self, question: str) -> dict[str, Any]:
         """Query the knowledge base."""
         if not self.initialized:
             self.initialize()

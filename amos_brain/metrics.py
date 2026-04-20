@@ -4,10 +4,12 @@ Tracks latency, errors, token usage, and backend health for
 operational visibility.
 """
 
+from __future__ import annotations
+
 import time
 from dataclasses import dataclass, field
 from functools import lru_cache
-from typing import Any, Dict, List
+from typing import Any
 
 
 @dataclass
@@ -40,7 +42,7 @@ class BackendMetrics:
     successful_requests: int = 0
     failed_requests: int = 0
     total_latency_ms: float = 0.0
-    errors: Dict[str, int] = field(default_factory=dict)
+    errors: dict[str, int] = field(default_factory=dict)
 
     @property
     def avg_latency_ms(self) -> float:
@@ -65,8 +67,8 @@ class MetricsCollector:
     """
 
     def __init__(self):
-        self._request_history: List[RequestMetrics] = []
-        self._backend_stats: Dict[str, BackendMetrics] = {}
+        self._request_history: list[RequestMetrics] = []
+        self._backend_stats: dict[str, BackendMetrics] = {}
         self._max_history = 1000
 
     def start_request(self, backend: str, model: str) -> RequestMetrics:
@@ -126,7 +128,7 @@ class MetricsCollector:
             if error_type:
                 stats.errors[error_type] = stats.errors.get(error_type, 0) + 1
 
-    def get_summary(self) -> Dict[str, Any]:
+    def get_summary(self) -> dict[str, Any]:
         """Get summary of all collected metrics.
 
         Returns:
@@ -163,7 +165,7 @@ class MetricsCollector:
             },
         }
 
-    def get_recent_errors(self, count: int = 10) -> List[dict[str, Any]]:
+    def get_recent_errors(self, count: int = 10) -> list[dict[str, Any]]:
         """Get recent error details.
 
         Args:

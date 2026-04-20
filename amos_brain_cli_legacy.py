@@ -16,13 +16,6 @@ Usage:
   python amos_brain_cli.py
 """
 
-import os
-import sys
-from typing import List
-
-# Setup paths
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-
 from amos_brain import GlobalLaws, get_amos_integration
 from amos_brain.cognitive_stack import CognitiveStack
 from amos_brain.dashboard import print_dashboard
@@ -211,7 +204,7 @@ def cmd_laws():
         print()
 
 
-def cmd_history(memory, args: List[str]):
+def cmd_history(memory, args: list[str]):
     """Execute /history command."""
     limit = int(args[0]) if args else 5
     history = memory.get_reasoning_history(limit=limit)

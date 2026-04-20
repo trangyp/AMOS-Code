@@ -167,11 +167,16 @@ class AmosCognitiveAgent:
                 "output": f"Created plan with {len(plan.steps)} steps",
             }
         elif action == "execute_shell":
+            import shlex
             import subprocess
 
             try:
                 cmd = decision.get("params", {}).get("command", "echo 'no command'")
-                proc = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=10)
+                # SECURITY: Use shell=False with shlex.split() to prevent injection
+                cmd_parts = shlex.split(cmd)
+                proc = subprocess.run(
+                    cmd_parts, shell=False, capture_output=True, text=True, timeout=10
+                )
                 result = {
                     "success": proc.returncode == 0,
                     "command": cmd,

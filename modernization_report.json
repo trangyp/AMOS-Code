@@ -1,0 +1,829 @@
+{
+  "generated_at": "2026-04-20T07:01:37.277983+00:00",
+  "root_path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code",
+  "total_files_analyzed": 959,
+  "batches": 6,
+  "summary": {
+    "files_with_datetime_issues": 225,
+    "files_with_typing_issues": 901,
+    "files_with_async_issues": 16,
+    "files_with_bare_except": 12,
+    "total_issues": 6198
+  },
+  "batch_results": [
+    {
+      "batch_name": "Core System Files",
+      "files_processed": 19,
+      "files_modified": 19,
+      "total_changes": 571,
+      "errors": [
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_translation_layer.py: Failed to modernize /Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_translation_layer.py: Syntax error after modernization: unexpected unindent (amos_translation_layer.py, line 942)"
+      ],
+      "changes_by_file": {
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_brain_reading_kernel.py": [
+          "Replaced 3 utcnow() calls",
+          "Replaced 4   patterns",
+          "Replaced 61 List[] patterns",
+          "Replaced 17 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_meaning_compiler.py": [
+          "Replaced 5 utcnow() calls",
+          "Replaced 14   patterns",
+          "Replaced 32 List[] patterns",
+          "Replaced 16 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_file_ingestion_runtime.py": [
+          "Replaced 4 utcnow() calls",
+          "Replaced 19   patterns",
+          "Replaced 15 List[] patterns",
+          "Replaced 17 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_formal_core.py": [
+          "Replaced 2   patterns",
+          "Replaced 18 List[] patterns",
+          "Replaced 10 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_cognitive_substrate.py": [
+          "Replaced 13 utcnow() calls",
+          "Replaced 24   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_superintelligence_stack.py": [
+          "Replaced 20 utcnow() calls",
+          "Replaced 16   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_integration_client.py": [
+          "Replaced 30   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_multi_agent_orchestrator.py": [
+          "Replaced 26   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_thinking_kernel.py": [
+          "Replaced 7 utcnow() calls",
+          "Replaced 18   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_secrets_manager.py": [
+          "Replaced 11 utcnow() calls",
+          "Replaced 14   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_auth_manager.py": [
+          "Replaced 9 utcnow() calls",
+          "Replaced 4   patterns",
+          "Replaced 5 List[] patterns",
+          "Replaced 4 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_platform_sdk.py": [
+          "Replaced 19   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_reasoning_kernel.py": [
+          "Replaced 10 utcnow() calls",
+          "Replaced 10   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_verified_patch_workflow.py": [
+          "Replaced 20 utcnow() calls",
+          "Replaced 1   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_intelligent_modernizer.py": [
+          "Replaced 10 utcnow() calls",
+          "Replaced 1   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_alerting.py": [
+          "Replaced 3   patterns",
+          "Replaced 8 List[] patterns",
+          "Replaced 6 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_superintelligence_core.py": [
+          "Replaced 10 utcnow() calls",
+          "Replaced 6   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_trainable_substrate.py": [
+          "Replaced 6 utcnow() calls",
+          "Replaced 9   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_service_mesh.py": [
+          "Replaced 14   patterns"
+        ]
+      }
+    },
+    {
+      "batch_name": "Backend Modules",
+      "files_processed": 29,
+      "files_modified": 29,
+      "total_changes": 247,
+      "errors": [
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/backend/brain_health_integration.py: Failed to modernize /Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/backend/brain_health_integration.py: Syntax error after modernization: from __future__ imports must occur at the beginning of the file (brain_health_integration.py, line 8)"
+      ],
+      "changes_by_file": {
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/backend/api/system.py": [
+          "Replaced 23 utcnow() calls"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/backend/api/brain_learning_system.py": [
+          "Replaced 15   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/backend/services/agent_service.py": [
+          "Replaced 1 utcnow() calls",
+          "Replaced 14   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/backend/analytics/analytics_service.py": [
+          "Replaced 14   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/backend/workflow/workflow_service.py": [
+          "Replaced 13   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/backend/mcp_registry.py": [
+          "Replaced 3 utcnow() calls",
+          "Replaced 7   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/backend/task_executor.py": [
+          "Replaced 9   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/backend/websocket_resilience.py": [
+          "Replaced 1   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/backend/agent_plugin_system.py": [
+          "Replaced 1 utcnow() calls",
+          "Replaced 8   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/backend/ai_cost_manager.py": [
+          "Replaced 7 utcnow() calls",
+          "Replaced 1   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/backend/llm_providers_complete.py": [
+          "Replaced 3 utcnow() calls",
+          "Replaced 6   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/backend/knowledge_graph/graph_service.py": [
+          "Replaced 8   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/backend/auth.py": [
+          "Replaced 6 utcnow() calls",
+          "Replaced 2   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/backend/amos_self_evolving_engine.py": [
+          "Replaced 8 utcnow() calls"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/backend/config/__init__.py": [
+          "Replaced 7   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/backend/ml_inference/model_serving.py": [
+          "Replaced 3 utcnow() calls",
+          "Replaced 4   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/backend/api/knowledge_graph.py": [
+          "Replaced 7   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/backend/api/task_processor.py": [
+          "Replaced 7   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/backend/api/brain_agent_manager.py": [
+          "Replaced 7   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/backend/api/analytics.py": [
+          "Replaced 7   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/backend/config.py": [
+          "Replaced 7   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/backend/auth_integration.py": [
+          "Replaced 6   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/backend/real_orchestrator_bridge.py": [
+          "Replaced 6   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/backend/tenancy/multi_tenant.py": [
+          "Replaced 4 utcnow() calls",
+          "Replaced 2   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/backend/api/brain_tasks.py": [
+          "Replaced 6   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/backend/api/brain_task_automation.py": [
+          "Replaced 6   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/backend/api/brain_decision_support.py": [
+          "Replaced 6   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/backend/api/workflow.py": [
+          "Replaced 6   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/backend/api/agent_tools.py": [
+          "Replaced 6   patterns"
+        ]
+      }
+    },
+    {
+      "batch_name": "ORGANISM_OS Subsystems",
+      "files_processed": 40,
+      "files_modified": 40,
+      "total_changes": 455,
+      "errors": [],
+      "changes_by_file": {
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/_AMOS_BRAIN/AMOS_ORGANISM_OS/06_MUSCLE/muscle_kernel.py": [
+          "Replaced 6 utcnow() calls",
+          "Replaced 1   patterns",
+          "Replaced 2 List[] patterns",
+          "Replaced 35 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/_AMOS_BRAIN/AMOS_ORGANISM_OS/03_IMMUNE/immune_kernel.py": [
+          "Replaced 2   patterns",
+          "Replaced 17 List[] patterns",
+          "Replaced 11 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/_AMOS_BRAIN/AMOS_ORGANISM_OS/11_CANON_INTEGRATION/canon_integration_kernel.py": [
+          "Replaced 8   patterns",
+          "Replaced 4 List[] patterns",
+          "Replaced 16 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/_AMOS_BRAIN/AMOS_ORGANISM_OS/15_ENGINE_ACTIVATION/engine_activation_kernel.py": [
+          "Replaced 1   patterns",
+          "Replaced 6 List[] patterns",
+          "Replaced 18 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/_AMOS_BRAIN/AMOS_ORGANISM_OS/01_BRAIN/brain_kernel.py": [
+          "Replaced 6 utcnow() calls",
+          "Replaced 6 List[] patterns",
+          "Replaced 14 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/_AMOS_BRAIN/AMOS_ORGANISM_OS/12_ETHICS_VALIDATION/ethics_validation_kernel.py": [
+          "Replaced 9 List[] patterns",
+          "Replaced 13 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/_AMOS_BRAIN/AMOS_ORGANISM_OS/10_LEARNING/learning_kernel.py": [
+          "Replaced 3 List[] patterns",
+          "Replaced 17 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/_AMOS_BRAIN/AMOS_ORGANISM_OS/08_WORLD_MODEL/world_model_kernel.py": [
+          "Replaced 5   patterns",
+          "Replaced 5 List[] patterns",
+          "Replaced 8 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/_AMOS_BRAIN/AMOS_ORGANISM_OS/13_MEMORY_ARCHIVAL/memory_archival_kernel.py": [
+          "Replaced 1   patterns",
+          "Replaced 8 List[] patterns",
+          "Replaced 8 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/_AMOS_BRAIN/AMOS_ORGANISM_OS/09_QUANTUM_LAYER/quantum_layer_kernel.py": [
+          "Replaced 1   patterns",
+          "Replaced 2 List[] patterns",
+          "Replaced 11 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/AMOS_ORGANISM_OS/CANON_INTEGRATION/canon_bridge.py": [
+          "Replaced 14   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/AMOS_ORGANISM_OS/04_BLOOD/resource_engine.py": [
+          "Replaced 10   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/AMOS_ORGANISM_OS/04_BLOOD/cashflow_tracker.py": [
+          "Replaced 4 utcnow() calls",
+          "Replaced 6   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/AMOS_ORGANISM_OS/14_INTERFACES/mcp_server.py": [
+          "Replaced 11 utcnow() calls"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/_AMOS_BRAIN/AMOS_ORGANISM_OS/04_BLOOD/blood_kernel.py": [
+          "Replaced 1 List[] patterns",
+          "Replaced 10 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/_AMOS_BRAIN/AMOS_ORGANISM_OS/02_SENSES/senses_kernel.py": [
+          "Replaced 1   patterns",
+          "Replaced 2 List[] patterns",
+          "Replaced 7 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/AMOS_ORGANISM_OS/unified_equation_api.py": [
+          "Replaced 9   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/AMOS_ORGANISM_OS/04_BLOOD/budget_manager.py": [
+          "Replaced 1 utcnow() calls",
+          "Replaced 8   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/AMOS_ORGANISM_OS/06_MUSCLE/automated_remediation_engine.py": [
+          "Replaced 9   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/_AMOS_BRAIN/AMOS_ORGANISM_OS/14_INTERFACES/interface_layer_kernel.py": [
+          "Replaced 2   patterns",
+          "Replaced 1 List[] patterns",
+          "Replaced 6 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/AMOS_ORGANISM_OS/07_METABOLISM/task_queue.py": [
+          "Replaced 8   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/_AMOS_BRAIN/AMOS_ORGANISM_OS/05_SKELETON/skeleton_kernel.py": [
+          "Replaced 3 List[] patterns",
+          "Replaced 6 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/AMOS_ORGANISM_OS/10_SOCIAL_ENGINE/negotiation_engine.py": [
+          "Replaced 6   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/AMOS_ORGANISM_OS/03_IMMUNE/agent_invariant_audit.py": [
+          "Replaced 3   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/AMOS_ORGANISM_OS/12_QUANTUM_LAYER/superposition_manager.py": [
+          "Replaced 6   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/AMOS_ORGANISM_OS/11_LEGAL_BRAIN/regulatory_scanner.py": [
+          "Replaced 6   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/_AMOS_BRAIN/AMOS_ORGANISM_OS/07_METABOLISM/metabolism_kernel.py": [
+          "Replaced 3 List[] patterns",
+          "Replaced 4 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/AMOS_ORGANISM_OS/07_METABOLISM/cleanup_engine.py": [
+          "Replaced 5   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/AMOS_ORGANISM_OS/07_METABOLISM/transform_engine.py": [
+          "Replaced 5   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/AMOS_ORGANISM_OS/11_LEGAL_BRAIN/ip_tracker.py": [
+          "Replaced 5   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/AMOS_ORGANISM_OS/01_BRAIN/brain_os.py": [
+          "Replaced 6 utcnow() calls"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/AMOS_ORGANISM_OS/01_BRAIN/brain_loader.py": [
+          "Replaced 5   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/AMOS_ORGANISM_OS/01_BRAIN/memory_layer.py": [
+          "Replaced 3 utcnow() calls",
+          "Replaced 2   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/AMOS_ORGANISM_OS/10_LIFE_ENGINE/cognitive_cycle_manager.py": [
+          "Replaced 5   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/AMOS_ORGANISM_OS/13_FACTORY/builder_engine.py": [
+          "Replaced 5   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/AMOS_ORGANISM_OS/13_FACTORY/code_generator.py": [
+          "Replaced 5   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/AMOS_ORGANISM_OS/09_QUANTUM_LAYER/decision_optimizer.py": [
+          "Replaced 5   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/AMOS_ORGANISM_OS/09_QUANTUM_LAYER/scenario_engine.py": [
+          "Replaced 5   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/AMOS_ORGANISM_OS/10_SOCIAL_ENGINE/human_interface.py": [
+          "Replaced 4   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/AMOS_ORGANISM_OS/10_SOCIAL_ENGINE/agent_coordinator.py": [
+          "Replaced 4   patterns"
+        ]
+      }
+    },
+    {
+      "batch_name": "Repo Doctor Modules",
+      "files_processed": 25,
+      "files_modified": 25,
+      "total_changes": 518,
+      "errors": [],
+      "changes_by_file": {
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/repo_doctor/arch_pathologies.py": [
+          "Replaced 39 List[] patterns",
+          "Replaced 2 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/repo_doctor/meta_cognitive_reflection.py": [
+          "Replaced 7 utcnow() calls",
+          "Replaced 2   patterns",
+          "Replaced 12 List[] patterns",
+          "Replaced 15 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/repo_doctor/omega_infinity.py": [
+          "Replaced 3   patterns",
+          "Replaced 20 List[] patterns",
+          "Replaced 13 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/repo_doctor/meta_pathologies.py": [
+          "Replaced 24 List[] patterns",
+          "Replaced 4 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/repo_doctor/invariants/state_coexistence.py": [
+          "Replaced 35 List[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/repo_doctor/security_scanner.py": [
+          "Replaced 13 utcnow() calls",
+          "Replaced 13   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/repo_doctor/graph_substrate.py": [
+          "Replaced 9   patterns",
+          "Replaced 10 List[] patterns",
+          "Replaced 6 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/repo_doctor/explanatory_engine.py": [
+          "Replaced 25 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/repo_doctor/layer19_meta_pathology.py": [
+          "Replaced 25 List[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/repo_doctor/recovery_resilience_engine.py": [
+          "Replaced 17 List[] patterns",
+          "Replaced 3 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/repo_doctor/operational_architecture_engine.py": [
+          "Replaced 14 List[] patterns",
+          "Replaced 6 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/repo_doctor/invariants/meta_pathology.py": [
+          "Replaced 20 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/repo_doctor/amos_brain_integration.py": [
+          "Replaced 8 List[] patterns",
+          "Replaced 9 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/repo_doctor/fast_document_reader.py": [
+          "Replaced 12   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/repo_doctor/graph/repo_graph.py": [
+          "Replaced 3   patterns",
+          "Replaced 7 List[] patterns",
+          "Replaced 5 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/repo_doctor/invariants/environment.py": [
+          "Replaced 15 List[] patterns",
+          "Replaced 1 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/repo_doctor/model/invariants.py": [
+          "Replaced 4 List[] patterns",
+          "Replaced 12 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/repo_doctor/fleet.py": [
+          "Replaced 1   patterns",
+          "Replaced 9 List[] patterns",
+          "Replaced 3 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/repo_doctor/unified_architecture_orchestrator.py": [
+          "Replaced 8 List[] patterns",
+          "Replaced 7 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/repo_doctor_omega/invariants/hard.py": [
+          "Replaced 13   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/repo_doctor/causal_architecture_engine.py": [
+          "Replaced 1   patterns",
+          "Replaced 12 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/repo_doctor/invariants/artifact.py": [
+          "Replaced 13 List[] patterns",
+          "Replaced 1 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/repo_doctor/invariants/migration.py": [
+          "Replaced 2   patterns",
+          "Replaced 7 List[] patterns",
+          "Replaced 2 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/repo_doctor_omega/invariants/meta.py": [
+          "Replaced 13 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/repo_doctor/invariants/control_systems.py": [
+          "Replaced 13 List[] patterns"
+        ]
+      }
+    },
+    {
+      "batch_name": "Integration & Tools",
+      "files_processed": 24,
+      "files_modified": 19,
+      "total_changes": 129,
+      "errors": [
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/backend/brain_health_integration.py: Failed to modernize /Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/backend/brain_health_integration.py: Syntax error after modernization: from __future__ imports must occur at the beginning of the file (brain_health_integration.py, line 8)"
+      ],
+      "changes_by_file": {
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_brain/tools_extended.py": [
+          "Replaced 18 utcnow() calls"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_cascade_brain_integration.py": [
+          "Replaced 4 utcnow() calls",
+          "Replaced 8   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/axiom_one_agent_tools.py": [
+          "Replaced 6 utcnow() calls",
+          "Replaced 4   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_brain_coding_tools.py": [
+          "Replaced 9 utcnow() calls"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_organism_integration.py": [
+          "Replaced 7   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/clawspring/amos_brain/brain_event_integration.py": [
+          "Replaced 4 utcnow() calls",
+          "Replaced 3   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/scripts/modernize_typing.py": [
+          "Replaced 1 List[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/axiom_one/backend_integration.py": [
+          "Replaced 4   patterns",
+          "Replaced 1 List[] patterns",
+          "Replaced 2 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_file_brain_integration.py": [
+          "Replaced 4   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_real_brain_integration.py": [
+          "Replaced 2 utcnow() calls",
+          "Replaced 4   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_brain/brain_event_integration.py": [
+          "Replaced 2 utcnow() calls",
+          "Replaced 4   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/scripts/modernize_datetime.py": [
+          "Replaced 7 utcnow() calls"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_cascade_brain_integration_v2.py": [
+          "Replaced 5   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_canon_integration.py": [
+          "Replaced 1 utcnow() calls",
+          "Replaced 4   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_equation_kernel_integration.py": [
+          "Replaced 1 utcnow() calls",
+          "Replaced 4   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/clawspring/amos_brain/math_cli_integration.py": [
+          "Replaced 6 utcnow() calls"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/scripts/init_registries.py": [
+          "Replaced 6 utcnow() calls"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_api_integration.py": [
+          "Replaced 4   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_mcp_production_integration.py": [
+          "Replaced 4   patterns"
+        ]
+      }
+    },
+    {
+      "batch_name": "Remaining Files",
+      "files_processed": 45,
+      "files_modified": 45,
+      "total_changes": 722,
+      "errors": [
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/brain_fix_engine.py: Failed to modernize /Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/brain_fix_engine.py: Syntax error after modernization: invalid syntax (brain_fix_engine.py, line 100)",
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/clawspring/amos_brain/amos_kernel_runtime.py: Failed to modernize /Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/clawspring/amos_brain/amos_kernel_runtime.py: Syntax error after modernization: invalid syntax (amos_kernel_runtime.py, line 150)",
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/clawspring/amos_brain/math_audit_logger.py: Failed to modernize /Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/clawspring/amos_brain/math_audit_logger.py: Syntax error after modernization: from __future__ imports must occur at the beginning of the file (math_audit_logger.py, line 11)",
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/clawspring/amos_plugin.py: Failed to modernize /Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/clawspring/amos_plugin.py: Syntax error after modernization: unmatched ')' (amos_plugin.py, line 23)",
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/clawspring/amos_brain/brain_workflow_engine.py: Failed to modernize /Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/clawspring/amos_brain/brain_workflow_engine.py: Syntax error after modernization: from __future__ imports must occur at the beginning of the file (brain_workflow_engine.py, line 12)"
+      ],
+      "changes_by_file": {
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/AXIOM_ONE_PROTOCOLS.py": [
+          "Replaced 2 utcnow() calls",
+          "Replaced 3   patterns",
+          "Replaced 36 List[] patterns",
+          "Replaced 11 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_universe/contracts/pydantic/events.py": [
+          "Replaced 1 utcnow() calls",
+          "Replaced 42   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/server/amos_api_hub.py": [
+          "Replaced 10 utcnow() calls",
+          "Replaced 16   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/server/amos_platform_gateway.py": [
+          "Replaced 9 utcnow() calls",
+          "Replaced 22   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_brain/real_learning_engine.py": [
+          "Replaced 18 utcnow() calls",
+          "Replaced 9   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_brain/super_brain.py": [
+          "Replaced 6 utcnow() calls",
+          "Replaced 20   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/equation_services.py": [
+          "Replaced 12   patterns",
+          "Replaced 3 List[] patterns",
+          "Replaced 9 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amosl/ast_nodes.py": [
+          "Replaced 24   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_self_evolution/regression_guard.py": [
+          "Replaced 22 utcnow() calls"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/minimal_real_brain.py": [
+          "Replaced 5 utcnow() calls",
+          "Replaced 15   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/server/amos_unified_gateway.py": [
+          "Replaced 6 utcnow() calls",
+          "Replaced 12   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_brain/agent_fabric_kernel.py": [
+          "Replaced 13 utcnow() calls",
+          "Replaced 6   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/ml/model_registry.py": [
+          "Replaced 2 utcnow() calls",
+          "Replaced 6   patterns",
+          "Replaced 2 List[] patterns",
+          "Replaced 8 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_universe/contracts/pydantic/repo.py": [
+          "Replaced 2 utcnow() calls",
+          "Replaced 16   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/axiom_one/models.py": [
+          "Replaced 18   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/clawspring/amos_brain/learning_memory_kernel.py": [
+          "Replaced 8 utcnow() calls",
+          "Replaced 6   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_brain/api_contracts/repo.py": [
+          "Replaced 2 utcnow() calls",
+          "Replaced 15   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/axiom_one/server.py": [
+          "Replaced 15 utcnow() calls"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/analytics/api.py": [
+          "Replaced 8 utcnow() calls",
+          "Replaced 7 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_brain/cookbook.py": [
+          "Replaced 13   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_brain/api_contracts/session.py": [
+          "Replaced 3 utcnow() calls",
+          "Replaced 10   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_universe/contracts/pydantic/session.py": [
+          "Replaced 3 utcnow() calls",
+          "Replaced 10   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/axiom_one/execution_slot.py": [
+          "Replaced 5 utcnow() calls",
+          "Replaced 8   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/axiom_one_agent_fleet.py": [
+          "Replaced 8 utcnow() calls",
+          "Replaced 3   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/equation_logging.py": [
+          "Replaced 8 utcnow() calls"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/axiom_one_system_graph.py": [
+          "Replaced 8 List[] patterns",
+          "Replaced 5 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_brain/repo_autopsy_engine.py": [
+          "Replaced 5 utcnow() calls",
+          "Replaced 7   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_universe/contracts/pydantic/brain.py": [
+          "Replaced 1 utcnow() calls",
+          "Replaced 11   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amosl_evolution.py": [
+          "Replaced 4 utcnow() calls",
+          "Replaced 7   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_brain/api_contracts/brain.py": [
+          "Replaced 1 utcnow() calls",
+          "Replaced 10   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_brain/api_contracts/chat.py": [
+          "Replaced 1 utcnow() calls",
+          "Replaced 10   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_universe/contracts/pydantic/chat.py": [
+          "Replaced 1 utcnow() calls",
+          "Replaced 10   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/axiom_one_repo_autopsy.py": [
+          "Replaced 8 utcnow() calls",
+          "Replaced 2   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/equation_exports.py": [
+          "Replaced 10   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/clawspring/openclaw_bridge.py": [
+          "Replaced 1 utcnow() calls",
+          "Replaced 9   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_brain/api_contracts/workflow.py": [
+          "Replaced 1 utcnow() calls",
+          "Replaced 9   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/sdk/python/amos_platform_sdk/client.py": [
+          "Replaced 10   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_universe/contracts/pydantic/workflow.py": [
+          "Replaced 1 utcnow() calls",
+          "Replaced 9   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/equation_database.py": [
+          "Replaced 9   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/clawspring/amos_brain/task_queue.py": [
+          "Replaced 3 utcnow() calls",
+          "Replaced 6   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_brain/task_queue.py": [
+          "Replaced 3 utcnow() calls",
+          "Replaced 6   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_brain/api_contracts/models.py": [
+          "Replaced 9   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_universe/contracts/pydantic/models.py": [
+          "Replaced 9   patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/analytics/warehouse.py": [
+          "Replaced 5 utcnow() calls",
+          "Replaced 2 List[] patterns",
+          "Replaced 3 Dict[] patterns"
+        ],
+        "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amosl_ledger.py": [
+          "Replaced 5 utcnow() calls",
+          "Replaced 3   patterns"
+        ]
+      }
+    }
+  ],
+  "top_files_by_issues": [
+    {
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_translation_layer.py",
+      "issues": 110
+    },
+    {
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_brain_reading_kernel.py",
+      "issues": 89
+    },
+    {
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_meaning_compiler.py",
+      "issues": 78
+    },
+    {
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_file_ingestion_runtime.py",
+      "issues": 63
+    },
+    {
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/AXIOM_ONE_PROTOCOLS.py",
+      "issues": 56
+    },
+    {
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/repo_doctor/arch_pathologies.py",
+      "issues": 51
+    },
+    {
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/_AMOS_BRAIN/AMOS_ORGANISM_OS/06_MUSCLE/muscle_kernel.py",
+      "issues": 45
+    },
+    {
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_universe/contracts/pydantic/events.py",
+      "issues": 44
+    },
+    {
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_formal_core.py",
+      "issues": 41
+    },
+    {
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_cognitive_substrate.py",
+      "issues": 40
+    },
+    {
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/repo_doctor/meta_cognitive_reflection.py",
+      "issues": 39
+    },
+    {
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/repo_doctor/omega_infinity.py",
+      "issues": 38
+    },
+    {
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_superintelligence_stack.py",
+      "issues": 37
+    },
+    {
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/repo_doctor/meta_pathologies.py",
+      "issues": 36
+    },
+    {
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/repo_doctor/invariants/state_coexistence.py",
+      "issues": 35
+    },
+    {
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/server/amos_api_hub.py",
+      "issues": 32
+    },
+    {
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/server/amos_platform_gateway.py",
+      "issues": 32
+    },
+    {
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_integration_client.py",
+      "issues": 31
+    },
+    {
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/_AMOS_BRAIN/AMOS_ORGANISM_OS/03_IMMUNE/immune_kernel.py",
+      "issues": 31
+    },
+    {
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/_AMOS_BRAIN/AMOS_ORGANISM_OS/11_CANON_INTEGRATION/canon_integration_kernel.py",
+      "issues": 29
+    }
+  ]
+}

@@ -19,7 +19,6 @@ from hypothesis import strategies as st
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from typing import List
 
 from .ast_nodes import (
     EquationKernel,
@@ -64,7 +63,7 @@ class TestSoftmax:
 
     @given(st.lists(st.floats(min_value=-10, max_value=10), min_size=2, max_size=10))
     @settings(max_examples=100)
-    def test_softmax_properties_hypothesis(self, kernel: EquationKernel, data: List[float]) -> None:
+    def test_softmax_properties_hypothesis(self, kernel: EquationKernel, data: list[float]) -> None:
         """Property-based testing for softmax invariants."""
         arr = np.array(data)
         result = kernel.execute("softmax", {"x": arr})
@@ -156,7 +155,7 @@ class TestShannonEntropy:
 
     @given(st.lists(st.floats(min_value=0.01, max_value=1.0), min_size=2, max_size=5))
     @settings(max_examples=50)
-    def test_entropy_properties(self, kernel: EquationKernel, probs: List[float]) -> None:
+    def test_entropy_properties(self, kernel: EquationKernel, probs: list[float]) -> None:
         """Property-based testing for entropy invariants."""
         # Normalize to valid probability distribution
         arr = np.array(probs)

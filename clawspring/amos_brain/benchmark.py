@@ -14,14 +14,12 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime
 from statistics import mean, stdev
-from typing import Any, List
+from typing import Any
 
 import psutil
 
-# Add paths
-sys.path.insert(0, ".")
-sys.path.insert(0, "clawspring")
-sys.path.insert(0, "clawspring/amos_brain")
+# Import AMOS Brain components
+# Note: clawspring and amos_brain must be installed as packages
 
 
 @dataclass
@@ -43,7 +41,7 @@ class PerformanceBenchmark:
     """Benchmark suite for AMOS Ecosystem."""
 
     def __init__(self):
-        self.results: List[BenchmarkResult] = []
+        self.results: list[BenchmarkResult] = []
         self.process = psutil.Process()
 
     def _measure_memory(self) -> float:

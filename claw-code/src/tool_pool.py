@@ -3,12 +3,11 @@ from dataclasses import dataclass
 from .models import PortingModule
 from .permissions import ToolPermissionContext
 from .tools import get_tools
-from typing import Optional, Tuple
 
 
 @dataclass(frozen=True)
 class ToolPool:
-    tools: Tuple[PortingModule, ...]
+    tools: tuple[PortingModule, ...]
     simple_mode: bool
     include_mcp: bool
 

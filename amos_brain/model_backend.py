@@ -5,6 +5,8 @@ OpenAI-compatible local endpoints. This is the primary execution boundary
 for the AMOS local runtime.
 """
 
+from __future__ import annotations
+
 import json
 import os
 import time

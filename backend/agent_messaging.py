@@ -28,21 +28,22 @@ Version: 3.1.0
 
 from __future__ import annotations
 
-
-
-import json
 import asyncio
-import uuid
-from datetime import datetime, timezone
-UTC = timezone.utc
-from typing import Any, Callable, Coroutine, Dict, List
-from dataclasses import dataclass, field, asdict
-from enum import Enum
+import json
 import os
+import uuid
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
+from collections.abc import Callable, Coroutine
+from dataclasses import asdict, dataclass, field
+from enum import Enum
+from typing import Any
 
 # SuperBrain integration
 try:
     from amos_brain import get_super_brain
+
     SUPERBRAIN_AVAILABLE = True
 except ImportError:
     SUPERBRAIN_AVAILABLE = False
@@ -55,17 +56,19 @@ MAX_RETRY_ATTEMPTS = 3
 
 class MessageType(Enum):
     """Types of agent messages."""
-    DIRECT = "direct"           # Direct message to specific agent
-    BROADCAST = "broadcast"     # Broadcast to all agents
-    HANDOFF = "handoff"         # Task handoff between agents
-    DELEGATION = "delegation"   # Task delegation
-    RESPONSE = "response"       # Response to previous message
-    SYSTEM = "system"           # System-level message
-    EVENT = "event"             # Generic event notification
+
+    DIRECT = "direct"  # Direct message to specific agent
+    BROADCAST = "broadcast"  # Broadcast to all agents
+    HANDOFF = "handoff"  # Task handoff between agents
+    DELEGATION = "delegation"  # Task delegation
+    RESPONSE = "response"  # Response to previous message
+    SYSTEM = "system"  # System-level message
+    EVENT = "event"  # Generic event notification
 
 
 class MessagePriority(Enum):
     """Message priority levels."""
+
     CRITICAL = 0
     HIGH = 1
     NORMAL = 2
@@ -75,19 +78,20 @@ class MessagePriority(Enum):
 @dataclass
 class AgentMessage:
     """Represents a message between agents."""
+
     message_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     conversation_id: str = ""
     sender_id: str = ""
     recipient_id: str = ""  # Empty for broadcast
     message_type: str = "direct"
     priority: int = 2  # NORMAL
-    content: Dict[str, Any] = field(default_factory=dict)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    content: dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
-    reply_to: str  = None
+    reply_to: str = None
     retry_count: int = 0
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert message to dictionary."""
         return asdict(self)
 
@@ -96,12 +100,12 @@ class AgentMessage:
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "AgentMessage":
+    def from_dict(cls, data: dict[str, Any]) -> AgentMessage:
         """Create message from dictionary."""
         return cls(**data)
 
     @classmethod
-    def from_json(cls, json_str: str) -> "AgentMessage":
+    def from_json(cls, json_str: str) -> AgentMessage:
         """Create message from JSON string."""
         return cls.from_dict(json.loads(json_str))
 
@@ -110,8 +114,8 @@ class AgentMessageBus:
     """Event-driven message bus for agent communication."""
 
     def __init__(self):
-        self.subscribers: Dict[str, list[Callable[[AgentMessage], Coroutine]]] = {}
-        self.message_history: List[AgentMessage] = []
+        self.subscribers: dict[str, list[Callable[[AgentMessage], Coroutine]]] = {}
+        self.message_history: list[AgentMessage] = []
         self.max_history = 1000
         self._lock = asyncio.Lock()
         self._redis = None
@@ -122,6 +126,7 @@ class AgentMessageBus:
         if self._redis is None:
             try:
                 import redis.asyncio as redis
+
                 self._redis = redis.from_url(REDIS_URL, decode_responses=True)
             except ImportError:
                 # Fallback to in-memory
@@ -153,15 +158,15 @@ class AgentMessageBus:
         if SUPERBRAIN_AVAILABLE:
             try:
                 brain = get_super_brain()
-                if brain and hasattr(brain, 'action_gate'):
+                if brain and hasattr(brain, "action_gate"):
                     # Validate message action
                     action_result = brain.action_gate.validate_action(
                         action=f"message:{message.message_type}",
                         agent_id=message.sender_id,
                         context={
                             "recipient": message.recipient_id,
-                            "conversation": message.conversation_id
-                        }
+                            "conversation": message.conversation_id,
+                        },
                     )
                     if not action_result.authorized:
                         print(f"[GOVERNANCE] Message blocked: {action_result.reason}")
@@ -175,7 +180,7 @@ class AgentMessageBus:
 
             # Trim history
             if len(self.message_history) > self.max_history:
-                self.message_history = self.message_history[-self.max_history:]
+                self.message_history = self.message_history[-self.max_history :]
 
         # Persist to Redis if available
         redis = await self._get_redis()
@@ -184,9 +189,7 @@ class AgentMessageBus:
                 channel = f"amos:messages:{message.conversation_id}"
                 await redis.publish(channel, message.to_json())
                 await redis.setex(
-                    f"amos:message:{message.message_id}",
-                    MESSAGE_TTL,
-                    message.to_json()
+                    f"amos:message:{message.message_id}", MESSAGE_TTL, message.to_json()
                 )
             except Exception as e:
                 print(f"Redis publish error: {e}")
@@ -195,15 +198,15 @@ class AgentMessageBus:
         if SUPERBRAIN_AVAILABLE:
             try:
                 brain = get_super_brain()
-                if brain and hasattr(brain, 'record_audit'):
+                if brain and hasattr(brain, "record_audit"):
                     brain.record_audit(
                         action="message_publish",
                         agent_id=message.sender_id,
                         details={
                             "message_id": message.message_id,
                             "type": message.message_type,
-                            "recipient": message.recipient_id
-                        }
+                            "recipient": message.recipient_id,
+                        },
                     )
             except Exception:
                 pass
@@ -222,11 +225,11 @@ class AgentMessageBus:
         if SUPERBRAIN_AVAILABLE:
             try:
                 brain = get_super_brain()
-                if brain and hasattr(brain, 'get_state'):
+                if brain and hasattr(brain, "get_state"):
                     state = brain.get_state()
                     brain_context = {
-                        "brain_id": getattr(state, 'brain_id', 'unknown'),
-                        "governance_active": True
+                        "brain_id": getattr(state, "brain_id", "unknown"),
+                        "governance_active": True,
                     }
             except Exception:
                 pass
@@ -253,23 +256,16 @@ class AgentMessageBus:
                 if SUPERBRAIN_AVAILABLE:
                     try:
                         brain = get_super_brain()
-                        if brain and hasattr(brain, 'record_audit'):
+                        if brain and hasattr(brain, "record_audit"):
                             brain.record_audit(
                                 action="message_handler_error",
                                 agent_id=message.recipient_id or "unknown",
-                                details={
-                                    "message_id": message.message_id,
-                                    "error": str(e)
-                                }
+                                details={"message_id": message.message_id, "error": str(e)},
                             )
                     except Exception:
                         pass
 
-    async def subscribe(
-        self,
-        agent_id: str,
-        handler: Callable[[AgentMessage], Coroutine]
-    ) -> bool:
+    async def subscribe(self, agent_id: str, handler: Callable[[AgentMessage], Coroutine]) -> bool:
         """Subscribe an agent to receive messages."""
         if agent_id not in self.subscribers:
             self.subscribers[agent_id] = []
@@ -291,9 +287,7 @@ class AgentMessageBus:
         """Unsubscribe an agent from messages."""
         if agent_id in self.subscribers:
             if handler:
-                self.subscribers[agent_id] = [
-                    h for h in self.subscribers[agent_id] if h != handler
-                ]
+                self.subscribers[agent_id] = [h for h in self.subscribers[agent_id] if h != handler]
             else:
                 del self.subscribers[agent_id]
 
@@ -303,9 +297,9 @@ class AgentMessageBus:
         self,
         sender_id: str,
         recipient_id: str,
-        content: Dict[str, Any],
+        content: dict[str, Any],
         conversation_id: str = "",
-        metadata: Dict[str, Any ] = None
+        metadata: dict[str, Any] = None,
     ) -> str:
         """Send a direct message to a specific agent."""
         message = AgentMessage(
@@ -314,7 +308,7 @@ class AgentMessageBus:
             conversation_id=conversation_id,
             message_type=MessageType.DIRECT.value,
             content=content,
-            metadata=metadata or {}
+            metadata=metadata or {},
         )
 
         await self.publish(message)
@@ -323,9 +317,9 @@ class AgentMessageBus:
     async def broadcast(
         self,
         sender_id: str,
-        content: Dict[str, Any],
+        content: dict[str, Any],
         conversation_id: str = "",
-        metadata: Dict[str, Any ] = None
+        metadata: dict[str, Any] = None,
     ) -> str:
         """Broadcast a message to all agents."""
         message = AgentMessage(
@@ -334,7 +328,7 @@ class AgentMessageBus:
             conversation_id=conversation_id,
             message_type=MessageType.BROADCAST.value,
             content=content,
-            metadata=metadata or {}
+            metadata=metadata or {},
         )
 
         await self.publish(message)
@@ -344,8 +338,8 @@ class AgentMessageBus:
         self,
         sender_id: str,
         recipient_id: str,
-        task: Dict[str, Any],
-        context: Dict[str, Any ] = None
+        task: dict[str, Any],
+        context: dict[str, Any] = None,
     ) -> str:
         """Hand off a task to another agent."""
         message = AgentMessage(
@@ -354,18 +348,14 @@ class AgentMessageBus:
             message_type=MessageType.HANDOFF.value,
             priority=MessagePriority.HIGH.value,
             content={"task": task, "context": context or {}},
-            metadata={"handoff": True}
+            metadata={"handoff": True},
         )
 
         await self.publish(message)
         return message.message_id
 
     async def delegate(
-        self,
-        delegator_id: str,
-        delegate_id: str,
-        task: Dict[str, Any],
-        deadline: str  = None
+        self, delegator_id: str, delegate_id: str, task: dict[str, Any], deadline: str = None
     ) -> str:
         """Delegate a task to another agent with deadline."""
         message = AgentMessage(
@@ -373,42 +363,29 @@ class AgentMessageBus:
             recipient_id=delegate_id,
             message_type=MessageType.DELEGATION.value,
             priority=MessagePriority.HIGH.value,
-            content={
-                "task": task,
-                "deadline": deadline,
-                "delegated_by": delegator_id
-            },
-            metadata={"delegation": True}
+            content={"task": task, "deadline": deadline, "delegated_by": delegator_id},
+            metadata={"delegation": True},
         )
 
         await self.publish(message)
         return message.message_id
 
     async def get_conversation_history(
-        self,
-        conversation_id: str,
-        limit: int = 50
-    ) -> List[AgentMessage]:
+        self, conversation_id: str, limit: int = 50
+    ) -> list[AgentMessage]:
         """Get message history for a conversation."""
         # Check Redis first
         redis = await self._get_redis()
         if redis:
             try:
-                messages = await redis.lrange(
-                    f"amos:conversation:{conversation_id}",
-                    0,
-                    limit - 1
-                )
+                messages = await redis.lrange(f"amos:conversation:{conversation_id}", 0, limit - 1)
                 if messages:
                     return [AgentMessage.from_json(m) for m in messages]
             except Exception as e:
                 print(f"Redis history error: {e}")
 
         # Fallback to in-memory
-        return [
-            m for m in self.message_history
-            if m.conversation_id == conversation_id
-        ][-limit:]
+        return [m for m in self.message_history if m.conversation_id == conversation_id][-limit:]
 
     async def get_message(self, message_id: str) -> Optional[AgentMessage]:
         """Get a specific message by ID."""
@@ -450,14 +427,14 @@ class AgentMessageBus:
             except Exception as e:
                 print(f"Cleanup error: {e}")
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get message bus statistics."""
         return {
             "total_messages": len(self.message_history),
             "subscribers": len(self.subscribers),
             "subscriber_list": list(self.subscribers.keys()),
             "running": self._running,
-            "redis_connected": self._redis is not None
+            "redis_connected": self._redis is not None,
         }
 
 
@@ -467,29 +444,19 @@ message_bus = AgentMessageBus()
 
 # Convenience functions for common patterns
 async def send_message(
-    sender: str,
-    recipient: str,
-    content: Dict[str, Any],
-    conversation_id: str = ""
+    sender: str, recipient: str, content: dict[str, Any], conversation_id: str = ""
 ) -> str:
     """Send a direct message."""
     return await message_bus.send_direct(sender, recipient, content, conversation_id)
 
 
-async def broadcast_message(
-    sender: str,
-    content: Dict[str, Any],
-    conversation_id: str = ""
-) -> str:
+async def broadcast_message(sender: str, content: dict[str, Any], conversation_id: str = "") -> str:
     """Broadcast a message."""
     return await message_bus.broadcast(sender, content, conversation_id)
 
 
 async def handoff_task(
-    from_agent: str,
-    to_agent: str,
-    task: Dict[str, Any],
-    context: Dict[str, Any ] = None
+    from_agent: str, to_agent: str, task: dict[str, Any], context: dict[str, Any] = None
 ) -> str:
     """Hand off a task between agents."""
     return await message_bus.handoff(from_agent, to_agent, task, context)

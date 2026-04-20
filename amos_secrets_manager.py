@@ -25,15 +25,15 @@ import os
 import threading
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timedelta, timezone
+
+UTC = UTC
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 # Encryption
 from cryptography.fernet import Fernet
-from threading import Thread
 
 # SuperBrain integration
 try:
@@ -43,6 +43,7 @@ try:
 except ImportError:
     SUPERBRAIN_AVAILABLE = False
 
+
 class SecretType(Enum):
     API_KEY = "api_key"
     DATABASE_URL = "database_url"
@@ -51,11 +52,13 @@ class SecretType(Enum):
     CERTIFICATE = "certificate"
     PRIVATE_KEY = "private_key"
 
+
 class SecretStatus(Enum):
     ACTIVE = "active"
     ROTATING = "rotating"
     EXPIRED = "expired"
     REVOKED = "revoked"
+
 
 @dataclass
 class SecretVersion:
@@ -64,9 +67,10 @@ class SecretVersion:
     version_id: str
     value: str
     created_at: datetime
-    expires_at: Optional[datetime]
+    expires_at: datetime
     created_by: str
     status: SecretStatus = SecretStatus.ACTIVE
+
 
 @dataclass
 class Secret:
@@ -75,16 +79,17 @@ class Secret:
     name: str
     secret_type: SecretType
     description: str
-    versions: List[SecretVersion] = field(default_factory=list)
-    allowed_services: List[str] = field(default_factory=list)
+    versions: list[SecretVersion] = field(default_factory=list)
+    allowed_services: list[str] = field(default_factory=list)
     rotation_days: int = 90
-    last_rotated: Optional[datetime] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    last_rotated: datetime = None
+    metadata: dict[str, Any] = field(default_factory=dict)
+
 
 class EncryptionEngine:
     """AES-256-GCM encryption for secrets at rest."""
 
-    def __init__(self, master_key: Optional[bytes] = None):
+    def __init__(self, master_key: bytes = None):
         if master_key is None:
             # Generate from environment or create new
             key_env = os.getenv("AMOS_MASTER_KEY")
@@ -106,18 +111,19 @@ class EncryptionEngine:
         with self._lock:
             return self._fernet.decrypt(ciphertext.encode()).decode()
 
+
 class SecretsManager:
     """Production secrets manager for AMOS."""
 
-    def __init__(self, storage_path: Optional[str] = None):
+    def __init__(self, storage_path: str = None):
         self._storage_path = Path(storage_path or ".amos_secrets")
         self._storage_path.mkdir(parents=True, exist_ok=True)
 
         self._encryption = EncryptionEngine()
-        self._secrets: Dict[str, Secret] = {}
-        self._leases: Dict[str, dict] = {}  # Active credential leases
+        self._secrets: dict[str, Secret] = {}
+        self._leases: dict[str, dict] = {}  # Active credential leases
         self._lock = threading.RLock()
-        self._rotation_thread: threading.Optional[Thread] = None
+        self._rotation_thread: threading.Thread = None
         self._running = False
 
         # Load existing secrets
@@ -209,7 +215,7 @@ class SecretsManager:
         value: str,
         secret_type: SecretType,
         description: str,
-        allowed_services: Optional[list[str]] = None,
+        allowed_services: list[str] = None,
         rotation_days: int = 90,
         created_by: str = "system",
     ) -> bool:
@@ -243,8 +249,8 @@ class SecretsManager:
             return False
 
     def get_secret(
-        self, name: str, service_identity: Optional[str] = None, require_lease: bool = False
-    ) -> Optional[str]:
+        self, name: str, service_identity: str = None, require_lease: bool = False
+    ) -> str:
         """Get secret value (with service validation)."""
         with self._lock:
             secret = self._secrets.get(name)
@@ -322,9 +328,7 @@ class SecretsManager:
                 return True
             return False
 
-    def lease_secret(
-        self, name: str, service_identity: str, ttl_seconds: int = 3600
-    ) -> Optional[dict]:
+    def lease_secret(self, name: str, service_identity: str, ttl_seconds: int = 3600) -> dict:
         """Create a temporary lease for a secret."""
         value = self.get_secret(name, service_identity, require_lease=True)
         if not value:
@@ -363,7 +367,7 @@ class SecretsManager:
             self._audit_log("lease_revoked", lease["secret_name"], lease["service_identity"])
             return True
 
-    def list_secrets(self, service_filter: Optional[str] = None) -> List[dict]:
+    def list_secrets(self, service_filter: str = None) -> list[dict]:
         """List all secrets (metadata only, no values)."""
         with self._lock:
             secrets = []
@@ -455,8 +459,10 @@ class SecretsManager:
         if self._rotation_thread:
             self._rotation_thread.join(timeout=5)
 
+
 # Singleton instance
-_secrets_manager: Optional[SecretsManager] = None
+_secrets_manager: SecretsManager = None
+
 
 def get_secrets_manager() -> SecretsManager:
     """Get singleton secrets manager."""
@@ -465,13 +471,14 @@ def get_secrets_manager() -> SecretsManager:
         _secrets_manager = SecretsManager()
     return _secrets_manager
 
+
 # Convenience functions
 def set_secret(
     name: str,
     value: str,
     secret_type: str = "password",
     description: str = "",
-    allowed_services: Optional[list[str]] = None,
+    allowed_services: list[str] = None,
 ) -> bool:
     """Create or update a secret."""
     mgr = get_secrets_manager()
@@ -483,16 +490,19 @@ def set_secret(
         allowed_services=allowed_services,
     )
 
-def get_secret(name: str, service: Optional[str] = None) -> Optional[str]:
+
+def get_secret(name: str, service: str = None) -> str:
     """Get secret value."""
     return get_secrets_manager().get_secret(name, service)
+
 
 def rotate_secret(name: str, new_value: str) -> bool:
     """Rotate secret value."""
     return get_secrets_manager().rotate_secret(name, new_value)
 
+
 # Environment loader
-def load_env_secrets(prefix: str = "AMOS_SECRET_") -> Dict[str, str]:
+def load_env_secrets(prefix: str = "AMOS_SECRET_") -> dict[str, str]:
     """Load secrets from environment variables into manager."""
     mgr = get_secrets_manager()
     loaded = {}
@@ -510,6 +520,7 @@ def load_env_secrets(prefix: str = "AMOS_SECRET_") -> Dict[str, str]:
                 loaded[secret_name] = "created"
 
     return loaded
+
 
 if __name__ == "__main__":
     # Test secrets manager

@@ -21,9 +21,11 @@ Version: 1.0.0
 
 import time
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from enum import Enum, auto
-from typing import Any
+from typing import Any, Optional
 
 # Repo Doctor Omega imports
 try:

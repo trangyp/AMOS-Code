@@ -8,10 +8,12 @@ Author: AMOS System
 Version: 1.0.0
 """
 
-from datetime import datetime, timezone
-from typing import Any, Dict, Generic, List, Optional, Protocol, TypeVar, runtime_checkable
-UTC = timezone.utc
+from __future__ import annotations
 
+from datetime import UTC, datetime
+from typing import Any, Generic, Optional, Protocol, TypeVar, runtime_checkable
+
+UTC = UTC
 # SQLAlchemy imports
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -34,9 +36,9 @@ class RepositoryProtocol(Protocol[T, ID]):
     """Protocol defining repository interface."""
 
     async def get(self, id: ID) -> T: ...
-    async def get_all(self, skip: int = 0, limit: int = 100) -> List[T]: ...
+    async def get_all(self, skip: int = 0, limit: int = 100) -> list[T]: ...
     async def create(self, obj: T) -> T: ...
-    async def update(self, id: ID, data: Dict[str, Any]) -> T: ...
+    async def update(self, id: ID, data: dict[str, Any]) -> T: ...
     async def delete(self, id: ID) -> bool: ...
     async def count(self) -> int: ...
 
@@ -72,7 +74,7 @@ class BaseRepository(Generic[T, ID]):
         result = await self.session.get(self.model_class, id)
         return result
 
-    async def get_all(self, skip: int = 0, limit: int = 100, order_by: str = None) -> List[T]:
+    async def get_all(self, skip: int = 0, limit: int = 100, order_by: str = None) -> list[T]:
         """Get all entities with pagination."""
         query = select(self.model_class)
 
@@ -90,7 +92,7 @@ class BaseRepository(Generic[T, ID]):
         await self.session.refresh(obj)
         return obj
 
-    async def update(self, id: ID, data: Dict[str, Any]) -> T:
+    async def update(self, id: ID, data: dict[str, Any]) -> T:
         """Update entity by ID."""
         # Check if entity exists
         obj = await self.get(id)
@@ -148,9 +150,9 @@ class UnitOfWork:
     def __init__(self, session: Optional[AsyncSession] = None):
         self._session = session
         self._owns_session = session is None
-        self._repositories: Dict[type, BaseRepository] = {}
+        self._repositories: dict[type, BaseRepository] = {}
 
-    async def __aenter__(self) -> "UnitOfWork":
+    async def __aenter__(self) -> UnitOfWork:
         if self._session is None:
             self._session = AsyncSessionLocal()
         return self
@@ -205,7 +207,7 @@ class BaseService(Generic[T, ID]):
                 return await self.create({"email": email, "name": name})
     """
 
-    def __init__(self, model_class: type[T], uow: Optional["UnitOfWork"] = None):
+    def __init__(self, model_class: type[T], uow: UnitOfWork | None = None):
         self.model_class = model_class
         self._uow = uow
         self._repo: BaseRepository[T, ID] = None
@@ -232,11 +234,11 @@ class BaseService(Generic[T, ID]):
         """Get entity by ID, returns None if not found."""
         return await self.repository.get(id)
 
-    async def get_all(self, skip: int = 0, limit: int = 100, order_by: str = None) -> List[T]:
+    async def get_all(self, skip: int = 0, limit: int = 100, order_by: str = None) -> list[T]:
         """Get all entities with pagination."""
         return await self.repository.get_all(skip, limit, order_by)
 
-    async def create(self, data: Dict[str, Any]) -> T:
+    async def create(self, data: dict[str, Any]) -> T:
         """Create new entity with validation."""
         # Validate data
         self._validate_create(data)
@@ -245,7 +247,7 @@ class BaseService(Generic[T, ID]):
         obj = self.model_class(**data)  # type: ignore
         return await self.repository.create(obj)
 
-    async def update(self, id: ID, data: Dict[str, Any]) -> T:
+    async def update(self, id: ID, data: dict[str, Any]) -> T:
         """Update entity with validation."""
         # Validate data
         self._validate_update(data)
@@ -272,11 +274,11 @@ class BaseService(Generic[T, ID]):
 
     # Validation Hooks
 
-    def _validate_create(self, data: Dict[str, Any]) -> None:
+    def _validate_create(self, data: dict[str, Any]) -> None:
         """Override to validate create data."""
         pass
 
-    def _validate_update(self, data: Dict[str, Any]) -> None:
+    def _validate_update(self, data: dict[str, Any]) -> None:
         """Override to validate update data."""
         pass
 
@@ -295,10 +297,10 @@ class ServiceFactory:
         user_service = factory.user_service()
     """
 
-    def __init__(self, uow: Optional["UnitOfWork"] = None):
+    def __init__(self, uow: UnitOfWork | None = None):
         self._uow = uow
 
-    def _get_uow(self) -> "UnitOfWork":
+    def _get_uow(self) -> UnitOfWork:
         """Get or create Unit of Work."""
         if self._uow is None:
             raise RuntimeError("No UnitOfWork available")
@@ -310,7 +312,7 @@ class ServiceFactory:
 # ============================================================================
 
 
-async def get_unit_of_work() -> "UnitOfWork":
+async def get_unit_of_work() -> UnitOfWork:
     """FastAPI dependency for Unit of Work."""
     async with UnitOfWork() as uow:
         yield uow

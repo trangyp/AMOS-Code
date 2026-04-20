@@ -14,7 +14,7 @@ import json
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 # Add paths for both systems
 sys.path.insert(0, str(Path(__file__).parent))
@@ -70,8 +70,8 @@ class UnifiedEquation:
     expression: str = ""
     description: str = ""
     language: str = ""
-    invariants: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    invariants: list[str] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class SuperBrainKnowledgeBridge:
@@ -85,7 +85,7 @@ class SuperBrainKnowledgeBridge:
         self._superbrain_available = SUPERBRAIN_AVAILABLE
         self._knowledge_available = KNOWLEDGE_BRIDGE_AVAILABLE
         self._knowledge_graph: Optional[EquationKnowledgeGraph] = None
-        self._equation_cache: List[UnifiedEquation] = []
+        self._equation_cache: list[UnifiedEquation] = []
         self._initialized = False
 
     def initialize(self) -> bool:
@@ -110,7 +110,7 @@ class SuperBrainKnowledgeBridge:
 
     def _build_unified_cache(self) -> None:
         """Build unified equation cache from both sources."""
-        cache: List[UnifiedEquation] = []
+        cache: list[UnifiedEquation] = []
 
         # Add knowledge bridge equations
         if self._knowledge_available and self._knowledge_graph:
@@ -137,7 +137,7 @@ class SuperBrainKnowledgeBridge:
         language: str = None,
         category: str = None,
         source: str = None,
-    ) -> List[UnifiedEquation]:
+    ) -> list[UnifiedEquation]:
         """Query unified equation database."""
         results = self._equation_cache
 
@@ -152,15 +152,15 @@ class SuperBrainKnowledgeBridge:
 
         return results
 
-    def get_by_language(self, language: str) -> List[UnifiedEquation]:
+    def get_by_language(self, language: str) -> list[UnifiedEquation]:
         """Get all equations for a language."""
         return [eq for eq in self._equation_cache if eq.language == language]
 
-    def get_by_invariant(self, invariant: str) -> List[UnifiedEquation]:
+    def get_by_invariant(self, invariant: str) -> list[UnifiedEquation]:
         """Get equations enforcing a specific invariant."""
         return [eq for eq in self._equation_cache if invariant in eq.invariants]
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get unified system statistics."""
         sources = {}
         languages = set()
@@ -185,7 +185,7 @@ class SuperBrainKnowledgeBridge:
             "status": "operational" if self._initialized else "not_initialized",
         }
 
-    def cross_reference_with_math_framework(self, equation_name: str) -> Dict[str, Any]:
+    def cross_reference_with_math_framework(self, equation_name: str) -> dict[str, Any]:
         """Cross-reference equation with Mathematical Framework.
 
         Finds related equations in the Mathematical Framework Engine

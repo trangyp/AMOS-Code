@@ -15,13 +15,13 @@ Version: 3.0.0
 
 import time
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Optional
 
-from .canon_knowledge_engine import get_canon_knowledge_engine
 from .canon_cognitive_processor import get_canon_cognitive_processor
-from .canon_reasoning_engine import get_canon_reasoning_engine
+from .canon_knowledge_engine import get_canon_knowledge_engine
 from .canon_learning_engine import get_canon_learning_engine
 from .canon_memory_system import get_canon_memory_system
+from .canon_reasoning_engine import get_canon_reasoning_engine
 
 
 @dataclass
@@ -70,7 +70,7 @@ class CanonOrchestrator:
         self,
         task: str,
         domain: str = "general",
-        context: Optional[dict[str, Any] ] = None,
+        context: dict[str, Optional[Any]] = None,
     ) -> OrchestrationResult:
         """Execute task with full Canon orchestration.
 
@@ -96,12 +96,8 @@ class CanonOrchestrator:
         reasoning_path.append(f"Accessed {len(memories_accessed)} relevant memories")
 
         # Step 2: Process with Canon cognitive enrichment
-        cog_result = self._cognitive_processor.process(
-            task, domain, context or {}
-        )
-        reasoning_path.append(
-            f"Cognitive processing: {cog_result.confidence:.0%} confidence"
-        )
+        cog_result = self._cognitive_processor.process(task, domain, context or {})
+        reasoning_path.append(f"Cognitive processing: {cog_result.confidence:.0%} confidence")
 
         # Step 3: Apply Canon reasoning if decision needed
         reason_result = None

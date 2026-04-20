@@ -2,7 +2,7 @@
 
 import time
 from collections import defaultdict
-from typing import Any, Dict
+from typing import Any
 
 try:
     from opentelemetry.metrics import Counter, Histogram, UpDownCounter
@@ -19,8 +19,8 @@ class EquationMetrics:
 
     def __init__(self) -> None:
         self._meter = get_meter() if OTEL_AVAILABLE else None
-        self._counters: Dict[str, Any] = {}
-        self._histograms: Dict[str, Any] = {}
+        self._counters: dict[str, Any] = {}
+        self._histograms: dict[str, Any] = {}
 
         if OTEL_AVAILABLE and self._meter:
             self._init_metrics()
@@ -94,7 +94,7 @@ class EquationMetrics:
         if OTEL_AVAILABLE and self._histograms.get("equation_batch_size"):
             self._histograms["equation_batch_size"].record(size)
 
-    def get_domain_stats(self) -> Dict[str, int]:
+    def get_domain_stats(self) -> dict[str, int]:
         """Get equation call statistics by domain."""
         return dict(self._counters.get("equation_by_domain", {}))
 
@@ -104,9 +104,9 @@ class PerformanceMetrics:
 
     def __init__(self) -> None:
         self._meter = get_meter() if OTEL_AVAILABLE else None
-        self._counters: Dict[str, Any] = {}
-        self._up_down_counters: Dict[str, Any] = {}
-        self._histograms: Dict[str, Any] = {}
+        self._counters: dict[str, Any] = {}
+        self._up_down_counters: dict[str, Any] = {}
+        self._histograms: dict[str, Any] = {}
 
         if OTEL_AVAILABLE and self._meter:
             self._init_metrics()

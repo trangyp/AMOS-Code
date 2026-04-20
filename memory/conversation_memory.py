@@ -9,9 +9,11 @@ while staying within token limits.
 import json
 import uuid
 from dataclasses import asdict, dataclass
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 @dataclass
@@ -21,8 +23,8 @@ class ConversationMessage:
     role: str  # "user" or "assistant"
     content: str
     timestamp: str
-    biological_context: Dict[str, Any] = None
-    ui_guidelines: Dict[str, Any] = None
+    biological_context: dict[str, Any] = None
+    ui_guidelines: dict[str, Any] = None
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -40,8 +42,8 @@ class ConversationSession:
     title: str
     created_at: str
     updated_at: str
-    messages: List[ConversationMessage]
-    biological_state_summary: Dict[str, Any] = None
+    messages: list[ConversationMessage]
+    biological_state_summary: dict[str, Any] = None
 
     def to_dict(self) -> dict:
         return {
@@ -118,8 +120,8 @@ class ConversationMemoryManager:
         session_id: str,
         role: str,
         content: str,
-        biological_context: Dict[str, Any] = None,
-        ui_guidelines: Dict[str, Any] = None,
+        biological_context: dict[str, Any] = None,
+        ui_guidelines: dict[str, Any] = None,
     ) -> Optional[ConversationMessage]:
         """Add message to conversation and update session."""
         session = self.get_session(session_id)
@@ -152,7 +154,7 @@ class ConversationMemoryManager:
         self._save_session(session)
         return message
 
-    def get_context_window(self, session_id: str, window_size: int = None) -> List[dict[str, str]]:
+    def get_context_window(self, session_id: str, window_size: int = None) -> list[dict[str, str]]:
         """
         Get recent conversation context for LLM prompt.
 
@@ -167,7 +169,7 @@ class ConversationMemoryManager:
 
         return [{"role": msg.role, "content": msg.content} for msg in recent_messages]
 
-    def get_all_sessions(self) -> List[ConversationSession]:
+    def get_all_sessions(self) -> list[ConversationSession]:
         """Get all conversation sessions, sorted by most recent."""
         sessions = []
 
@@ -207,7 +209,7 @@ class ConversationMemoryManager:
             title = title[: max_length - 3] + "..."
         return title
 
-    def _update_bio_summary(self, current_summary: Dict[str, Any], new_context: dict) -> dict:
+    def _update_bio_summary(self, current_summary: dict[str, Any], new_context: dict) -> dict:
         """Update biological state summary across conversation."""
         if not current_summary:
             return new_context

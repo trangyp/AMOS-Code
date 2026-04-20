@@ -1,4 +1,6 @@
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
+
+from typing import Any
 
 """AMOS Cognitive Task Processor - Production task execution using brain/organism.
 
@@ -11,18 +13,18 @@ Real implementation that uses:
 Owner: Trang Phan
 """
 
+
 import time
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-UTC = timezone.utc
 
+UTC = timezone.utc
 try:
     from .master_orchestrator import get_master_orchestrator
     from .organism_bridge import get_organism_bridge
 except ImportError:
     from master_orchestrator import get_master_orchestrator
-
     from organism_bridge import get_organism_bridge
 
 
@@ -32,7 +34,7 @@ class TaskRequest:
 
     description: str
     priority: str = "MEDIUM"
-    context: Dict[str, Any] = field(default_factory=dict)
+    context: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -42,9 +44,9 @@ class TaskResponse:
     task_id: str
     success: bool
     domain: str
-    result: Dict[str, Any]
+    result: dict[str, Any]
     duration_ms: float
-    engines_used: List[str]
+    engines_used: list[str]
     timestamp: str
 
 
@@ -108,7 +110,7 @@ class CognitiveTaskProcessor:
 
 
 # Singleton
-_processor: Optional[CognitiveTaskProcessor] = None
+_processor: CognitiveTaskProcessor | None = None
 
 
 def get_task_processor() -> CognitiveTaskProcessor:

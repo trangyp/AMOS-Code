@@ -6,15 +6,19 @@ Based on: ReAct (Reasoning + Acting) pattern from agentic AI research 2025.
 Architecture: Thought → Action → Observation → Repeat
 """
 
+from __future__ import annotations
 
 import asyncio
 import json
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+
+UTC = timezone.utc
+
 UTC = timezone.utc
 from enum import Enum, auto
-from typing import Any, Dict, List, Optional, Protocol, runtime_checkable
+from typing import Any, Protocol, runtime_checkable
 
 try:
     from .amos_kernel_runtime import (
@@ -53,7 +57,7 @@ class ToolCall:
     """Tool call specification."""
 
     tool_name: str
-    parameters: Dict[str, Any]
+    parameters: dict[str, Any]
     call_id: str
 
 
@@ -64,7 +68,7 @@ class ToolResult:
     call_id: str
     success: bool
     result: Any
-    error: Optional[str] = None
+    error: str | None = None
     latency_ms: float = 0.0
 
 
@@ -72,12 +76,11 @@ class ToolResult:
 class ToolExecutor(Protocol):
     """Protocol for tool execution."""
 
-    async def execute(self, tool_name: str, params: Dict[str, Any]) -> ToolResult: ...
+    async def execute(self, tool_name: str, params: dict[str, Any]) -> ToolResult: ...
 
 
 class AMOSReActAgent:
-    """
-    ReAct Agent integrated with AMOS Brain Kernel.
+    """ReAct Agent integrated with AMOS Brain Kernel.
 
     Implements the reasoning-acting loop with brain-based state management:
     - Uses brain kernel for state tracking
@@ -88,8 +91,8 @@ class AMOSReActAgent:
 
     def __init__(
         self,
-        kernel: Optional[AMOSKernelRuntime] = None,
-        tool_executor: Optional[ToolExecutor] = None,
+        kernel: AMOSKernelRuntime | None = None,
+        tool_executor: ToolExecutor | None = None,
         max_iterations: int = 10,
         latency_budget_ms: float = 5000.0,
     ):
@@ -99,22 +102,21 @@ class AMOSReActAgent:
         self.latency_budget_ms = latency_budget_ms
 
         # Trajectory tracking
-        self.trajectory: List[ReActStep] = []
-        self.tool_calls: List[ToolCall] = []
-        self.tool_results: List[ToolResult] = []
+        self.trajectory: list[ReActStep] = []
+        self.tool_calls: list[ToolCall] = []
+        self.tool_results: list[ToolResult] = []
 
         # State tracking
-        self.current_state: Optional[StateGraph] = None
+        self.current_state: StateGraph | None = None
         self.iteration_count = 0
         self.start_time: float = 0.0
 
     async def run(
         self,
         query: str,
-        available_tools: Optional[List[str] ] = None,
-    ) -> Dict[str, Any]:
-        """
-        Execute ReAct loop for a query.
+        available_tools: list[str | None] = None,
+    ) -> dict[str, Any]:
+        """Execute ReAct loop for a query.
 
         Args:
             query: User query to process
@@ -122,6 +124,7 @@ class AMOSReActAgent:
 
         Returns:
             Result with answer, trajectory, and metrics
+
         """
         self.start_time = time.perf_counter()
         self.trajectory = []
@@ -242,7 +245,7 @@ class AMOSReActAgent:
             else "max_iterations",
         }
 
-    def _extract_entities(self, text: str) -> List[str]:
+    def _extract_entities(self, text: str) -> list[str]:
         """Extract key entities from text."""
         # Simple extraction - could use NER
         words = text.split()
@@ -251,8 +254,8 @@ class AMOSReActAgent:
     def _generate_thought(
         self,
         query: str,
-        observation: Dict[str, Any],
-        cycle_result: Dict[str, Any],
+        observation: dict[str, Any],
+        cycle_result: dict[str, Any],
         iteration: int,
     ) -> str:
         """Generate reasoning thought based on brain kernel output."""
@@ -284,8 +287,8 @@ class AMOSReActAgent:
     def _decide_action(
         self,
         thought: str,
-        available_tools: Optional[List[str] ],
-    ) -> Dict[str, Any]:
+        available_tools: list[str | None],
+    ) -> dict[str, Any]:
         """Decide next action based on thought."""
         # Simple logic - could be LLM-based
         if available_tools and len(self.tool_calls) < 3:
@@ -315,7 +318,7 @@ class AMOSReActAgent:
 class SimpleToolExecutor:
     """Simple tool executor for testing."""
 
-    async def execute(self, tool_name: str, params: Dict[str, Any]) -> ToolResult:
+    async def execute(self, tool_name: str, params: dict[str, Any]) -> ToolResult:
         """Execute a tool (stub implementation)."""
         start = time.perf_counter()
 
@@ -333,7 +336,7 @@ class SimpleToolExecutor:
 
 
 # Global agent instance
-_global_react_agent: Optional[AMOSReActAgent] = None
+_global_react_agent: AMOSReActAgent | None = None
 
 
 def get_react_agent() -> AMOSReActAgent:

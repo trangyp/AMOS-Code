@@ -7,26 +7,20 @@ Integrates: ethics_validation_kernel, coherence_engine, coherent_organism,
 master_orchestrator, and organism CLI.
 """
 
+from __future__ import annotations
 
-import sys
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, Optional, Tuple
-
-sys.path.insert(0, ".")
-sys.path.insert(0, "clawspring")
-sys.path.insert(0, "clawspring/amos_brain")
-
-ORGANISM_PATH = Path(__file__).parent.parent.parent / "AMOS_ORGANISM_OS"
+from typing import Any
 
 
 @dataclass
 class UnifiedState:
     """Unified state from both cognitive and organism systems."""
 
-    cognitive_status: Dict[str, Any]
-    organism_status: Dict[str, Any]
+    cognitive_status: dict[str, Any]
+    organism_status: dict[str, Any]
     coherence_score: float
     ethics_clearance: bool
     timestamp: datetime
@@ -57,7 +51,7 @@ class EthicsValidationBridge:
             print(f"[EthicsBridge] Kernel load warning: {e}")
         return False
 
-    def validate_with_kernel(self, action: str, context: dict) -> Tuple[bool, str]:
+    def validate_with_kernel(self, action: str, context: dict) -> tuple[bool, str]:
         """Validate action using organism ethics kernel."""
         if self.kernel and hasattr(self.kernel, "validate_action"):
             try:
@@ -91,7 +85,7 @@ class CoherenceEngineBridge:
             print(f"[CoherenceBridge] Engine load warning: {e}")
         return False
 
-    def check_coherence(self, state: Dict[str, Any]) -> float:
+    def check_coherence(self, state: dict[str, Any]) -> float:
         """Check system coherence using organism engine."""
         if self.engine and hasattr(self.engine, "check_coherence"):
             try:
@@ -126,7 +120,7 @@ class CoherentOrganismBridge:
             print(f"[OrganismBridge] Organism load warning: {e}")
         return False
 
-    def get_organism_state(self) -> Dict[str, Any]:
+    def get_organism_state(self) -> dict[str, Any]:
         """Get state from coherent organism."""
         if self.organism and hasattr(self.organism, "get_state"):
             try:
@@ -177,7 +171,7 @@ class UnifiedOrchestratorBridge:
         except Exception as e:
             print(f"[UnifiedOrchestrator] Cognitive load: {e}")
 
-    def unified_orchestrate(self, task: str, context: dict) -> Dict[str, Any]:
+    def unified_orchestrate(self, task: str, context: dict) -> dict[str, Any]:
         """Orchestrate using both systems."""
         results = {"cognitive": None, "organism": None, "unified_decision": None}
 
@@ -202,7 +196,7 @@ class UnifiedOrchestratorBridge:
 
         return results
 
-    def _make_unified_decision(self, results: dict) -> Dict[str, Any]:
+    def _make_unified_decision(self, results: dict) -> dict[str, Any]:
         """Synthesize unified decision from both orchestrators."""
         cognitive = results.get("cognitive")
         organism = results.get("organism")
@@ -274,7 +268,7 @@ class DeepIntegrationSystem:
             timestamp=datetime.now(),
         )
 
-    def execute_unified_task(self, task: str, context: dict) -> Dict[str, Any]:
+    def execute_unified_task(self, task: str, context: dict) -> dict[str, Any]:
         """Execute task through unified system."""
         # Step 1: Check unified state
         state = self.get_unified_state()
@@ -329,7 +323,7 @@ class DeepIntegrationSystem:
 
 
 # Global instance
-_deep_integration: Optional[DeepIntegrationSystem] = None
+_deep_integration: DeepIntegrationSystem | None = None
 
 
 def get_deep_integration() -> DeepIntegrationSystem:

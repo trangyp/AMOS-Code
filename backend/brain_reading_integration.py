@@ -1,4 +1,6 @@
-from typing import Any, Dict, Optional, Tuple
+from __future__ import annotations
+
+from typing import Any, Optional
 
 """AMOS Brain Reading Kernel Integration
 
@@ -8,6 +10,7 @@ cognitive text processing and stable read generation.
 Owner: Trang Phan
 Version: 1.0.0
 """
+
 
 import logging
 
@@ -46,21 +49,24 @@ except ImportError:
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/reading", tags=["Reading Kernel"])
 
+
 class ReadRequest(BaseModel):
     """Request to process text through reading kernel."""
 
     text: str
-    context: Dict[str, Any] = {}
-    memory_context: Dict[str, Any] = {}
-    world_context: Dict[str, Any] = {}
+    context: dict[str, Any] = {}
+    memory_context: dict[str, Any] = {}
+    world_context: dict[str, Any] = {}
+
 
 class ReadResponse(BaseModel):
     """Response with stable read result."""
 
     status: str
-    stable_read: Dict[str, Any]  = None
+    stable_read: dict[str, Any] = None
     processing_time_ms: float = 0.0
     error: Optional[str] = None
+
 
 class ReadingKernelService:
     """Service wrapper for AMOS Reading Kernel."""
@@ -87,10 +93,10 @@ class ReadingKernelService:
     async def process_text(
         self,
         text: str,
-        context: Dict[str, Any]  = None,
-        memory_context: Dict[str, Any]  = None,
-        world_context: Dict[str, Any]  = None,
-    ) -> Tuple[Optional[StableRead], float]:
+        context: dict[str, Any] = None,
+        memory_context: dict[str, Any] = None,
+        world_context: dict[str, Any] = None,
+    ) -> tuple[Optional[StableRead], float]:
         """Process text through reading pipeline.
 
         Returns:
@@ -133,7 +139,7 @@ class ReadingKernelService:
             elapsed = (time.time() - start) * 1000
             return None, elapsed
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get kernel status."""
         return {
             "initialized": self._initialized,
@@ -141,8 +147,10 @@ class ReadingKernelService:
             "brain_available": BRAIN_AVAILABLE,
         }
 
+
 # Global service instance
 _reading_service: Optional[ReadingKernelService] = None
+
 
 async def get_reading_service() -> ReadingKernelService:
     """Get or create reading service."""
@@ -151,6 +159,7 @@ async def get_reading_service() -> ReadingKernelService:
         _reading_service = ReadingKernelService()
         await _reading_service.initialize()
     return _reading_service
+
 
 @router.post("/process", response_model=ReadResponse)
 async def process_read_request(request: ReadRequest) -> ReadResponse:
@@ -179,18 +188,21 @@ async def process_read_request(request: ReadRequest) -> ReadResponse:
         status="success", stable_read=stable_read.to_dict(), processing_time_ms=elapsed
     )
 
+
 @router.get("/status")
-async def get_kernel_status() -> Dict[str, Any]:
+async def get_kernel_status() -> dict[str, Any]:
     """Get reading kernel status."""
     service = await get_reading_service()
     return service.get_status()
 
+
 @router.post("/reset")
-async def reset_kernel() -> Dict[str, str]:
+async def reset_kernel() -> dict[str, str]:
     """Reset reading kernel state."""
     global _reading_service
     _reading_service = None
     return {"status": "reset"}
+
 
 # Export bridge interface for consistency with other integrations
 def get_reading_bridge() -> ReadingKernelService:

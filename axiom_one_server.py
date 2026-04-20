@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 """Axiom One Standalone Server - Real Working Features"""
 
 import os
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -79,9 +81,9 @@ class AutopsyResponse(BaseModel):
     repo_name: str
     started_at: str
     completed_at: str
-    summary: Dict[str, Any]
-    issues: List[dict[str, Any]]
-    validation_steps: List[dict[str, Any]]
+    summary: dict[str, Any]
+    issues: list[dict[str, Any]]
+    validation_steps: list[dict[str, Any]]
 
 
 class GitTreeRequest(BaseModel):
@@ -103,7 +105,7 @@ class CreateBranchRequest(BaseModel):
 class CommitRequest(BaseModel):
     repo_id: str
     message: str
-    files: List[str] = None
+    files: list[str] = None
 
 
 # ============================================================================
@@ -162,7 +164,7 @@ async def run_repo_autopsy(request: AutopsyRequest) -> AutopsyResponse:
 
 
 @app.post("/axiom-one/git/tree")
-async def get_git_tree(request: GitTreeRequest) -> Dict[str, Any]:
+async def get_git_tree(request: GitTreeRequest) -> dict[str, Any]:
     """Get file tree for repository."""
     git = get_git_service()
     try:
@@ -184,7 +186,7 @@ async def get_git_tree(request: GitTreeRequest) -> Dict[str, Any]:
 
 
 @app.post("/axiom-one/git/content")
-async def get_file_content(request: FileContentRequest) -> Dict[str, str]:
+async def get_file_content(request: FileContentRequest) -> dict[str, str]:
     """Get file content."""
     git = get_git_service()
     try:
@@ -195,7 +197,7 @@ async def get_file_content(request: FileContentRequest) -> Dict[str, str]:
 
 
 @app.post("/axiom-one/git/branches")
-async def get_branches(repo_id: str) -> Dict[str, Any]:
+async def get_branches(repo_id: str) -> dict[str, Any]:
     """Get branches."""
     git = get_git_service()
     try:
@@ -217,7 +219,7 @@ async def get_branches(repo_id: str) -> Dict[str, Any]:
 
 
 @app.post("/axiom-one/git/create-branch")
-async def create_branch(request: CreateBranchRequest) -> Dict[str, Any]:
+async def create_branch(request: CreateBranchRequest) -> dict[str, Any]:
     """Create new branch."""
     git = get_git_service()
     try:
@@ -232,7 +234,7 @@ async def create_branch(request: CreateBranchRequest) -> Dict[str, Any]:
 
 
 @app.post("/axiom-one/git/commit")
-async def commit(request: CommitRequest) -> Dict[str, Any]:
+async def commit(request: CommitRequest) -> dict[str, Any]:
     """Create commit."""
     git = get_git_service()
     try:
@@ -252,12 +254,12 @@ async def commit(request: CommitRequest) -> Dict[str, Any]:
 
 
 @app.get("/health")
-async def health() -> Dict[str, str]:
+async def health() -> dict[str, str]:
     return {"status": "healthy", "service": "axiom-one"}
 
 
 @app.get("/")
-async def root() -> Dict[str, Any]:
+async def root() -> dict[str, Any]:
     return {
         "name": "Axiom One",
         "version": "1.0.0",

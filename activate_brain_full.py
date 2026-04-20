@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from typing import Any, Dict, List
+from typing import Any
 
 """AMOS Brain - Full Repository Analysis & Fix System
 
@@ -12,11 +12,13 @@ import ast
 import os
 import subprocess
 import sys
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 
+UTC = UTC
 
-def get_all_python_files(repo_path: str) -> List[Path]:
+
+def get_all_python_files(repo_path: str) -> list[Path]:
     """Recursively find all Python files."""
     files = []
     for root, dirs, filenames in os.walk(repo_path):
@@ -32,7 +34,7 @@ def get_all_python_files(repo_path: str) -> List[Path]:
     return sorted(files)
 
 
-def analyze_file_ast(filepath: Path) -> Dict[str, Any]:
+def analyze_file_ast(filepath: Path) -> dict[str, Any]:
     """Parse Python file and extract structural information."""
     try:
         content = filepath.read_text(encoding="utf-8", errors="ignore")
@@ -70,7 +72,7 @@ def analyze_file_ast(filepath: Path) -> Dict[str, Any]:
         return {"path": str(filepath), "syntax_errors": True, "error": str(e)}
 
 
-def run_ruff_fix(files: List[Path]) -> Dict[str, Any]:
+def run_ruff_fix(files: list[Path]) -> dict[str, Any]:
     """Run Ruff linter with auto-fix on all files."""
     if not files:
         return {"status": "no_files"}
@@ -86,7 +88,7 @@ def run_ruff_fix(files: List[Path]) -> Dict[str, Any]:
     }
 
 
-def run_import_sorting(files: List[Path]) -> Dict[str, Any]:
+def run_import_sorting(files: list[Path]) -> dict[str, Any]:
     """Run Ruff format to organize imports."""
     if not files:
         return {"status": "no_files"}
@@ -124,7 +126,7 @@ def fix_common_patterns(filepath: Path) -> bool:
         return False
 
 
-def analyze_repository(repo_path: str) -> Dict[str, Any]:
+def analyze_repository(repo_path: str) -> dict[str, Any]:
     """Full repository analysis using brain capabilities."""
     print(f"\n{'=' * 70}")
     print("AMOS BRAIN: Repository Analysis")
@@ -178,7 +180,7 @@ def analyze_repository(repo_path: str) -> Dict[str, Any]:
     }
 
 
-def apply_fixes(repo_path: str, files: List[Path]) -> Dict[str, int]:
+def apply_fixes(repo_path: str, files: list[Path]) -> dict[str, int]:
     """Apply automatic fixes to repository."""
     print(f"\n{'=' * 70}")
     print("AMOS BRAIN: Applying Fixes")

@@ -6,13 +6,14 @@ These tools are registered during SuperBrain initialization.
 
 import json
 import subprocess
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 
-def analyze_code_structure(file_path: str) -> Dict[str, Any]:
+def analyze_code_structure(file_path: str) -> dict[str, Any]:
     """Analyze Python code structure and extract key information.
 
     Args:
@@ -59,7 +60,7 @@ def analyze_code_structure(file_path: str) -> Dict[str, Any]:
         return {"error": str(e), "file": file_path}
 
 
-def execute_shell_command(command: str, timeout: int = 30) -> Dict[str, Any]:
+def execute_shell_command(command: str, timeout: int = 30) -> dict[str, Any]:
     """Execute a shell command safely.
 
     Args:
@@ -91,7 +92,7 @@ def execute_shell_command(command: str, timeout: int = 30) -> Dict[str, Any]:
         return {"command": command, "error": str(e), "success": False}
 
 
-def search_files(pattern: str, directory: str = ".", max_results: int = 20) -> Dict[str, Any]:
+def search_files(pattern: str, directory: str = ".", max_results: int = 20) -> dict[str, Any]:
     """Search for files matching a pattern.
 
     Args:
@@ -149,7 +150,7 @@ def search_files(pattern: str, directory: str = ".", max_results: int = 20) -> D
         return {"error": str(e), "pattern": pattern}
 
 
-def get_system_info() -> Dict[str, Any]:
+def get_system_info() -> dict[str, Any]:
     """Get system information.
 
     Returns:
@@ -166,7 +167,7 @@ def get_system_info() -> Dict[str, Any]:
     }
 
 
-def validate_json(data: str) -> Dict[str, Any]:
+def validate_json(data: str) -> dict[str, Any]:
     """Validate and parse JSON data.
 
     Args:

@@ -24,7 +24,7 @@ Version: 1.0.0
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent))
@@ -45,7 +45,7 @@ class SystemStatus:
     available_tools: int = 0
     active_sessions: int = 0
     vector_memories: int = 0
-    laws_active: List[str] = field(default_factory=list)
+    laws_active: list[str] = field(default_factory=list)
 
 
 class AMOSUnifiedSystem:
@@ -62,7 +62,7 @@ class AMOSUnifiedSystem:
         self._orchestrator = None
         self._mcp_bridge = None
         self._laws = None
-        self._agents: Dict[str, Any] = {}
+        self._agents: dict[str, Any] = {}
         self._tools = None
         self._auth = None
         self._vector_memory = None
@@ -179,7 +179,7 @@ class AMOSUnifiedSystem:
         self.status.active_agents = len(self._agents)
         return agent
 
-    def execute(self, task: str, agents: List[str] = None, require_consensus: bool = True) -> dict:
+    def execute(self, task: str, agents: list[str] = None, require_consensus: bool = True) -> dict:
         """Execute task with hybrid orchestration."""
         if not self._orchestrator:
             return {"error": "System not initialized"}

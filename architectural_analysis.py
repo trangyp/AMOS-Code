@@ -9,7 +9,6 @@ import re
 from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, List
 
 
 @dataclass
@@ -30,22 +29,22 @@ class AnalysisResult:
     """Complete analysis result."""
 
     total_files: int
-    issues: List[ArchitectureIssue] = field(default_factory=list)
-    files_with_os_environ: List[str] = field(default_factory=list)
-    files_with_direct_imports: List[str] = field(default_factory=list)
-    singleton_pattern_violations: List[str] = field(default_factory=list)
-    hidden_dependencies: List[str] = field(default_factory=list)
+    issues: list[ArchitectureIssue] = field(default_factory=list)
+    files_with_os_environ: list[str] = field(default_factory=list)
+    files_with_direct_imports: list[str] = field(default_factory=list)
+    singleton_pattern_violations: list[str] = field(default_factory=list)
+    hidden_dependencies: list[str] = field(default_factory=list)
 
-    def get_issues_by_category(self) -> Dict[str, list[ArchitectureIssue]]:
+    def get_issues_by_category(self) -> dict[str, list[ArchitectureIssue]]:
         result = defaultdict(list)
         for issue in self.issues:
             result[issue.category].append(issue)
         return dict(result)
 
-    def get_critical_issues(self) -> List[ArchitectureIssue]:
+    def get_critical_issues(self) -> list[ArchitectureIssue]:
         return [i for i in self.issues if i.severity == "critical"]
 
-    def get_high_issues(self) -> List[ArchitectureIssue]:
+    def get_high_issues(self) -> list[ArchitectureIssue]:
         return [i for i in self.issues if i.severity == "high"]
 
 
@@ -75,10 +74,10 @@ class ArchitectureAnalyzer:
         "get_metrics",
     ]
 
-    def __init__(self, repo_path: str | Path):
+    def __init__(self, repo_path: Union[str, Path]):
         self.repo_path = Path(repo_path)
-        self.issues: List[ArchitectureIssue] = []
-        self.python_files: List[Path] = []
+        self.issues: list[ArchitectureIssue] = []
+        self.python_files: list[Path] = []
 
     def analyze(self) -> AnalysisResult:
         """Run complete architectural analysis."""
@@ -279,7 +278,7 @@ class ArchitectureAnalyzer:
             except Exception:
                 pass
 
-    def _get_files_with_pattern(self, patterns: List[str]) -> List[str]:
+    def _get_files_with_pattern(self, patterns: list[str]) -> list[str]:
         """Get files matching patterns."""
         result = []
         for file_path in self.python_files:
@@ -293,7 +292,7 @@ class ArchitectureAnalyzer:
                 pass
         return result
 
-    def _find_singleton_violations(self) -> List[str]:
+    def _find_singleton_violations(self) -> list[str]:
         """Find files that should use singleton pattern but don't."""
         result = []
         for file_path in self.python_files:
@@ -307,7 +306,7 @@ class ArchitectureAnalyzer:
                 pass
         return list(set(result))
 
-    def _find_hidden_dependencies(self) -> List[str]:
+    def _find_hidden_dependencies(self) -> list[str]:
         """Find files with hidden dependencies."""
         result = []
         for file_path in self.python_files:

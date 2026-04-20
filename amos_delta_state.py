@@ -6,13 +6,17 @@ From: State_{t+1} = FullRebuild (O(|State|))
 To:   State_{t+1} = State_t + Δ_t (O(|Δ|))
 """
 
+from __future__ import annotations
+
 import hashlib
 import json
 import time
 from copy import deepcopy
 from dataclasses import dataclass, field
-from datetime import datetime
-from typing import Any, Dict, List, Optional, Protocol
+from datetime import UTC, datetime
+from typing import Any, Optional, Protocol
+
+UTC = UTC
 
 
 class StateView(Protocol):
@@ -20,7 +24,7 @@ class StateView(Protocol):
 
     def get(self, path: str, default: Any = None) -> Any: ...
 
-    def to_dict(self) -> Dict[str, Any]: ...
+    def to_dict(self) -> dict[str, Any]: ...
 
 
 @dataclass(frozen=True)
@@ -48,8 +52,8 @@ class DeltaState:
     """
 
     state_id: str
-    base_state: Dict[str, Any] = field(default_factory=dict)
-    deltas: List[StateDelta] = field(default_factory=list)
+    base_state: dict[str, Any] = field(default_factory=dict)
+    deltas: list[StateDelta] = field(default_factory=list)
     parent_id: Optional[str] = None
     created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
@@ -166,13 +170,13 @@ class DeltaStateManager:
     """
 
     def __init__(self, max_cache_size: int = 1000):
-        self._states: Dict[str, DeltaState] = {}
-        self._hot_cache: Dict[str, Any] = {}  # Path-based value cache
+        self._states: dict[str, DeltaState] = {}
+        self._hot_cache: dict[str, Any] = {}  # Path-based value cache
         self._max_cache_size = max_cache_size
         self._access_count = 0
         self._hit_count = 0
 
-    def create_state(self, initial_data: Dict[str, Any] = None) -> DeltaState:
+    def create_state(self, initial_data: dict[str, Any] = None) -> DeltaState:
         """Create new root state."""
         state = DeltaState(
             state_id=self._generate_id(),
@@ -225,7 +229,7 @@ class DeltaStateManager:
 
         return value
 
-    def get_full_state(self, state_id: str) -> Dict[str, Any]:
+    def get_full_state(self, state_id: str) -> dict[str, Any]:
         """Get fully materialized state."""
         if state_id not in self._states:
             return None
@@ -251,7 +255,7 @@ class DeltaStateManager:
         """Generate unique state ID."""
         return hashlib.sha256(str(time.time()).encode()).hexdigest()[:16]
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get manager statistics."""
         total_deltas = sum(s.get_delta_count() for s in self._states.values())
         return {

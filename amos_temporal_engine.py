@@ -11,14 +11,18 @@ Provides temporal semantics for the 5-lens mathematical regime:
 - Field: Temporal phase evolution
 """
 
+from __future__ import annotations
+
 import asyncio
 import heapq
 import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from enum import Enum, auto
-from typing import Any, Dict, List, Optional
+
+UTC = UTC
+from typing import Any, Optional
 
 
 class TemporalStatus(Enum):
@@ -40,12 +44,12 @@ class TemporalEvent:
     name: str = ""
     scheduled_at: datetime = field(default_factory=lambda: datetime.now(UTC))
     status: TemporalStatus = TemporalStatus.PENDING
-    payload: Dict[str, Any] = field(default_factory=dict)
+    payload: dict[str, Any] = field(default_factory=dict)
     callback: Callable[..., Any] = None
     priority: int = 0
     retry_count: int = 0
     max_retries: int = 3
-    dependencies: List[str] = field(default_factory=list)
+    dependencies: list[str] = field(default_factory=list)
     created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
     def __lt__(self, other: TemporalEvent) -> bool:
@@ -61,10 +65,10 @@ class TemporalWorkflow:
 
     id: str = field(default_factory=lambda: str(uuid.uuid4()))
     name: str = ""
-    events: List[TemporalEvent] = field(default_factory=list)
+    events: list[TemporalEvent] = field(default_factory=list)
     created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     status: TemporalStatus = TemporalStatus.PENDING
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class TemporalEngine:
@@ -76,12 +80,12 @@ class TemporalEngine:
     """
 
     def __init__(self) -> None:
-        self._event_queue: List[TemporalEvent] = []
-        self._workflows: Dict[str, TemporalWorkflow] = {}
-        self._event_map: Dict[str, TemporalEvent] = {}
+        self._event_queue: list[TemporalEvent] = []
+        self._workflows: dict[str, TemporalWorkflow] = {}
+        self._event_map: dict[str, TemporalEvent] = {}
         self._running = False
         self._lock = asyncio.Lock()
-        self._metrics: Dict[str, Any] = {
+        self._metrics: dict[str, Any] = {
             "events_processed": 0,
             "events_failed": 0,
             "workflows_completed": 0,
@@ -94,8 +98,8 @@ class TemporalEngine:
         callback: Callable[..., Any],
         delay_seconds: float = 0,
         priority: int = 0,
-        dependencies: List[str] = None,
-        payload: Dict[str, Any] = None,
+        dependencies: list[str] = None,
+        payload: dict[str, Any] = None,
     ) -> str:
         """Schedule a temporal event."""
         event = TemporalEvent(
@@ -116,11 +120,11 @@ class TemporalEngine:
     async def schedule_workflow(
         self,
         name: str,
-        events: List[tuple[str, Callable[..., Any], float]],
-        metadata: Dict[str, Any] = None,
+        events: list[tuple[str, Callable[..., Any], float]],
+        metadata: dict[str, Any] = None,
     ) -> str:
         """Schedule a field-theoretic workflow."""
-        workflow_events: List[TemporalEvent] = []
+        workflow_events: list[TemporalEvent] = []
         prev_event_id: str = None
 
         for event_name, callback, delay in events:
@@ -158,7 +162,7 @@ class TemporalEngine:
     async def _process_events(self) -> None:
         """Process pending temporal events."""
         now = datetime.now(UTC)
-        events_to_process: List[TemporalEvent] = []
+        events_to_process: list[TemporalEvent] = []
 
         async with self._lock:
             while self._event_queue and self._event_queue[0].scheduled_at <= now:
@@ -203,7 +207,7 @@ class TemporalEngine:
                 event.status = TemporalStatus.FAILED
                 self._metrics["events_failed"] += 1
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """Get temporal engine metrics."""
         return {
             **self._metrics,
@@ -212,7 +216,7 @@ class TemporalEngine:
             "checked_at": datetime.now(UTC).isoformat(),
         }
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get temporal engine status."""
         return {
             "running": self._running,
@@ -247,7 +251,7 @@ if __name__ == "__main__":
         """Demonstrate temporal engine capabilities."""
         engine = get_temporal_engine()
 
-        async def sample_task(payload: Dict[str, Any]) -> None:
+        async def sample_task(payload: dict[str, Any]) -> None:
             print(f"[TEMPORAL] Executing: {payload.get('name', 'unknown')}")
 
         # Schedule events

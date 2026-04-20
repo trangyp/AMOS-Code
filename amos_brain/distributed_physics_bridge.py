@@ -1,10 +1,10 @@
 """Layer 18 Bridge - Distributed Systems Physics Engine Bridge."""
 
 from __future__ import annotations
-from typing import Optional
 
 try:
     from repo_doctor.layer18_physics_engine import DistributedPhysicsEngine
+
     _ENGINE_AVAILABLE = True
 except ImportError:
     _ENGINE_AVAILABLE = False
@@ -12,7 +12,6 @@ except ImportError:
 
 class DistributedPhysicsBridge:
     """Bridge between Layer 18 Physics Engine and AMOS Brain."""
-
 
     def __init__(self) -> None:
         self.engine: Optional[DistributedPhysicsEngine] = None

@@ -7,7 +7,9 @@ the most powerful code analysis and quality tools.
 """
 
 import subprocess
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 
 
 def install_tools() -> None:

@@ -44,6 +44,14 @@ AMOS Brain is a unified cognitive architecture that adds structured reasoning ca
 
 ## 🚀 Quick Start
 
+### Installation
+
+```bash
+pip install amos-brain
+# Or with all extras
+pip install "amos-brain[all]"
+```
+
 ### Local LLM Mode (Recommended)
 
 Run AMOS with local models (Ollama, LM Studio, vLLM) - no API keys needed:
@@ -51,28 +59,31 @@ Run AMOS with local models (Ollama, LM Studio, vLLM) - no API keys needed:
 ```bash
 # With Ollama (default)
 export AMOS_MODEL=llama3.2:latest
-python amos_local.py
+amos-brain --local
 
 # With LM Studio
 export AMOS_LLM_BACKEND=lmstudio
 export AMOS_MODEL=your-model-name
-python amos_local.py
+amos-brain --local
 
-# Health check only
-python amos_local.py --check
+# Health check
+amos-brain doctor
 ```
 
-### Legacy Mode (Cloud Providers)
+### CLI Usage
 
 ```bash
-# Unified launcher - discover all features
-python amos_brain_launcher.py
+# Show brain status
+amos-brain status
 
-# Or start with tutorial
-python amos_brain_tutorial.py
+# Process a task
+amos-brain think "Design secure API"
 
-# Or use the CLI
-python amos_brain_cli.py
+# Run orchestration
+amos-brain orchestrate --goal "Build microservices"
+
+# Check system health
+amos-brain doctor
 ```
 
 See `amos_brain/README.md` and `AMOS_BRAIN_GUIDE.md` for full documentation.
@@ -105,7 +116,7 @@ ollama pull llama3.2:latest
 
 # Run AMOS
 export AMOS_MODEL=llama3.2:latest
-python amos_local.py
+amos-brain --local
 ```
 
 **LM Studio:**
@@ -116,7 +127,7 @@ python amos_local.py
 # 4. Run AMOS
 export AMOS_LLM_BACKEND=lmstudio
 export AMOS_MODEL=your-model-name
-python amos_local.py
+amos-brain --local
 ```
 
 **vLLM:**
@@ -128,7 +139,7 @@ python -m vllm.entrypoints.openai.api_server \
 # Run AMOS
 export AMOS_LLM_BACKEND=vllm
 export AMOS_MODEL=meta-llama/Llama-2-7b-chat-hf
-python amos_local.py
+amos-brain --local
 ```
 
 ### Features
@@ -199,7 +210,7 @@ pip install -e ".[clawspring,dev]"
 
 ## 📝 License
 
-MIT License - See LICENSE file for details.
+Apache License 2.0 - See LICENSE file for details.
 
 ---
 

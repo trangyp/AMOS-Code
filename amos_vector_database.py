@@ -18,7 +18,7 @@ import hashlib
 import time
 import uuid
 from dataclasses import dataclass, field
-from typing import Any, Dict, List
+from typing import Any
 
 import numpy as np
 
@@ -28,14 +28,14 @@ class VectorDocument:
     """A document with vector embedding."""
 
     doc_id: str
-    vector: List[float]
+    vector: list[float]
 
     # Content
     text: str = ""
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     # Optional sparse vector for hybrid search
-    sparse_vector: Dict[int, float] = None
+    sparse_vector: dict[int, float] = None
 
     # Timestamps
     created_at: float = field(default_factory=time.time)
@@ -48,9 +48,9 @@ class SearchResult:
 
     doc_id: str
     score: float
-    vector: List[float] = None
+    vector: list[float] = None
     text: str = ""
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -103,12 +103,12 @@ class AMOSVectorDatabase:
     """
 
     def __init__(self):
-        self.collections: Dict[str, Collection] = {}
-        self.vectors: Dict[str, dict[str, VectorDocument]] = {}  # collection_id -> doc_id -> doc
-        self.indexes: Dict[str, Any] = {}  # Simple in-memory index structure
+        self.collections: dict[str, Collection] = {}
+        self.vectors: dict[str, dict[str, VectorDocument]] = {}  # collection_id -> doc_id -> doc
+        self.indexes: dict[str, Any] = {}  # Simple in-memory index structure
 
         # Query cache
-        self.query_cache: Dict[str, list[SearchResult]] = {}
+        self.query_cache: dict[str, list[SearchResult]] = {}
         self.cache_hits: int = 0
         self.cache_misses: int = 0
 
@@ -185,7 +185,7 @@ class AMOSVectorDatabase:
 
         return collection_id
 
-    def _generate_embedding(self, text: str, dimension: int) -> List[float]:
+    def _generate_embedding(self, text: str, dimension: int) -> list[float]:
         """Generate a simple embedding for demo purposes."""
         # Use hash-based pseudo-random but deterministic embedding
         np.random.seed(int(hashlib.md5(text.encode()).hexdigest(), 16) % (2**32))
@@ -194,7 +194,7 @@ class AMOSVectorDatabase:
         embedding = embedding / np.linalg.norm(embedding)
         return embedding.tolist()
 
-    async def upsert(self, collection_id: str, documents: List[VectorDocument]) -> int:
+    async def upsert(self, collection_id: str, documents: list[VectorDocument]) -> int:
         """Upsert documents into a collection."""
         if collection_id not in self.collections:
             raise ValueError(f"Collection {collection_id} not found")
@@ -220,9 +220,9 @@ class AMOSVectorDatabase:
     async def upsert_texts(
         self,
         collection_id: str,
-        texts: List[str],
-        metadatas: List[dict] = None,
-        ids: List[str] = None,
+        texts: list[str],
+        metadatas: list[dict] = None,
+        ids: list[str] = None,
     ) -> int:
         """Upsert texts with auto-generated embeddings."""
         if collection_id not in self.collections:
@@ -246,11 +246,11 @@ class AMOSVectorDatabase:
     async def search(
         self,
         collection_id: str,
-        query_vector: List[float],
+        query_vector: list[float],
         top_k: int = 10,
-        filter_metadata: Dict[str, Any] = None,
+        filter_metadata: dict[str, Any] = None,
         include_vectors: bool = False,
-    ) -> List[SearchResult]:
+    ) -> list[SearchResult]:
         """Search for similar vectors."""
         if collection_id not in self.collections:
             return []
@@ -305,8 +305,8 @@ class AMOSVectorDatabase:
         collection_id: str,
         query_text: str,
         top_k: int = 10,
-        filter_metadata: Dict[str, Any] = None,
-    ) -> List[SearchResult]:
+        filter_metadata: dict[str, Any] = None,
+    ) -> list[SearchResult]:
         """Search using text query (auto-embed)."""
         if collection_id not in self.collections:
             return []
@@ -319,11 +319,11 @@ class AMOSVectorDatabase:
     async def hybrid_search(
         self,
         collection_id: str,
-        query_vector: List[float],
-        query_sparse: Dict[int, float],
+        query_vector: list[float],
+        query_sparse: dict[int, float],
         top_k: int = 10,
         alpha: float = 0.7,  # Weight for dense vs sparse (0.7 = 70% dense, 30% sparse)
-    ) -> List[SearchResult]:
+    ) -> list[SearchResult]:
         """Hybrid search combining dense and sparse vectors."""
         if collection_id not in self.collections:
             return []
@@ -375,7 +375,7 @@ class AMOSVectorDatabase:
 
         return results
 
-    async def delete(self, collection_id: str, doc_ids: List[str]) -> int:
+    async def delete(self, collection_id: str, doc_ids: list[str]) -> int:
         """Delete documents from a collection."""
         if collection_id not in self.collections:
             return 0
@@ -392,8 +392,8 @@ class AMOSVectorDatabase:
         return deleted
 
     async def get(
-        self, collection_id: str, doc_ids: List[str], include_vectors: bool = True
-    ) -> List[VectorDocument]:
+        self, collection_id: str, doc_ids: list[str], include_vectors: bool = True
+    ) -> list[VectorDocument]:
         """Get documents by ID."""
         if collection_id not in self.collections:
             return []
@@ -417,7 +417,7 @@ class AMOSVectorDatabase:
 
         return results
 
-    def get_collection_stats(self, collection_id: str) -> Dict[str, Any]:
+    def get_collection_stats(self, collection_id: str) -> dict[str, Any]:
         """Get statistics for a collection."""
         collection = self.collections.get(collection_id)
         if not collection:
@@ -438,7 +438,7 @@ class AMOSVectorDatabase:
             "created_at": collection.created_at,
         }
 
-    def get_database_summary(self) -> Dict[str, Any]:
+    def get_database_summary(self) -> dict[str, Any]:
         """Get overall database summary."""
         total_vectors = sum(len(vecs) for vecs in self.vectors.values())
 

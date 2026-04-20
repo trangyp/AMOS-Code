@@ -13,10 +13,13 @@ import hashlib
 import json
 import os
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
+
 UTC = timezone.utc
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 
 @dataclass

@@ -13,7 +13,9 @@ import json
 import logging
 from collections import defaultdict
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import UTC, datetime
+
+UTC = UTC, timedelta
 from enum import Enum, auto
 from pathlib import Path
 from typing import Any
@@ -61,7 +63,7 @@ class WorldObject:
     name: str
     object_type: ObjectType
     position: Position = field(default_factory=Position)
-    properties: Dict[str, Any] = field(default_factory=dict)
+    properties: dict[str, Any] = field(default_factory=dict)
     relationships: dict[str, list[str]] = field(default_factory=lambda: defaultdict(list))
     created_at: str = ""
     last_updated: str = ""
@@ -80,10 +82,10 @@ class Context:
 
     context_id: str
     timestamp: str
-    active_objects: List[str] = field(default_factory=list)
+    active_objects: list[str] = field(default_factory=list)
     spatial_relations: list[tuple[str, str, SpatialRelation]] = field(default_factory=list)
-    environmental_state: Dict[str, Any] = field(default_factory=dict)
-    inferred_facts: List[str] = field(default_factory=list)
+    environmental_state: dict[str, Any] = field(default_factory=dict)
+    inferred_facts: list[str] = field(default_factory=list)
 
 
 class WorldModelKernel:
@@ -102,14 +104,14 @@ class WorldModelKernel:
         self.logs_path.mkdir(parents=True, exist_ok=True)
 
         # Object registry
-        self.objects: Dict[str, WorldObject] = {}
+        self.objects: dict[str, WorldObject] = {}
 
         # Context history
-        self.contexts: List[Context] = []
+        self.contexts: list[Context] = []
         self.max_contexts = 100
 
         # Current context
-        self.current_context: Optional[Context] = None
+        self.current_context: Context = None
 
         # Spatial index (simplified)
         self.spatial_grid: dict[str, set[str]] = defaultdict(set)
@@ -131,7 +133,7 @@ class WorldModelKernel:
         self,
         name: str,
         object_type: ObjectType,
-        position: Optional[Position] = None,
+        position: Position = None,
         properties: dict[str, Any] = None,
         confidence: float = 1.0,
     ) -> WorldObject:
@@ -180,7 +182,7 @@ class WorldModelKernel:
     def update_object(
         self,
         object_id: str,
-        position: Optional[Position] = None,
+        position: Position = None,
         properties: dict[str, Any] = None,
         confidence: float = None,
     ) -> bool:
@@ -226,16 +228,16 @@ class WorldModelKernel:
         logger.debug(f"Added relationship: {from_id} {relation.name} {to_id}")
         return True
 
-    def get_object(self, object_id: str) -> Optional[WorldObject]:
+    def get_object(self, object_id: str) -> WorldObject:
         """Get an object by ID."""
         return self.objects.get(object_id)
 
     def find_objects(
         self,
-        object_type: Optional[ObjectType] = None,
+        object_type: ObjectType = None,
         name_pattern: str = None,
         path_prefix: str = None,
-    ) -> List[WorldObject]:
+    ) -> list[WorldObject]:
         """Find objects matching criteria."""
         results = []
 
@@ -331,7 +333,7 @@ class WorldModelKernel:
             inferences.append(f"{recent_count} objects modified in last minute")
 
         # Inference 3: Object type distribution
-        type_counts: Dict[str, int] = defaultdict(int)
+        type_counts: dict[str, int] = defaultdict(int)
         for obj_id in context.active_objects:
             if obj_id in self.objects:
                 type_counts[self.objects[obj_id].object_type.name] += 1
@@ -344,7 +346,7 @@ class WorldModelKernel:
 
     def predict(
         self, object_id: str, prediction_type: str = "future_state", horizon_seconds: int = 60
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Make a prediction about an object's future state."""
         if object_id not in self.objects:
             return {"error": "Object not found"}
@@ -388,7 +390,7 @@ class WorldModelKernel:
 
         return prediction
 
-    def spatial_query(self, center_path: str, depth: int = 1) -> List[WorldObject]:
+    def spatial_query(self, center_path: str, depth: int = 1) -> list[WorldObject]:
         """Query objects in spatial proximity."""
         results = []
 
@@ -410,10 +412,10 @@ class WorldModelKernel:
 
         return results
 
-    def get_state(self) -> Dict[str, Any]:
+    def get_state(self) -> dict[str, Any]:
         """Get current world model state."""
         # Count by type
-        type_counts: Dict[str, int] = defaultdict(int)
+        type_counts: dict[str, int] = defaultdict(int)
         for obj in self.objects.values():
             type_counts[obj.object_type.name] += 1
 
@@ -428,7 +430,7 @@ class WorldModelKernel:
             "timestamp": datetime.now(UTC).isoformat(),
         }
 
-    def get_object_graph(self) -> Dict[str, Any]:
+    def get_object_graph(self) -> dict[str, Any]:
         """Get object relationship graph."""
         return {
             "nodes": [

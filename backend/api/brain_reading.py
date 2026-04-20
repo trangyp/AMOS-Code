@@ -1,4 +1,6 @@
-from typing import Any, Dict, List
+from __future__ import annotations
+
+from typing import Any
 
 """AMOS Brain-Reading API Endpoints
 
@@ -6,18 +8,8 @@ Exposes the Brain-Reading Kernel for cognitive text processing.
 This is NOT language parsing - it is brain-level reading.
 """
 
-import sys
-from pathlib import Path
-
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
-
-# Add paths for imports
-_AMOS_ROOT = Path(__file__).parent.parent.parent.resolve()
-if str(_AMOS_ROOT) not in sys.path:
-    sys.path.insert(0, str(_AMOS_ROOT))
-if str(_AMOS_ROOT / "clawspring") not in sys.path:
-    sys.path.insert(0, str(_AMOS_ROOT / "clawspring"))
 
 # Import brain reading kernel
 try:
@@ -36,8 +28,8 @@ class BrainReadRequest(BaseModel):
     """Request for brain-level reading."""
 
     text: str = Field(..., description="Input text to read cognitively")
-    context: Dict[str, Any] = Field(default_factory=dict, description="AMOS context")
-    goals: List[str] = Field(default_factory=list, description="Active goals")
+    context: dict[str, Any] = Field(default_factory=dict, description="AMOS context")
+    goals: list[str] = Field(default_factory=list, description="Active goals")
 
 
 class BrainReadResponse(BaseModel):
@@ -52,11 +44,11 @@ class BrainReadResponse(BaseModel):
     priority: float
     compiled_goal_type: str
     compiled_objective: str
-    constraints: List[str]
-    references: List[str]
-    conflicts: List[dict[str, Any]]
-    ambiguities: List[dict[str, Any]]
-    execution_plan: Dict[str, Any] = None
+    constraints: list[str]
+    references: list[str]
+    conflicts: list[dict[str, Any]]
+    ambiguities: list[dict[str, Any]]
+    execution_plan: dict[str, Any] = None
 
 
 @router.post("/read", response_model=BrainReadResponse)
@@ -117,7 +109,7 @@ async def brain_read(request: BrainReadRequest) -> BrainReadResponse:
 
 
 @router.get("/status")
-async def brain_reading_status() -> Dict[str, Any]:
+async def brain_reading_status() -> dict[str, Any]:
     """Get Brain-Reading Kernel status."""
     if not _BRAIN_READING_AVAILABLE:
         return {"available": False, "error": "Brain-Reading Kernel not imported"}

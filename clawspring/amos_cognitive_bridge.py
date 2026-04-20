@@ -8,9 +8,13 @@ Owner: Trang
 Version: 1.0.0
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass
-from datetime import datetime
-from typing import Any, Dict, Optional, Tuple
+from datetime import datetime, timezone
+
+UTC = timezone.utc
+from typing import Any
 
 from clawspring.amos_ubi_engine import AMOSUBIEngine, UBIResult
 
@@ -28,7 +32,7 @@ class CognitiveContext:
     def to_prompt_injection(self) -> str:
         """Convert to LLM prompt context injection."""
         return f"""
-[AMOS Biological Context - {self.timestamp.strftime('%H:%M')}]
+[AMOS Biological Context - {self.timestamp.strftime("%H:%M")}]
 - User cognitive load: {self.cognitive_load}
 - Emotional state: {self.emotional_state}
 - Physical comfort: {self.body_comfort}
@@ -47,7 +51,7 @@ class CognitiveBridge:
 
     def __init__(self):
         self.ubi = AMOSUBIEngine()
-        self._last_analysis: Optional[CognitiveContext] = None
+        self._last_analysis: CognitiveContext | None = None
 
     def analyze_user_state(self, description: str) -> CognitiveContext:
         """Analyze user biological state via UBI Engine."""
@@ -120,7 +124,7 @@ class CognitiveBridge:
             return "acceptable"
         return "optimal"
 
-    def enhance_prompt(self, user_prompt: str, context: Optional[CognitiveContext] = None) -> str:
+    def enhance_prompt(self, user_prompt: str, context: CognitiveContext | None = None) -> str:
         """Enhance user prompt with biological context for LLM."""
         if context is None:
             context = self._last_analysis
@@ -134,7 +138,7 @@ class CognitiveBridge:
 {user_prompt}
 """
 
-    def get_response_guidelines(self) -> Dict[str, Any]:
+    def get_response_guidelines(self) -> dict[str, Any]:
         """Get UI/UX guidelines based on current biological state."""
         if self._last_analysis is None:
             return {
@@ -171,7 +175,7 @@ class CognitiveBridge:
 
 
 # Singleton instance
-_cognitive_bridge: Optional[CognitiveBridge] = None
+_cognitive_bridge: CognitiveBridge | None = None
 
 
 def get_cognitive_bridge() -> CognitiveBridge:
@@ -182,7 +186,7 @@ def get_cognitive_bridge() -> CognitiveBridge:
     return _cognitive_bridge
 
 
-def analyze_and_enhance(user_prompt: str, context_description: str = "") -> Tuple[str, dict]:
+def analyze_and_enhance(user_prompt: str, context_description: str = "") -> tuple[str, dict]:
     """Convenience function: analyze state and enhance prompt."""
     bridge = get_cognitive_bridge()
 

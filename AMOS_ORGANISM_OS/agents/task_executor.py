@@ -6,8 +6,7 @@ Capabilities: run_command, check_status, log_output
 import logging
 import subprocess
 from dataclasses import dataclass
-from datetime import datetime
-from typing import List, Tuple
+from datetime import UTC, datetime
 
 
 @dataclass
@@ -51,7 +50,7 @@ class TaskExecutor:
     BLOCKED_PATTERNS = ["rm -rf", "rm -f /", "mkfs", "dd if", "> /dev", ":(){", "chmod 777 /"]
 
     def __init__(self):
-        self.history: List[TaskResult] = []
+        self.history: list[TaskResult] = []
         self.setup_logging()
 
     def setup_logging(self):
@@ -61,7 +60,7 @@ class TaskExecutor:
         )
         self.logger = logging.getLogger("TaskExecutor")
 
-    def validate_command(self, command: str) -> Tuple[bool, str]:
+    def validate_command(self, command: str) -> tuple[bool, str]:
         """Check if command is safe to execute."""
         # Check blocked patterns
         for pattern in self.BLOCKED_PATTERNS:
@@ -93,8 +92,12 @@ class TaskExecutor:
         # Execute
         self.logger.info(f"Executing: {command}")
         try:
+            # SECURITY: Use shlex.split() and shell=False to prevent injection
+            import shlex
+
+            cmd_parts = shlex.split(command)
             result = subprocess.run(
-                command, shell=True, capture_output=True, text=True, timeout=timeout
+                cmd_parts, shell=False, capture_output=True, text=True, timeout=timeout
             )
 
             task_result = TaskResult(
@@ -141,7 +144,7 @@ class TaskExecutor:
             "last_command": self.history[-1].command if self.history else None,
         }
 
-    def get_history(self, limit: int = 10) -> List[TaskResult]:
+    def get_history(self, limit: int = 10) -> list[TaskResult]:
         """Get execution history."""
         return self.history[-limit:]
 

@@ -8,9 +8,11 @@ import json
 import uuid
 from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 @dataclass
@@ -19,8 +21,8 @@ class TransformContext:
 
     source_format: str = ""
     target_format: str = ""
-    metadata: Dict[str, Any] = field(default_factory=dict)
-    options: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
+    options: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -32,10 +34,10 @@ class Transform:
     transform_type: str = ""  # map, filter, aggregate, convert
     input_schema: str = ""
     output_schema: str = ""
-    config: Dict[str, Any] = field(default_factory=dict)
+    config: dict[str, Any] = field(default_factory=dict)
     created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
@@ -46,14 +48,14 @@ class TransformEngine:
     conversion between different data formats.
     """
 
-    def __init__(self, data_dir: Optional[Path] = None):
+    def __init__(self, data_dir: Path = None):
         if data_dir is None:
             data_dir = Path(__file__).parent / "data"
         self.data_dir = data_dir
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
-        self.transforms: Dict[str, Transform] = {}
-        self.transformers: Dict[str, Callable] = {}
+        self.transforms: dict[str, Transform] = {}
+        self.transformers: dict[str, Callable] = {}
 
         self._load_transforms()
         self._register_default_transformers()
@@ -123,8 +125,8 @@ class TransformEngine:
         self,
         transform_id: str,
         data: Any,
-        context: Optional[TransformContext] = None,
-    ) -> Dict[str, Any]:
+        context: TransformContext = None,
+    ) -> dict[str, Any]:
         """Execute a transform on data."""
         transform = self.transforms.get(transform_id)
         if not transform:
@@ -157,9 +159,9 @@ class TransformEngine:
     def apply_transforms(
         self,
         data: Any,
-        transform_ids: List[str],
-        context: Optional[TransformContext] = None,
-    ) -> Dict[str, Any]:
+        transform_ids: list[str],
+        context: TransformContext = None,
+    ) -> dict[str, Any]:
         """Apply multiple transforms in sequence."""
         current_data = data
         applied = []
@@ -227,7 +229,7 @@ class TransformEngine:
         _flatten_recursive(data)
         return result
 
-    def list_transforms(self) -> List[dict]:
+    def list_transforms(self) -> list[dict]:
         """List all transforms."""
         return [
             {
@@ -242,10 +244,10 @@ class TransformEngine:
 
 
 # Global instance
-_ENGINE: Optional[TransformEngine] = None
+_ENGINE: TransformEngine = None
 
 
-def get_transform_engine(data_dir: Optional[Path] = None) -> TransformEngine:
+def get_transform_engine(data_dir: Path = None) -> TransformEngine:
     """Get or create global transform engine."""
     global _ENGINE
     if _ENGINE is None:

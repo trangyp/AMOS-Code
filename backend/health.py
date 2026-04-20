@@ -1,33 +1,20 @@
 """AMOS Production Health Checks
 
-Comprehensive health check system for Docker/Kubernetes deployment.
+Health monitoring and status checking for AMOS.
 Implements liveness, readiness, and startup probes.
-
-Usage:
-    from backend.health import HealthChecker, health_checker
-
-    # In FastAPI endpoint
-    @app.get("/health/live")
-    async def liveness():
-        return health_checker.liveness()
-
-    @app.get("/health/ready")
-    async def readiness():
-        return await health_checker.readiness()
-
-Creator: Trang Phan
-Version: 1.0.0
 """
+
+from __future__ import annotations
 
 import asyncio
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-
-UTC = timezone.utc
-from typing import Any, Dict
+from datetime import UTC, datetime
+from typing import Any
 
 import psutil
+
+UTC = UTC
 
 
 @dataclass
@@ -38,8 +25,8 @@ class HealthStatus:
     timestamp: str
     version: str
     uptime_seconds: float
-    checks: Dict[str, Any] = field(default_factory=dict)
-    details: Dict[str, Any] = None
+    checks: dict[str, Any] = field(default_factory=dict)
+    details: dict[str, Any] = None
 
 
 @dataclass
@@ -50,7 +37,7 @@ class ComponentCheck:
     status: str  # "pass", "fail", "warn"
     response_time_ms: float
     message: str = None
-    metadata: Dict[str, Any] = None
+    metadata: dict[str, Any] = None
 
 
 class HealthChecker:
@@ -60,8 +47,8 @@ class HealthChecker:
 
     def __init__(self):
         self._start_time = time.time()
-        self._checks: Dict[str, callable] = {}
-        self._last_checks: Dict[str, ComponentCheck] = {}
+        self._checks: dict[str, callable] = {}
+        self._last_checks: dict[str, ComponentCheck] = {}
         self._register_default_checks()
 
     def _register_default_checks(self) -> None:
@@ -93,7 +80,7 @@ class HealthChecker:
         Should check all dependencies (database, external services, etc.)
         """
         start_time = time.time()
-        checks: Dict[str, Any] = {}
+        checks: dict[str, Any] = {}
         all_passed = True
 
         # Run all registered checks
@@ -241,7 +228,7 @@ class HealthChecker:
         """Add a custom health check."""
         self._checks[name] = check_fn
 
-    def get_last_checks(self) -> Dict[str, ComponentCheck]:
+    def get_last_checks(self) -> dict[str, ComponentCheck]:
         """Get results from last health check run."""
         return self._last_checks.copy()
 

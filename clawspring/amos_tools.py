@@ -11,9 +11,9 @@ Version: 2.0.0
 
 from datetime import datetime
 from functools import wraps
-from typing import Any, Dict
+from typing import Any
 
-from tool_registry import ToolDef, register_tool
+from clawspring.tool_registry import ToolDef, register_tool
 
 # SuperBrain integration
 try:
@@ -95,7 +95,7 @@ def governed_tool(tool_func):
     """Decorator to add SuperBrain governance to tool functions."""
 
     @wraps(tool_func)
-    def wrapper(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+    def wrapper(params: dict[str, Any], config: dict[str, Any]) -> str:
         tool_name = tool_func.__name__.replace("_amos_", "")
 
         # Validate via SuperBrain
@@ -116,7 +116,7 @@ def governed_tool(tool_func):
 # ── Tool Implementations ────────────────────────────────────────────────────
 
 
-def _amos_reasoning(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_reasoning(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Execute AMOS Rule of 2 and Rule of 4 reasoning on a problem."""
     problem = params.get("problem", "")
     ctx = params.get("context", {})
@@ -161,7 +161,7 @@ def _amos_reasoning(params: Dict[str, Any], config: Dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
-def _amos_laws(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_laws(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Get AMOS Global Laws and check compliance."""
     action = params.get("action", "list")
 
@@ -191,7 +191,7 @@ def _amos_laws(params: Dict[str, Any], config: Dict[str, Any]) -> str:
         return f"Unknown action: {action}. Use 'list', 'check', or 'validate'"
 
 
-def _amos_engines(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_engines(params: dict[str, Any], config: dict[str, Any]) -> str:
     """List and query AMOS cognitive engines."""
     action = params.get("action", "list")
     query = params.get("query", "")
@@ -235,7 +235,7 @@ def _amos_engines(params: Dict[str, Any], config: Dict[str, Any]) -> str:
         return f"Unknown: {action}. Use list/route/execute"
 
 
-def _amos_status(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_status(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Get AMOS Brain integration status."""
     runtime = _get_runtime()
     identity = runtime.get_identity()
@@ -257,7 +257,7 @@ def _amos_status(params: Dict[str, Any], config: Dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
-def _amos_enhance_prompt(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_enhance_prompt(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Enhance a system prompt with AMOS brain context."""
     base_prompt = params.get("prompt", "")
 
@@ -278,7 +278,7 @@ Gap: No embodiment, consciousness, or autonomous action
     return f"# Enhanced System Prompt\n\n{enhanced}"
 
 
-def _amos_workflow(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_workflow(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Run full AMOS workflow: cognitive → execution → validation → output."""
     from amos_orchestrator import run_amos_workflow
 
@@ -291,7 +291,7 @@ def _amos_workflow(params: Dict[str, Any], config: Dict[str, Any]) -> str:
     return run_amos_workflow(task, output_type)
 
 
-def _amos_code(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_code(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Generate AMOS-compliant code for specified layer."""
     from amos_coding_engine import get_coding_engine
 
@@ -332,7 +332,7 @@ def _amos_code(params: Dict[str, Any], config: Dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
-def _amos_design(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_design(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Generate UI/UX design with biological constraints."""
     from amos_design_engine import get_design_engine
 
@@ -389,7 +389,7 @@ def _amos_design(params: Dict[str, Any], config: Dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
-def _amos_signal(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_signal(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Run signal processing analysis across multiple domains."""
     from amos_signal_engine import get_signal_engine
 
@@ -405,7 +405,7 @@ def _amos_signal(params: Dict[str, Any], config: Dict[str, Any]) -> str:
     return engine.get_findings_summary(results)
 
 
-def _amos_ubi(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_ubi(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Analyze human factors using UBI (Unified Biological Intelligence)."""
     from amos_ubi_engine import get_ubi_engine
 
@@ -439,7 +439,7 @@ def _amos_ubi(params: Dict[str, Any], config: Dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
-def _amos_memory(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_memory(params: dict[str, Any], config: dict[str, Any]) -> str:
     """AMOS memory layer - store and recall brain artifacts."""
     from amos_memory import get_memory_bridge
 
@@ -472,7 +472,7 @@ Version: {stats["amos_version"]}
     return f"Unknown action: {action}. Use 'stats' or 'recall'."
 
 
-def _amos_strategy(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_strategy(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Run strategy/game theory analysis."""
     from amos_strategy_engine import get_strategy_engine
 
@@ -488,7 +488,7 @@ def _amos_strategy(params: Dict[str, Any], config: Dict[str, Any]) -> str:
     return engine.get_findings_summary(results)
 
 
-def _amos_society(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_society(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Run society/culture analysis across multiple domains."""
     from amos_society_engine import get_society_engine
 
@@ -504,7 +504,7 @@ def _amos_society(params: Dict[str, Any], config: Dict[str, Any]) -> str:
     return engine.get_findings_summary(results)
 
 
-def _amos_econ(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_econ(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Run economics/finance analysis across multiple domains."""
     from amos_econ_engine import get_econ_engine
 
@@ -520,7 +520,7 @@ def _amos_econ(params: Dict[str, Any], config: Dict[str, Any]) -> str:
     return engine.get_findings_summary(results)
 
 
-def _amos_scientific(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_scientific(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Run scientific analysis across multiple domains."""
     from amos_scientific_engine import get_scientific_engine
 
@@ -536,7 +536,7 @@ def _amos_scientific(params: Dict[str, Any], config: Dict[str, Any]) -> str:
     return engine.get_findings_summary(results)
 
 
-def _amos_multi_agent(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_multi_agent(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Run multi-agent parallel analysis."""
     from amos_multi_agent import get_multi_agent_coordinator
 
@@ -556,7 +556,7 @@ def _amos_multi_agent(params: Dict[str, Any], config: Dict[str, Any]) -> str:
         return f"Unknown analysis_type: {analysis_type}. Use 'quadrant' or 'dual'."
 
 
-def _amos_multi_agent_coordination(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_multi_agent_coordination(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Run multi-agent coordination and swarm intelligence analysis."""
     from amos_multi_agent_coordination_engine import get_multi_agent_engine
 
@@ -572,7 +572,7 @@ def _amos_multi_agent_coordination(params: Dict[str, Any], config: Dict[str, Any
     return engine.get_findings_summary(results)
 
 
-def _amos_memory_optimization(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_memory_optimization(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Run memory optimization and caching analysis."""
     from amos_memory_optimization_engine import get_memory_optimization_engine
 
@@ -588,7 +588,7 @@ def _amos_memory_optimization(params: Dict[str, Any], config: Dict[str, Any]) ->
     return engine.get_findings_summary(results)
 
 
-def _amos_logic_core(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_logic_core(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Run logic core analysis for formal logic and reasoning."""
     from amos_logic_core_engine import get_logic_core_engine
 
@@ -604,7 +604,7 @@ def _amos_logic_core(params: Dict[str, Any], config: Dict[str, Any]) -> str:
     return engine.get_findings_summary(results)
 
 
-def _amos_species_interaction_core(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_species_interaction_core(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Run species interaction core analysis (HIE, UMPL, UST, UIE, UEL)."""
     from amos_species_interaction_core_engine import get_species_interaction_core_engine
 
@@ -620,7 +620,7 @@ def _amos_species_interaction_core(params: Dict[str, Any], config: Dict[str, Any
     return engine.get_findings_summary(results)
 
 
-def _amos_ubi_stack(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_ubi_stack(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Run UBI Stack neurobiological intelligence analysis."""
     from amos_ubi_stack_engine import get_ubi_stack_engine
 
@@ -636,7 +636,7 @@ def _amos_ubi_stack(params: Dict[str, Any], config: Dict[str, Any]) -> str:
     return engine.get_findings_summary(results)
 
 
-def _amos_planetary_stack(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_planetary_stack(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Run Planetary Stack analysis for planetary-scale systems."""
     from amos_planetary_stack_engine import get_planetary_stack_engine
 
@@ -652,7 +652,7 @@ def _amos_planetary_stack(params: Dict[str, Any], config: Dict[str, Any]) -> str
     return engine.get_findings_summary(results)
 
 
-def _amos_knowledge_graph(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_knowledge_graph(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Run Knowledge Graph analysis for semantic entity and relationship extraction."""
     from amos_knowledge_graph_engine import get_knowledge_graph_engine
 
@@ -668,7 +668,7 @@ def _amos_knowledge_graph(params: Dict[str, Any], config: Dict[str, Any]) -> str
     return engine.get_findings_summary(results)
 
 
-def _amos_ethics_safety(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_ethics_safety(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Run Ethics & Safety analysis for ethical reasoning and safety constraints."""
     from amos_ethics_safety_engine import get_ethics_safety_engine
 
@@ -684,7 +684,7 @@ def _amos_ethics_safety(params: Dict[str, Any], config: Dict[str, Any]) -> str:
     return engine.get_findings_summary(results)
 
 
-def _amos_causal_inference(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_causal_inference(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Run Causal Inference analysis using do-calculus and Pearl's framework."""
     from amos_causal_inference_engine import get_causal_inference_engine
 
@@ -700,7 +700,7 @@ def _amos_causal_inference(params: Dict[str, Any], config: Dict[str, Any]) -> st
     return engine.get_findings_summary(results)
 
 
-def _amos_knowledge(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_knowledge(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Query knowledge graph and external data sources."""
     from amos_knowledge_connector import get_knowledge_connector
 
@@ -716,7 +716,7 @@ def _amos_knowledge(params: Dict[str, Any], config: Dict[str, Any]) -> str:
     return connector.get_findings_summary(result)
 
 
-def _amos_personality(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_personality(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Run personality/character analysis."""
     from amos_personality_engine import get_personality_engine
 
@@ -734,7 +734,7 @@ def _amos_personality(params: Dict[str, Any], config: Dict[str, Any]) -> str:
     return engine.get_findings_summary(results)
 
 
-def _amos_emotion(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_emotion(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Run emotion/affective analysis across multiple domains."""
     from amos_emotion_engine import get_emotion_engine
 
@@ -750,7 +750,7 @@ def _amos_emotion(params: Dict[str, Any], config: Dict[str, Any]) -> str:
     return engine.get_findings_summary(results)
 
 
-def _amos_biology_cognition(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_biology_cognition(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Run biology and cognition analysis."""
     from amos_biology_cognition_engine import get_biology_cognition_engine
 
@@ -766,7 +766,7 @@ def _amos_biology_cognition(params: Dict[str, Any], config: Dict[str, Any]) -> s
     return engine.get_findings_summary(results)
 
 
-def _amos_design_language(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_design_language(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Run design language and UX analysis."""
     from amos_design_language_engine import get_design_language_engine
 
@@ -782,7 +782,7 @@ def _amos_design_language(params: Dict[str, Any], config: Dict[str, Any]) -> str
     return engine.get_findings_summary(results)
 
 
-def _amos_workflow_orchestrator(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_workflow_orchestrator(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Run workflow orchestration for complex multi-engine tasks."""
     from amos_workflow_orchestrator import get_workflow_orchestrator
 
@@ -799,12 +799,12 @@ def _amos_workflow_orchestrator(params: Dict[str, Any], config: Dict[str, Any]) 
     return orchestrator.get_findings_summary(result)
 
 
-def _amos_electrical_power(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_electrical_power(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Run electrical power systems analysis."""
     from amos_electrical_power_engine import get_electrical_power_engine
 
     description = params.get("description", "")
-    domains = params.get("domains", None)
+    domains = params.get("domains")
 
     if not description:
         return "Error: 'description' parameter is required"
@@ -815,12 +815,12 @@ def _amos_electrical_power(params: Dict[str, Any], config: Dict[str, Any]) -> st
     return engine.get_findings_summary(results)
 
 
-def _amos_mechanical_structural(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_mechanical_structural(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Run mechanical and structural analysis."""
     from amos_mechanical_structural_engine import get_mechanical_structural_engine
 
     description = params.get("description", "")
-    domains = params.get("domains", None)
+    domains = params.get("domains")
 
     if not description:
         return "Error: 'description' parameter is required"
@@ -831,12 +831,12 @@ def _amos_mechanical_structural(params: Dict[str, Any], config: Dict[str, Any]) 
     return engine.get_findings_summary(results)
 
 
-def _amos_numerical_methods(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_numerical_methods(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Run numerical methods and scientific computing analysis."""
     from amos_numerical_methods_engine import get_numerical_methods_engine
 
     description = params.get("description", "")
-    domains = params.get("domains", None)
+    domains = params.get("domains")
 
     if not description:
         return "Error: 'description' parameter is required"
@@ -847,12 +847,12 @@ def _amos_numerical_methods(params: Dict[str, Any], config: Dict[str, Any]) -> s
     return engine.get_findings_summary(results)
 
 
-def _amos_econ_finance(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_econ_finance(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Run economics and financial analysis."""
     from amos_econ_finance_engine import get_econ_finance_engine
 
     description = params.get("description", "")
-    domains = params.get("domains", None)
+    domains = params.get("domains")
 
     if not description:
         return "Error: 'description' parameter is required"
@@ -863,12 +863,12 @@ def _amos_econ_finance(params: Dict[str, Any], config: Dict[str, Any]) -> str:
     return engine.get_findings_summary(results)
 
 
-def _amos_strategy_game(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_strategy_game(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Run strategy and game theory analysis."""
     from amos_strategy_game_engine import get_strategy_game_engine
 
     description = params.get("description", "")
-    domains = params.get("domains", None)
+    domains = params.get("domains")
 
     if not description:
         return "Error: 'description' parameter is required"
@@ -879,12 +879,12 @@ def _amos_strategy_game(params: Dict[str, Any], config: Dict[str, Any]) -> str:
     return engine.get_findings_summary(results)
 
 
-def _amos_society_culture(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_society_culture(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Run society and culture analysis."""
     from amos_society_culture_engine import get_society_culture_engine
 
     description = params.get("description", "")
-    domains = params.get("domains", None)
+    domains = params.get("domains")
 
     if not description:
         return "Error: 'description' parameter is required"
@@ -895,12 +895,12 @@ def _amos_society_culture(params: Dict[str, Any], config: Dict[str, Any]) -> str
     return engine.get_findings_summary(results)
 
 
-def _amos_speed(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_speed(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Run speed optimization analysis for AMOS engines."""
     from amos_speed_engine import get_speed_engine
 
     description = params.get("description", "")
-    mode = params.get("mode", None)
+    mode = params.get("mode")
 
     if not description:
         return "Error: 'description' parameter is required"
@@ -911,12 +911,12 @@ def _amos_speed(params: Dict[str, Any], config: Dict[str, Any]) -> str:
     return engine.get_findings_summary(results)
 
 
-def _amos_species_interaction(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_species_interaction(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Run species interaction analysis for human-facing AI."""
     from amos_species_interaction_engine import get_species_interaction_engine
 
     description = params.get("description", "")
-    domains = params.get("domains", None)
+    domains = params.get("domains")
 
     if not description:
         return "Error: 'description' parameter is required"
@@ -927,7 +927,7 @@ def _amos_species_interaction(params: Dict[str, Any], config: Dict[str, Any]) ->
     return engine.get_findings_summary(results)
 
 
-def _amos_universe_core(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_universe_core(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Run universe core physics and cosmology analysis."""
     from amos_universe_core_engine import get_universe_core_engine
 
@@ -943,12 +943,12 @@ def _amos_universe_core(params: Dict[str, Any], config: Dict[str, Any]) -> str:
     return engine.get_findings_summary(results)
 
 
-def _amos_audit_quality(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_audit_quality(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Run audit quality analysis across financial, operational, and risk domains."""
     from amos_audit_quality_engine import get_audit_quality_engine
 
     description = params.get("description", "")
-    domains = params.get("domains", None)
+    domains = params.get("domains")
 
     if not description:
         return "Error: 'description' parameter is required"
@@ -959,12 +959,12 @@ def _amos_audit_quality(params: Dict[str, Any], config: Dict[str, Any]) -> str:
     return engine.get_findings_summary(results)
 
 
-def _amos_unified_coding(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_unified_coding(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Run unified coding analysis across architecture, backend, database, security."""
     from amos_unified_coding_engine import get_unified_coding_engine
 
     description = params.get("description", "")
-    domains = params.get("domains", None)
+    domains = params.get("domains")
 
     if not description:
         return "Error: 'description' parameter is required"
@@ -975,12 +975,12 @@ def _amos_unified_coding(params: Dict[str, Any], config: Dict[str, Any]) -> str:
     return engine.get_findings_summary(results)
 
 
-def _amos_systems_core(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_systems_core(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Run systems core orchestration and health monitoring."""
     from amos_systems_core_engine import get_systems_core_engine
 
     operation = params.get("operation", "report")
-    component = params.get("component", None)
+    component = params.get("component")
 
     engine = get_systems_core_engine()
 
@@ -1004,12 +1004,12 @@ def _amos_systems_core(params: Dict[str, Any], config: Dict[str, Any]) -> str:
         return engine.findings_summary(results)
 
 
-def _amos_physics_cosmos(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_physics_cosmos(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Run physics and cosmos analysis across classical, EM, quantum, statistical, cosmology."""
     from amos_physics_cosmos_engine import get_physics_cosmos_engine
 
     description = params.get("description", "")
-    domains = params.get("domains", None)
+    domains = params.get("domains")
 
     if not description:
         return "Error: 'description' parameter is required"
@@ -1020,12 +1020,12 @@ def _amos_physics_cosmos(params: Dict[str, Any], config: Dict[str, Any]) -> str:
     return engine.get_findings_summary(results)
 
 
-def _amos_tech_quantum(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_tech_quantum(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Run tech quantum analysis for quantum computing applications."""
     from amos_tech_quantum_engine import get_tech_quantum_engine
 
     description = params.get("description", "")
-    domains = params.get("domains", None)
+    domains = params.get("domains")
 
     if not description:
         return "Error: 'description' parameter is required"
@@ -1036,7 +1036,7 @@ def _amos_tech_quantum(params: Dict[str, Any], config: Dict[str, Any]) -> str:
     return engine.get_findings_summary(results)
 
 
-def _amos_logic_law(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_logic_law(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Run deterministic logic and legal analysis."""
     from amos_logic_law_engine import get_logic_law_engine
 
@@ -1052,12 +1052,12 @@ def _amos_logic_law(params: Dict[str, Any], config: Dict[str, Any]) -> str:
     return engine.get_findings_summary(results)
 
 
-def _amos_vn_legal(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_vn_legal(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Run Vietnam-specialised legal analysis."""
     from amos_vn_legal_engine import get_vn_legal_engine
 
     description = params.get("description", "")
-    domains = params.get("domains", None)
+    domains = params.get("domains")
 
     if not description:
         return "Error: 'description' parameter is required"
@@ -1068,7 +1068,7 @@ def _amos_vn_legal(params: Dict[str, Any], config: Dict[str, Any]) -> str:
     return engine.get_findings_summary(results)
 
 
-def _amos_vomni(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_vomni(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Run vOmni kernel master orchestration and routing."""
     from amos_vomni_kernel_engine import get_vomni_engine
 
@@ -1084,7 +1084,7 @@ def _amos_vomni(params: Dict[str, Any], config: Dict[str, Any]) -> str:
     return engine.get_findings_summary(results)
 
 
-def _amos_engineering_math(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_engineering_math(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Run engineering and mathematics analysis."""
     from amos_engineering_math_engine import get_engineering_math_engine
 
@@ -1102,7 +1102,7 @@ def _amos_engineering_math(params: Dict[str, Any], config: Dict[str, Any]) -> st
     return engine.get_findings_summary(results)
 
 
-def _amos_physics(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_physics(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Run physics and cosmology analysis."""
     from amos_physics_engine import get_physics_engine
 
@@ -1120,7 +1120,7 @@ def _amos_physics(params: Dict[str, Any], config: Dict[str, Any]) -> str:
     return engine.get_findings_summary(results)
 
 
-def _amos_consciousness(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_consciousness(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Run consciousness and meta-cognitive analysis."""
     from amos_consciousness_engine import get_consciousness_engine
 
@@ -1136,7 +1136,7 @@ def _amos_consciousness(params: Dict[str, Any], config: Dict[str, Any]) -> str:
     return engine.get_findings_summary(results)
 
 
-def _amos_monitoring(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_monitoring(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Get system monitoring and telemetry status."""
     from amos_monitoring import get_monitoring
 
@@ -1153,7 +1153,7 @@ def _amos_monitoring(params: Dict[str, Any], config: Dict[str, Any]) -> str:
         return f"Unknown action: {action}. Use 'status' or 'health'."
 
 
-def _amos_audit(params: Dict[str, Any], config: Dict[str, Any]) -> str:
+def _amos_audit(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Audit content against AMOS 6 Global Laws."""
     from amos_cognitive_audit import get_cognitive_audit
 

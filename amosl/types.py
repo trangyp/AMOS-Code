@@ -5,7 +5,6 @@
 
 from dataclasses import dataclass
 from enum import Enum, auto
-from typing import Dict
 
 
 class Substrate(Enum):
@@ -29,7 +28,7 @@ class Type:
 
 
 class ClassicalType:
-    """Classical types: Bool | Int | Float | Text | Record | Set | Map"""
+    """Classical types: Union[Bool, Int] | Float | Text | Record | Set | Map"""
 
     BOOL = Type("Bool", Substrate.CLASSICAL)
     INT = Type("Int", Substrate.CLASSICAL)
@@ -37,7 +36,7 @@ class ClassicalType:
     TEXT = Type("Text", Substrate.CLASSICAL)
 
     @staticmethod
-    def Record(fields: Dict[str, Type]) -> Type:
+    def Record(fields: dict[str, Type]) -> Type:
         return Type(f"Record({len(fields)})", Substrate.CLASSICAL)
 
     @staticmethod
@@ -53,7 +52,7 @@ class ClassicalType:
 
 
 class QuantumType:
-    """Quantum types: Qubit | Register[n] | DensityMatrix | Hamiltonian"""
+    """Quantum types: Union[Qubit, Register][n] | DensityMatrix | Hamiltonian"""
 
     QUBIT = Type("Qubit", Substrate.QUANTUM)
     DENSITY_MATRIX = Type("DensityMatrix", Substrate.QUANTUM)
@@ -68,7 +67,7 @@ class QuantumType:
 
 
 class BiologicalType:
-    """Biological types: DNASeq | RNASeq | AminoSeq | Gene | Protein | Cell"""
+    """Biological types: Union[DNASeq, RNASeq] | AminoSeq | Gene | Protein | Cell"""
 
     DNA_SEQ = Type("DNASeq", Substrate.BIOLOGICAL)
     RNA_SEQ = Type("RNASeq", Substrate.BIOLOGICAL)
@@ -86,7 +85,7 @@ class BiologicalType:
 
 
 class HybridType:
-    """Hybrid types: Bridge | Signal | Mapping"""
+    """Hybrid types: Union[Bridge, Signal] | Mapping"""
 
     SIGNAL = Type("Signal", Substrate.HYBRID)
 

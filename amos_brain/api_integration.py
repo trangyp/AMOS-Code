@@ -4,10 +4,10 @@ Provides high-level API endpoints for brain cognitive operations
 with proper error handling and async support.
 """
 
-from typing import Any, Dict, Optional
-
+from __future__ import annotations
 
 import asyncio
+from typing import Any, Optional
 
 from .facade import BrainClient
 from .super_brain import SuperBrainRuntime, get_super_brain
@@ -31,7 +31,7 @@ class BrainAPI:
             self._super_brain = get_super_brain()
             self._initialized = True
 
-    def think(self, query: str, domain: str = "general") -> Dict[str, Any]:
+    def think(self, query: str, domain: str = "general") -> dict[str, Any]:
         """Process a cognitive query.
 
         Args:
@@ -156,11 +156,28 @@ def brain_get_result(task_id: str) -> dict[str, Any]:
     Returns:
         Task result dict or None if not found
     """
-    # In a real implementation, this would query a task store
-    # For now, return a placeholder indicating task lookup
+    # Try to use Redis-backed TaskStore for real task lookup
+    try:
+        from amos_platform_gateway import task_store
+
+        task = task_store.get(task_id)
+        if task:
+            return {
+                "task_id": task_id,
+                "status": task.get("status", "unknown"),
+                "found": True,
+                "task_type": task.get("type"),
+                "payload": task.get("payload"),
+                "result": task.get("result"),
+                "created_at": task.get("created_at"),
+                "updated_at": task.get("updated_at"),
+            }
+    except Exception:
+        pass
+
+    # Fallback: return not found
     return {
         "task_id": task_id,
-        "status": "completed",
+        "status": "not_found",
         "found": False,
-        "note": "Task store not implemented - results retrieved synchronously",
     }

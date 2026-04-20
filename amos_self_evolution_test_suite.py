@@ -6,37 +6,38 @@ Ensures Law 3 compliance: Evolution must be triggered by evidence
 Provides comprehensive safety guarantees for production deployment.
 """
 
-
 import asyncio
 import tempfile
-import traceback
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol, Tuple
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 import hashlib
-import json
+from pathlib import Path
+from typing import Any, Optional, Protocol
 
 
 class EvolutionSafetyError(Exception):
     """Safety violation in self-evolution process."""
+
     pass
 
 
 class RollbackTriggeredError(Exception):
     """Evolution rolled back due to safety check failure."""
+
     pass
 
 
 @dataclass
 class SafetyReport:
     """Safety validation report for evolution attempt."""
+
     evolution_id: str
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     passed: bool = False
-    checks: Dict[str, bool] = field(default_factory=dict)
-    violations: List[str] = field(default_factory=list)
+    checks: dict[str, bool] = field(default_factory=dict)
+    violations: list[str] = field(default_factory=list)
     rollback_required: bool = False
     evidence_quality: float = 0.0
 
@@ -44,7 +45,7 @@ class SafetyReport:
 class EvolutionSafetyChecker(Protocol):
     """Protocol for evolution safety validators."""
 
-    async def validate(self, context: Dict[str, Any]) -> Tuple[bool, list[str]]:
+    async def validate(self, context: dict[str, Any]) -> tuple[bool, list[str]]:
         """Return (passed, violations)."""
         ...
 
@@ -52,7 +53,7 @@ class EvolutionSafetyChecker(Protocol):
 class SyntaxValidator:
     """Validate generated code syntax."""
 
-    async def validate(self, context: Dict[str, Any]) -> Tuple[bool, list[str]]:
+    async def validate(self, context: dict[str, Any]) -> tuple[bool, list[str]]:
         code = context.get("proposed_code", "")
         if not code:
             return False, ["No code provided"]
@@ -68,17 +69,32 @@ class ImportSafetyValidator:
     """Validate imports are from allowed modules."""
 
     ALLOWED_MODULES = {
-        "asyncio", "collections", "dataclasses", "datetime",
-        "json", "math", "numpy", "pathlib", "typing",
-        "amos", "amosl", "amos_brain"
+        "asyncio",
+        "collections",
+        "dataclasses",
+        "datetime",
+        "json",
+        "math",
+        "numpy",
+        "pathlib",
+        "typing",
+        "amos",
+        "amosl",
+        "amos_brain",
     }
 
     BLOCKED_MODULES = {
-        "os.system", "subprocess", "eval", "exec", "compile",
-        "__import__", "importlib", "sys.modules"
+        "os.system",
+        "subprocess",
+        "eval",
+        "exec",
+        "compile",
+        "__import__",
+        "importlib",
+        "sys.modules",
     }
 
-    async def validate(self, context: Dict[str, Any]) -> Tuple[bool, list[str]]:
+    async def validate(self, context: dict[str, Any]) -> tuple[bool, list[str]]:
         code = context.get("proposed_code", "")
         violations = []
 
@@ -92,7 +108,7 @@ class ImportSafetyValidator:
 class BehavioralConsistencyValidator:
     """Validate behavior matches specification."""
 
-    async def validate(self, context: Dict[str, Any]) -> Tuple[bool, list[str]]:
+    async def validate(self, context: dict[str, Any]) -> tuple[bool, list[str]]:
         spec = context.get("specification", {})
         if not spec:
             return True, []  # No spec to validate against
@@ -113,7 +129,7 @@ class BehavioralConsistencyValidator:
 class SemanticDriftValidator:
     """Validate semantic consistency with original."""
 
-    async def validate(self, context: Dict[str, Any]) -> Tuple[bool, list[str]]:
+    async def validate(self, context: dict[str, Any]) -> tuple[bool, list[str]]:
         original_hash = context.get("original_hash")
         proposed_code = context.get("proposed_code", "")
 
@@ -135,7 +151,7 @@ class SemanticDriftValidator:
 
         return len(violations) == 0, violations
 
-    def _extract_fingerprint(self, code: str) -> Dict[str, str]:
+    def _extract_fingerprint(self, code: str) -> dict[str, str]:
         """Extract function signatures from code."""
         fingerprint = {}
         for line in code.split("\n"):
@@ -150,7 +166,7 @@ class SemanticDriftValidator:
 class TestCoverageValidator:
     """Validate tests exist and pass for evolved code."""
 
-    async def validate(self, context: Dict[str, Any]) -> Tuple[bool, list[str]]:
+    async def validate(self, context: dict[str, Any]) -> tuple[bool, list[str]]:
         test_code = context.get("test_code", "")
 
         if not test_code:
@@ -172,14 +188,15 @@ class TestCoverageValidator:
 @dataclass
 class EvolutionContext:
     """Context for evolution attempt."""
+
     evolution_id: str
     target_file: Path
     original_code: str
     proposed_code: str
     reason: str
-    evidence: Dict[str, Any]
-    specification: Dict[str, Any]  = None
-    test_code: str  = None
+    evidence: dict[str, Any]
+    specification: dict[str, Any] = None
+    test_code: str = None
 
 
 class SelfEvolutionTestSuite:
@@ -191,24 +208,21 @@ class SelfEvolutionTestSuite:
     """
 
     def __init__(self) -> None:
-        self.validators: List[EvolutionSafetyChecker] = [
+        self.validators: list[EvolutionSafetyChecker] = [
             SyntaxValidator(),
             ImportSafetyValidator(),
             BehavioralConsistencyValidator(),
             SemanticDriftValidator(),
-            TestCoverageValidator()
+            TestCoverageValidator(),
         ]
-        self._test_history: List[SafetyReport] = []
+        self._test_history: list[SafetyReport] = []
         self._sandbox_dir: Optional[Path] = None
 
     async def initialize(self) -> None:
         """Initialize test suite with sandbox environment."""
         self._sandbox_dir = Path(tempfile.mkdtemp(prefix="amos_evolution_"))
 
-    async def validate_evolution(
-        self,
-        context: EvolutionContext
-    ) -> SafetyReport:
+    async def validate_evolution(self, context: EvolutionContext) -> SafetyReport:
         """
         Comprehensive safety validation for evolution attempt.
 
@@ -224,7 +238,7 @@ class SelfEvolutionTestSuite:
             "specification": context.specification or {},
             "test_code": context.test_code or "",
             "reason": context.reason,
-            "evidence": context.evidence
+            "evidence": context.evidence,
         }
 
         # Run all validators
@@ -249,7 +263,7 @@ class SelfEvolutionTestSuite:
 
         return report
 
-    def _extract_fingerprint(self, code: str) -> Dict[str, str]:
+    def _extract_fingerprint(self, code: str) -> dict[str, str]:
         """Extract semantic fingerprint from code."""
         fingerprint = {}
         for line in code.split("\n"):
@@ -259,7 +273,7 @@ class SelfEvolutionTestSuite:
                 fingerprint[func_name] = sig
         return fingerprint
 
-    def _assess_evidence_quality(self, evidence: Dict[str, Any]) -> float:
+    def _assess_evidence_quality(self, evidence: dict[str, Any]) -> float:
         """Assess quality of evolution evidence (0.0-1.0)."""
         if not evidence:
             return 0.0
@@ -286,10 +300,7 @@ class SelfEvolutionTestSuite:
 
         return score if checks > 0 else 0.0
 
-    async def execute_sandbox_test(
-        self,
-        context: EvolutionContext
-    ) -> Tuple[bool, str]:
+    async def execute_sandbox_test(self, context: EvolutionContext) -> tuple[bool, str]:
         """
         Execute evolved code in sandboxed environment.
 
@@ -306,9 +317,9 @@ class SelfEvolutionTestSuite:
 
             # Attempt import (catches many runtime errors)
             import importlib.util
+
             spec = importlib.util.spec_from_file_location(
-                f"evolution_{context.evolution_id}",
-                test_file
+                f"evolution_{context.evolution_id}", test_file
             )
             module = importlib.util.module_from_spec(spec)
 
@@ -326,7 +337,7 @@ class SelfEvolutionTestSuite:
             if test_file.exists():
                 test_file.unlink()
 
-    def get_safety_metrics(self) -> Dict[str, Any]:
+    def get_safety_metrics(self) -> dict[str, Any]:
         """Get safety testing metrics."""
         if not self._test_history:
             return {"total_tests": 0, "pass_rate": 0.0}
@@ -340,10 +351,12 @@ class SelfEvolutionTestSuite:
             "failed": total - passed,
             "pass_rate": passed / total if total > 0 else 0.0,
             "rollbacks_triggered": sum(1 for r in self._test_history if r.rollback_required),
-            "average_evidence_quality": sum(r.evidence_quality for r in self._test_history) / total if total > 0 else 0.0
+            "average_evidence_quality": sum(r.evidence_quality for r in self._test_history) / total
+            if total > 0
+            else 0.0,
         }
 
-    def export_safety_report(self, evolution_id: str  = None) -> Dict[str, Any]:
+    def export_safety_report(self, evolution_id: str = None) -> dict[str, Any]:
         """Export safety report for compliance."""
         if evolution_id:
             reports = [r for r in self._test_history if r.evolution_id == evolution_id]
@@ -359,11 +372,11 @@ class SelfEvolutionTestSuite:
                     "passed": r.passed,
                     "checks": r.checks,
                     "violations": r.violations,
-                    "evidence_quality": r.evidence_quality
+                    "evidence_quality": r.evidence_quality,
                 }
                 for r in reports
             ],
-            "metrics": self.get_safety_metrics()
+            "metrics": self.get_safety_metrics(),
         }
 
 
@@ -387,6 +400,7 @@ async def validate_evolution_safety(context: EvolutionContext) -> SafetyReport:
 
 
 if __name__ == "__main__":
+
     async def demo():
         """Demonstrate self-evolution test suite."""
         print("=== AMOS Self-Evolution Test Suite Demo ===\n")
@@ -405,11 +419,11 @@ if __name__ == "__main__":
             reason="Add return value",
             evidence={
                 "performance_metrics": {"improvement": 0.15},
-                "test_results": {"passed": True}
+                "test_results": {"passed": True},
             },
             test_code="""def test_foo():
     assert foo() == 42
-"""
+""",
         )
 
         report = await suite.validate_evolution(context)
@@ -426,7 +440,7 @@ if __name__ == "__main__":
             proposed_code="def bar(:\n    invalid syntax",
             reason="Break things",
             evidence={},
-            test_code=""
+            test_code="",
         )
 
         bad_report = await suite.validate_evolution(bad_context)

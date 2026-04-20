@@ -9,20 +9,20 @@ Implements the field-theoretic regime:
 
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 @dataclass
 class FieldState:
     """Field state Φ = φ_c ⊕ φ_q ⊕ φ_b ⊕ φ_h."""
 
-    classical: Dict[str, Any] = field(default_factory=dict)
-    quantum: Dict[str, Any] = field(default_factory=dict)
-    biological: Dict[str, Any] = field(default_factory=dict)
-    hybrid: Dict[str, Any] = field(default_factory=dict)
+    classical: dict[str, Any] = field(default_factory=dict)
+    quantum: dict[str, Any] = field(default_factory=dict)
+    biological: dict[str, Any] = field(default_factory=dict)
+    hybrid: dict[str, Any] = field(default_factory=dict)
     timestamp: float = 0.0
 
-    def to_vector(self) -> List[float]:
+    def to_vector(self) -> list[float]:
         """Convert to state vector for evolution."""
         vec = []
         vec.extend(self.classical.get("values", []))
@@ -31,7 +31,7 @@ class FieldState:
         vec.extend(self.hybrid.get("couplings", []))
         return vec
 
-    def from_vector(self, vec: List[float]) -> None:
+    def from_vector(self, vec: list[float]) -> None:
         """Update from state vector."""
         # Simplified reconstruction
         pass
@@ -56,12 +56,12 @@ class FieldEvolution:
     """Field-theoretic evolution engine."""
 
     def __init__(self):
-        self.constraints: List[Callable[[FieldState], float]] = []
-        self.multipliers: Dict[str, float] = {}
-        self.trajectory: List[FieldState] = []
-        self.action_history: List[float] = []
+        self.constraints: list[Callable[[FieldState], float]] = []
+        self.multipliers: dict[str, float] = {}
+        self.trajectory: list[FieldState] = []
+        self.action_history: list[float] = []
 
-    def classical_lagrangian(self, phi_c: Dict[str, Any], phi_c_dot: Dict[str, Any]) -> float:
+    def classical_lagrangian(self, phi_c: dict[str, Any], phi_c_dot: dict[str, Any]) -> float:
         """Classical Lagrangian L_c.
 
         L = T - V for classical mechanics style,
@@ -72,7 +72,7 @@ class FieldEvolution:
         cost = phi_c.get("computation_cost", 0.0)
         return -energy - cost  # Minimize cost, maximize efficiency
 
-    def quantum_lagrangian(self, phi_q: Dict[str, Any], phi_q_dot: Dict[str, Any]) -> float:
+    def quantum_lagrangian(self, phi_q: dict[str, Any], phi_q_dot: dict[str, Any]) -> float:
         """Quantum Lagrangian L_q.
 
         L = ⟨ψ|i∂_t - H|ψ⟩ - μ·C_q
@@ -82,7 +82,7 @@ class FieldEvolution:
         penalty = (1.0 - coherence) * 0.1  # Decoherence penalty
         return -energy - penalty
 
-    def biological_lagrangian(self, phi_b: Dict[str, Any], phi_b_dot: Dict[str, Any]) -> float:
+    def biological_lagrangian(self, phi_b: dict[str, Any], phi_b_dot: dict[str, Any]) -> float:
         """Biological Lagrangian L_b.
 
         Reaction-diffusion/regulation terms.
@@ -92,7 +92,7 @@ class FieldEvolution:
         metabolic_cost = phi_b.get("metabolic_cost", 0.0)
         return growth - metabolic_cost
 
-    def hybrid_lagrangian(self, phi_h: Dict[str, Any], phi_h_dot: Dict[str, Any]) -> float:
+    def hybrid_lagrangian(self, phi_h: dict[str, Any], phi_h_dot: dict[str, Any]) -> float:
         """Hybrid Lagrangian L_h.
 
         Bridge/schedule optimization.
@@ -103,10 +103,10 @@ class FieldEvolution:
 
     def interaction_lagrangian(
         self,
-        phi_c: Dict[str, Any],
-        phi_q: Dict[str, Any],
-        phi_b: Dict[str, Any],
-        phi_h: Dict[str, Any],
+        phi_c: dict[str, Any],
+        phi_q: dict[str, Any],
+        phi_b: dict[str, Any],
+        phi_h: dict[str, Any],
     ) -> float:
         """Interaction Lagrangian L_int.
 
@@ -162,7 +162,7 @@ class FieldEvolution:
 
         return terms
 
-    def action_functional(self, trajectory: List[FieldState], dt: float = 1.0) -> float:
+    def action_functional(self, trajectory: list[FieldState], dt: float = 1.0) -> float:
         """Compute action S[Φ] = ∫ L dt."""
         total_action = 0.0
 
@@ -231,7 +231,7 @@ class FieldEvolution:
 
     def evolve_with_constraints(
         self, initial: FieldState, steps: int, dt: float = 0.1
-    ) -> List[FieldState]:
+    ) -> list[FieldState]:
         """Evolve with constraint satisfaction.
 
         S_c[Φ] = S[Φ] + Σ λ_i C_i[Φ]
@@ -287,7 +287,7 @@ class FieldEvolution:
 
     def optimize_trajectory(
         self, initial: FieldState, target: FieldState, max_steps: int = 100
-    ) -> List[FieldState]:
+    ) -> list[FieldState]:
         """Find optimal trajectory minimizing action."""
         # Gradient descent on path space
         trajectory = self.evolve_with_constraints(initial, max_steps)
@@ -297,7 +297,7 @@ class FieldEvolution:
 
         return trajectory
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """Get field evolution statistics."""
         if not self.action_history:
             return {"empty": True}
@@ -309,7 +309,7 @@ class FieldEvolution:
             "action_variance": self._compute_variance(self.action_history),
         }
 
-    def _compute_variance(self, values: List[float]) -> float:
+    def _compute_variance(self, values: list[float]) -> float:
         """Compute variance."""
         if not values:
             return 0.0
@@ -323,19 +323,19 @@ class LindbladianEvolution:
     ρ̇ = -i[H, ρ] + D(ρ)
     """
 
-    def __init__(self, hamiltonian: List[list[complex]] = None):
+    def __init__(self, hamiltonian: list[list[complex]] = None):
         self.H = hamiltonian
-        self.decoherence_rates: Dict[str, float] = {}
+        self.decoherence_rates: dict[str, float] = {}
 
     def lindbladian(
-        self, rho: List[list[complex]], jump_operators: List[list[list[complex]]]
-    ) -> List[list[complex]]:
+        self, rho: list[list[complex]], jump_operators: list[list[list[complex]]]
+    ) -> list[list[complex]]:
         """Compute Lindbladian D(ρ)."""
         # Simplified: return zero for pure states
         n = len(rho)
         return [[0.0 for _ in range(n)] for _ in range(n)]
 
-    def evolve_density_matrix(self, rho: List[list[complex]], dt: float) -> List[list[complex]]:
+    def evolve_density_matrix(self, rho: list[list[complex]], dt: float) -> list[list[complex]]:
         """Single step of density matrix evolution."""
         # Simplified unitary evolution
         # In practice: use matrix exponentiation

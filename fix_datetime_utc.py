@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""Fix datetime.UTC imports for Python 3.9 compatibility"""
+"""Fix timezone.utc imports for Python 3.9 compatibility"""
 
 import re
 from pathlib import Path
 
 
 def fix_datetime_utc(filepath):
-    """Fix datetime.UTC imports in a file."""
+    """Fix timezone.utc imports in a file."""
     try:
-        with open(filepath, "r") as f:
+        with open(filepath) as f:
             content = f.read()
 
         original = content
@@ -35,7 +35,7 @@ def fix_datetime_utc(filepath):
             flags=re.MULTILINE,
         )
 
-        # Replace datetime.UTC usage with timezone.utc
+        # Replace timezone.utc usage with timezone.utc
         content = re.sub(r"datetime\.UTC", "timezone.utc", content)
         content = re.sub(r"\bUTC\b", "timezone.utc", content)
 
@@ -50,7 +50,7 @@ def fix_datetime_utc(filepath):
 
 
 def main():
-    """Main function to fix all datetime.UTC issues."""
+    """Main function to fix all timezone.utc issues."""
     base_path = Path(".")
 
     # Files known to have issues (from grep results)

@@ -28,7 +28,7 @@ import traceback
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List
+from typing import Any
 
 
 class TestLevel(Enum):
@@ -58,7 +58,7 @@ class TestCase:
     result: TestResult
     duration_ms: float
     message: str = ""
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: dict[str, Any] = field(default_factory=dict)
     traceback: str = None
 
 
@@ -67,7 +67,7 @@ class TestSuite:
     """Collection of test cases."""
 
     name: str
-    cases: List[TestCase] = field(default_factory=list)
+    cases: list[TestCase] = field(default_factory=list)
 
     @property
     def passed(self) -> int:
@@ -103,7 +103,7 @@ class AMOSUnifiedTest:
     def __init__(self, verbose: bool = False, quick: bool = False):
         self.verbose = verbose
         self.quick = quick
-        self.suites: List[TestSuite] = []
+        self.suites: list[TestSuite] = []
         self.start_time: datetime = None
         self.end_time: datetime = None
 
@@ -620,7 +620,7 @@ class AMOSUnifiedTest:
     # RUN ALL TESTS
     # ========================================================================
 
-    def run_all(self) -> List[TestSuite]:
+    def run_all(self) -> list[TestSuite]:
         """Execute complete test suite."""
         self.start_time = datetime.now(timezone.utc)
 

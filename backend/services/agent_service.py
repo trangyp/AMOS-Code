@@ -1,4 +1,6 @@
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
+
+from typing import Any
 
 """AMOS Agent Service - Autonomous Agent Orchestration
 
@@ -21,9 +23,7 @@ import time
 import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
-
+from datetime import UTC, datetime
 from enum import Enum
 
 try:
@@ -42,9 +42,11 @@ except ImportError:
 
 try:
     from backend.data_pipeline.streaming import publish_event
+
     STREAMING_AVAILABLE = True
 except ImportError:
     STREAMING_AVAILABLE = False
+
 
 class AgentStatus(Enum):
     """Agent lifecycle status."""
@@ -57,6 +59,7 @@ class AgentStatus(Enum):
     TERMINATED = "terminated"
     ERROR = "error"
 
+
 class AgentCapability(Enum):
     """Agent capability types."""
 
@@ -68,14 +71,16 @@ class AgentCapability(Enum):
     MEMORY_ACCESS = "memory_access"
     TOOL_USE = "tool_use"
 
+
 @dataclass
 class AgentMemory:
     """Agent working memory."""
 
-    short_term: List[dict[str, Any]] = field(default_factory=list)
-    long_term_refs: List[str] = field(default_factory=list)
+    short_term: list[dict[str, Any]] = field(default_factory=list)
+    long_term_refs: list[str] = field(default_factory=list)
     context_window: int = 4096
     last_accessed: float = field(default_factory=time.time)
+
 
 @dataclass
 class AgentConfig:
@@ -84,13 +89,14 @@ class AgentConfig:
     agent_id: str
     name: str
     description: str
-    capabilities: List[AgentCapability]
+    capabilities: list[AgentCapability]
     max_tasks: int = 10
     timeout_seconds: float = 300.0
     memory_limit_mb: int = 512
     allow_delegation: bool = True
     verbose: bool = False
-    created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+
 
 @dataclass
 class Task:
@@ -100,14 +106,15 @@ class Task:
     description: str
     priority: int = 5  # 1-10, higher = more important
     status: str = "pending"
-    assigned_agent: Optional[str] = None
-    parent_task: Optional[str] = None
-    subtasks: List[str] = field(default_factory=list)
+    assigned_agent: str = None
+    parent_task: str = None
+    subtasks: list[str] = field(default_factory=list)
     result: Any = None
-    error: Optional[str] = None
+    error: str = None
     created_at: float = field(default_factory=time.time)
-    started_at: Optional[float] = None
-    completed_at: Optional[float] = None
+    started_at: float = None
+    completed_at: float = None
+
 
 @dataclass
 class AgentInstance:
@@ -117,38 +124,39 @@ class AgentInstance:
     config: AgentConfig
     status: AgentStatus
     memory: AgentMemory
-    current_task: Optional[str] = None
-    task_history: List[str] = field(default_factory=list)
+    current_task: str = None
+    task_history: list[str] = field(default_factory=list)
     spawned_at: float = field(default_factory=time.time)
     last_heartbeat: float = field(default_factory=time.time)
     total_tasks_completed: int = 0
     total_tasks_failed: int = 0
 
+
 class ToolRegistry:
     """Registry of tools available to agents."""
 
     def __init__(self):
-        self._tools: Dict[str, Callable[..., Any]] = {}
-        self._descriptions: Dict[str, str] = {}
-        self._capabilities: Dict[str, list[AgentCapability]] = {}
+        self._tools: dict[str, Callable[..., Any]] = {}
+        self._descriptions: dict[str, str] = {}
+        self._capabilities: dict[str, list[AgentCapability]] = {}
 
     def register(
         self,
         name: str,
         handler: Callable[..., Any],
         description: str,
-        required_caps: List[AgentCapability],
+        required_caps: list[AgentCapability],
     ) -> None:
         """Register a new tool."""
         self._tools[name] = handler
         self._descriptions[name] = description
         self._capabilities[name] = required_caps
 
-    def get_tool(self, name: str) -> Callable[..., Any] :
+    def get_tool(self, name: str) -> Callable[..., Any]:
         """Get tool handler by name."""
         return self._tools.get(name)
 
-    def list_tools(self) -> List[dict[str, Any]]:
+    def list_tools(self) -> list[dict[str, Any]]:
         """List all registered tools."""
         return [
             {
@@ -159,10 +167,11 @@ class ToolRegistry:
             for name in self._tools
         ]
 
-    def can_use_tool(self, tool_name: str, agent_caps: List[AgentCapability]) -> bool:
+    def can_use_tool(self, tool_name: str, agent_caps: list[AgentCapability]) -> bool:
         """Check if agent can use tool."""
         required = self._capabilities.get(tool_name, [])
         return all(cap in agent_caps for cap in required)
+
 
 class AgentService:
     """Multi-agent orchestration service.
@@ -171,10 +180,10 @@ class AgentService:
     communication with SuperBrain governance.
     """
 
-    def __init__(self, redis_url: Optional[str] = None):
+    def __init__(self, redis_url: str = None):
         self.redis_url = redis_url or "redis://localhost:6379/13"
-        self._agents: Dict[str, AgentInstance] = {}
-        self._tasks: Dict[str, Task] = {}
+        self._agents: dict[str, AgentInstance] = {}
+        self._tasks: dict[str, Task] = {}
         self._tool_registry = ToolRegistry()
         self._redis: redis.Optional[Redis] = None
 
@@ -277,7 +286,7 @@ class AgentService:
         return config.agent_id
 
     async def assign_task(
-        self, agent_id: str, description: str, priority: int = 5, parent_task: Optional[str] = None
+        self, agent_id: str, description: str, priority: int = 5, parent_task: str = None
     ) -> str:
         """Assign task to agent.
 
@@ -414,7 +423,7 @@ class AgentService:
 
     async def delegate_task(
         self, from_agent_id: str, to_agent_id: str, description: str, priority: int = 5
-    ) -> Optional[str]:
+    ) -> str:
         """Delegate task from one agent to another."""
         from_agent = self._agents.get(from_agent_id)
         if not from_agent or not from_agent.config.allow_delegation:
@@ -431,24 +440,22 @@ class AgentService:
 
         return task_id
 
-    def get_agent(self, agent_id: str) -> Optional[AgentInstance]:
+    def get_agent(self, agent_id: str) -> AgentInstance:
         """Get agent by ID."""
         return self._agents.get(agent_id)
 
-    def get_task(self, task_id: str) -> Optional[Task]:
+    def get_task(self, task_id: str) -> Task:
         """Get task by ID."""
         return self._tasks.get(task_id)
 
-    def list_agents(self, status: Optional[AgentStatus] = None) -> List[AgentInstance]:
+    def list_agents(self, status: AgentStatus = None) -> list[AgentInstance]:
         """List agents, optionally filtered by status."""
         agents = list(self._agents.values())
         if status:
             agents = [a for a in agents if a.status == status]
         return agents
 
-    def list_tasks(
-        self, agent_id: Optional[str] = None, status: Optional[str] = None
-    ) -> List[Task]:
+    def list_tasks(self, agent_id: str = None, status: str = None) -> list[Task]:
         """List tasks with optional filters."""
         tasks = list(self._tasks.values())
 
@@ -460,7 +467,7 @@ class AgentService:
 
         return tasks
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get service statistics."""
         return {
             "total_agents": len(self._agents),
@@ -473,6 +480,7 @@ class AgentService:
             "completed_tasks": len([t for t in self._tasks.values() if t.status == "completed"]),
             "registered_tools": len(self._tool_registry.list_tools()),
         }
+
 
 # Global instance
 agent_service = AgentService()

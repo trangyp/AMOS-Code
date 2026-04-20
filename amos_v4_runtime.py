@@ -18,8 +18,10 @@ import statistics
 from collections import defaultdict, deque
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
-from typing import Any, Dict, List
+from datetime import UTC, datetime, timedelta
+from typing import Any
+
+UTC = UTC
 
 # ============================================================================
 # 1. ENHANCED WORLD MODEL (Y_t) - With Signal Filtering & Uncertainty
@@ -31,7 +33,7 @@ class Signal:
     """A signal from the world with confidence and source reliability."""
 
     source: str
-    data: Dict[str, Any]
+    data: dict[str, Any]
     timestamp: datetime
     confidence: float = 0.5  # 0-1
     reliability_score: float = 0.5  # Historical accuracy of source
@@ -55,13 +57,13 @@ class WorldModelEngineV4:
 
     def __init__(self, history_window: int = 100):
         self.signals: deque = deque(maxlen=history_window)
-        self.source_reliability: Dict[str, list[float]] = defaultdict(list)
-        self.market_state: Dict[str, float] = {}
-        self.uncertainty_bounds: Dict[str, tuple[float, float]] = {}
+        self.source_reliability: dict[str, list[float]] = defaultdict(list)
+        self.market_state: dict[str, float] = {}
+        self.uncertainty_bounds: dict[str, tuple[float, float]] = {}
         self.model_version = 0
 
         # Kalman-filter-like state estimates
-        self.state_estimates: Dict[str, dict] = {}
+        self.state_estimates: dict[str, dict] = {}
 
     def ingest_signal(self, signal: Signal):
         """Ingest and weight a new signal."""
@@ -134,7 +136,7 @@ class WorldModelEngineV4:
             "sources": len(relevant_signals),
         }
 
-    def get_market_state(self) -> Dict[str, dict]:
+    def get_market_state(self) -> dict[str, dict]:
         """Get current filtered market state with uncertainty."""
         topics = [
             "opportunity_index",
@@ -183,15 +185,15 @@ class WorldModelEngineV4:
 class AllocationPolicy:
     """Learned allocation policy with dynamic weights."""
 
-    goal_weights: Dict[str, float] = field(default_factory=dict)
-    resource_type_weights: Dict[str, float] = field(
+    goal_weights: dict[str, float] = field(default_factory=dict)
+    resource_type_weights: dict[str, float] = field(
         default_factory=lambda: {"time": 0.4, "capital": 0.3, "attention": 0.2, "compute": 0.1}
     )
     exploration_rate: float = 0.1  # ε-greedy exploration
     learning_rate: float = 0.05
 
     # Performance history for learning
-    allocation_history: List[dict] = field(default_factory=list)
+    allocation_history: list[dict] = field(default_factory=list)
 
 
 class AdaptiveResourceAllocator:
@@ -203,11 +205,11 @@ class AdaptiveResourceAllocator:
 
     def __init__(self):
         self.policy = AllocationPolicy()
-        self.returns_history: Dict[str, list[float]] = defaultdict(list)
+        self.returns_history: dict[str, list[float]] = defaultdict(list)
 
     def allocate_with_learning(
-        self, demands: List[dict], world_state: dict
-    ) -> Dict[str, dict[str, float]]:
+        self, demands: list[dict], world_state: dict
+    ) -> dict[str, dict[str, float]]:
         """Allocate resources with adaptive learning."""
         # ε-greedy: sometimes explore randomly
         if random.random() < self.policy.exploration_rate:
@@ -216,7 +218,7 @@ class AdaptiveResourceAllocator:
         # Exploit: use learned weights
         return self._exploitative_allocation(demands, world_state)
 
-    def _exploratory_allocation(self, demands: List[dict]) -> dict:
+    def _exploratory_allocation(self, demands: list[dict]) -> dict:
         """Random allocation for exploration."""
         allocations = {"time": {}, "capital": {}, "attention": {}, "compute": {}}
 
@@ -228,7 +230,7 @@ class AdaptiveResourceAllocator:
 
         return allocations
 
-    def _exploitative_allocation(self, demands: List[dict], world_state: dict) -> dict:
+    def _exploitative_allocation(self, demands: list[dict], world_state: dict) -> dict:
         """Allocate based on learned weights and current state."""
         # Score each demand using learned goal weights
         scored_demands = []
@@ -358,8 +360,8 @@ class IdentityConstraint:
 
     max_compromise_per_action: float = 0.1  # How much can identity bend per action
     cumulative_drift_limit: float = 0.3  # Total drift before alarm
-    forbidden_actions: List[str] = field(default_factory=list)
-    required_presence: List[str] = field(default_factory=list)  # Must always maintain
+    forbidden_actions: list[str] = field(default_factory=list)
+    required_presence: list[str] = field(default_factory=list)  # Must always maintain
 
 
 class IdentityPreservingEconomics:
@@ -496,9 +498,9 @@ class FeedbackCompressor:
     """
 
     def __init__(self):
-        self.leading_indicators: Dict[str, list[Callable]] = {}
+        self.leading_indicators: dict[str, list[Callable]] = {}
         self.partial_outcomes: deque = deque(maxlen=100)
-        self.surrogate_models: Dict[str, Any] = {}
+        self.surrogate_models: dict[str, Any] = {}
 
     def register_leading_indicator(self, action_type: str, indicator_fn: Callable[[dict], float]):
         """Register a function that provides early signal for action type."""
@@ -623,7 +625,7 @@ class AMOSv4ProductionRuntime:
         self.cycle_count = 0
         self.decision_history: deque = deque(maxlen=1000)
 
-    def cycle(self, goals: List[dict], world_signals: List[Signal]) -> dict:
+    def cycle(self, goals: list[dict], world_signals: list[Signal]) -> dict:
         """Execute one full v4 production cycle.
 
         Returns decision and learning updates.
@@ -696,7 +698,7 @@ class AMOSv4ProductionRuntime:
 
         return cycle_record
 
-    def _generate_actions(self, goals: List[dict]) -> List[dict]:
+    def _generate_actions(self, goals: list[dict]) -> list[dict]:
         """Generate candidate actions from goals."""
         actions = []
         for goal in goals:

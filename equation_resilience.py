@@ -44,10 +44,11 @@ import os
 import time
 from collections.abc import Callable, Coroutine
 from enum import Enum, auto
-from typing import Any, Dict, TypeVar
+from typing import Any, TypeVar
 
 try:
     from equation_tracing import create_span
+
     _tracing_available = True
 except ImportError:
     _tracing_available = False
@@ -58,6 +59,7 @@ F = TypeVar("F", bound=Callable[..., Coroutine[Any, Any, Any]])
 
 class CircuitState(Enum):
     """Circuit breaker states."""
+
     CLOSED = auto()
     OPEN = auto()
     HALF_OPEN = auto()
@@ -65,6 +67,7 @@ class CircuitState(Enum):
 
 class CircuitBreakerError(Exception):
     """Raised when circuit breaker is open."""
+
     pass
 
 
@@ -84,9 +87,7 @@ class CircuitBreaker:
         self._failures = 0
         self._last_failure_time: float = 0.0
         self._half_open_calls = 0
-        self._enabled = (
-            os.getenv("CIRCUIT_BREAKER_ENABLED", "true").lower() == "true"
-        )
+        self._enabled = os.getenv("CIRCUIT_BREAKER_ENABLED", "true").lower() == "true"
 
     @property
     def state(self) -> CircuitState:
@@ -127,7 +128,7 @@ class CircuitBreaker:
         self,
         fn: Callable[..., Coroutine[Any, Any, T]],
         *args: Any,
-        fallback: Callable[[], T]  = None,
+        fallback: Callable[[], T] = None,
         **kwargs: Any,
     ) -> T:
         """Execute async function with circuit breaker protection."""
@@ -140,8 +141,7 @@ class CircuitBreaker:
             if fallback:
                 return fallback()
             raise CircuitBreakerError(
-                f"Circuit '{self.name}' is OPEN. "
-                f"Service temporarily unavailable."
+                f"Circuit '{self.name}' is OPEN. Service temporarily unavailable."
             )
 
         try:
@@ -168,7 +168,7 @@ class CircuitBreaker:
             # Re-raise the original exception
             raise exc from None
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """Get circuit breaker metrics."""
         return {
             "name": self.name,
@@ -182,7 +182,7 @@ class CircuitBreaker:
 
 
 # Global breaker instances for common services
-_breakers: Dict[str, CircuitBreaker] = {}
+_breakers: dict[str, CircuitBreaker] = {}
 
 
 def get_breaker(
@@ -213,7 +213,7 @@ def circuit_breaker(
     name: str = "default",
     fail_max: int = 5,
     reset_timeout: float = 30.0,
-    fallback: Callable[[], Any]  = None,
+    fallback: Callable[[], Any] = None,
 ) -> Callable[[F], F]:
     """Decorator to add circuit breaker protection.
 
@@ -240,7 +240,7 @@ def circuit_breaker(
     return decorator
 
 
-def get_all_breaker_metrics() -> Dict[str, dict[str, Any]]:
+def get_all_breaker_metrics() -> dict[str, dict[str, Any]]:
     """Get metrics for all circuit breakers.
 
     Returns:

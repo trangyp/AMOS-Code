@@ -13,10 +13,6 @@ Usage:
 
 import os
 import sys
-from pathlib import Path
-
-# Ensure repo_doctor is in path
-sys.path.insert(0, str(Path(__file__).parent.parent))
 
 
 def check_treesitter_installation() -> dict:

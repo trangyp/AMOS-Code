@@ -10,15 +10,19 @@ Integrates:
 Provides single API for all 180+ equations across 20 phases.
 """
 
+from __future__ import annotations
+
 import asyncio
 import importlib.util
 import sys
 from collections.abc import Callable
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
 from enum import Enum, auto
+
+UTC = UTC
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol, Tuple
+from typing import Any, Optional, Protocol
 
 import numpy as np
 
@@ -47,7 +51,7 @@ class EquationEntry:
     domain: str
     formula: str
     function: Callable[..., Any]
-    invariants: Tuple[str, ...]
+    invariants: tuple[str, ...]
     status: PhaseStatus
     added_date: str
 
@@ -64,9 +68,9 @@ class UnifiedEquationRegistry:
 
     def __init__(self, repo_path: str = None):
         self.repo_path = Path(repo_path) if repo_path else Path.cwd()
-        self._equations: Dict[str, EquationEntry] = {}
-        self._phases: Dict[int, list[str]] = {i: [] for i in range(1, 21)}
-        self._domains: Dict[str, list[str]] = {}
+        self._equations: dict[str, EquationEntry] = {}
+        self._phases: dict[int, list[str]] = {i: [] for i in range(1, 21)}
+        self._domains: dict[str, list[str]] = {}
         self._initialized = False
 
     async def initialize(self) -> None:
@@ -201,19 +205,19 @@ class UnifiedEquationRegistry:
             raise ValueError(f"Equation '{name}' not found")
         return entry.function(*args, **kwargs)
 
-    def list_all(self) -> List[str]:
+    def list_all(self) -> list[str]:
         """List all registered equation names."""
         return list(self._equations.keys())
 
-    def list_by_phase(self, phase: int) -> List[str]:
+    def list_by_phase(self, phase: int) -> list[str]:
         """List equations in a phase."""
         return self._phases.get(phase, [])
 
-    def list_by_domain(self, domain: str) -> List[str]:
+    def list_by_domain(self, domain: str) -> list[str]:
         """List equations in a domain."""
         return self._domains.get(domain, [])
 
-    def search(self, query: str) -> List[str]:
+    def search(self, query: str) -> list[str]:
         """Search equations by name or formula."""
         results = []
         query_lower = query.lower()
@@ -222,7 +226,7 @@ class UnifiedEquationRegistry:
                 results.append(name)
         return results
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get registry statistics."""
         return {
             "total_equations": len(self._equations),

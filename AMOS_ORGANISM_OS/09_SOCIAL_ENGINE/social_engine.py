@@ -12,9 +12,11 @@ Version: 1.0.0
 import json
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from pathlib import Path
-from typing import Any, Dict, List, Set
+from typing import Any
 
 
 @dataclass
@@ -53,7 +55,7 @@ class KnowledgeShare:
     content: Any
     share_scope: str  # team, all, specific_agents
     timestamp: str
-    recipients: List[str] = field(default_factory=list)
+    recipients: list[str] = field(default_factory=list)
 
 
 class SocialEngine:
@@ -67,10 +69,10 @@ class SocialEngine:
         self.data_dir = self.social_dir / "data"
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
-        self.messages: List[Message] = []
-        self.connections: List[SocialConnection] = []
-        self.knowledge_shares: List[KnowledgeShare] = []
-        self.agent_presence: Dict[str, str] = {}  # agent_id -> status
+        self.messages: list[Message] = []
+        self.connections: list[SocialConnection] = []
+        self.knowledge_shares: list[KnowledgeShare] = []
+        self.agent_presence: dict[str, str] = {}  # agent_id -> status
 
         self._load_state()
 
@@ -173,8 +175,8 @@ class SocialEngine:
         return msg
 
     def broadcast(
-        self, sender: str, message_type: str, content: Any, exclude: Set[str] = None
-    ) -> List[Message]:
+        self, sender: str, message_type: str, content: Any, exclude: set[str] = None
+    ) -> list[Message]:
         """Broadcast message to all agents."""
         exclude = exclude or set()
         messages = []
@@ -194,7 +196,7 @@ class SocialEngine:
 
     def get_messages(
         self, recipient: str, unread_only: bool = False, message_type: str = None
-    ) -> List[Message]:
+    ) -> list[Message]:
         """Get messages for an agent."""
         msgs = [m for m in self.messages if m.recipient == recipient]
 
@@ -261,7 +263,7 @@ class SocialEngine:
         knowledge_type: str,
         content: Any,
         share_scope: str = "team",
-        specific_recipients: List[str] = None,
+        specific_recipients: list[str] = None,
     ) -> KnowledgeShare:
         """Share knowledge from one agent to others."""
         ks = KnowledgeShare(
@@ -298,7 +300,7 @@ class SocialEngine:
         print(f"[SOCIAL] Knowledge shared by {source_agent}: {knowledge_type}")
         return ks
 
-    def get_social_graph(self, agent_id: str) -> Dict[str, Any]:
+    def get_social_graph(self, agent_id: str) -> dict[str, Any]:
         """Get social graph for an agent."""
         connections = [
             {
@@ -328,8 +330,8 @@ class SocialEngine:
         }
 
     def coordinate_task(
-        self, task_id: str, coordinator: str, participants: List[str], task_description: str
-    ) -> Dict[str, Any]:
+        self, task_id: str, coordinator: str, participants: list[str], task_description: str
+    ) -> dict[str, Any]:
         """Coordinate a multi-agent task."""
         # Send coordination messages
         for participant in participants:
@@ -354,10 +356,10 @@ class SocialEngine:
             "coordination_messages_sent": len(participants) - 1,
         }
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get social engine status."""
         # Get unique agents
-        agents: Set[str] = set()
+        agents: set[str] = set()
         for conn in self.connections:
             agents.add(conn.agent_a)
             agents.add(conn.agent_b)

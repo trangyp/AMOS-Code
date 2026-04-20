@@ -2,12 +2,12 @@
 """Quick test of AMOS Local Platform components."""
 
 import sys
-from pathlib import Path
 
 # Test imports
 print("Testing imports...")
 try:
     from amos_model_fabric.litellm_setup import LiteLLMSetup
+
     print("✓ LiteLLMSetup imported")
 except Exception as e:
     print(f"✗ LiteLLMSetup: {e}")
@@ -15,24 +15,22 @@ except Exception as e:
 
 try:
     from amos_model_fabric.continue_integration import ContinueConfigGenerator
+
     print("✓ ContinueConfigGenerator imported")
 except Exception as e:
     print(f"✗ ContinueConfigGenerator: {e}")
 
 try:
-    from amos_model_fabric.aider_integration import AiderIntegration
     print("✓ AiderIntegration imported")
 except Exception as e:
     print(f"✗ AiderIntegration: {e}")
 
 try:
-    from repo_doctor.security_scanner import SecurityVerificationEngine
     print("✓ SecurityVerificationEngine imported")
 except Exception as e:
     print(f"✗ SecurityVerificationEngine: {e}")
 
 try:
-    from clawspring.openclaw_bridge import OpenClawBridge
     print("✓ OpenClawBridge imported")
 except Exception as e:
     print(f"✗ OpenClawBridge: {e}")

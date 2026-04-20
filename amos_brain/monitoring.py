@@ -1,4 +1,6 @@
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
+
+from typing import Any, Optional
 
 """AMOS Brain Monitoring - Production monitoring and metrics.
 
@@ -6,10 +8,12 @@ Provides health checks, metrics collection, and monitoring for
 brain operations in production environments.
 """
 
+
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 
 
 @dataclass
@@ -31,8 +35,8 @@ class HealthStatus:
     status: str = "unknown"
     healthy: bool = False
     last_check: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
-    checks: Dict[str, bool] = field(default_factory=dict)
-    details: Dict[str, Any] = field(default_factory=dict)
+    checks: dict[str, bool] = field(default_factory=dict)
+    details: dict[str, Any] = field(default_factory=dict)
 
 
 class BrainMonitor:
@@ -41,7 +45,7 @@ class BrainMonitor:
     def __init__(self) -> None:
         self._metrics = BrainMetrics()
         self._start_time = time.time()
-        self._request_times: List[float] = []
+        self._request_times: list[float] = []
         self._max_history = 1000
 
     def record_request(self, success: bool, response_time_ms: float) -> None:
@@ -74,7 +78,7 @@ class BrainMonitor:
         """Perform health check."""
         from .facade import BrainClient
 
-        checks: Dict[str, bool] = {}
+        checks: dict[str, bool] = {}
 
         # Check brain client
         try:

@@ -8,17 +8,14 @@ Example:
     >>> bridge = EquationKnowledgeBridge()
     >>> result = bridge.compute("softmax", {"x": [1.0, 2.0, 3.0]})
     >>> print(result.value)
+
 """
 
-# Import from AMOS equation kernel
-import sys
-from dataclasses import dataclass
-from pathlib import Path
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
 
-# Add parent directory to path for imports
-amos_root = Path(__file__).parent.parent
-sys.path.insert(0, str(amos_root))
+# Import from AMOS equation kernel
+from dataclasses import dataclass
+from typing import Any
 
 try:
     from amos_equation_kernel import (
@@ -48,9 +45,9 @@ class DomainKnowledge:
 
     domain: str
     pattern: MathematicalPattern
-    equations: List[EquationMetadata]
-    related_concepts: List[str]
-    cross_domain_links: List[str]
+    equations: list[EquationMetadata]
+    related_concepts: list[str]
+    cross_domain_links: list[str]
 
 
 class EquationKnowledgeBridge:
@@ -62,6 +59,7 @@ class EquationKnowledgeBridge:
     Attributes:
         equation_kernel: The underlying equation computation engine
         knowledge_graph: Connection to AMOS knowledge base
+
     """
 
     def __init__(self) -> None:
@@ -69,7 +67,7 @@ class EquationKnowledgeBridge:
         self._kernel = get_equation_kernel() if KERNEL_AVAILABLE else None
         self._knowledge = KnowledgeGraphKernel() if KNOWLEDGE_AVAILABLE else None
 
-    def compute(self, equation_name: str, parameters: Dict[str, Any]) -> Optional[EquationResult]:
+    def compute(self, equation_name: str, parameters: dict[str, Any]) -> EquationResult | None:
         """Execute an equation with validation.
 
         Args:
@@ -78,12 +76,13 @@ class EquationKnowledgeBridge:
 
         Returns:
             EquationResult with value and validation status, or None if unavailable
+
         """
         if self._kernel is None:
             return None
         return self._kernel.execute(equation_name, parameters)
 
-    def get_domain_equations(self, pattern: MathematicalPattern) -> List[EquationMetadata]:
+    def get_domain_equations(self, pattern: MathematicalPattern) -> list[EquationMetadata]:
         """Get all equations for a specific mathematical pattern.
 
         Args:
@@ -91,22 +90,24 @@ class EquationKnowledgeBridge:
 
         Returns:
             List of equation metadata matching the pattern
+
         """
         if self._kernel is None:
             return []
         return self._kernel.get_by_pattern(pattern)
 
-    def find_cross_domain_patterns(self) -> List[dict[str, Any]]:
+    def find_cross_domain_patterns(self) -> list[dict[str, Any]]:
         """Find structural similarities across domains.
 
         Returns:
             List of isomorphism records showing cross-domain connections
+
         """
         if self._kernel is None:
             return []
         return self._kernel.find_isomorphisms()
 
-    def explain_equation(self, equation_name: str) -> Dict[str, Any]:
+    def explain_equation(self, equation_name: str) -> dict[str, Any]:
         """Get comprehensive explanation of an equation.
 
         Args:
@@ -114,6 +115,7 @@ class EquationKnowledgeBridge:
 
         Returns:
             Dictionary with metadata, pattern, and domain context
+
         """
         if self._kernel is None:
             return None
@@ -147,6 +149,7 @@ class EquationKnowledgeBridge:
 
         Returns:
             True if invariants are satisfied
+
         """
         if self._kernel is None:
             return False
@@ -155,11 +158,12 @@ class EquationKnowledgeBridge:
         # This is a simplified version - in production would use stored params
         return True  # Placeholder
 
-    def get_unified_framework_summary(self) -> Dict[str, Any]:
+    def get_unified_framework_summary(self) -> dict[str, Any]:
         """Get summary of the unified mathematical framework.
 
         Returns:
             Dictionary with framework statistics and structure
+
         """
         if self._kernel is None:
             return {"status": "kernel_unavailable"}
@@ -167,8 +171,8 @@ class EquationKnowledgeBridge:
         all_equations = self._kernel.get_all_equations()
 
         # Count by domain
-        domains: Dict[str, int] = {}
-        patterns: Dict[str, int] = {}
+        domains: dict[str, int] = {}
+        patterns: dict[str, int] = {}
 
         for eq in all_equations:
             domains[eq.domain] = domains.get(eq.domain, 0) + 1
@@ -186,7 +190,7 @@ class EquationKnowledgeBridge:
 
 
 # Global bridge instance
-_bridge: Optional[EquationKnowledgeBridge] = None
+_bridge: EquationKnowledgeBridge | None = None
 
 
 def get_equation_bridge() -> EquationKnowledgeBridge:

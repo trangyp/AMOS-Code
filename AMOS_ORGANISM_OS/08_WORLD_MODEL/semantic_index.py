@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 """Semantic Index — Document indexing and search for AMOS."""
 
 import re
 from dataclasses import dataclass, field
-from datetime import datetime
-from typing import Any, Dict, List, Optional
+from datetime import UTC, datetime
+from typing import Any, Optional
 
 
 @dataclass
@@ -13,8 +15,8 @@ class IndexedDocument:
     id: str
     source: str
     content_hash: str
-    tokens: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    tokens: list[str] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
     indexed_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
 
@@ -29,12 +31,12 @@ class SemanticIndex:
     """
 
     def __init__(self):
-        self._documents: Dict[str, IndexedDocument] = {}
-        self._token_index: Dict[str, list[str]] = {}
-        self._source_to_id: Dict[str, str] = {}
+        self._documents: dict[str, IndexedDocument] = {}
+        self._token_index: dict[str, list[str]] = {}
+        self._source_to_id: dict[str, str] = {}
 
     def index_document(
-        self, source: str, content: str, metadata: Dict[str, Any] = None
+        self, source: str, content: str, metadata: dict[str, Any] = None
     ) -> IndexedDocument:
         """Index a document."""
         import hashlib
@@ -74,7 +76,7 @@ class SemanticIndex:
 
         return doc
 
-    def _tokenize(self, content: str) -> List[str]:
+    def _tokenize(self, content: str) -> list[str]:
         """Simple tokenization."""
         # Normalize
         content = content.lower()
@@ -122,7 +124,7 @@ class SemanticIndex:
         }
         return [t for t in tokens if t not in stop_words][:1000]  # Limit tokens
 
-    def search(self, query: str, limit: int = 10) -> List[IndexedDocument]:
+    def search(self, query: str, limit: int = 10) -> list[IndexedDocument]:
         """Search documents by query."""
         query_tokens = self._tokenize(query)
 
@@ -130,7 +132,7 @@ class SemanticIndex:
             return []
 
         # Score documents
-        scores: Dict[str, int] = {}
+        scores: dict[str, int] = {}
         for token in query_tokens:
             for doc_id in self._token_index.get(token, []):
                 scores[doc_id] = scores.get(doc_id, 0) + 1
@@ -155,7 +157,7 @@ class SemanticIndex:
         except Exception:
             return None
 
-    def status(self) -> Dict[str, Any]:
+    def status(self) -> dict[str, Any]:
         """Get index status."""
         total_tokens = sum(len(doc.tokens) for doc in self._documents.values())
         return {

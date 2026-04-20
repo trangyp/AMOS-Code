@@ -7,10 +7,10 @@ Full executable specification for the six core engines.
 
 from collections.abc import AsyncIterator
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
 from enum import Enum
 
+UTC = UTC
 from typing import Any, Protocol
 
 # ============================================================================
@@ -55,7 +55,7 @@ class ObjectRef:
 class ActionRef:
     action_type: str
     target: ObjectRef
-    parameters: Dict[str, Any]
+    parameters: dict[str, Any]
 
 
 @dataclass
@@ -71,7 +71,7 @@ class PolicyContext:
 class PolicyResult:
     allowed: bool
     reason: str
-    required_approvers: List[str]
+    required_approvers: list[str]
     audit_level: str
 
 
@@ -89,15 +89,15 @@ class AxiomObject:
     criticality: str
     security_class: str
     cost_center: str = None
-    relations: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-    tags: List[str] = field(default_factory=list)
+    relations: list[str] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
+    tags: list[str] = field(default_factory=list)
     audit_ref: str = None
 
 
 class KernelEngine(Protocol):
     async def create_object(
-        self, obj_type: str, initial_data: Dict[str, Any], actor: ActorRef, workspace_id: str
+        self, obj_type: str, initial_data: dict[str, Any], actor: ActorRef, workspace_id: str
     ) -> Tuple[AxiomObject, str]: ...
 
     async def transition_object(
@@ -108,9 +108,9 @@ class KernelEngine(Protocol):
         policy_context: PolicyContext,
     ) -> Tuple[AxiomObject, str]: ...
 
-    async def get_object(self, object_id: str, at_version: int = None) -> Optional[AxiomObject]: ...
+    async def get_object(self, object_id: str, at_version: int = None) -> AxiomObject: ...
 
-    async def get_object_history(self, object_id: str) -> List[tuple[AxiomObject, str]]: ...
+    async def get_object_history(self, object_id: str) -> list[tuple[AxiomObject, str]]: ...
 
     async def evaluate_policy(
         self, action: ActionRef, target: ObjectRef, actor: ActorRef
@@ -150,16 +150,16 @@ class Edge:
     created_at: datetime
     created_by: str
     confidence: float = 1.0
-    properties: Dict[str, Any] = field(default_factory=dict)
+    properties: dict[str, Any] = field(default_factory=dict)
     is_active: bool = True
 
 
 @dataclass
 class ImpactReport:
     center_object: str
-    affected_objects: List[tuple[str, int]]  # (object_id, depth)
+    affected_objects: list[tuple[str, int]]  # (object_id, depth)
     risk_score: float
-    recommended_actions: List[str]
+    recommended_actions: list[str]
 
 
 class GraphEngine(Protocol):
@@ -169,7 +169,7 @@ class GraphEngine(Protocol):
         target: str,
         edge_type: EdgeType,
         actor: ActorRef,
-        properties: Dict[str, Any] = None,
+        properties: dict[str, Any] = None,
     ) -> Edge: ...
 
     async def invalidate_edge(self, edge_id: str, actor: ActorRef, reason: str) -> None: ...
@@ -177,14 +177,14 @@ class GraphEngine(Protocol):
     async def traverse(
         self,
         from_object: str,
-        edge_types: List[EdgeType],
+        edge_types: list[EdgeType],
         direction: str = "out",
         max_depth: int = 1,
-    ) -> List[Edge]: ...
+    ) -> list[Edge]: ...
 
     async def find_paths(
-        self, source: str, target: str, allowed_edges: List[EdgeType] = None
-    ) -> List[list[Edge]]: ...
+        self, source: str, target: str, allowed_edges: list[EdgeType] = None
+    ) -> list[list[Edge]]: ...
 
     async def compute_blast_radius(self, center_object: str, depth: int = 3) -> ImpactReport: ...
 
@@ -221,13 +221,13 @@ class ExecutionRequest:
     kind: str
     target: str
     environment: str
-    permissions: List[str]
+    permissions: list[str]
     timeout_seconds: int
     resource_limits: ResourceLimits
     command_or_payload: str
     working_directory: str = None
-    environment_vars: Dict[str, str] = field(default_factory=dict)
-    expected_artifacts: List[str] = field(default_factory=list)
+    environment_vars: dict[str, str] = field(default_factory=dict)
+    expected_artifacts: list[str] = field(default_factory=list)
     rollback_eligible: bool = False
     rollback_script: str = None
 
@@ -237,7 +237,7 @@ class ExecutionEvent:
     timestamp: datetime
     state: ExecutionState
     message: str
-    data: Dict[str, Any]
+    data: dict[str, Any]
 
 
 @dataclass
@@ -245,7 +245,7 @@ class ArtifactRef:
     artifact_id: str
     artifact_type: str
     storage_path: str
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
 
 
 @dataclass
@@ -258,7 +258,7 @@ class ExecutionReceipt:
     exit_code: int
     stdout: str
     stderr: str
-    artifacts: List[ArtifactRef]
+    artifacts: list[ArtifactRef]
     rollback_available: bool
 
 
@@ -285,7 +285,7 @@ class TelemetryPoint:
     timestamp: datetime
     type: TelemetryType
     source: str
-    data: Dict[str, Any]
+    data: dict[str, Any]
     execution_id: str = None
     object_id: str = None
     actor_id: str = None
@@ -295,7 +295,7 @@ class TelemetryPoint:
 
 class ObservationEngine(Protocol):
     async def ingest(self, point: TelemetryPoint) -> None: ...
-    async def ingest_batch(self, points: List[TelemetryPoint]) -> None: ...
+    async def ingest_batch(self, points: list[TelemetryPoint]) -> None: ...
 
 
 # ============================================================================
@@ -318,7 +318,7 @@ class KnowledgeObject:
     title: str
     content: str
     format: str
-    relates_to: List[str]
+    relates_to: list[str]
     created_by: str
     created_at: datetime
     updated_at: datetime
@@ -328,12 +328,12 @@ class KnowledgeObject:
 
 class KnowledgeEngine(Protocol):
     async def create_knowledge(
-        self, ktype: KnowledgeType, title: str, content: str, relates_to: List[str], actor: ActorRef
+        self, ktype: KnowledgeType, title: str, content: str, relates_to: list[str], actor: ActorRef
     ) -> KnowledgeObject: ...
 
     async def search_semantic(
-        self, query: str, ktype: Optional[KnowledgeType] = None
-    ) -> List[KnowledgeObject]: ...
+        self, query: str, ktype: KnowledgeType = None
+    ) -> list[KnowledgeObject]: ...
 
 
 # ============================================================================
@@ -352,9 +352,9 @@ class AgentRole(Enum):
 
 @dataclass
 class AgentScope:
-    repos: List[str]
-    paths: List[str]
-    environments: List[str]
+    repos: list[str]
+    paths: list[str]
+    environments: list[str]
 
 
 @dataclass
@@ -363,7 +363,7 @@ class AgentRun:
     agent_role: str
     goal: str
     scope: AgentScope
-    tools_allowed: List[str]
+    tools_allowed: list[str]
     max_steps: int
     budget: float
     approval_policy: str
@@ -383,9 +383,9 @@ class AgentStep:
 @dataclass
 class AgentReceipt:
     run_id: str
-    steps: List[AgentStep]
-    evidence_refs: List[str]
-    policies_checked: List[str]
+    steps: list[AgentStep]
+    evidence_refs: list[str]
+    policies_checked: list[str]
     final_result: str
     rollback_available: bool
 
@@ -395,7 +395,7 @@ class AgentEngine(Protocol):
         self, role: AgentRole, goal: str, scope: AgentScope, actor: ActorRef
     ) -> AgentRun: ...
 
-    async def execute_step(self, run_id: str, step: AgentStep) -> Dict[str, Any]: ...
+    async def execute_step(self, run_id: str, step: AgentStep) -> dict[str, Any]: ...
 
     async def get_receipt(self, run_id: str) -> AgentReceipt: ...
 
@@ -412,9 +412,9 @@ class AxiomEvent:
     actor_type: str
     actor_id: str
     action: str
-    target_object_ids: List[str]
-    input_refs: List[str]
-    policy_checks: List[str]
+    target_object_ids: list[str]
+    input_refs: list[str]
+    policy_checks: list[str]
     result: str
     diff_ref: str = None
     receipt_ref: str = None
@@ -423,8 +423,8 @@ class AxiomEvent:
 
 class EventStore(Protocol):
     async def append(self, event: AxiomEvent) -> None: ...
-    async def get(self, event_id: str) -> Optional[AxiomEvent]: ...
-    async def get_for_object(self, object_id: str) -> List[AxiomEvent]: ...
+    async def get(self, event_id: str) -> AxiomEvent: ...
+    async def get_for_object(self, object_id: str) -> list[AxiomEvent]: ...
 
 
 # ============================================================================
@@ -449,7 +449,7 @@ class Command:
     command_type: CommandType
     target_type: str
     target_id: str
-    options: Dict[str, Any]
+    options: dict[str, Any]
     actor: ActorRef
 
 
@@ -471,10 +471,10 @@ class StaticIssue:
 @dataclass
 class AutopsyResult:
     repo_id: str
-    static_issues: List[StaticIssue]
-    safe_fixes: List[dict[str, Any]]
-    patches: List[dict[str, Any]]
-    residual_risk: List[str]
+    static_issues: list[StaticIssue]
+    safe_fixes: list[dict[str, Any]]
+    patches: list[dict[str, Any]]
+    residual_risk: list[str]
 
 
 # ============================================================================
@@ -485,15 +485,15 @@ class AutopsyResult:
 @dataclass
 class SimulationResult:
     confidence: float
-    estimated_breakage: List[str]
+    estimated_breakage: list[str]
     rollback_recommendation: str
-    required_approvals: List[str]
+    required_approvals: list[str]
     cost_impact: float
 
 
 class SimulationEngine(Protocol):
     async def simulate(
-        self, action: str, target_objects: List[str], environment: str
+        self, action: str, target_objects: list[str], environment: str
     ) -> SimulationResult: ...
 
 
@@ -549,7 +549,7 @@ def create_axiom_object(
 
 
 def create_event(
-    actor: ActorRef, action: str, targets: List[str], result: str = "success"
+    actor: ActorRef, action: str, targets: list[str], result: str = "success"
 ) -> AxiomEvent:
     """Factory for creating events."""
     now = datetime.now(timezone.utc)

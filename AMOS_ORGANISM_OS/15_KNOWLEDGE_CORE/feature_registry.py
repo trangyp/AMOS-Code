@@ -8,9 +8,11 @@ Owner: Trang
 Version: 1.0.0
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 @dataclass
@@ -21,8 +23,8 @@ class FeatureModule:
     category: str
     path: str
     status: str = "active"
-    capabilities: List[str] = field(default_factory=list)
-    dependencies: List[str] = field(default_factory=list)
+    capabilities: list[str] = field(default_factory=list)
+    dependencies: list[str] = field(default_factory=list)
 
 
 class FeatureRegistry:
@@ -41,7 +43,7 @@ class FeatureRegistry:
         if root_path is None:
             root_path = Path(__file__).parent.parent.parent
         self.root = root_path
-        self.features: List[FeatureModule] = []
+        self.features: list[FeatureModule] = []
         self._discover_all()
 
     def _discover_all(self):
@@ -197,7 +199,7 @@ class FeatureRegistry:
                     )
                 )
 
-    def get_summary(self) -> Dict[str, Any]:
+    def get_summary(self) -> dict[str, Any]:
         """Get feature registry summary."""
         by_category = {}
         for f in self.features:
@@ -212,28 +214,28 @@ class FeatureRegistry:
             "categories": list(by_category.keys()),
         }
 
-    def list_by_category(self, category: str) -> List[FeatureModule]:
+    def list_by_category(self, category: str) -> list[FeatureModule]:
         """List features by category."""
         return [f for f in self.features if f.category == category]
 
     # Properties for orchestrator compatibility
     @property
-    def discovered_features(self) -> List[FeatureModule]:
+    def discovered_features(self) -> list[FeatureModule]:
         """Get all discovered features."""
         return self.features
 
     @property
-    def cognitive_engines(self) -> List[FeatureModule]:
+    def cognitive_engines(self) -> list[FeatureModule]:
         """Get cognitive engines."""
         return self.list_by_category("cognitive_engine")
 
     @property
-    def core_brain_engines(self) -> List[FeatureModule]:
+    def core_brain_engines(self) -> list[FeatureModule]:
         """Get core brain engines."""
         return self.list_by_category("core_brain_engine")
 
     @property
-    def knowledge_packs(self) -> List[FeatureModule]:
+    def knowledge_packs(self) -> list[FeatureModule]:
         """Get knowledge packs."""
         return self.list_by_category("knowledge_pack")
 

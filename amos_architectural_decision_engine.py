@@ -12,11 +12,11 @@ Implements L1-L6 AMOS Laws for repository governance.
 import ast
 import subprocess
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 from enum import Enum
 from pathlib import Path
-from typing import Dict, List
 
 
 class Law(Enum):
@@ -59,9 +59,9 @@ class ArchitecturalState:
 
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     total_files: int = 0
-    violations: List[Violation] = field(default_factory=list)
+    violations: list[Violation] = field(default_factory=list)
     health_score: float = 1.0
-    law_compliance: Dict[str, float] = field(default_factory=dict)
+    law_compliance: dict[str, float] = field(default_factory=dict)
 
     def calculate_health(self) -> float:
         """Calculate overall health score."""
@@ -93,7 +93,7 @@ class ArchitecturalDecisionEngine:
 
     def __init__(self, repo_path: str = None):
         self.repo_path = Path(repo_path) if repo_path else Path.cwd()
-        self.violations: List[Violation] = []
+        self.violations: list[Violation] = []
         self.state = ArchitecturalState()
 
     def analyze_repository(self) -> ArchitecturalState:
@@ -153,7 +153,7 @@ class ArchitecturalDecisionEngine:
 
             if result.returncode == 0:
                 # Parse git history for ownership
-                file_owners: Dict[str, set[str]] = {}
+                file_owners: dict[str, set[str]] = {}
                 current_author = ""
 
                 for line in result.stdout.split("\n"):
@@ -239,7 +239,7 @@ class ArchitecturalDecisionEngine:
                         )
                     )
 
-    def generate_fix_plan(self) -> List[dict]:
+    def generate_fix_plan(self) -> list[dict]:
         """Generate prioritized fix plan."""
         # Sort by severity
         sorted_violations = sorted(self.violations, key=lambda v: v.severity.value, reverse=True)
@@ -275,7 +275,7 @@ class ArchitecturalDecisionEngine:
         ]
 
         # Group by law
-        law_violations: Dict[Law, list[Violation]] = {law: [] for law in Law}
+        law_violations: dict[Law, list[Violation]] = {law: [] for law in Law}
         for v in self.violations:
             law_violations[v.law].append(v)
 

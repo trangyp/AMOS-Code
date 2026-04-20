@@ -1,9 +1,11 @@
 """AMOS Signal Processing Engine - Multi-domain signal analysis."""
 
-from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
 
-from amos_runtime import get_runtime
+from dataclasses import dataclass
+from typing import Any
+
+from clawspring.amos_runtime import get_runtime
 
 
 @dataclass
@@ -12,9 +14,9 @@ class SignalAnalysis:
 
     domain: str
     input_data: str
-    findings: List[dict]
+    findings: list[dict]
     confidence: float
-    limitations: List[str]
+    limitations: list[str]
     law_compliance: dict
     gap_acknowledgment: str
 
@@ -61,7 +63,7 @@ class TimeFrequencyKernel:
             ),
         )
 
-    def _get_principles(self, category: str) -> List[str]:
+    def _get_principles(self, category: str) -> list[str]:
         """Get signal principles for category."""
         principles = {
             "time_domain": ["Sampling theorem", "Convolution", "Impulse response"],
@@ -132,7 +134,7 @@ class BiologicalSignalsKernel:
             ),
         )
 
-    def _get_primitives(self, category: str) -> List[str]:
+    def _get_primitives(self, category: str) -> list[str]:
         """Get biomedical primitives for category."""
         primitives = {
             "ecg": ["P-QRS-T", "Rhythm analysis", "HRV metrics"],
@@ -187,7 +189,7 @@ class ControlSystemsKernel:
             ),
         )
 
-    def _get_primitives(self, category: str) -> List[str]:
+    def _get_primitives(self, category: str) -> list[str]:
         """Get control primitives for category."""
         primitives = {
             "feedback": ["Negative feedback", "Loop gain", "Bandwidth"],
@@ -242,7 +244,7 @@ class CommunicationSignalsKernel:
             ),
         )
 
-    def _get_primitives(self, category: str) -> List[str]:
+    def _get_primitives(self, category: str) -> list[str]:
         """Get communication primitives for category."""
         primitives = {
             "modulation": ["Constellation", "Symbol rate", "Spectral efficiency"],
@@ -266,7 +268,7 @@ class AMOSSignalEngine:
 
     def __init__(self):
         self.runtime = get_runtime()
-        self.kernels: Dict[str, Any] = {}
+        self.kernels: dict[str, Any] = {}
         self._init_kernels()
 
     def _init_kernels(self):
@@ -277,8 +279,8 @@ class AMOSSignalEngine:
     def analyze(
         self,
         description: str,
-        domains: Optional[List[str]] = None,
-    ) -> Dict[str, SignalAnalysis]:
+        domains: list[str | None] = None,
+    ) -> dict[str, SignalAnalysis]:
         """Run signal processing analysis across specified domains."""
         domains = domains or list(self.DOMAINS.keys())
         results = {}
@@ -290,7 +292,7 @@ class AMOSSignalEngine:
 
         return results
 
-    def get_findings_summary(self, results: Dict[str, SignalAnalysis]) -> str:
+    def get_findings_summary(self, results: dict[str, SignalAnalysis]) -> str:
         """Generate human-readable findings summary."""
         lines = [
             "# AMOS Signal Processing Analysis Summary",
@@ -377,7 +379,7 @@ class AMOSSignalEngine:
 
 
 # Singleton
-_signal_engine: Optional[AMOSSignalEngine] = None
+_signal_engine: AMOSSignalEngine | None = None
 
 
 def get_signal_engine() -> AMOSSignalEngine:
@@ -390,8 +392,8 @@ def get_signal_engine() -> AMOSSignalEngine:
 
 def analyze_signals(
     description: str,
-    domains: Optional[List[str]] = None,
-) -> Dict[str, SignalAnalysis]:
+    domains: list[str | None] = None,
+) -> dict[str, SignalAnalysis]:
     """Quick helper for signal processing analysis."""
     return get_signal_engine().analyze(description, domains)
 

@@ -1,12 +1,7 @@
-import os
-import sys
-
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from clawspring.tools import generate_unified_diff
 
 
 def test_generate_unified_diff():
-    from tools import generate_unified_diff
-
     old = "line1\nline2\nline3\n"
     new = "line1\nline2_modified\nline3\n"
     diff = generate_unified_diff(old, new, "test.py")
@@ -17,14 +12,12 @@ def test_generate_unified_diff():
 
 
 def test_generate_unified_diff_empty_old():
-    from tools import generate_unified_diff
-
     diff = generate_unified_diff("", "new content\n", "test.py")
     assert "+new content" in diff
 
 
 def test_edit_returns_diff(tmp_path):
-    from tools import _edit
+    from clawspring.tools import _edit
 
     f = tmp_path / "test.txt"
     f.write_text("hello world\n")

@@ -45,9 +45,10 @@ Environment Variables:
 import logging
 import os
 import random
+import secrets
+import string
 from dataclasses import dataclass
 from datetime import timedelta
-from typing import List, Optional
 
 # Faker imports
 try:
@@ -186,7 +187,7 @@ class SeedResult:
     equations_created: int = 0
     executions_created: int = 0
     api_keys_created: int = 0
-    errors: List[str] = None
+    errors: list[str] = None
 
     def __post_init__(self):
         if self.errors is None:
@@ -289,8 +290,10 @@ class DatabaseSeeder:
             username = self.fake.user_name() + f"_{i}"
             email = self.fake.email()
 
-            # Generate password hash if auth available
-            password = "testpassword123"
+            # Generate random password for seeding (not for production)
+            password = "".join(
+                secrets.choice(string.ascii_letters + string.digits) for _ in range(16)
+            )
             if AUTH_AVAILABLE:
                 hashed_password = get_password_hash(password)
             else:
@@ -530,7 +533,7 @@ class DatabaseSeeder:
                     user = User(
                         username="default_seeder",
                         email="seeder@example.com",
-                        hashed_password="dummy_hash",
+                        hashed_password=secrets.token_hex(32),
                         role="admin",
                     )
                     session.add(user)
@@ -543,11 +546,11 @@ class DatabaseSeeder:
                 for i in range(count):
                     if domain_data["equations"]:
                         template = random.choice(domain_data["equations"])
-                        name = f"{template[0]} Variant {i+1}"
+                        name = f"{template[0]} Variant {i + 1}"
                         formula = template[1]
                         solution = template[2]
                     else:
-                        name = f"{self.fake.word().title()} Formula {i+1}"
+                        name = f"{self.fake.word().title()} Formula {i + 1}"
                         formula = self._generate_formula()
                         solution = self._generate_solution()
 
@@ -586,7 +589,9 @@ class DatabaseSeeder:
                 created = 0
 
                 for i in range(count):
-                    password = "testpass123"
+                    password = "".join(
+                        secrets.choice(string.ascii_letters + string.digits) for _ in range(16)
+                    )
                     if AUTH_AVAILABLE:
                         hashed = get_password_hash(password)
                     else:

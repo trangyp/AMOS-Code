@@ -37,7 +37,7 @@ Environment Variables:
 import os
 import secrets
 import uuid
-from typing import Any, Dict
+from typing import Any
 
 try:
     from fastapi import Request, Response
@@ -59,7 +59,7 @@ def generate_nonce() -> str:
     return secrets.token_urlsafe(16)
 
 
-def get_security_headers(csp_nonce: str = None) -> Dict[str, str]:
+def get_security_headers(csp_nonce: str = None) -> dict[str, str]:
     """Generate security headers dictionary.
 
     Args:
@@ -86,7 +86,7 @@ def get_security_headers(csp_nonce: str = None) -> Dict[str, str]:
     if csp_nonce and _CSP_NONCE_ENABLED:
         csp += f" 'nonce-{csp_nonce}'"
 
-    headers: Dict[str, str] = {
+    headers: dict[str, str] = {
         # Enforce HTTPS for 2 years
         "Strict-Transport-Security": (f"max-age={_HSTS_MAX_AGE}; includeSubDomains; preload"),
         # Prevent XSS
@@ -101,7 +101,7 @@ def get_security_headers(csp_nonce: str = None) -> Dict[str, str]:
         "Referrer-Policy": "strict-origin-when-cross-origin",
         # Control browser features
         "Permissions-Policy": (
-            "geolocation=(), microphone=(), camera=(), " "payment=(), usb=(), magnetometer=()"
+            "geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=()"
         ),
         # Cache control for API responses
         "Cache-Control": ("no-store, no-cache, must-revalidate, proxy-revalidate"),
@@ -193,7 +193,7 @@ def get_csp_nonce(request: Any) -> str:
 
 
 # Security configuration helpers
-def get_cors_config() -> Dict[str, Any]:
+def get_cors_config() -> dict[str, Any]:
     """Get secure CORS configuration.
 
     Returns:
@@ -221,7 +221,7 @@ def get_cors_config() -> Dict[str, Any]:
 # Security event logging
 def log_security_event(
     event_type: str,
-    details: Dict[str, Any],
+    details: dict[str, Any],
     request_id: str = None,
 ) -> None:
     """Log security-related events.
@@ -273,7 +273,7 @@ def get_client_ip(request: Any) -> str:
 
 
 # Security headers for static content
-STATIC_SECURITY_HEADERS: Dict[str, str] = {
+STATIC_SECURITY_HEADERS: dict[str, str] = {
     "Strict-Transport-Security": f"max-age={_HSTS_MAX_AGE}; includeSubDomains",
     "X-Frame-Options": "SAMEORIGIN",  # Allow framing from same origin for UI
     "Content-Security-Policy": "script-src 'self'; object-src 'self'",

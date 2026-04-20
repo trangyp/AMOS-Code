@@ -3,11 +3,12 @@ Deep repository analysis and repair system."""
 
 import subprocess
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from axiom_one_graph import (
     AxiomEdge,
@@ -47,11 +48,11 @@ class RepoIssue:
     severity: IssueSeverity
     title: str
     description: str
-    affected_files: List[str]
+    affected_files: list[str]
     root_cause: str
     suggested_fix: str
     auto_fixable: bool
-    evidence: Dict[str, Any] = field(default_factory=dict)
+    evidence: dict[str, Any] = field(default_factory=dict)
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
 
@@ -63,7 +64,7 @@ class ValidationResult:
     stdout: str
     stderr: str
     exit_code: int
-    issues_found: List[RepoIssue] = field(default_factory=list)
+    issues_found: list[RepoIssue] = field(default_factory=list)
 
 
 @dataclass
@@ -72,9 +73,9 @@ class AutopsyReport:
     repo_name: str
     started_at: str
     completed_at: str = None
-    validation_results: List[ValidationResult] = field(default_factory=list)
-    issues: List[RepoIssue] = field(default_factory=list)
-    graph_stats: Dict[str, Any] = field(default_factory=dict)
+    validation_results: list[ValidationResult] = field(default_factory=list)
+    issues: list[RepoIssue] = field(default_factory=list)
+    graph_stats: dict[str, Any] = field(default_factory=dict)
     fix_branch: str = None
     fix_pr_url: str = None
 
@@ -86,7 +87,7 @@ class AutopsyReport:
     def auto_fixable_count(self) -> int:
         return sum(1 for i in self.issues if i.auto_fixable)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "repo_path": self.repo_path,
             "repo_name": self.repo_name,
@@ -106,9 +107,9 @@ class StaticGraphBuilder:
 
     def __init__(self, graph: AxiomGraph):
         self.graph = graph
-        self.repo_path: Optional[Path] = None
+        self.repo_path: Path = None
 
-    async def build(self, repo_path: str, repo_name: str, owner_id: str) -> Dict[str, Any]:
+    async def build(self, repo_path: str, repo_name: str, owner_id: str) -> dict[str, Any]:
         self.repo_path = Path(repo_path)
         repo_node = create_repo_node(repo_path, repo_name, owner_id)
         await self.graph.add_node(repo_node)
@@ -138,7 +139,7 @@ class DynamicValidator:
     def __init__(self, repo_path: str):
         self.repo_path = Path(repo_path)
 
-    async def run_full_validation(self) -> List[ValidationResult]:
+    async def run_full_validation(self) -> list[ValidationResult]:
         results = []
         results.append(await self._validate_install())
         if results[-1].success:
@@ -230,7 +231,7 @@ class RepoAutopsyEngine:
     def __init__(self, graph: AxiomGraph):
         self.graph = graph
         self.static_builder = StaticGraphBuilder(graph)
-        self.validator: Optional[DynamicValidator] = None
+        self.validator: DynamicValidator = None
 
     async def autopsy(self, repo_path: str, repo_name: str, owner_id: str) -> AutopsyReport:
         started_at = datetime.now(timezone.utc).isoformat()
@@ -238,7 +239,7 @@ class RepoAutopsyEngine:
         self.validator = DynamicValidator(repo_path)
         validation_results = await self.validator.run_full_validation()
 
-        all_issues: List[RepoIssue] = []
+        all_issues: list[RepoIssue] = []
         for result in validation_results:
             all_issues.extend(result.issues_found)
 

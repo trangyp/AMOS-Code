@@ -8,15 +8,13 @@ Registers the following tools into the central tool_registry:
   ListAgentTypes   — list available agent type definitions
 """
 
+from __future__ import annotations
 
-from tool_registry import ToolDef, register_tool
+from clawspring.tool_registry import ToolDef, register_tool
 
 from .subagent import SubAgentManager, get_agent_definition, load_agent_definitions
-from typing import Optional
 
-# ── Singleton manager ──────────────────────────────────────────────────────
-
-_agent_manager: Optional[SubAgentManager] = None
+# ── Singleton manager ──────────────────────────────────────────────────────_agent_manager: Optional[SubAgentManager] = None
 
 
 def get_agent_manager() -> SubAgentManager:

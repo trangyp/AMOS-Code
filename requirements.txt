@@ -1,117 +1,28 @@
-# AMOS Equation System v2.0 - Production Requirements
+# AMOS Brain Cognitive OS - Requirements
 # Python 3.10+ required
-# Total: 35 modules, ~18,000+ lines
+#
+# DEPRECATED: This file is kept for backward compatibility only.
+# All dependencies are now defined in pyproject.toml with proper extras.
+#
+# USE THESE COMMANDS INSTEAD:
+#   pip install -e .                           # Core only
+#   pip install -e ".[server]"                # + FastAPI/Uvicorn
+#   pip install -e ".[database]"              # + SQLAlchemy/PostgreSQL
+#   pip install -e ".[security]"               # + Auth/JWT/Rate limiting
+#   pip install -e ".[events]"                # + Redis/Celery/Kafka
+#   pip install -e ".[ml]"                    # + PyTorch/Transformers/OpenAI
+#   pip install -e ".[graphql]"               # + Strawberry GraphQL
+#   pip install -e ".[observability]"         # + OpenTelemetry
+#   pip install -e ".[search]"               # + Elasticsearch/Neo4j
+#   pip install -e ".[reports]"              # + Excel/PDF generation
+#   pip install -e ".[dev]"                  # + Testing/Linting tools
+#   pip install -e ".[all]"                   # Everything
+#
+# For Docker/production, the Dockerfile uses:
+#   pip install ".[server,database,security,events,ml]"
+#
+# NOTE: This file will be removed in a future release.
+#       Migrate to pyproject.toml-based installation.
 
-aiohttp>=3.9.0             # Async HTTP framework
-aiokafka>=0.9.0               # Kafka async client
-alembic>=1.12.0            # Database migrations
-asyncpg>=0.29.0            # PostgreSQL async driver
-celery>=5.3.0              # Distributed task queue
-cryptography>=41.0.0              # Cryptographic primitives
-
-# =============================================================================
-# SEARCH & ANALYTICS
-# =============================================================================
-elasticsearch[async]>=8.11.0  # Elasticsearch async client
-faker>=22.0.0              # Data generation for seeding
-# =============================================================================
-# CORE FRAMEWORK
-# =============================================================================
-fastapi>=0.104.0           # Web framework with OpenAPI
-
-# =============================================================================
-# HTTP & NETWORKING
-# =============================================================================
-httpx>=0.25.0              # Async HTTP client
-kombu>=5.3.0               # Messaging library
-
-# =============================================================================
-# GRAPH DATABASE
-# =============================================================================
-neo4j>=5.15.0              # Neo4j async driver
-openpyxl>=3.1.0            # Excel reading
-
-# =============================================================================
-# OBSERVABILITY
-# =============================================================================
-# OpenTelemetry
-opentelemetry-api>=1.21.0
-opentelemetry-exporter-otlp>=1.21.0
-opentelemetry-instrumentation-fastapi>=0.42b0
-opentelemetry-sdk>=1.21.0
-orjson>=3.9.0              # Fast JSON parsing
-
-# =============================================================================
-# DATA PROCESSING & I/O
-# =============================================================================
-pandas>=2.1.0              # Data manipulation
-passlib[bcrypt]>=1.7.4            # Password hashing
-
-# =============================================================================
-# OBSERVABILITY
-# =============================================================================
-prometheus-client>=0.19.0        # Prometheus metrics
-
-# Prometheus
-prometheus-client>=0.19.0
-prometheus-fastapi-instrumentator>=6.1.0
-pydantic>=2.5.0            # Data validation
-pydantic-settings>=2.1.0   # Configuration management
-
-# =============================================================================
-# UTILITIES
-# =============================================================================
-python-dateutil>=2.8.0     # Date parsing
-python-dotenv>=1.0.0               # Environment variables
-
-# =============================================================================
-# AUTHENTICATION & SECURITY
-# =============================================================================
-python-jose[cryptography]>=3.3.0  # JWT tokens
-python-multipart>=0.0.6    # Form data parsing
-pytz>=2023.3                # Timezone handling
-
-# =============================================================================
-# CACHE & MESSAGE QUEUE
-# =============================================================================
-redis>=5.0.0               # Redis client
-reportlab>=4.0.0           # PDF generation
-requests>=2.31.0           # Sync HTTP client
-rich>=13.7.0               # Terminal formatting
-secure>=0.3.0                      # Security headers
-
-# =============================================================================
-# DATABASE & ORM
-# =============================================================================
-sqlalchemy[asyncio]>=2.0.0 # Async ORM
-starlette>=0.27.0          # ASGI toolkit
-
-# =============================================================================
-# GRAPHQL
-# =============================================================================
-strawberry-graphql[fastapi]>=0.213.0
-
-# Logging
-structlog>=23.2.0          # Structured logging
-tenacity>=8.2.0            # Retry logic
-
-# =============================================================================
-# ADMIN & CLI
-# =============================================================================
-typer[all]>=0.9.0          # CLI framework
-ujson>=5.8.0               # Alternative JSON parser
-uvicorn[standard]>=0.24.0  # ASGI server
-websockets>=12.0           # WebSocket support
-xlsxwriter>=3.1.0          # Excel writing
-
-# =============================================================================
-# DEVELOPMENT & TESTING (Optional - install with: pip install -r requirements-dev.txt)
-# =============================================================================
-# pytest>=7.4.0
-# pytest-asyncio>=0.21.0
-# pytest-cov>=4.1.0
-# black>=23.0.0
-# ruff>=0.1.0
-# mypy>=1.7.0
-# pre-commit>=3.5.0
-# locust>=2.19.0          # Load testing
+# Kept for CI compatibility during transition
+-e .

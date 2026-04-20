@@ -1,4 +1,6 @@
-from typing import Any, Dict, Optional
+from __future__ import annotations
+
+from typing import Any, Optional
 
 """Brain Health Integration - Real-time brain system health monitoring.
 
@@ -6,21 +8,16 @@ Integrates clawspring/amos_brain health reporting with FastAPI health endpoints.
 Provides production-ready health checks for Kubernetes/Docker.
 """
 
-import sys
+
 from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
 
-from pathlib import Path
+UTC = UTC
 
-# Add clawspring to path
-CLAWSPRING_PATH = Path(__file__).parent.parent / "clawspring"
-if str(CLAWSPRING_PATH) not in sys.path:
-    sys.path.insert(0, str(CLAWSPRING_PATH))
+# Import alias modules to set up paths
+import clawspring  # noqa: F401
+import clawspring.amos_brain  # noqa: F401
 
-AMOS_BRAIN_PATH = CLAWSPRING_PATH / "amos_brain"
-if str(AMOS_BRAIN_PATH) not in sys.path:
-    sys.path.insert(0, str(AMOS_BRAIN_PATH))
 
 @dataclass
 class BrainHealthStatus:
@@ -33,7 +30,8 @@ class BrainHealthStatus:
     components_ready: int
     components_total: int
     timestamp: str
-    details: Dict[str, Any]
+    details: dict[str, Any]
+
 
 class BrainHealthChecker:
     """Production health checker for AMOS brain ecosystem."""
@@ -115,7 +113,7 @@ class BrainHealthChecker:
                 details={"error": str(e)},
             )
 
-    async def liveness_check(self) -> Dict[str, Any]:
+    async def liveness_check(self) -> dict[str, Any]:
         """Kubernetes liveness probe - is the process running?"""
         return {
             "status": "alive",
@@ -123,7 +121,7 @@ class BrainHealthChecker:
             "service": "amos-brain",
         }
 
-    async def readiness_check(self) -> Dict[str, Any]:
+    async def readiness_check(self) -> dict[str, Any]:
         """Kubernetes readiness probe - is it ready to accept traffic?"""
         health = await self.get_health()
 
@@ -142,8 +140,10 @@ class BrainHealthChecker:
             },
         }
 
+
 # Singleton
 _health_checker: Optional[BrainHealthChecker] = None
+
 
 async def get_brain_health_checker() -> BrainHealthChecker:
     """Get or create singleton health checker."""
@@ -153,10 +153,12 @@ async def get_brain_health_checker() -> BrainHealthChecker:
         await _health_checker.initialize()
     return _health_checker
 
+
 async def get_brain_health() -> BrainHealthStatus:
     """Convenience function to get brain health."""
     checker = await get_brain_health_checker()
     return await checker.get_health()
+
 
 if __name__ == "__main__":
     import asyncio

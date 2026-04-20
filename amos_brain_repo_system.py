@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 """AMOS Brain Repository System - Full Brain Integration
 
@@ -13,7 +13,9 @@ Uses actual AMOS brain components:
 import ast
 import subprocess
 import sys
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from pathlib import Path
 
 # Add repo to path
@@ -37,7 +39,7 @@ class BrainRepositorySystem:
         self.super_brain = get_super_brain()
         self.thinking_engine = ThinkingEngine()
         self.laws = GlobalLaws()
-        self.results: List[dict] = []
+        self.results: list[dict] = []
 
     def initialize(self) -> bool:
         """Initialize the brain system."""
@@ -59,7 +61,7 @@ class BrainRepositorySystem:
             print(f"⚠️ SuperBrain init: {e}")
             return False
 
-    def get_all_python_files(self) -> List[Path]:
+    def get_all_python_files(self) -> list[Path]:
         """Get all Python files using brain-guided search."""
         files = []
         skip_dirs = {".git", "__pycache__", ".venv", "venv", "node_modules", ".ruff_cache"}
@@ -71,7 +73,7 @@ class BrainRepositorySystem:
 
         return sorted(files)
 
-    def check_file_syntax(self, filepath: Path) -> Tuple[bool, str]:
+    def check_file_syntax(self, filepath: Path) -> tuple[bool, str]:
         """Check Python file syntax."""
         try:
             content = filepath.read_text(encoding="utf-8", errors="ignore")
@@ -82,7 +84,7 @@ class BrainRepositorySystem:
         except Exception as e:
             return False, str(e)
 
-    def analyze_with_brain(self, filepath: Path) -> Dict[str, Any]:
+    def analyze_with_brain(self, filepath: Path) -> dict[str, Any]:
         """Use brain to analyze a file."""
         # Check syntax first
         ok, error = self.check_file_syntax(filepath)
@@ -106,7 +108,7 @@ class BrainRepositorySystem:
 
         return result
 
-    def run_ruff_fix(self, files: List[Path]) -> Dict[str, Any]:
+    def run_ruff_fix(self, files: list[Path]) -> dict[str, Any]:
         """Run Ruff linter with auto-fix."""
         if not files:
             return {"status": "no_files"}
@@ -131,14 +133,14 @@ class BrainRepositorySystem:
             "returncode": result.returncode,
         }
 
-    def run_ruff_format(self) -> Dict[str, Any]:
+    def run_ruff_format(self) -> dict[str, Any]:
         """Run Ruff formatter."""
         cmd = ["ruff", "format", str(self.repo_path)]
         result = subprocess.run(cmd, capture_output=True, text=True)
 
         return {"status": "success", "stdout": result.stdout, "stderr": result.stderr}
 
-    def process_repository(self) -> Dict[str, Any]:
+    def process_repository(self) -> dict[str, Any]:
         """Main processing loop using brain."""
         print("\n[PHASE 1] Brain-guided repository scan...")
         files = self.get_all_python_files()

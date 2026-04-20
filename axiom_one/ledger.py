@@ -12,10 +12,13 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
+
 UTC = timezone.utc
 from enum import Enum, auto
-from typing import Any, Dict, List, Set
+from typing import Any
 
 
 class PolicyLevel(Enum):
@@ -41,11 +44,11 @@ class AuditReceipt:
     receipt_id: str
     slot_id: str
     timestamp: str
-    objective: Dict[str, Any]
+    objective: dict[str, Any]
     actions: list[dict[str, Any]] = field(default_factory=list)
-    verification_bundle: Dict[str, Any] = field(default_factory=dict)
+    verification_bundle: dict[str, Any] = field(default_factory=dict)
     risk_score: float = 0.0
-    approved_by: List[str] = field(default_factory=list)
+    approved_by: list[str] = field(default_factory=list)
 
     def compute_hash(self) -> str:
         """Compute immutable hash of this receipt."""
@@ -76,16 +79,16 @@ class Ledger:
     """Governance, audit, and economics layer."""
 
     def __init__(self):
-        self._policies: List[PolicyRule] = []
-        self._receipts: Dict[str, AuditReceipt] = {}
-        self._spend_records: List[SpendRecord] = []
-        self._approvers: Set[str] = set()
+        self._policies: list[PolicyRule] = []
+        self._receipts: dict[str, AuditReceipt] = {}
+        self._spend_records: list[SpendRecord] = []
+        self._approvers: set[str] = set()
 
     def add_policy(self, policy: PolicyRule) -> None:
         """Add a policy rule."""
         self._policies.append(policy)
 
-    def check_policies(self, slot_data: Dict[str, Any]) -> List[PolicyRule]:
+    def check_policies(self, slot_data: dict[str, Any]) -> list[PolicyRule]:
         """Check which policies are violated."""
         violations = []
         for policy in self._policies:
@@ -95,7 +98,7 @@ class Ledger:
         return violations
 
     def create_receipt(
-        self, slot_id: str, objective: Dict[str, Any], actions: list[dict[str, Any]]
+        self, slot_id: str, objective: dict[str, Any], actions: list[dict[str, Any]]
     ) -> AuditReceipt:
         """Create audit receipt for completed slot."""
         receipt = AuditReceipt(

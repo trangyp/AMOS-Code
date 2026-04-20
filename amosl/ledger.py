@@ -12,7 +12,7 @@ import hashlib
 import json
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 
 @dataclass(frozen=True)
@@ -22,14 +22,14 @@ class LedgerEntry:
     timestamp: float
     step: int
     state_hash: str
-    action: Dict[str, Any]
-    observation: Dict[str, Any]
-    uncertainty: Dict[str, float]
+    action: dict[str, Any]
+    observation: dict[str, Any]
+    uncertainty: dict[str, float]
     invariants_satisfied: bool
     outcome: Any
     prev_hash: str = ""
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "timestamp": self.timestamp,
             "step": self.step,
@@ -52,12 +52,12 @@ class LedgerEntry:
 class TraceTensor:
     """Trace tensor for comprehensive recording."""
 
-    inputs: List[dict[str, Any]] = field(default_factory=list)
-    observations: List[dict[str, Any]] = field(default_factory=list)
-    actions: List[dict[str, Any]] = field(default_factory=list)
-    constraints: List[str] = field(default_factory=list)
-    verification: List[bool] = field(default_factory=list)
-    outputs: List[Any] = field(default_factory=list)
+    inputs: list[dict[str, Any]] = field(default_factory=list)
+    observations: list[dict[str, Any]] = field(default_factory=list)
+    actions: list[dict[str, Any]] = field(default_factory=list)
+    constraints: list[str] = field(default_factory=list)
+    verification: list[bool] = field(default_factory=list)
+    outputs: list[Any] = field(default_factory=list)
 
     def append_step(self, input_data, obs, action, constraint, verified, output):
         self.inputs.append(input_data)
@@ -72,7 +72,7 @@ class Ledger:
     """Immutable ledger with chain of entries."""
 
     def __init__(self):
-        self.entries: List[LedgerEntry] = []
+        self.entries: list[LedgerEntry] = []
         self.trace = TraceTensor()
         self._current_hash = "0" * 16
 
@@ -82,7 +82,7 @@ class Ledger:
         state: Any,
         action: dict = None,
         observation: dict = None,
-        uncertainty: Dict[str, float] = None,
+        uncertainty: dict[str, float] = None,
         invariants_satisfied: bool = True,
         outcome: Any = None,
     ) -> LedgerEntry:
@@ -138,7 +138,7 @@ class Ledger:
 
         return None
 
-    def _reconstruct_trace(self, up_to_step: int) -> List[dict]:
+    def _reconstruct_trace(self, up_to_step: int) -> list[dict]:
         """Reconstruct trace up to given step."""
         trace = []
         for entry in self.entries:
@@ -172,7 +172,7 @@ class Ledger:
         # state transformation. For now, we return the state.
         return state
 
-    def verify_chain(self) -> Tuple[bool, list[str]]:
+    def verify_chain(self) -> tuple[bool, list[str]]:
         """Verify ledger integrity (hash chain)."""
         errors = []
 
@@ -188,7 +188,7 @@ class Ledger:
 
         return len(errors) == 0, errors
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """Get ledger statistics."""
         total = len(self.entries)
         verified = sum(1 for e in self.entries if e.invariants_satisfied)
@@ -201,11 +201,11 @@ class Ledger:
             "last_step": self.entries[-1].step if self.entries else None,
         }
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Serialize ledger."""
         return {"entries": [e.to_dict() for e in self.entries], "statistics": self.get_statistics()}
 
-    def query(self, step: int = None, outcome_type: str = None) -> List[LedgerEntry]:
+    def query(self, step: int = None, outcome_type: str = None) -> list[LedgerEntry]:
         """Query ledger entries."""
         results = []
 

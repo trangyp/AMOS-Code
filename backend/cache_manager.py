@@ -15,15 +15,14 @@ Version: 3.0.0
 
 from __future__ import annotations
 
-
-
-
+import asyncio
 import hashlib
 import json
 import os
+import time
 from collections.abc import Callable
 from functools import wraps
-from typing import Any
+from typing import Any, Optional
 
 # Redis configuration
 REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
@@ -47,8 +46,8 @@ class CacheManager:
 
                 self._redis = redis.from_url(REDIS_URL, decode_responses=True)
             except ImportError:
-                # Fallback to mock cache if Redis not available
-                self._redis = MockCache()
+                # Fallback to in-memory cache if Redis not available
+                self._redis = MemoryCache()
         return self._redis
 
     async def get(self, key: str) -> Optional[Any]:
@@ -114,42 +113,64 @@ class CacheManager:
             return {"status": "unhealthy", "error": str(e)}
 
 
-class MockCache:
-    """In-memory mock cache for development/testing."""
+class MemoryCache:
+    """In-memory cache with TTL support for development/testing."""
 
     def __init__(self):
-        self._data = {}
+        self._data: dict[str, tuple[str, float]] = {}
+        self._lock = asyncio.Lock()
 
-    async def get(self, key: str) -> str:
-        import time
-
-        if key in self._data:
-            value, expiry = self._data[key]
-            if expiry > time.time():
-                return value
-            del self._data[key]
-        return None
+    async def get(self, key: str) -> Optional[str]:
+        """Get value from cache with TTL check."""
+        async with self._lock:
+            if key in self._data:
+                value, expiry = self._data[key]
+                if expiry > time.time():
+                    return value
+                del self._data[key]
+            return None
 
     async def setex(self, key: str, ttl: int, value: str) -> None:
-        import time
-
-        self._data[key] = (value, time.time() + ttl)
+        """Set value with expiration time."""
+        async with self._lock:
+            self._data[key] = (value, time.time() + ttl)
 
     async def delete(self, *keys: str) -> int:
+        """Delete keys from cache."""
         count = 0
-        for key in keys:
-            if key in self._data:
-                del self._data[key]
-                count += 1
+        async with self._lock:
+            for key in keys:
+                if key in self._data:
+                    del self._data[key]
+                    count += 1
         return count
 
-    async def keys(self, pattern: str) -> list:
-        import fnmatch
+    async def keys(self, pattern: str) -> list[str]:
+        """Get keys matching pattern (simple substring match)."""
+        async with self._lock:
+            import fnmatch
 
-        return [k for k in self._data.keys() if fnmatch.fnmatch(k, pattern)]
+            return [k for k in self._data.keys() if fnmatch.fnmatch(k, pattern)]
 
     async def ping(self) -> bool:
+        """Health check - always returns True for memory cache."""
         return True
+
+    async def expire(self, key: str, ttl: int) -> bool:
+        """Update TTL for existing key."""
+        async with self._lock:
+            if key in self._data:
+                value, _ = self._data[key]
+                self._data[key] = (value, time.time() + ttl)
+                return True
+            return False
+
+    def get_stats(self) -> dict[str, int]:
+        """Get cache statistics."""
+        return {
+            "keys": len(self._data),
+            "size": sum(len(v[0]) for v in self._data.values()),
+        }
 
 
 # Global cache manager instance

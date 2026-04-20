@@ -229,7 +229,7 @@ def run_tests():
             failed += 1
 
     print("=" * 70)
-    print(f"Results: {passed}/{passed+failed} tests passed")
+    print(f"Results: {passed}/{passed + failed} tests passed")
     print("=" * 70)
 
     return failed == 0

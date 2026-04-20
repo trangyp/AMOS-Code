@@ -18,9 +18,6 @@ All standard clawspring options are supported.
 import os
 import sys
 
-# Ensure paths are set up
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-
 # Import AMOS brain
 from amos_brain.integration import get_amos_integration
 

@@ -17,7 +17,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 from .execution_slot import ExecutionSlot, SlotMode, SlotStatus
 from .ledger import Ledger
@@ -97,7 +97,10 @@ class BrainPoweredOrchestrator:
         return self._repo_doctor
 
     def execute_intelligent(
-        self, objective: str, mode: SlotMode = SlotMode.LOCAL, context: Optional[dict[str, Any] ] = None
+        self,
+        objective: str,
+        mode: SlotMode = SlotMode.LOCAL,
+        context: Optional[dict[str, Any]] = None,
     ) -> ExecutionSlot:
         """
         Execute with full brain integration.

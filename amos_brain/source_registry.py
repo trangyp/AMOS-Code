@@ -5,9 +5,11 @@ All data/document sources are registered here.
 Unified interface for loading and querying sources.
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass
 from threading import Lock
-from typing import Any
+from typing import Any, Optional
 
 
 @dataclass
@@ -17,7 +19,7 @@ class SourceConfig:
     source_id: str
     source_type: str  # e.g., "file", "url", "database", "api"
     location: str
-    metadata: dict[str, Any] = None
+    metadata: Optional[dict[str, Any]] = None
     healthy: bool = True
 
 

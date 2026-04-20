@@ -4,7 +4,9 @@ Routes user requests through reading kernel → orchestrator → execution.
 End-to-end intelligent task processing.
 """
 
-from typing import Any, Dict, Optional
+from __future__ import annotations
+
+from typing import Any, Optional
 
 from fastapi import APIRouter
 from pydantic import BaseModel
@@ -18,7 +20,7 @@ router = APIRouter()
 
 class RouteRequest(BaseModel):
     text: str
-    context: Dict[str, Any] = None
+    context: dict[str, Any] = None
 
 
 class RouteResponse(BaseModel):
@@ -30,7 +32,7 @@ class RouteResponse(BaseModel):
     execution_latency_ms: float
     total_latency_ms: float
     error: Optional[str] = None
-    result: Dict[str, Any] = None
+    result: dict[str, Any] = None
 
 
 class RouteStats(BaseModel):
@@ -75,7 +77,7 @@ async def route_request(req: RouteRequest) -> RouteResponse:
 
 
 @router.post("/execute")
-async def execute_task(req: RouteRequest) -> Dict[str, Any]:
+async def execute_task(req: RouteRequest) -> dict[str, Any]:
     """Execute a task with full feedback."""
     router = get_intelligent_router()
     result = await router.route_and_execute(req.text, req.context)
@@ -126,7 +128,7 @@ async def get_router_stats() -> RouteStats:
 
 
 @router.get("/health")
-async def router_health() -> Dict[str, Any]:
+async def router_health() -> dict[str, Any]:
     """Health check for intelligent router."""
     router = get_intelligent_router()
     stats = router.get_stats()

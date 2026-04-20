@@ -22,7 +22,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 # Add project to path
 sys.path.insert(0, str(Path(__file__).parent))
@@ -62,7 +62,7 @@ class ExecutionPlan:
     """Represents an autonomous execution plan."""
 
     goal: str
-    steps: List[ExecutionStep] = field(default_factory=list)
+    steps: list[ExecutionStep] = field(default_factory=list)
     created_at: str = field(default_factory=lambda: datetime.now().isoformat())
 
 
@@ -94,7 +94,7 @@ class AMOSAutonomousAgent:
         self.explorer = None
         self.generator = None
         self.workflow = None
-        self.execution_log: List[dict] = []
+        self.execution_log: list[dict] = []
 
     def initialize(self) -> AMOSAutonomousAgent:
         """Initialize all systems."""
@@ -112,7 +112,7 @@ class AMOSAutonomousAgent:
         print("\n🟢 Agent fully operational and ready for autonomous execution")
         return self
 
-    def understand_goal(self, goal: str) -> Dict[str, Any]:
+    def understand_goal(self, goal: str) -> dict[str, Any]:
         """Phase 1: Understand the goal using brain analysis.
 
         Determines:
@@ -145,7 +145,7 @@ class AMOSAutonomousAgent:
 
         return understanding
 
-    def plan_execution(self, understanding: Dict[str, Any]) -> ExecutionPlan:
+    def plan_execution(self, understanding: dict[str, Any]) -> ExecutionPlan:
         """Phase 2: Plan execution using available tools.
 
         Decides which tools to use and in what order.
@@ -318,13 +318,16 @@ class AMOSAutonomousAgent:
 
         print("\n✓ Report saved")
 
-    def _execute_command(self, command: str) -> Dict[str, Any]:
+    def _execute_command(self, command: str) -> dict[str, Any]:
         """Execute a shell command and return results."""
         try:
-            # Run command with timeout
+            # SECURITY: Use shlex.split() and shell=False to prevent injection
+            import shlex
+
+            cmd_parts = shlex.split(command)
             result = subprocess.run(
-                command,
-                shell=True,
+                cmd_parts,
+                shell=False,
                 capture_output=True,
                 text=True,
                 timeout=60,
@@ -352,7 +355,7 @@ class AMOSAutonomousAgent:
                 "returncode": -1,
             }
 
-    def _determine_project_types(self, goal: str) -> List[str]:
+    def _determine_project_types(self, goal: str) -> list[str]:
         """Determine project types from goal."""
         goal_lower = goal.lower()
         types = []
@@ -373,7 +376,7 @@ class AMOSAutonomousAgent:
 
         return types
 
-    def _extract_domains(self, goal: str) -> List[str]:
+    def _extract_domains(self, goal: str) -> list[str]:
         """Extract relevant domains from goal."""
         goal_lower = goal.lower()
         domains = []

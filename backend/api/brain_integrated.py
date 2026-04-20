@@ -1,4 +1,6 @@
-from typing import Any, Dict, Optional
+from __future__ import annotations
+
+from typing import Any, Optional
 
 """Integrated Brain API - Production-ready cognitive endpoints.
 
@@ -7,12 +9,12 @@ to prevent 'taking a long time' errors.
 """
 
 import asyncio
-from datetime import datetime, timezone
-
-UTC = timezone.utc
+from datetime import UTC, datetime
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException
 from pydantic import BaseModel, Field
+
+UTC = UTC
 
 # Import AMOS brain with fallback
 try:
@@ -37,7 +39,7 @@ class CognitiveRequest(BaseModel):
 
     query: str = Field(..., min_length=1, max_length=10000)
     mode: str = Field(default="auto", pattern="^(auto|fast|deep|analytical)$")
-    context: Dict[str, Any] = Field(default_factory=dict)
+    context: dict[str, Any] = Field(default_factory=dict)
     timeout_seconds: float = Field(default=30.0, ge=1.0, le=300.0)
 
 
@@ -193,7 +195,7 @@ async def process_long_thinking(task_id: str, query: str, context: dict) -> None
 @router.post("/think-async")
 async def brain_think_async(
     request: CognitiveRequest, background_tasks: BackgroundTasks
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Submit async thinking task - returns immediately, processes in background."""
     task_id = f"think-{datetime.now(UTC).strftime('%Y%m%d%H%M%S')}"
 

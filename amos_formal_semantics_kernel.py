@@ -13,9 +13,11 @@ from __future__ import annotations
 import re
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+
+UTC = UTC
 from enum import Enum, auto
-from typing import Any, Dict, List
+from typing import Any, Optional
 
 # =============================================================================
 # 1. Formula Classification System
@@ -82,9 +84,9 @@ class SymbolTableEntry:
     domain: str = ""
     measurement_rule: str = ""  # How to measure/observe this symbol
     update_rule: str = ""  # How this symbol changes
-    allowed_operations: List[str] = field(default_factory=list)
+    allowed_operations: list[str] = field(default_factory=list)
     source: str = ""  # Where this symbol comes from (equation, invariant, etc.)
-    dependencies: List[str] = field(default_factory=list)
+    dependencies: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -93,21 +95,21 @@ class TypedASTNode:
 
     node_type: str  # "argmax", "add", "symbol", "apply", etc.
     value: Any = None
-    children: List[TypedASTNode] = field(default_factory=list)
+    children: list[TypedASTNode] = field(default_factory=list)
     inferred_type: ValueType = ValueType.SCALAR
-    free_symbols: List[str] = field(default_factory=list)
-    bound_symbols: List[str] = field(default_factory=list)
+    free_symbols: list[str] = field(default_factory=list)
+    bound_symbols: list[str] = field(default_factory=list)
 
 
 @dataclass
 class OperationalSemantics:
     """Operational meaning of a formal expression."""
 
-    reads: List[str] = field(default_factory=list)  # State it reads
-    writes: List[str] = field(default_factory=list)  # State it writes
+    reads: list[str] = field(default_factory=list)  # State it reads
+    writes: list[str] = field(default_factory=list)  # State it writes
     mode: str = "evaluate"  # evaluate|optimize|check|define|transition|forbid
     computational_complexity: str = "O(1)"  # Big-O complexity
-    side_effects: List[str] = field(default_factory=list)
+    side_effects: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -117,15 +119,15 @@ class FormalExpression:
     id: str = ""
     kind: FormulaClass = FormulaClass.STATE_DEFINITION
     raw_text: str = ""
-    ast: TypedASTNode | None = None
-    free_symbols: List[str] = field(default_factory=list)
-    bound_symbols: List[str] = field(default_factory=list)
-    input_symbols: List[str] = field(default_factory=list)
-    output_symbols: List[str] = field(default_factory=list)
-    state_dependencies: List[str] = field(default_factory=list)
-    type_requirements: Dict[str, ValueType] = field(default_factory=dict)
+    ast: Optional[TypedASTNode] = None
+    free_symbols: list[str] = field(default_factory=list)
+    bound_symbols: list[str] = field(default_factory=list)
+    input_symbols: list[str] = field(default_factory=list)
+    output_symbols: list[str] = field(default_factory=list)
+    state_dependencies: list[str] = field(default_factory=list)
+    type_requirements: dict[str, ValueType] = field(default_factory=dict)
     operational_semantics: OperationalSemantics = field(default_factory=OperationalSemantics)
-    checkability: Dict[str, bool] = field(
+    checkability: dict[str, bool] = field(
         default_factory=lambda: {
             "is_executable": True,
             "is_runtime_checkable": True,
@@ -133,7 +135,7 @@ class FormalExpression:
             "requires_proof": False,
         }
     )
-    compiled_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    compiled_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
 
 @dataclass
@@ -159,7 +161,7 @@ class Objective:
     operator: str = "argmax"  # argmax|argmin|maximize|minimize
     score_function: str = ""  # Mathematical expression
     score_fn: Callable[..., float] = None  # Executable scoring function
-    constraints: List[str] = field(default_factory=list)
+    constraints: list[str] = field(default_factory=list)
     output: str = ""  # Output variable
     formal_source: str = ""
 
@@ -171,10 +173,10 @@ class TransitionRule:
     id: str = ""
     state_in: str = ""  # Input state variable
     operator: str = ""  # e.g., "reorganize", "evolve", "update"
-    condition_inputs: List[str] = field(default_factory=list)
+    condition_inputs: list[str] = field(default_factory=list)
     state_out: str = ""  # Output state variable
-    writes: List[str] = field(default_factory=list)  # What state is modified
-    reads: List[str] = field(default_factory=list)  # What state is read
+    writes: list[str] = field(default_factory=list)  # What state is modified
+    reads: list[str] = field(default_factory=list)  # What state is read
     transition_fn: Callable[[Any, Any], Any] = None  # Executable transition
     formal_source: str = ""
 
@@ -185,9 +187,9 @@ class ArchitectureComponent:
 
     id: str = ""
     type: str = ""  # kernel|engine|memory|verifier|planner|governor|renderer|optimizer
-    inputs: List[str] = field(default_factory=list)
-    outputs: List[str] = field(default_factory=list)
-    properties: Dict[str, Any] = field(default_factory=dict)
+    inputs: list[str] = field(default_factory=list)
+    outputs: list[str] = field(default_factory=list)
+    properties: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -197,26 +199,26 @@ class ArchitectureEdge:
     source: str = ""
     relation: str = ""  # feeds|constrains|verifies|updates|stores|routes_to
     target: str = ""
-    properties: Dict[str, Any] = field(default_factory=dict)
+    properties: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
 class ArchitectureGraph:
     """Compiled architecture as executable graph."""
 
-    components: List[ArchitectureComponent] = field(default_factory=list)
-    edges: List[ArchitectureEdge] = field(default_factory=list)
-    entry_points: List[str] = field(default_factory=list)
-    exit_points: List[str] = field(default_factory=list)
+    components: list[ArchitectureComponent] = field(default_factory=list)
+    edges: list[ArchitectureEdge] = field(default_factory=list)
+    entry_points: list[str] = field(default_factory=list)
+    exit_points: list[str] = field(default_factory=list)
 
-    def get_component(self, id: str) -> ArchitectureComponent | None:
+    def get_component(self, id: str) -> Optional[ArchitectureComponent]:
         """Get component by ID."""
         for c in self.components:
             if c.id == id:
                 return c
         return None
 
-    def get_dependencies(self, component_id: str) -> List[str]:
+    def get_dependencies(self, component_id: str) -> list[str]:
         """Get components that feed into this component."""
         deps = []
         for e in self.edges:
@@ -233,7 +235,7 @@ class ProofObligation:
     statement: str = ""
     kind: str = ""  # type_safety|invariant_preservation|constraint_satisfiability|dependency_consistency|transition_validity
     status: str = "open"  # open|proved|failed|unknown
-    dependencies: List[str] = field(default_factory=list)
+    dependencies: list[str] = field(default_factory=list)
     generated_from: str = ""  # Which expression generated this
 
 
@@ -284,20 +286,20 @@ class FormalSemanticsKernel:
     """
 
     def __init__(self):
-        self.symbol_table: Dict[str, SymbolTableEntry] = {}
-        self.expressions: Dict[str, FormalExpression] = {}
-        self.invariants: Dict[str, Invariant] = {}
-        self.objectives: Dict[str, Objective] = {}
-        self.transitions: Dict[str, TransitionRule] = {}
+        self.symbol_table: dict[str, SymbolTableEntry] = {}
+        self.expressions: dict[str, FormalExpression] = {}
+        self.invariants: dict[str, Invariant] = {}
+        self.objectives: dict[str, Objective] = {}
+        self.transitions: dict[str, TransitionRule] = {}
         self.architecture: ArchitectureGraph = ArchitectureGraph()
-        self.proof_obligations: List[ProofObligation] = []
+        self.proof_obligations: list[ProofObligation] = []
         self.understanding_state = FormalUnderstandingState()
 
     # ==========================================================================
     # 4.1 Parsing & Symbol Extraction
     # ==========================================================================
 
-    def parse_formal_text(self, text: str, expr_id: str | None = None) -> FormalExpression:
+    def parse_formal_text(self, text: str, expr_id: Optional[str] = None) -> FormalExpression:
         """Parse formal mathematical text into structured expression."""
         expr_id = expr_id or f"expr_{len(self.expressions)}"
 
@@ -329,7 +331,7 @@ class FormalSemanticsKernel:
     def _extract_symbols(self, text: str) -> dict[str, list[str]]:
         """Extract symbols from mathematical text."""
         # Pattern matching for common mathematical notation
-        free_symbols: List[str] = []
+        free_symbols: list[str] = []
         bound_symbols = []
         inputs = []
         outputs = []
@@ -438,7 +440,7 @@ class FormalSemanticsKernel:
     # ==========================================================================
 
     def bind_symbols(
-        self, expr: FormalExpression, context: Dict[str, Any] = None
+        self, expr: FormalExpression, context: dict[str, Any] = None
     ) -> FormalExpression:
         """Bind symbols to their semantic definitions."""
         context = context or {}
@@ -556,7 +558,7 @@ class FormalSemanticsKernel:
     # ==========================================================================
 
     def compile_invariant(
-        self, expr: FormalExpression, invariant_id: str | None = None
+        self, expr: FormalExpression, invariant_id: Optional[str] = None
     ) -> Invariant:
         """Compile an invariant expression into a runtime-checkable predicate."""
         invariant_id = invariant_id or f"inv_{len(self.invariants)}"
@@ -618,7 +620,7 @@ class FormalSemanticsKernel:
         try:
             # Create a lambda that evaluates the predicate
             # This is a simplified version - full version would use proper AST compilation
-            def predicate_fn(state: Dict[str, Any]) -> bool:
+            def predicate_fn(state: dict[str, Any]) -> bool:
                 try:
                     # Simple predicate evaluation
                     if "<=" in predicate:
@@ -638,7 +640,7 @@ class FormalSemanticsKernel:
             return None
 
     def compile_objective(
-        self, expr: FormalExpression, objective_id: str | None = None
+        self, expr: FormalExpression, objective_id: Optional[str] = None
     ) -> Objective:
         """Compile an objective expression into optimizer-ready structure."""
         objective_id = objective_id or f"obj_{len(self.objectives)}"
@@ -679,7 +681,7 @@ class FormalSemanticsKernel:
         return objective
 
     def compile_transition_rule(
-        self, expr: FormalExpression, rule_id: str | None = None
+        self, expr: FormalExpression, rule_id: Optional[str] = None
     ) -> TransitionRule:
         """Compile a transition equation into state semantics."""
         rule_id = rule_id or f"trans_{len(self.transitions)}"
@@ -727,7 +729,7 @@ class FormalSemanticsKernel:
         return transition
 
     def compile_architecture_graph(
-        self, components: List[str], edges: list[tuple[str, str, str]]
+        self, components: list[str], edges: list[tuple[str, str, str]]
     ) -> ArchitectureGraph:
         """Compile architecture declaration into component graph."""
         graph = ArchitectureGraph()
@@ -778,7 +780,7 @@ class FormalSemanticsKernel:
     # 4.5 Proof Obligation Generation
     # ==========================================================================
 
-    def generate_proof_obligations(self) -> List[ProofObligation]:
+    def generate_proof_obligations(self) -> list[ProofObligation]:
         """Generate proof obligations from compiled formal system."""
         obligations = []
 
@@ -918,7 +920,7 @@ class FormalSemanticsKernel:
     # 4.7 Full Compilation Pipeline
     # ==========================================================================
 
-    def compile_formal_system(self, expressions: List[str]) -> Dict[str, Any]:
+    def compile_formal_system(self, expressions: list[str]) -> dict[str, Any]:
         """
         Run full semantic compilation pipeline on formal expressions.
 
@@ -927,7 +929,7 @@ class FormalSemanticsKernel:
         [compile_invariant|compile_objective|compile_transition] →
         generate_proof_obligations → evaluate_semantic_integrity
         """
-        results: Dict[str, Any] = {
+        results: dict[str, Any] = {
             "expressions": {},
             "invariants": {},
             "objectives": {},
@@ -968,7 +970,7 @@ class FormalSemanticsKernel:
 
         return results
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Export entire formal semantics state as dictionary."""
         return {
             "symbol_table": {
@@ -1052,7 +1054,7 @@ class FormalSemanticsKernel:
 # 5. Global Access Functions
 # =============================================================================
 
-_kernel_instance: FormalSemanticsKernel | None = None
+_kernel_instance: Optional[FormalSemanticsKernel] = None
 
 
 def get_formal_semantics_kernel() -> FormalSemanticsKernel:

@@ -24,10 +24,9 @@ Version: 1.0.0
 
 from __future__ import annotations
 
-
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any
+from typing import Any, Optional
 
 
 class EpistemicStatus(Enum):

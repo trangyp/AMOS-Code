@@ -4,13 +4,15 @@ This module provides real-time health checks for all AMOS subsystems,
 API endpoints, and critical infrastructure components.
 """
 
+from __future__ import annotations
+
 import asyncio
 import json
 import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 @dataclass
@@ -22,7 +24,7 @@ class HealthStatus:
     last_check: datetime
     response_time_ms: float
     message: str = ""
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -31,7 +33,7 @@ class SystemHealth:
 
     timestamp: datetime
     overall_status: str
-    components: List[HealthStatus]
+    components: list[HealthStatus]
     uptime_seconds: float
     version: str = "1.0.0"
 
@@ -41,7 +43,7 @@ class HealthMonitor:
 
     def __init__(self, config_path: Optional[Path] = None):
         self.config_path = config_path or Path("AMOS_ORGANISM_OS/system_registry.json")
-        self.checks: Dict[str, callable] = {}
+        self.checks: dict[str, callable] = {}
         self._last_health: Optional[SystemHealth] = None
         self._start_time = time.time()
         self._register_default_checks()
@@ -208,7 +210,7 @@ class HealthMonitor:
             message="API endpoint check placeholder",
         )
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert last health check to dictionary."""
         if not self._last_health:
             return {"error": "No health check performed yet"}

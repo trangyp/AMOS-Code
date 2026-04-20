@@ -14,6 +14,8 @@ Commands:
     export      Export session data to JSON
 """
 
+from __future__ import annotations
+
 import argparse
 import hashlib
 import json
@@ -22,7 +24,7 @@ import sys
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 _module_logger = logging.getLogger(__name__)
 
@@ -36,8 +38,8 @@ class AMOSInteraction:
     name: str
     input_hash: str
     output_summary: str
-    engines_used: List[str] = field(default_factory=list)
-    laws_applied: List[str] = field(default_factory=list)
+    engines_used: list[str] = field(default_factory=list)
+    laws_applied: list[str] = field(default_factory=list)
     duration_ms: int = 0
     success: bool = True
 
@@ -49,19 +51,19 @@ class AMOSSession:
     session_id: str
     start_time: str
     end_time: str = None
-    interactions: List[AMOSInteraction] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    interactions: list[AMOSInteraction] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     def add_interaction(self, interaction: AMOSInteraction):
         """Add an interaction to the session."""
         self.interactions.append(interaction)
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Calculate session statistics."""
         if not self.interactions:
             return {"total_interactions": 0}
 
-        types: Dict[str, int] = {}
+        types: dict[str, int] = {}
         engines = set()
         laws = set()
         total_duration = 0
@@ -116,7 +118,7 @@ class AMOSSessionLogger:
         self.current_session: Optional[AMOSSession] = None
         self.LOG_DIR.mkdir(exist_ok=True)
 
-    def start_session(self, metadata: Dict[str, Any] = None) -> str:
+    def start_session(self, metadata: dict[str, Any] = None) -> str:
         """Start a new logging session."""
         session_id = self._generate_session_id()
         self.current_session = AMOSSession(
@@ -126,7 +128,7 @@ class AMOSSessionLogger:
         self._save_session()
         return session_id
 
-    def end_session(self) -> Dict[str, Any]:
+    def end_session(self) -> dict[str, Any]:
         """End current session and return stats."""
         if not self.current_session:
             return {"error": "No active session"}
@@ -146,8 +148,8 @@ class AMOSSessionLogger:
         name: str,
         input_data: str,
         output_data: str,
-        engines_used: List[str] = None,
-        laws_applied: List[str] = None,
+        engines_used: list[str] = None,
+        laws_applied: list[str] = None,
         duration_ms: int = 0,
         success: bool = True,
     ) -> bool:
@@ -172,7 +174,7 @@ class AMOSSessionLogger:
         self._save_session()
         return True
 
-    def get_current_stats(self) -> Dict[str, Any]:
+    def get_current_stats(self) -> dict[str, Any]:
         """Get stats for current session."""
         if not self.current_session:
             return {"error": "No active session"}
@@ -235,7 +237,7 @@ Performance:
 
         return filepath
 
-    def list_sessions(self) -> List[dict[str, Any]]:
+    def list_sessions(self) -> list[dict[str, Any]]:
         """List all saved sessions."""
         sessions = []
         for f in self.LOG_DIR.glob("*.json"):

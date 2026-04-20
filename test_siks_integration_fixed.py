@@ -7,13 +7,10 @@ No fake features. No stubs. Real working code only.
 """
 
 import asyncio
-import sys
 from pathlib import Path
 
 # Add paths
 _AMOS_ROOT = Path(__file__).parent.resolve()
-sys.path.insert(0, str(_AMOS_ROOT))
-sys.path.insert(0, str(_AMOS_ROOT / "clawspring" / "amos_brain"))
 
 print("Testing SIKS Integration (Fixed)...")
 print("-" * 60)

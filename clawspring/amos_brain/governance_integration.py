@@ -1,15 +1,17 @@
 """AMOS Governance Integration Layer - System Orchestrator"""
 
+from __future__ import annotations
 
 import threading
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
 
-from .governance_config_manager import GovernanceConfigManager, GovernanceMode
-from .unified_governance_coordinator import UnifiedGovernanceCoordinator
+from .governance_config_manager import GovernanceConfigManager
 from .governance_streaming_api import GovernanceStreamingAPI
+from .unified_governance_coordinator import UnifiedGovernanceCoordinator
+
 try:
     CONFIG_AVAILABLE = True
 except ImportError:
@@ -31,7 +33,7 @@ class GovernanceIntegration:
 
     def __init__(
         self,
-        config_path: Optional[Path] = None,
+        config_path: Path | None = None,
         environment: str = "development",
         enable_streaming: bool = True,
     ):
@@ -39,13 +41,13 @@ class GovernanceIntegration:
         self.environment = environment
         self.enable_streaming = enable_streaming
 
-        self._config: Optional[GovernanceConfigManager] = None
-        self._coordinator: Optional[UnifiedGovernanceCoordinator] = None
-        self._streaming: Optional[GovernanceStreamingAPI] = None
+        self._config: GovernanceConfigManager | None = None
+        self._coordinator: UnifiedGovernanceCoordinator | None = None
+        self._streaming: GovernanceStreamingAPI | None = None
 
         self._initialized = False
         self._running = False
-        self._coordinator_thread: threading.Thread  = None
+        self._coordinator_thread: threading.Thread = None
 
     def initialize(self) -> bool:
         """Initialize all governance components."""
@@ -57,16 +59,20 @@ class GovernanceIntegration:
                 config_path=self.config_path,
                 environment=self.environment,
             )
-            print(f"[GovernanceIntegration] Config loaded: {self._config.get_current_policy().name}")
+            print(
+                f"[GovernanceIntegration] Config loaded: {self._config.get_current_policy().name}"
+            )
 
         # 2. Initialize coordinator with config
         if COORDINATOR_AVAILABLE and self._config:
             policy = self._config.get_current_policy()
-            self._coordinator = UnifiedGovernanceCoordinator({
-                "mode": policy.mode.value,
-                "cycle_interval": policy.cycle_interval_seconds,
-                "auto_remediate": policy.auto_remediate,
-            })
+            self._coordinator = UnifiedGovernanceCoordinator(
+                {
+                    "mode": policy.mode.value,
+                    "cycle_interval": policy.cycle_interval_seconds,
+                    "auto_remediate": policy.auto_remediate,
+                }
+            )
             print("[GovernanceIntegration] Coordinator initialized")
 
         # 3. Initialize streaming API
@@ -146,14 +152,16 @@ class GovernanceIntegration:
 
                 # Stream cycle completion
                 if self._streaming:
-                    self._streaming.on_cycle_completed({
-                        "cycle_id": result.cycle_id,
-                        "status": result.status,
-                        "issues_found": result.issues_found,
-                        "issues_predicted": result.issues_predicted,
-                        "issues_remediated": result.issues_remediated,
-                        "time_elapsed_ms": result.time_elapsed_ms,
-                    })
+                    self._streaming.on_cycle_completed(
+                        {
+                            "cycle_id": result.cycle_id,
+                            "status": result.status,
+                            "issues_found": result.issues_found,
+                            "issues_predicted": result.issues_predicted,
+                            "issues_remediated": result.issues_remediated,
+                            "time_elapsed_ms": result.time_elapsed_ms,
+                        }
+                    )
 
                 # Wait for next cycle
                 time.sleep(self._coordinator.cycle_interval)
@@ -162,7 +170,7 @@ class GovernanceIntegration:
                 print(f"[GovernanceIntegration] Coordinator error: {e}")
                 time.sleep(60)
 
-    def get_health(self) -> Dict[str, Any]:
+    def get_health(self) -> dict[str, Any]:
         """Get integrated system health."""
         health = {
             "timestamp": datetime.now().isoformat(),
@@ -223,8 +231,9 @@ class GovernanceIntegration:
 # Convenience Functions
 # =============================================================================
 
+
 def create_integrated_governance(
-    config_path: Optional[Path] = None,
+    config_path: Path | None = None,
     environment: str = "development",
 ) -> GovernanceIntegration:
     """Factory function to create integrated governance system."""
@@ -261,7 +270,7 @@ if __name__ == "__main__":
     print(f"Initialized: {health['initialized']}")
     print(f"Components: {list(health['components'].keys())}")
 
-    for name, status in health['components'].items():
+    for name, status in health["components"].items():
         print(f"  - {name}: {status.get('status', 'unknown')}")
 
     # Test 3: Config Change Simulation

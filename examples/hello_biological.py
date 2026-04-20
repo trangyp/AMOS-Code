@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
-"""Hello Biological - AMOSL Biological Substrate Demo."""
+"""Hello Biological - AMOSL Biological Substrate Demo.
 
-import os
-import sys
-
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)) + "/..")
+Usage: pip install amos-brain && python -m amosl.examples.hello_biological
+"""
 
 from amosl.bridge import BridgeExecutor, BridgeType
 

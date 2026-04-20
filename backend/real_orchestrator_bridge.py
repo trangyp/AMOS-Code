@@ -4,12 +4,14 @@ This replaces fake task execution with real cognitive orchestration
 through the clawspring/amos_brain ecosystem.
 """
 
+from __future__ import annotations
+
 import sys
 import time
 import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 # Add clawspring to path
 CLAWSPRING_PATH = Path(__file__).parent.parent / "clawspring"
@@ -17,12 +19,13 @@ if str(CLAWSPRING_PATH) not in sys.path:
     sys.path.insert(0, str(CLAWSPRING_PATH))
 
 # Import real orchestrators
-from amos_brain.master_orchestrator import MasterOrchestrator, get_orchestrator
 from amos_brain.task_execution_integration import (
     TaskExecutionIntegration,
     get_task_execution_integration,
 )
-from amos_brain.organism_bridge import get_organism_bridge, OrganismBridge
+
+from amos_brain.master_orchestrator import MasterOrchestrator, get_orchestrator
+from amos_brain.organism_bridge import OrganismBridge, get_organism_bridge
 
 
 @dataclass
@@ -32,13 +35,13 @@ class TaskResult:
     task_id: str
     success: bool
     output: str
-    error: Optional[str] = None
+    error: str = None
     duration_ms: float = 0.0
     execution_type: str = "unknown"
     domain: str = "unknown"
-    engines_used: List[str] = field(default_factory=list)
-    artifacts: Dict[str, Any] = field(default_factory=dict)
-    organism_enhancements: Dict[str, Any] = field(default_factory=dict)
+    engines_used: list[str] = field(default_factory=list)
+    artifacts: dict[str, Any] = field(default_factory=dict)
+    organism_enhancements: dict[str, Any] = field(default_factory=dict)
 
 
 class RealOrchestratorBridge:
@@ -52,9 +55,9 @@ class RealOrchestratorBridge:
     - Actual domain analysis
     """
 
-    _instance: Optional["RealOrchestratorBridge"] = None
+    _instance: RealOrchestratorBridge = None
 
-    def __new__(cls) -> "RealOrchestratorBridge":
+    def __new__(cls) -> RealOrchestratorBridge:
         if cls._instance is None:
             cls._instance = super().__new__(cls)
             cls._instance._initialized = False
@@ -63,11 +66,11 @@ class RealOrchestratorBridge:
     def __init__(self):
         if self._initialized:
             return
-        self._orchestrator: Optional[MasterOrchestrator] = None
-        self._task_executor: Optional[TaskExecutionIntegration] = None
-        self._organism_bridge: Optional[OrganismBridge] = None
+        self._orchestrator: MasterOrchestrator = None
+        self._task_executor: TaskExecutionIntegration = None
+        self._organism_bridge: OrganismBridge = None
         self._initialized = False
-        self._execution_history: List[TaskResult] = []
+        self._execution_history: list[TaskResult] = []
 
     async def initialize(self) -> bool:
         """Initialize all real orchestrator connections."""
@@ -120,7 +123,7 @@ class RealOrchestratorBridge:
         self,
         task_description: str,
         priority: str = "MEDIUM",
-        context: Optional[dict[str, Any]] = None,
+        context: dict[str, Optional[Any]] = None,
     ) -> TaskResult:
         """Execute a task through real orchestrators."""
         task_id = f"task_{uuid.uuid4().hex[:12]}"
@@ -242,7 +245,7 @@ class RealOrchestratorBridge:
 
         return "analysis"
 
-    def _get_engines_for_domain(self, domain: str) -> List[str]:
+    def _get_engines_for_domain(self, domain: str) -> list[str]:
         """Get recommended engines for domain."""
         engine_map = {
             "security": ["AMOS_Deterministic_Logic_And_Law_Engine"],
@@ -256,7 +259,7 @@ class RealOrchestratorBridge:
         default = ["AMOS_Deterministic_Logic_And_Law_Engine"]
         return engine_map.get(domain, default)
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get bridge and orchestrator status."""
         orchestrator_status = {}
         if self._orchestrator:
@@ -274,13 +277,13 @@ class RealOrchestratorBridge:
             "orchestrator_status": orchestrator_status,
         }
 
-    def get_execution_history(self, limit: int = 100) -> List[TaskResult]:
+    def get_execution_history(self, limit: int = 100) -> list[TaskResult]:
         """Get recent execution history."""
         return self._execution_history[-limit:]
 
 
 # Global bridge instance
-_real_orchestrator_bridge: Optional[RealOrchestratorBridge] = None
+_real_orchestrator_bridge: RealOrchestratorBridge = None
 
 
 def get_real_orchestrator_bridge() -> RealOrchestratorBridge:

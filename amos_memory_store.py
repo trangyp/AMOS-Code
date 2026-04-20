@@ -12,6 +12,8 @@ Implements 2025 AI memory patterns (Mem0, vector databases, semantic search):
 Component #74 - Agent Memory & Context Management Layer
 """
 
+from __future__ import annotations
+
 import asyncio
 import hashlib
 import time
@@ -19,7 +21,7 @@ import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Protocol, Tuple
+from typing import Any, Optional, Protocol
 
 import numpy as np
 
@@ -55,7 +57,7 @@ class MemoryEntry:
     agent_id: str = None
 
     # Vector embedding for semantic search (simulated with numpy)
-    embedding: List[float] = None
+    embedding: list[float] = None
     embedding_model: str = "text-embedding-3-small"
 
     # Metadata
@@ -65,20 +67,20 @@ class MemoryEntry:
     importance_score: float = 1.0  # 0-10, higher = more important
 
     # For semantic memory: related concepts
-    related_concepts: List[str] = field(default_factory=list)
+    related_concepts: list[str] = field(default_factory=list)
 
     # For episodic memory: conversation context
     conversation_turn: int = None
     speaker: str = None  # "user", "agent", "system"
 
     # Tags for categorization
-    tags: List[str] = field(default_factory=list)
+    tags: list[str] = field(default_factory=list)
 
     # Source reference
     source_prompt_id: str = None
     source_execution_id: str = None
 
-    def compute_embedding(self, dimension: int = 1536) -> List[float]:
+    def compute_embedding(self, dimension: int = 1536) -> list[float]:
         """Compute a deterministic embedding vector from content."""
         # Simulate embedding computation using hash
         # In production, this would call an embedding API (OpenAI, etc.)
@@ -93,7 +95,7 @@ class MemoryEntry:
 
         return embedding.tolist()
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "memory_id": self.memory_id,
             "content": self.content[:200] + "..." if len(self.content) > 200 else self.content,
@@ -119,11 +121,11 @@ class SessionContext:
     last_active: float = field(default_factory=time.time)
 
     # Conversation state
-    conversation_turns: List[dict[str, Any]] = field(default_factory=list)
+    conversation_turns: list[dict[str, Any]] = field(default_factory=list)
     current_turn: int = 0
 
     # Working memory - recent relevant memories
-    active_memories: List[str] = field(default_factory=list)  # memory_ids
+    active_memories: list[str] = field(default_factory=list)  # memory_ids
 
     # Context window management
     max_context_tokens: int = 4000
@@ -133,7 +135,7 @@ class SessionContext:
     total_interactions: int = 0
     session_summary: str = ""
 
-    def add_turn(self, speaker: str, content: str) -> Dict[str, Any]:
+    def add_turn(self, speaker: str, content: str) -> dict[str, Any]:
         """Add a conversation turn."""
         turn = {
             "turn": self.current_turn,
@@ -162,7 +164,7 @@ class MemoryQuery:
     """Query for retrieving memories."""
 
     query_text: str
-    memory_types: List[MemoryType] = None
+    memory_types: list[MemoryType] = None
     scope: Optional[MemoryScope] = None
     user_id: str = None
     session_id: str = None
@@ -171,7 +173,7 @@ class MemoryQuery:
     top_k: int = 5
     min_similarity: float = 0.7
     time_range_hours: int = None
-    tags: List[str] = None
+    tags: list[str] = None
 
 
 @dataclass
@@ -187,14 +189,14 @@ class VectorStore(Protocol):
     """Protocol for vector storage backends."""
 
     async def store_embedding(
-        self, memory_id: str, embedding: List[float], metadata: Dict[str, Any]
+        self, memory_id: str, embedding: list[float], metadata: dict[str, Any]
     ) -> bool:
         """Store an embedding with metadata."""
         ...
 
     async def search_similar(
-        self, query_embedding: List[float], top_k: int = 5, filters: Dict[str, Any] = None
-    ) -> List[tuple[str, float]]:
+        self, query_embedding: list[float], top_k: int = 5, filters: dict[str, Any] = None
+    ) -> list[tuple[str, float]]:
         """Search for similar embeddings. Returns list of (memory_id, score)."""
         ...
 
@@ -207,19 +209,19 @@ class InMemoryVectorStore:
     """In-memory vector store for embeddings."""
 
     def __init__(self):
-        self.embeddings: Dict[str, list[float]] = {}
-        self.metadata: Dict[str, dict[str, Any]] = {}
+        self.embeddings: dict[str, list[float]] = {}
+        self.metadata: dict[str, dict[str, Any]] = {}
 
     async def store_embedding(
-        self, memory_id: str, embedding: List[float], metadata: Dict[str, Any]
+        self, memory_id: str, embedding: list[float], metadata: dict[str, Any]
     ) -> bool:
         self.embeddings[memory_id] = embedding
         self.metadata[memory_id] = metadata
         return True
 
     async def search_similar(
-        self, query_embedding: List[float], top_k: int = 5, filters: Dict[str, Any] = None
-    ) -> List[tuple[str, float]]:
+        self, query_embedding: list[float], top_k: int = 5, filters: dict[str, Any] = None
+    ) -> list[tuple[str, float]]:
         """Cosine similarity search."""
         query_vec = np.array(query_embedding)
 
@@ -283,14 +285,14 @@ class AMOSMemoryStore:
         self.vector_store = vector_store or InMemoryVectorStore()
 
         # In-memory storage
-        self.memories: Dict[str, MemoryEntry] = {}
-        self.sessions: Dict[str, SessionContext] = {}
+        self.memories: dict[str, MemoryEntry] = {}
+        self.sessions: dict[str, SessionContext] = {}
 
         # Indexes for efficient retrieval
-        self.user_memories: Dict[str, list[str]] = {}  # user_id -> memory_ids
-        self.session_memories: Dict[str, list[str]] = {}  # session_id -> memory_ids
-        self.tag_index: Dict[str, list[str]] = {}  # tag -> memory_ids
-        self.type_index: Dict[MemoryType, list[str]] = {}  # type -> memory_ids
+        self.user_memories: dict[str, list[str]] = {}  # user_id -> memory_ids
+        self.session_memories: dict[str, list[str]] = {}  # session_id -> memory_ids
+        self.tag_index: dict[str, list[str]] = {}  # tag -> memory_ids
+        self.type_index: dict[MemoryType, list[str]] = {}  # type -> memory_ids
 
         # Configuration
         self.max_session_age_hours = 24
@@ -331,7 +333,7 @@ class AMOSMemoryStore:
 
         return session
 
-    def _get_relevant_user_memories(self, user_id: str, limit: int = 10) -> List[MemoryEntry]:
+    def _get_relevant_user_memories(self, user_id: str, limit: int = 10) -> list[MemoryEntry]:
         """Get most relevant memories for a user."""
         if user_id not in self.user_memories:
             return []
@@ -353,8 +355,8 @@ class AMOSMemoryStore:
         user_id: str = None,
         agent_id: str = None,
         importance_score: float = 1.0,
-        tags: List[str] = None,
-        related_concepts: List[str] = None,
+        tags: list[str] = None,
+        related_concepts: list[str] = None,
         speaker: str = None,
         conversation_turn: int = None,
         source_prompt_id: str = None,
@@ -428,7 +430,7 @@ class AMOSMemoryStore:
 
     def add_conversation_turn(
         self, session_id: str, speaker: str, content: str, importance_score: float = 1.0
-    ) -> Tuple[SessionContext, MemoryEntry]:
+    ) -> tuple[SessionContext, MemoryEntry]:
         """Add a conversation turn as episodic memory."""
         if session_id not in self.sessions:
             raise ValueError(f"Session {session_id} not found")
@@ -474,7 +476,7 @@ class AMOSMemoryStore:
 
         print(f"[MemoryStore] Promoted to long-term: {memory.memory_id[:20]}...")
 
-    async def search_memories(self, query: MemoryQuery) -> List[MemorySearchResult]:
+    async def search_memories(self, query: MemoryQuery) -> list[MemorySearchResult]:
         """Search for relevant memories using semantic similarity."""
         # Compute query embedding
         query_hash = hashlib.sha256(query.query_text.encode()).hexdigest()
@@ -613,7 +615,7 @@ class AMOSMemoryStore:
 
         summary = f"""Session Summary:
 - Session ID: {session_id}
-- User: {session.user_id or 'Anonymous'}
+- User: {session.user_id or "Anonymous"}
 - Duration: {self._format_duration(time.time() - session.created_at)}
 - Total Turns: {session.current_turn}
 - Memories Created: {episodic_count}
@@ -627,11 +629,11 @@ class AMOSMemoryStore:
         if seconds < 60:
             return f"{int(seconds)}s"
         elif seconds < 3600:
-            return f"{int(seconds/60)}m"
+            return f"{int(seconds / 60)}m"
         else:
-            return f"{seconds/3600:.1f}h"
+            return f"{seconds / 3600:.1f}h"
 
-    def get_user_memory_stats(self, user_id: str) -> Dict[str, Any]:
+    def get_user_memory_stats(self, user_id: str) -> dict[str, Any]:
         """Get memory statistics for a user."""
         if user_id not in self.user_memories:
             return {"error": "User not found"}
@@ -685,7 +687,7 @@ class AMOSMemoryStore:
         print(f"[MemoryStore] Cleaned up {removed} old sessions")
         return removed
 
-    def export_user_memories(self, user_id: str) -> List[dict[str, Any]]:
+    def export_user_memories(self, user_id: str) -> list[dict[str, Any]]:
         """Export all memories for a user."""
         if user_id not in self.user_memories:
             return []
@@ -693,7 +695,7 @@ class AMOSMemoryStore:
         memory_ids = self.user_memories[user_id]
         return [self.memories[mid].to_dict() for mid in memory_ids if mid in self.memories]
 
-    def import_memories(self, memories: List[dict[str, Any]], user_id: str) -> int:
+    def import_memories(self, memories: list[dict[str, Any]], user_id: str) -> int:
         """Import memories for a user."""
         imported = 0
         for mem_data in memories:

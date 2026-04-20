@@ -12,9 +12,11 @@ Uses actual AMOS brain infrastructure:
 import ast
 import subprocess
 import sys
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 # Add repo to path
 sys.path.insert(0, str(Path(__file__).parent))
@@ -37,7 +39,7 @@ class BrainBuildSystem:
         self.engine = get_cognitive_engine()
         self.memory = BrainMemory()
         self.super_brain = get_super_brain()
-        self.results: List[dict] = []
+        self.results: list[dict] = []
 
     def initialize(self) -> bool:
         """Initialize all brain subsystems."""
@@ -54,7 +56,7 @@ class BrainBuildSystem:
             print(f"Init warning: {e}")
             return True  # Continue anyway
 
-    def get_repo_files(self) -> List[Path]:
+    def get_repo_files(self) -> list[Path]:
         """Get all Python files in repo."""
         skip = {
             ".git",
@@ -73,7 +75,7 @@ class BrainBuildSystem:
             files.append(f)
         return sorted(files)
 
-    def check_syntax(self, filepath: Path) -> Tuple[bool, str]:
+    def check_syntax(self, filepath: Path) -> tuple[bool, str]:
         """Check file syntax."""
         try:
             content = filepath.read_text(encoding="utf-8", errors="ignore")
@@ -84,7 +86,7 @@ class BrainBuildSystem:
         except Exception as e:
             return False, str(e)
 
-    def analyze_file(self, filepath: Path) -> Dict[str, Any]:
+    async def analyze_file(self, filepath: Path) -> dict[str, Any]:
         """Analyze file with brain."""
         ok, error = self.check_syntax(filepath)
 
@@ -98,7 +100,7 @@ class BrainBuildSystem:
         if not ok:
             # Use cognitive engine
             query = f"Fix syntax error in {filepath.name}: {error}"
-            cognitive_result = self.engine.process(query, domain="software")
+            cognitive_result = await self.engine.process(query, domain="software")
             result["brain_analysis"] = {
                 "content": cognitive_result.content,
                 "confidence": cognitive_result.confidence,
@@ -106,7 +108,7 @@ class BrainBuildSystem:
 
         return result
 
-    def run_ruff_fix(self) -> Dict[str, Any]:
+    def run_ruff_fix(self) -> dict[str, Any]:
         """Run Ruff with auto-fix."""
         cmd = ["ruff", "check", ".", "--fix", "--select", "E,W,F,I,UP", "--ignore", "UP042,UP043,D"]
         result = subprocess.run(cmd, capture_output=True, text=True)
@@ -116,17 +118,17 @@ class BrainBuildSystem:
             "stderr": result.stderr,
         }
 
-    def run_ruff_format(self) -> Dict[str, Any]:
+    def run_ruff_format(self) -> dict[str, Any]:
         """Run Ruff format."""
         cmd = ["ruff", "format", "."]
         result = subprocess.run(cmd, capture_output=True, text=True)
         return {"status": "success", "stdout": result.stdout}
 
-    def build(self) -> Dict[str, Any]:
+    async def build(self) -> dict[str, Any]:
         """Run full brain-driven build."""
         print("\n[PHASE 1] Brain Cognitive Analysis")
         query = "Analyze repository for critical build-blocking issues"
-        cognitive_result = self.engine.process(query, domain="software")
+        cognitive_result = await self.engine.process(query, domain="software")
         print(f"Brain confidence: {cognitive_result.confidence}")
 
         # Save to memory
@@ -157,7 +159,7 @@ class BrainBuildSystem:
 
         print("\n[PHASE 4] Brain-Guided Fixes")
         for f, e in syntax_errors[:5]:
-            analysis = self.analyze_file(f)
+            analysis = await self.analyze_file(f)
             if analysis["brain_analysis"]:
                 print(f"  {f.name}: {analysis['brain_analysis']['content'][:80]}...")
 
@@ -178,7 +180,7 @@ class BrainBuildSystem:
 
         # Final brain assessment
         final_query = "Assess repository build quality after fixes"
-        final_result = self.engine.process(final_query, domain="software")
+        final_result = await self.engine.process(final_query, domain="software")
 
         return {
             "total_files": len(files),
@@ -194,7 +196,9 @@ class BrainBuildSystem:
             print("Init failed")
             return
 
-        results = self.build()
+        import asyncio
+
+        results = asyncio.run(self.build())
 
         print("\n" + "=" * 70)
         print("BRAIN BUILD COMPLETE")

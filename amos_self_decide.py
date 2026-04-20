@@ -20,7 +20,7 @@ import sys
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 # Add paths
 REPO_ROOT = Path(__file__).parent
@@ -37,13 +37,13 @@ class DecisionOutput:
     decision: str
     rationale: str
     confidence: float
-    assumptions: Dict[str, Any]
-    limits: Dict[str, Any]
+    assumptions: dict[str, Any]
+    limits: dict[str, Any]
     coherence_score: float
-    axioms_satisfied: List[str]
-    laws_applied: List[str]
+    axioms_satisfied: list[str]
+    laws_applied: list[str]
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "decision": self.decision,
             "rationale": self.rationale,
@@ -161,7 +161,7 @@ class AMOSSelfDecider:
 
         return decision
 
-    def _analyze_internal(self, request: str) -> Dict[str, Any]:
+    def _analyze_internal(self, request: str) -> dict[str, Any]:
         """Internal/Technical perspective (Rule of 2)."""
         # Pattern recognition
         next_count = request.lower().count("next")
@@ -182,7 +182,7 @@ class AMOSSelfDecider:
             "components_available": 15,
         }
 
-    def _analyze_external(self, request: str) -> Dict[str, Any]:
+    def _analyze_external(self, request: str) -> dict[str, Any]:
         """External/Value perspective (Rule of 2)."""
         return {
             "assessment": (
@@ -195,7 +195,7 @@ class AMOSSelfDecider:
             "satisfaction_metric": "system_self_operates",
         }
 
-    def _analyze_quadrants(self, p1: dict, p2: dict) -> Dict[str, str]:
+    def _analyze_quadrants(self, p1: dict, p2: dict) -> dict[str, str]:
         """Apply Rule of 4 - Quadrant analysis."""
         return {
             "BIOLOGICAL": "Human tests AI by observing autonomous decisions",
@@ -204,7 +204,7 @@ class AMOSSelfDecider:
             "ENVIRONMENTAL": "Uses existing components, proves ecosystem integration",
         }
 
-    def _verify_axioms(self, p1: dict, p2: dict, quadrants: dict) -> List[str]:
+    def _verify_axioms(self, p1: dict, p2: dict, quadrants: dict) -> list[str]:
         """Verify epistemic axioms are satisfied."""
         axioms = []
 
@@ -219,7 +219,7 @@ class AMOSSelfDecider:
 
         return axioms
 
-    def _apply_laws(self, quadrants: dict) -> Dict[str, str]:
+    def _apply_laws(self, quadrants: dict) -> dict[str, str]:
         """Apply 6 Global Laws."""
         return {
             "L1 (Structural)": "✓",
@@ -231,7 +231,7 @@ class AMOSSelfDecider:
         }
 
     def _generate_decision(
-        self, p1: dict, p2: dict, quadrants: dict, axioms: List[str], laws: Dict[str, str]
+        self, p1: dict, p2: dict, quadrants: dict, axioms: list[str], laws: dict[str, str]
     ) -> DecisionOutput:
         """Generate final decision with full epistemic tagging."""
         # Based on all analysis

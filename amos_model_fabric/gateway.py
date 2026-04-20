@@ -1,17 +1,31 @@
+from __future__ import annotations
+
+from typing import Optional
+
 """AMOS Model Fabric Gateway - Unified LLM Gateway
 
 Connects SuperBrain to local/offline LLM backends with intelligent routing.
 Integrates: Ollama, LM Studio, llama.cpp, vLLM, SGLang via LiteLLM proxy.
 """
 
-
 import asyncio
 import logging
 import subprocess
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+
+UTC = UTC
 from pathlib import Path
+
+from amos_model_fabric.schemas import (
+    FabricRequest,
+    FabricResponse,
+    ModelCapability,
+    ModelInfo,
+    ProviderHealth,
+    ProviderType,
+)
 
 # LiteLLM for unified API
 from .capability_registry import CapabilityRegistry, get_capability_registry
@@ -23,15 +37,6 @@ from .providers import (
     SGLangProvider,
     VLLMProvider,
     create_provider,
-)
-
-from amos_model_fabric.models import (
-    FabricRequest,
-    FabricResponse,
-    ModelCapability,
-    ModelInfo,
-    ProviderHealth,
-    ProviderType,
 )
 
 logger = logging.getLogger(__name__)
@@ -78,7 +83,7 @@ class LiteLLMRouter:
 
     def __init__(self):
         self._model_list: list[dict] = []
-        self._litellm_proxy_process: subprocess.Popen | None = None
+        self._litellm_proxy_process: subprocess.Optional[Popen] = None
         self._proxy_url: str = "http://localhost:4000"
 
     def build_model_list(self, registry: CapabilityRegistry) -> list[dict]:
@@ -130,7 +135,7 @@ class LiteLLMRouter:
             },
         }
 
-    def start_proxy(self, config_path: Path | None = None) -> bool:
+    def start_proxy(self, config_path: Optional[Path] = None) -> bool:
         """Start LiteLLM proxy server if available."""
         try:
             # Check if litellm proxy is already running
@@ -141,7 +146,7 @@ class LiteLLMRouter:
                 if resp.status_code == 200:
                     logger.info("LiteLLM proxy already running")
                     return True
-            except:
+            except Exception:
                 pass
 
             # Start proxy in background
@@ -166,7 +171,7 @@ class LiteLLMRouter:
 
                 resp = requests.get(f"{self._proxy_url}/health", timeout=5)
                 return resp.status_code == 200
-            except:
+            except Exception:
                 return False
 
         except Exception as e:
@@ -189,7 +194,7 @@ class RoutingStrategy:
     def select_provider(
         self,
         required_capabilities: list[ModelCapability],
-        preferred_provider: ProviderType | None = None,
+        preferred_provider: Optional[ProviderType] = None,
         task_type: str = "general",
     ) -> RoutingDecision:
         """Select the best provider for a task."""
@@ -266,7 +271,7 @@ class ModelFabricGateway:
         self.metrics = GatewayMetrics()
         self._providers: dict[ProviderType, BaseProvider] = {}
         self._initialized = False
-        self._last_health_check: datetime | None = None
+        self._last_health_check: Optional[datetime] = None
 
     async def initialize(self) -> bool:
         """Initialize the gateway and discover available providers."""
@@ -324,7 +329,7 @@ class ModelFabricGateway:
 
     async def complete(self, request: FabricRequest) -> FabricResponse:
         """Execute a completion request."""
-        start = datetime.now(timezone.utc)
+        start = datetime.now(UTC)
 
         # Determine required capabilities
         required_caps = self._infer_required_capabilities(request)
@@ -346,7 +351,7 @@ class ModelFabricGateway:
 
         try:
             response = await provider.complete(request)
-            latency_ms = (datetime.now(timezone.utc) - start).total_seconds() * 1000
+            latency_ms = (datetime.now(UTC) - start).total_seconds() * 1000
 
             self.metrics.record_request(success=True, latency_ms=latency_ms)
             self.registry.update_model_health(
@@ -356,7 +361,7 @@ class ModelFabricGateway:
             return response
 
         except Exception as e:
-            latency_ms = (datetime.now(timezone.utc) - start).total_seconds() * 1000
+            latency_ms = (datetime.now(UTC) - start).total_seconds() * 1000
             self.metrics.record_request(success=False, latency_ms=latency_ms)
             self.registry.update_model_health(
                 f"{decision.provider_type.value}:{decision.model}", False, str(e)
@@ -413,10 +418,10 @@ class ModelFabricGateway:
             try:
                 is_healthy = await provider.health_check()
                 results[provider_type] = is_healthy
-            except:
+            except Exception:
                 results[provider_type] = False
 
-        self._last_health_check = datetime.now(timezone.utc)
+        self._last_health_check = datetime.now(UTC)
         return results
 
     def get_metrics(self) -> GatewayMetrics:
@@ -435,7 +440,7 @@ class ModelFabricGateway:
 
 
 # Singleton instance
-_gateway: ModelFabricGateway | None = None
+_gateway: Optional[ModelFabricGateway] = None
 
 
 def get_gateway() -> ModelFabricGateway:

@@ -11,8 +11,9 @@ Version: 2.1.0
 
 import traceback
 from collections.abc import Callable
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 
 
 class BrainExecutionBridge:
@@ -31,7 +32,7 @@ class BrainExecutionBridge:
         self.platform = None
         self.session_id: str = None
         self.brain_context: dict = {}
-        self.execution_history: List[dict] = []
+        self.execution_history: list[dict] = []
         self.max_history = 100
 
     async def initialize(self) -> dict:
@@ -274,7 +275,7 @@ print(json.dumps(result, indent=2))
     async def debug_with_sandbox(
         self,
         code: str,
-        test_cases: List[dict] = None,
+        test_cases: list[dict] = None,
         stream_handler: Callable[[str, str], None] = None,
     ) -> dict:
         """Debug code in isolated sandbox.
@@ -295,13 +296,13 @@ print(json.dumps(result, indent=2))
 import traceback
 import sys
 import json
-from typing import Callable, Optional, List
+from typing import Callable, Optional
 
 print("=== Debug Session Started ===")
 
 try:
     # Original code
-{chr(10).join('    ' + line for line in code.split(chr(10)))}
+{chr(10).join("    " + line for line in code.split(chr(10)))}
 
     print("=== Execution Successful ===")
 

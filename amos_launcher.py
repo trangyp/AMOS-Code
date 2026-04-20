@@ -31,11 +31,10 @@ import subprocess
 import sys
 import time
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
-# Add paths
-sys.path.insert(0, str(Path(__file__).parent / "clawspring"))
-sys.path.insert(0, str(Path(__file__).parent))
+# Import from proper packages
+from amos_brain import get_amos_integration
 
 
 def print_header(title: str):
@@ -51,7 +50,7 @@ def print_component(name: str, status: str, details: str = ""):
     print(f"  {icon} {name:20s} {status:10s} {details}")
 
 
-def check_ecosystem() -> Dict[str, Any]:
+def check_ecosystem() -> dict[str, Any]:
     """Check status of all 15 ecosystem components."""
     print_header("AMOS ECOSYSTEM STATUS CHECK")
 
@@ -75,8 +74,6 @@ def check_ecosystem() -> Dict[str, Any]:
 
     # Check 1: Core Brain
     try:
-        from amos_brain import get_amos_integration
-
         amos = get_amos_integration()
         status = amos.get_status()
         if status.get("initialized"):
@@ -149,30 +146,42 @@ def check_ecosystem() -> Dict[str, Any]:
 
     # Check 6: CLI
     try:
+        # Try entry point first, fallback to module execution
         result = subprocess.run(
-            ["python3", "clawspring/clawspring.py", "--amos", "--version"],
+            ["amos-cli", "--version"],
             capture_output=True,
             text=True,
             timeout=5,
         )
-        if result.returncode == 0 and "clawspring" in result.stdout:
+        if result.returncode != 0:
+            result = subprocess.run(
+                [sys.executable, "-m", "amos_brain.cli", "--version"],
+                capture_output=True,
+                text=True,
+                timeout=5,
+            )
+        if result.returncode == 0:
             components["CLI --amos"] = True
-            print_component("CLI --amos", "ok", "flag working")
+            print_component("CLI --amos", "ok", "entry point working")
         else:
-            print_component("CLI --amos", "warn", "flag not working")
+            print_component("CLI --amos", "warn", "entry point not working")
     except Exception as e:
         print_component("CLI --amos", "error", str(e)[:30])
 
     # Check 7: Tests
     try:
+        # Use pytest with pyargs to find installed package tests
         result = subprocess.run(
-            ["python3", "test_amos_integration.py"], capture_output=True, text=True, timeout=30
+            [sys.executable, "-m", "pytest", "--pyargs", "amos_brain", "-v", "--tb=short"],
+            capture_output=True,
+            text=True,
+            timeout=60,
         )
-        if "12 passed" in result.stdout and "0 failed" in result.stdout:
+        if result.returncode == 0:
             components["Integration Tests"] = True
-            print_component("Integration Tests", "ok", "12/12 passing")
+            print_component("Integration Tests", "ok", "tests passing")
         else:
-            print_component("Integration Tests", "warn", "some failing")
+            print_component("Integration Tests", "warn", "some tests failing")
     except Exception as e:
         print_component("Integration Tests", "error", str(e)[:30])
 
@@ -282,9 +291,11 @@ def start_api_server(port: int = 8080):
     print("  Press Ctrl+C to stop")
     print()
 
-    import subprocess
-
-    subprocess.run(["python3", "amos_api_simple.py", "--port", str(port)])
+    # Use entry point or module execution instead of file path
+    try:
+        subprocess.run(["amos-api-server", "--port", str(port)])
+    except FileNotFoundError:
+        subprocess.run([sys.executable, "-m", "amos_brain.api_server", "--port", str(port)])
 
 
 def start_dashboard():
@@ -293,9 +304,11 @@ def start_dashboard():
     print("  Starting TUI dashboard...")
     print()
 
-    import subprocess
-
-    subprocess.run(["python3", "amos_unified_dashboard.py"])
+    # Use entry point or module execution instead of file path
+    try:
+        subprocess.run(["amos-dashboard"])
+    except FileNotFoundError:
+        subprocess.run([sys.executable, "-m", "amos_brain.dashboard"])
 
 
 def run_health_checks():
@@ -392,8 +405,16 @@ Examples:
         print("\n  [1/2] Starting API server...")
         import subprocess
 
+        # Use entry point or module execution instead of file path
+        try:
+            api_cmd = ["amos-api-server", "--port", str(args.port)]
+            # Test if entry point exists
+            subprocess.run(["amos-api-server", "--help"], capture_output=True, timeout=2)
+        except (FileNotFoundError, subprocess.TimeoutExpired):
+            api_cmd = [sys.executable, "-m", "amos_brain.api_server", "--port", str(args.port)]
+
         api_proc = subprocess.Popen(
-            ["python3", "amos_api_simple.py", "--port", str(args.port)],
+            api_cmd,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )
@@ -406,7 +427,11 @@ Examples:
         print()
 
         try:
-            subprocess.run(["python3", "amos_unified_dashboard.py"])
+            # Use entry point or module execution instead of file path
+            try:
+                subprocess.run(["amos-dashboard"])
+            except FileNotFoundError:
+                subprocess.run([sys.executable, "-m", "amos_brain.dashboard"])
         except KeyboardInterrupt:
             print("\n  Stopping API server...")
             api_proc.terminate()

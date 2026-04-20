@@ -8,9 +8,11 @@ Version: 1.0.0
 """
 
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from enum import Enum
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any, Optional, Protocol
 
 
 class ProtocolType(Enum):
@@ -45,8 +47,8 @@ class Protocol:
     protocol_type: ProtocolType
     version: str
     message_format: MessageFormat
-    schema: Dict[str, Any]
-    required_headers: List[str]
+    schema: dict[str, Any]
+    required_headers: list[str]
     enabled: bool = True
 
 
@@ -56,8 +58,8 @@ class Message:
 
     protocol_id: str
     timestamp: datetime
-    headers: Dict[str, str]
-    payload: Dict[str, Any]
+    headers: dict[str, str]
+    payload: dict[str, Any]
     format: MessageFormat
     valid: bool = True
 
@@ -70,8 +72,8 @@ class ProtocolHandler:
     """
 
     def __init__(self):
-        self.protocols: Dict[str, Protocol] = {}
-        self.messages: List[Message] = []
+        self.protocols: dict[str, Protocol] = {}
+        self.messages: list[Message] = []
         self._load_default_protocols()
 
     def _load_default_protocols(self):
@@ -108,7 +110,7 @@ class ProtocolHandler:
         return True
 
     def validate_message(
-        self, protocol_id: str, headers: Dict[str, str], payload: Dict[str, Any]
+        self, protocol_id: str, headers: dict[str, str], payload: dict[str, Any]
     ) -> bool:
         """Validate a message against protocol schema."""
         if protocol_id not in self.protocols:
@@ -130,7 +132,7 @@ class ProtocolHandler:
         return True
 
     def create_message(
-        self, protocol_id: str, headers: Dict[str, str], payload: Dict[str, Any]
+        self, protocol_id: str, headers: dict[str, str], payload: dict[str, Any]
     ) -> Optional[Message]:
         """Create a validated message."""
         valid = self.validate_message(protocol_id, headers, payload)
@@ -153,7 +155,7 @@ class ProtocolHandler:
         return message
 
     def convert_format(
-        self, data: Dict[str, Any], from_format: MessageFormat, to_format: MessageFormat
+        self, data: dict[str, Any], from_format: MessageFormat, to_format: MessageFormat
     ) -> str:
         """Convert data between formats."""
         if from_format == to_format:
@@ -180,14 +182,14 @@ class ProtocolHandler:
         """Get a protocol definition."""
         return self.protocols.get(protocol_id)
 
-    def list_protocols(self, protocol_type: Optional[ProtocolType] = None) -> List[Protocol]:
+    def list_protocols(self, protocol_type: Optional[ProtocolType] = None) -> list[Protocol]:
         """List all protocols, optionally filtered by type."""
         protocols = list(self.protocols.values())
         if protocol_type:
             protocols = [p for p in protocols if p.protocol_type == protocol_type]
         return protocols
 
-    def get_messages(self, protocol_id: str = None, valid_only: bool = True) -> List[Message]:
+    def get_messages(self, protocol_id: str = None, valid_only: bool = True) -> list[Message]:
         """Get messages, optionally filtered."""
         messages = self.messages
 

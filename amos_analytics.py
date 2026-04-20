@@ -76,56 +76,119 @@ Author: Trang Phan
 Version: 1.0.0
 """
 
+from __future__ import annotations
+
 import asyncio
 import json
+import os
 import uuid
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
+
+UTC = timezone.utc
 
 
-# Mock ClickHouse for demo
-class MockClickHouse:
-    """Mock ClickHouse client for demonstration."""
+# Real ClickHouse client wrapper
+class ClickHouseClient:
+    """Real ClickHouse client with fallback to in-memory for testing."""
 
-    def __init__(self):
-        self._data: Dict[str, list[dict]] = {
+    def __init__(self, host: str = "localhost", port: int = 8123, database: str = "default"):
+        self.host = host
+        self.port = port
+        self.database = database
+        self._real_client = None
+        self._memory_data: dict[str, list[dict]] = {
             "events_raw": [],
             "tenant_metrics_hourly": [],
             "agent_performance_daily": [],
             "system_health_minute": [],
             "cost_analysis_daily": [],
         }
+        self._use_memory = False
 
-    async def execute(self, query: str, params: dict = None) -> List[dict]:
-        """Execute query (mock implementation)."""
+    async def connect(self) -> bool:
+        """Connect to real ClickHouse if available."""
+        try:
+            import clickhouse_connect
+
+            self._real_client = clickhouse_connect.get_client(
+                host=self.host,
+                port=self.port,
+                database=self.database,
+                username=os.getenv("CLICKHOUSE_USER", "default"),
+                password=os.getenv("CLICKHOUSE_PASSWORD", ""),
+            )
+            self._use_memory = False
+            return True
+        except ImportError:
+            print("[Analytics] clickhouse-connect not available, using memory store")
+            self._use_memory = True
+            return True
+        except Exception as e:
+            print(f"[Analytics] ClickHouse connection failed: {e}, using memory store")
+            self._use_memory = True
+            return True
+
+    async def execute(self, query: str, params: dict = None) -> list[dict]:
+        """Execute query on real ClickHouse or memory fallback."""
+        if self._use_memory or self._real_client is None:
+            return await self._execute_memory(query, params)
+        return await self._execute_real(query, params)
+
+    async def _execute_real(self, query: str, params: dict = None) -> list[dict]:
+        """Execute on real ClickHouse."""
+        try:
+            result = self._real_client.query(query, parameters=params)
+            return result.result_rows if hasattr(result, "result_rows") else []
+        except Exception as e:
+            print(f"[Analytics] Query failed: {e}, falling back to memory")
+            return await self._execute_memory(query, params)
+
+    async def _execute_memory(self, query: str, params: dict = None) -> list[dict]:
+        """Execute on in-memory store (fallback)."""
         query_lower = query.lower()
 
         # Parse simple INSERT
         if "insert into" in query_lower:
             table = query_lower.split("insert into")[1].split()[0]
-            if table in self._data:
-                # Extract values from query (simplified)
-                self._data[table].append(params or {})
+            if table in self._memory_data:
+                self._memory_data[table].append(params or {})
             return []
 
         # Parse simple SELECT
         if "select" in query_lower:
             table = None
-            for t in self._data.keys():
+            for t in self._memory_data.keys():
                 if t in query_lower:
                     table = t
                     break
 
             if table:
-                results = self._data[table]
+                results = self._memory_data[table].copy()
                 # Apply simple WHERE filtering
                 if params and "tenant_id" in params:
                     results = [r for r in results if r.get("tenant_id") == params["tenant_id"]]
                 return results
 
         return []
+
+    async def command(self, cmd: str) -> None:
+        """Execute DDL command."""
+        if self._real_client and not self._use_memory:
+            try:
+                self._real_client.command(cmd)
+            except Exception as e:
+                print(f"[Analytics] DDL command failed: {e}")
+
+    def close(self) -> None:
+        """Close connection."""
+        if self._real_client:
+            try:
+                self._real_client.close()
+            except Exception:
+                pass
 
 
 class EventType(str, Enum):
@@ -169,7 +232,7 @@ class AnalyticsEvent:
     event_type: EventType = EventType.API_CALL
 
     # Event data
-    data: Dict[str, Any] = field(default_factory=dict)
+    data: dict[str, Any] = field(default_factory=dict)
 
     # Metadata
     user_id: str = None
@@ -183,7 +246,7 @@ class AnalyticsEvent:
     cpu_percent: float = 0.0
 
     # Tags for filtering
-    tags: List[str] = field(default_factory=list)
+    tags: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -286,11 +349,11 @@ class AnalyticsQuery:
     """Query parameters for analytics."""
 
     tenant_id: str = None
-    event_types: List[EventType] = None
+    event_types: list[EventType] = None
     from_date: datetime = None
     to_date: datetime = None
     granularity: str = "hour"  # minute, hour, day, week, month
-    filters: Dict[str, Any] = field(default_factory=dict)
+    filters: dict[str, Any] = field(default_factory=dict)
 
 
 class AnalyticsEngine:
@@ -312,16 +375,21 @@ class AnalyticsEngine:
         self.host = clickhouse_host
         self.port = clickhouse_port
         self.database = database
-        self._client: Optional[MockClickHouse] = None
+        self._client: Optional[ClickHouseClient] = None
         self._initialized = False
 
     async def initialize(self) -> bool:
         """Initialize analytics engine and create tables."""
         try:
-            # Mock client for demo
-            self._client = MockClickHouse()
+            # Real ClickHouse client with memory fallback
+            self._client = ClickHouseClient(
+                host=self.host,
+                port=self.port,
+                database=self.database,
+            )
+            await self._client.connect()
 
-            # Create tables (in production: actual ClickHouse DDL)
+            # Create tables via actual ClickHouse DDL or memory
             await self._create_tables()
 
             self._initialized = True
@@ -475,7 +543,7 @@ class AnalyticsEngine:
 
     async def get_tenant_metrics(
         self, tenant_id: str, from_date: datetime, to_date: datetime, granularity: str = "hour"
-    ) -> List[TenantMetrics]:
+    ) -> list[TenantMetrics]:
         """Get aggregated metrics for a tenant.
 
         Args:
@@ -533,7 +601,7 @@ class AnalyticsEngine:
 
     async def get_agent_performance(
         self, tenant_id: str, agent_type: str = None, days: int = 30
-    ) -> List[AgentPerformanceMetrics]:
+    ) -> list[AgentPerformanceMetrics]:
         """Get agent performance metrics.
 
         Args:
@@ -588,7 +656,7 @@ class AnalyticsEngine:
             print(f"[AnalyticsEngine] Query failed: {e}")
             return []
 
-    async def get_system_health(self, minutes: int = 60) -> List[SystemHealthMetrics]:
+    async def get_system_health(self, minutes: int = 60) -> list[SystemHealthMetrics]:
         """Get system health metrics.
 
         Args:
@@ -634,7 +702,7 @@ class AnalyticsEngine:
             print(f"[AnalyticsEngine] Query failed: {e}")
             return []
 
-    async def query_custom(self, query: AnalyticsQuery) -> List[dict[str, Any]]:
+    async def query_custom(self, query: AnalyticsQuery) -> list[dict[str, Any]]:
         """Execute custom analytics query.
 
         Args:
@@ -648,7 +716,7 @@ class AnalyticsEngine:
 
         # Build query dynamically
         sql = "SELECT * FROM events_raw WHERE 1=1"
-        params: Dict[str, Any] = {}
+        params: dict[str, Any] = {}
 
         if query.tenant_id:
             sql += " AND tenant_id = %(tenant_id)s"
@@ -674,7 +742,7 @@ class AnalyticsEngine:
             print(f"[AnalyticsEngine] Query failed: {e}")
             return []
 
-    async def get_billing_report(self, tenant_id: str, year: int, month: int) -> Dict[str, Any]:
+    async def get_billing_report(self, tenant_id: str, year: int, month: int) -> dict[str, Any]:
         """Generate billing report for tenant.
 
         Args:

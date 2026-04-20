@@ -1,5 +1,6 @@
 """Threaded sub-agent system for spawning nested agent loops."""
 
+from __future__ import annotations
 
 import logging
 import os
@@ -10,7 +11,7 @@ import uuid
 from concurrent.futures import Future, ThreadPoolExecutor
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +32,7 @@ class AgentDefinition:
 
 # ── Built-in agent definitions ─────────────────────────────────────────────
 
-_BUILTIN_AGENTS: Dict[str, AgentDefinition] = {
+_BUILTIN_AGENTS: dict[str, AgentDefinition] = {
     "general-purpose": AgentDefinition(
         name="general-purpose",
         description=(
@@ -62,7 +63,7 @@ _BUILTIN_AGENTS: Dict[str, AgentDefinition] = {
             "- Security vulnerabilities (injection, XSS, auth bypass, etc.)\n"
             "- Performance issues\n"
             "- Code quality and maintainability\n"
-            "Be concise and specific. Categorize findings as: Critical | Warning | Suggestion.\n"
+            "Be concise and specific. Categorize findings as: Union[Critical, Warning] | Suggestion.\n"
         ),
         tools=["Read", "Glob", "Grep"],
         source="built-in",
@@ -153,14 +154,14 @@ def _parse_agent_md(path: Path, source: str = "user") -> AgentDefinition:
     )
 
 
-def load_agent_definitions() -> Dict[str, AgentDefinition]:
+def load_agent_definitions() -> dict[str, AgentDefinition]:
     """Load all agent definitions: built-ins → user-level → project-level.
 
     Search paths:
       ~/.clawspring/agents/*.md   (user-level)
       .clawspring/agents/*.md     (project-level, overrides user)
     """
-    defs: Dict[str, AgentDefinition] = dict(_BUILTIN_AGENTS)
+    defs: dict[str, AgentDefinition] = dict(_BUILTIN_AGENTS)
 
     # User-level
     user_dir = Path.home() / ".clawspring" / "agents"
@@ -185,7 +186,7 @@ def load_agent_definitions() -> Dict[str, AgentDefinition]:
     return defs
 
 
-def get_agent_definition(name: str) -> Optional[AgentDefinition]:
+def get_agent_definition(name: str) -> AgentDefinition | None:
     """Look up an agent definition by name. Returns None if not found."""
     return load_agent_definitions().get(name)
 
@@ -200,20 +201,20 @@ class SubAgentTask:
     id: str
     prompt: str
     status: str = "pending"  # pending | running | completed | failed | cancelled
-    result: str  = None
+    result: str = None
     depth: int = 0
     name: str = ""  # optional human-readable name (addressable by SendMessage)
     worktree_path: str = ""  # set if isolation="worktree"
     worktree_branch: str = ""  # set if isolation="worktree"
     _cancel_flag: bool = False
-    _future: Optional[Future] = field(default=None, repr=False)
+    _future: Future | None = field(default=None, repr=False)
     _inbox: Any = field(default_factory=queue.Queue, repr=False)  # for send_message
 
 
 # ── Worktree helpers ───────────────────────────────────────────────────────
 
 
-def _git_root(cwd: str) -> str :
+def _git_root(cwd: str) -> str:
     """Return the git root directory for cwd, or None if not in a git repo."""
     try:
         r = subprocess.run(
@@ -236,6 +237,7 @@ def _create_worktree(base_dir: str) -> tuple:
 
     Raises:
         subprocess.CalledProcessError or OSError on failure.
+
     """
     branch = f"nano-agent-{uuid.uuid4().hex[:8]}"
     # mkdtemp gives us a path; remove the empty dir so git can create it
@@ -302,8 +304,8 @@ class SubAgentManager:
     """Manages concurrent sub-agent tasks using a thread pool."""
 
     def __init__(self, max_concurrent: int = 5, max_depth: int = 5):
-        self.tasks: Dict[str, SubAgentTask] = {}
-        self._by_name: Dict[str, str] = {}  # name → task_id
+        self.tasks: dict[str, SubAgentTask] = {}
+        self._by_name: dict[str, str] = {}  # name → task_id
         self.max_concurrent = max_concurrent
         self.max_depth = max_depth
         self._pool = ThreadPoolExecutor(max_workers=max_concurrent)
@@ -314,7 +316,7 @@ class SubAgentManager:
         config: dict,
         system_prompt: str,
         depth: int = 0,
-        agent_def: Optional[AgentDefinition] = None,
+        agent_def: AgentDefinition | None = None,
         isolation: str = "",  # "" | "worktree"
         name: str = "",
     ) -> SubAgentTask:
@@ -331,6 +333,7 @@ class SubAgentManager:
 
         Returns:
             SubAgentTask tracking the spawned work.
+
         """
         task_id = uuid.uuid4().hex[:12]
         short_name = name or task_id[:8]
@@ -441,11 +444,12 @@ class SubAgentManager:
         task._future = self._pool.submit(_run)
         return task
 
-    def wait(self, task_id: str, timeout: float = None) -> Optional[SubAgentTask]:
+    def wait(self, task_id: str, timeout: float = None) -> SubAgentTask | None:
         """Block until a task completes or timeout expires.
 
         Returns:
             The task, or None if task_id is unknown.
+
         """
         task = self.tasks.get(task_id)
         if task is None:
@@ -457,12 +461,12 @@ class SubAgentManager:
                 logger.debug("Task future result had exception (expected)")
         return task
 
-    def get_result(self, task_id: str) -> str :
+    def get_result(self, task_id: str) -> str:
         """Return the result string for a completed task, or None."""
         task = self.tasks.get(task_id)
         return task.result if task else None
 
-    def list_tasks(self) -> List[SubAgentTask]:
+    def list_tasks(self) -> list[SubAgentTask]:
         """Return all tracked tasks."""
         return list(self.tasks.values())
 
@@ -478,6 +482,7 @@ class SubAgentManager:
 
         Returns:
             True if the message was queued, False if task not found or already done.
+
         """
         # Resolve name → task_id
         task_id = self._by_name.get(task_id_or_name, task_id_or_name)
@@ -494,6 +499,7 @@ class SubAgentManager:
 
         Returns:
             True if the cancel flag was set, False if task not found or not running.
+
         """
         task = self.tasks.get(task_id)
         if task is None:

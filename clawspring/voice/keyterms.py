@@ -8,18 +8,18 @@ Inspired by Claude Code's voiceKeyterms.ts, but expanded for a multi-provider
 setting and adapted to pull context from the Python runtime environment.
 """
 
+from __future__ import annotations
 
 import re
 import subprocess
 from pathlib import Path
-from typing import List, Set
 
 # ── Global coding keyterms ────────────────────────────────────────────────
 # Terms that speech engines consistently mishear during coding dictation.
 # Exclude anything trivially recognised (e.g. "file", "code") — only add
 # terms where phonetic ambiguity is high.
 
-GLOBAL_KEYTERMS: List[str] = [
+GLOBAL_KEYTERMS: list[str] = [
     # Tools and protocols
     "MCP",
     "grep",
@@ -70,7 +70,7 @@ MAX_KEYTERMS = 50
 # ── Helpers ───────────────────────────────────────────────────────────────
 
 
-def split_identifier(name: str) -> List[str]:
+def split_identifier(name: str) -> list[str]:
     """Split camelCase / PascalCase / kebab-case / snake_case into words.
 
     Fragments ≤ 2 chars or > 20 chars are discarded.
@@ -78,6 +78,7 @@ def split_identifier(name: str) -> List[str]:
     Examples:
         "clawspring" → ["nano", "claude", "code"]
         "MyWebhookHandler" → ["My", "Webhook", "Handler"]
+
     """
     # camelCase / PascalCase
     spaced = re.sub(r"([a-z])([A-Z])", r"\1 \2", name)
@@ -116,7 +117,7 @@ def _project_root() -> Optional[Path]:
     return Path.cwd()
 
 
-def _recent_py_files(root: Path, limit: int = 20) -> List[Path]:
+def _recent_py_files(root: Path, limit: int = 20) -> list[Path]:
     """Return the most-recently modified Python/TS/JS files in the repo."""
     try:
         result = subprocess.run(
@@ -141,7 +142,7 @@ def _recent_py_files(root: Path, limit: int = 20) -> List[Path]:
 # ── Public API ────────────────────────────────────────────────────────────
 
 
-def get_voice_keyterms(recent_files: List[str] = None) -> List[str]:
+def get_voice_keyterms(recent_files: list[str] = None) -> list[str]:
     """Build a list of keyterms for the STT engine.
 
     Combines:
@@ -152,7 +153,7 @@ def get_voice_keyterms(recent_files: List[str] = None) -> List[str]:
 
     Returns up to MAX_KEYTERMS unique terms.
     """
-    terms: List[str] = list(GLOBAL_KEYTERMS)
+    terms: list[str] = list(GLOBAL_KEYTERMS)
 
     # Project name
     root = _project_root()
@@ -177,8 +178,8 @@ def get_voice_keyterms(recent_files: List[str] = None) -> List[str]:
             terms.extend(split_identifier(stem))
 
     # Deduplicate preserving order, trim to limit
-    seen: Set[str] = set()
-    result: List[str] = []
+    seen: set[str] = set()
+    result: list[str] = []
     for t in terms:
         if t not in seen:
             seen.add(t)

@@ -12,12 +12,14 @@ Implements 2025 MLflow-style experiment tracking:
 Component #90 - Experiment Tracker
 """
 
+from __future__ import annotations
+
 import asyncio
 import time
 import uuid
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class ExperimentStatus(Enum):
@@ -39,10 +41,10 @@ class Experiment:
 
     # Metadata
     created_at: float = field(default_factory=time.time)
-    tags: Dict[str, str] = field(default_factory=dict)
+    tags: dict[str, str] = field(default_factory=dict)
 
     # Runs
-    runs: List[str] = field(default_factory=list)
+    runs: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -60,20 +62,20 @@ class Run:
     duration_seconds: float = 0.0
 
     # Parameters
-    params: Dict[str, Any] = field(default_factory=dict)
+    params: dict[str, Any] = field(default_factory=dict)
 
     # Metrics (time-series)
-    metrics: Dict[str, list[tuple[float, float]]] = field(default_factory=dict)
+    metrics: dict[str, list[tuple[float, float]]] = field(default_factory=dict)
 
     # Artifacts
-    artifacts: Dict[str, str] = field(default_factory=dict)
+    artifacts: dict[str, str] = field(default_factory=dict)
 
     # Tags
-    tags: Dict[str, str] = field(default_factory=dict)
+    tags: dict[str, str] = field(default_factory=dict)
 
     # Parent run (for nested runs)
     parent_run_id: str = None
-    child_runs: List[str] = field(default_factory=list)
+    child_runs: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -90,7 +92,7 @@ class ModelArtifact:
     model_path: str
 
     # Metrics
-    metrics: Dict[str, float] = field(default_factory=dict)
+    metrics: dict[str, float] = field(default_factory=dict)
 
     # Registered in Model Registry
     registered_model_id: str = None
@@ -118,13 +120,13 @@ class AMOSExperimentTracker:
     """
 
     def __init__(self):
-        self.experiments: Dict[str, Experiment] = {}
-        self.runs: Dict[str, Run] = {}
-        self.artifacts: Dict[str, ModelArtifact] = {}
+        self.experiments: dict[str, Experiment] = {}
+        self.runs: dict[str, Run] = {}
+        self.artifacts: dict[str, ModelArtifact] = {}
 
         # Search indexes
-        self.experiments_by_tag: Dict[str, list[str]] = {}
-        self.runs_by_status: Dict[ExperimentStatus, list[str]] = {
+        self.experiments_by_tag: dict[str, list[str]] = {}
+        self.runs_by_status: dict[ExperimentStatus, list[str]] = {
             status: [] for status in ExperimentStatus
         }
 
@@ -177,7 +179,7 @@ class AMOSExperimentTracker:
                 self.experiments_by_tag[tag].append(exp.experiment_id)
 
     def create_experiment(
-        self, name: str, description: str = "", tags: Dict[str, str] = None
+        self, name: str, description: str = "", tags: dict[str, str] = None
     ) -> str:
         """Create a new experiment."""
         experiment_id = f"exp_{uuid.uuid4().hex[:8]}"
@@ -201,8 +203,8 @@ class AMOSExperimentTracker:
         self,
         experiment_id: str,
         run_name: str = "",
-        params: Dict[str, Any] = None,
-        tags: Dict[str, str] = None,
+        params: dict[str, Any] = None,
+        tags: dict[str, str] = None,
     ) -> str:
         """Start a new run in an experiment."""
         if experiment_id not in self.experiments:
@@ -235,7 +237,7 @@ class AMOSExperimentTracker:
 
         run.params[key] = value
 
-    def log_params(self, run_id: str, params: Dict[str, Any]) -> None:
+    def log_params(self, run_id: str, params: dict[str, Any]) -> None:
         """Log multiple parameters."""
         for key, value in params.items():
             self.log_param(run_id, key, value)
@@ -255,7 +257,7 @@ class AMOSExperimentTracker:
 
         run.metrics[key].append((timestamp, value))
 
-    def log_metrics(self, run_id: str, metrics: Dict[str, float], step: int = None) -> None:
+    def log_metrics(self, run_id: str, metrics: dict[str, float], step: int = None) -> None:
         """Log multiple metrics."""
         for key, value in metrics.items():
             self.log_metric(run_id, key, value, step)
@@ -294,7 +296,7 @@ class AMOSExperimentTracker:
 
     def get_experiment_runs(
         self, experiment_id: str, status: Optional[ExperimentStatus] = None
-    ) -> List[Run]:
+    ) -> list[Run]:
         """Get all runs for an experiment."""
         experiment = self.experiments.get(experiment_id)
         if not experiment:
@@ -307,7 +309,7 @@ class AMOSExperimentTracker:
 
         return sorted(runs, key=lambda r: r.started_at, reverse=True)
 
-    def compare_runs(self, run_ids: List[str]) -> Dict[str, Any]:
+    def compare_runs(self, run_ids: list[str]) -> dict[str, Any]:
         """Compare multiple runs."""
         runs = [self.runs.get(rid) for rid in run_ids if rid in self.runs]
 
@@ -341,7 +343,7 @@ class AMOSExperimentTracker:
 
         return comparison
 
-    def search_experiments(self, query: str = "", tags: Dict[str, str] = None) -> List[Experiment]:
+    def search_experiments(self, query: str = "", tags: dict[str, str] = None) -> list[Experiment]:
         """Search experiments by name or tags."""
         results = []
 
@@ -380,7 +382,7 @@ class AMOSExperimentTracker:
 
         return best_run
 
-    def get_tracker_summary(self) -> Dict[str, Any]:
+    def get_tracker_summary(self) -> dict[str, Any]:
         """Get summary of all experiments and runs."""
         return {
             "total_experiments": len(self.experiments),

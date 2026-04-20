@@ -29,14 +29,12 @@ Environment Variables:
     TEST_DEBUG: Enable debug logging during tests
 """
 
+import asyncio
+import json
 import os
 import sys
 import time
-import json
-import asyncio
 import unittest
-from typing import Any, Dict, Generator
-from contextlib import asynccontextmanager
 
 # Test configuration
 _TEST_DEBUG = os.getenv("TEST_DEBUG", "false").lower() == "true"
@@ -46,27 +44,31 @@ _TEST_REDIS_URL = os.getenv("TEST_REDIS_URL", "redis://localhost:6379/1")
 try:
     import pytest
     import pytest_asyncio
+
     PYTEST_AVAILABLE = True
 except ImportError:
     PYTEST_AVAILABLE = False
 
 try:
-    from httpx import AsyncClient, ASGITransport
+    from httpx import ASGITransport, AsyncClient
+
     HTTPX_AVAILABLE = True
 except ImportError:
     HTTPX_AVAILABLE = False
 
 try:
     from fastapi.testclient import TestClient
+
     TESTCLIENT_AVAILABLE = True
 except ImportError:
     TESTCLIENT_AVAILABLE = False
 
 # Import our production modules
-_module_imports: Dict[str, bool] = {}
+_module_imports: dict[str, bool] = {}
 
 try:
-    from equation_app import create_app, app_state
+    from equation_app import app_state, create_app
+
     _module_imports["equation_app"] = True
 except ImportError as e:
     _module_imports["equation_app"] = False
@@ -74,30 +76,35 @@ except ImportError as e:
 
 try:
     from equation_security import SecurityMiddleware
+
     _module_imports["equation_security"] = True
 except ImportError:
     _module_imports["equation_security"] = False
 
 try:
     from equation_metrics import get_metrics, record_equation_solved
+
     _module_imports["equation_metrics"] = True
 except ImportError:
     _module_imports["equation_metrics"] = False
 
 try:
     from equation_health import HealthCheckService
+
     _module_imports["equation_health"] = True
 except ImportError:
     _module_imports["equation_health"] = False
 
 try:
     from equation_schemas import EquationRequestV1, ErrorResponse
+
     _module_imports["equation_schemas"] = True
 except ImportError:
     _module_imports["equation_schemas"] = False
 
 try:
-    from equation_versioning import VersionRegistry, APIVersionStatus
+    from equation_versioning import APIVersionStatus, VersionRegistry
+
     _module_imports["equation_versioning"] = True
 except ImportError:
     _module_imports["equation_versioning"] = False
@@ -109,12 +116,8 @@ class ProductionStackTestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         """Set up test class."""
-        cls.available_modules = [
-            name for name, available in _module_imports.items() if available
-        ]
-        cls.missing_modules = [
-            name for name, available in _module_imports.items() if not available
-        ]
+        cls.available_modules = [name for name, available in _module_imports.items() if available]
+        cls.missing_modules = [name for name, available in _module_imports.items() if not available]
 
         if _TEST_DEBUG:
             print(f"\nAvailable modules: {cls.available_modules}")
@@ -165,6 +168,7 @@ class TestApplicationFactory(ProductionStackTestCase):
         """Verify create_app returns a FastAPI instance."""
         try:
             from fastapi import FastAPI
+
             app = create_app()
             self.assertIsInstance(app, FastAPI)
         except ImportError:
@@ -204,10 +208,7 @@ class TestSecurityMiddleware(ProductionStackTestCase):
 
         app = create_app()
 
-        async with AsyncClient(
-            transport=ASGITransport(app=app),
-            base_url="http://test"
-        ) as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             response = await client.get("/")
 
             # Check for key security headers
@@ -223,17 +224,11 @@ class TestSecurityMiddleware(ProductionStackTestCase):
 
         app = create_app()
 
-        async with AsyncClient(
-            transport=ASGITransport(app=app),
-            base_url="http://test"
-        ) as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             response = await client.get("/")
 
             # CSP header should be present
-            self.assertIn(
-                "content-security-policy",
-                [h.lower() for h in response.headers.keys()]
-            )
+            self.assertIn("content-security-policy", [h.lower() for h in response.headers.keys()])
 
 
 class TestHealthEndpoints(ProductionStackTestCase):
@@ -251,10 +246,7 @@ class TestHealthEndpoints(ProductionStackTestCase):
 
         app = create_app()
 
-        async with AsyncClient(
-            transport=ASGITransport(app=app),
-            base_url="http://test"
-        ) as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             response = await client.get("/health/live")
             self.assertEqual(response.status_code, 200)
 
@@ -266,10 +258,7 @@ class TestHealthEndpoints(ProductionStackTestCase):
 
         app = create_app()
 
-        async with AsyncClient(
-            transport=ASGITransport(app=app),
-            base_url="http://test"
-        ) as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             response = await client.get("/health/ready")
             # Should return 200 or 503
             self.assertIn(response.status_code, [200, 503])
@@ -282,10 +271,7 @@ class TestHealthEndpoints(ProductionStackTestCase):
 
         app = create_app()
 
-        async with AsyncClient(
-            transport=ASGITransport(app=app),
-            base_url="http://test"
-        ) as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             response = await client.get("/status")
             data = response.json()
 
@@ -330,10 +316,7 @@ class TestAPIVersioning(ProductionStackTestCase):
 
         app = create_app()
 
-        async with AsyncClient(
-            transport=ASGITransport(app=app),
-            base_url="http://test"
-        ) as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             response = await client.get("/")
             self.assertIn("x-api-version", [h.lower() for h in response.headers.keys()])
 
@@ -373,9 +356,7 @@ class TestSchemaValidation(ProductionStackTestCase):
     def test_equation_request_v1_valid(self) -> None:
         """Verify valid EquationRequestV1 can be created."""
         request = EquationRequestV1(
-            equation_name="sigmoid",
-            inputs={"x": 1.0},
-            timeout_seconds=30.0
+            equation_name="sigmoid", inputs={"x": 1.0}, timeout_seconds=30.0
         )
         self.assertEqual(request.equation_name, "sigmoid")
         self.assertEqual(request.inputs, {"x": 1.0})
@@ -383,10 +364,7 @@ class TestSchemaValidation(ProductionStackTestCase):
     def test_equation_request_v1_invalid_name(self) -> None:
         """Verify EquationRequestV1 validates equation name."""
         try:
-            EquationRequestV1(
-                equation_name="invalid-name!",
-                inputs={"x": 1.0}
-            )
+            EquationRequestV1(equation_name="invalid-name!", inputs={"x": 1.0})
             self.fail("Should have raised validation error")
         except Exception:
             # Expected validation error
@@ -408,10 +386,7 @@ class TestErrorHandling(ProductionStackTestCase):
 
         app = create_app()
 
-        async with AsyncClient(
-            transport=ASGITransport(app=app),
-            base_url="http://test"
-        ) as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             response = await client.get("/nonexistent-endpoint")
             self.assertEqual(response.status_code, 404)
 
@@ -430,15 +405,12 @@ class TestErrorHandling(ProductionStackTestCase):
 
         app = create_app()
 
-        async with AsyncClient(
-            transport=ASGITransport(app=app),
-            base_url="http://test"
-        ) as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             # Send invalid JSON to trigger validation error
             response = await client.post(
                 "/api/v1/equations/solve",
                 data="invalid json",
-                headers={"Content-Type": "application/json"}
+                headers={"Content-Type": "application/json"},
             )
             # Should return 422 Unprocessable Entity
             self.assertEqual(response.status_code, 422)
@@ -459,10 +431,7 @@ class TestRootEndpoint(ProductionStackTestCase):
 
         app = create_app()
 
-        async with AsyncClient(
-            transport=ASGITransport(app=app),
-            base_url="http://test"
-        ) as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             response = await client.get("/")
             self.assertEqual(response.status_code, 200)
 
@@ -494,10 +463,7 @@ class TestPerformance(ProductionStackTestCase):
 
         app = create_app()
 
-        async with AsyncClient(
-            transport=ASGITransport(app=app),
-            base_url="http://test"
-        ) as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             start = time.time()
             response = await client.get("/")
             elapsed = time.time() - start
@@ -514,10 +480,7 @@ class TestPerformance(ProductionStackTestCase):
 
         app = create_app()
 
-        async with AsyncClient(
-            transport=ASGITransport(app=app),
-            base_url="http://test"
-        ) as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             # Make 10 concurrent requests
             tasks = [client.get("/") for _ in range(10)]
             responses = await asyncio.gather(*tasks)

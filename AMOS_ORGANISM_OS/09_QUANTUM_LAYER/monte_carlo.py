@@ -8,9 +8,11 @@ import random
 import uuid
 from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 @dataclass
@@ -27,10 +29,10 @@ class SimulationResult:
     confidence_95_low: float = 0.0
     confidence_95_high: float = 0.0
     success_rate: float = 0.0  # Probability of positive outcome
-    distribution: Dict[str, float] = field(default_factory=dict)
+    distribution: dict[str, float] = field(default_factory=dict)
     timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
@@ -43,7 +45,7 @@ class MonteCarloSimulator:
 
     def __init__(self, data_dir: Optional[Path] = None):
         self.data_dir = data_dir
-        self.simulations: Dict[str, SimulationResult] = {}
+        self.simulations: dict[str, SimulationResult] = {}
 
     def run_simulation(
         self,
@@ -107,7 +109,7 @@ class MonteCarloSimulator:
     def simulate_risk_scenario(
         self,
         base_value: float,
-        risk_factors: List[dict[str, Any]],
+        risk_factors: list[dict[str, Any]],
         iterations: int = 1000,
     ) -> SimulationResult:
         """Simulate a risk scenario with multiple risk factors.
@@ -158,16 +160,16 @@ class MonteCarloSimulator:
 
     def compare_strategies(
         self,
-        strategies: Dict[str, Callable[[], float]],
+        strategies: dict[str, Callable[[], float]],
         iterations: int = 1000,
-    ) -> Dict[str, SimulationResult]:
+    ) -> dict[str, SimulationResult]:
         """Compare multiple strategies via simulation."""
         results = {}
         for name, func in strategies.items():
             results[name] = self.run_simulation(func, iterations, name)
         return results
 
-    def _calculate_distribution(self, outcomes: List[float]) -> Dict[str, float]:
+    def _calculate_distribution(self, outcomes: list[float]) -> dict[str, float]:
         """Calculate outcome distribution buckets."""
         if not outcomes:
             return {}
@@ -205,7 +207,7 @@ class MonteCarloSimulator:
 
     def recommend_decision(
         self,
-        results: Dict[str, SimulationResult],
+        results: dict[str, SimulationResult],
         criteria: str = "expected_value",  # expected_value, risk_adjusted, safety
     ) -> str:
         """Recommend best strategy based on simulation results."""
@@ -233,7 +235,7 @@ class MonteCarloSimulator:
         scored.sort(key=lambda x: x[1], reverse=True)
         return scored[0][0] if scored else ""
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get simulator status."""
         return {
             "total_simulations": len(self.simulations),

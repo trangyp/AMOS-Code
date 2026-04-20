@@ -16,16 +16,11 @@ Endpoints:
 - WS /ws/verify - Real-time streaming verification
 """
 
+from __future__ import annotations
+
 import sys
 import time
-from pathlib import Path
-from typing import Any, Dict, List, Optional
-
-# Add AMOS paths
-sys.path.insert(0, str(Path(__file__).parent / "AMOS_ORGANISM_OS"))
-sys.path.insert(0, str(Path(__file__).parent / "AMOS_ORGANISM_OS" / "01_BRAIN"))
-sys.path.insert(0, str(Path(__file__).parent / "AMOS_ORGANISM_OS" / "03_IMMUNE"))
-sys.path.insert(0, str(Path(__file__).parent / "AMOS_ORGANISM_OS" / "06_MUSCLE"))
+from typing import Any, Optional
 
 # Import FastAPI components
 try:
@@ -122,7 +117,7 @@ if FASTAPI_AVAILABLE:
 if FASTAPI_AVAILABLE:
 
     @app.get("/api/equations/status")
-    async def get_status() -> Dict[str, Any]:
+    async def get_status() -> dict[str, Any]:
         """Get equation system status."""
         eq_api = get_equation_api()
         if eq_api:
@@ -140,7 +135,7 @@ if FASTAPI_AVAILABLE:
         }
 
     @app.post("/api/equations/verify")
-    async def verify_code(request: VerificationRequest) -> Dict[str, Any]:
+    async def verify_code(request: VerificationRequest) -> dict[str, Any]:
         """Verify code for invariant violations."""
         eq_api = get_equation_api()
         if not eq_api:
@@ -161,7 +156,7 @@ if FASTAPI_AVAILABLE:
     async def query_equations(
         domain: str = None,
         language: str = None,
-    ) -> List[dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Query equations by domain or language."""
         eq_api = get_equation_api()
         if not eq_api:

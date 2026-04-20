@@ -27,12 +27,14 @@ Owner: Trang
 Version: 7.0.0 - Meta-Semantic Layer
 """
 
+from __future__ import annotations
+
 import threading
 import time
 from collections import defaultdict
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Optional
 
 
 class SemanticStatus(Enum):
@@ -81,7 +83,7 @@ class SemanticCategory:
 
     name: str
     definition: str
-    membership_criteria: Dict[str, Any]
+    membership_criteria: dict[str, Any]
 
     # Temporal tracking
     version: str = "1.0.0"
@@ -89,18 +91,18 @@ class SemanticCategory:
     last_redefined: float = field(default_factory=time.time)
 
     # Relations
-    disjoint_with: Set[str] = field(default_factory=set)
-    contains: Set[str] = field(default_factory=set)
-    overlaps_with: Set[str] = field(default_factory=set)
+    disjoint_with: set[str] = field(default_factory=set)
+    contains: set[str] = field(default_factory=set)
+    overlaps_with: set[str] = field(default_factory=set)
 
     # Governance
-    linked_detectors: Set[str] = field(default_factory=set)
-    linked_enforcers: Set[str] = field(default_factory=set)
-    linked_governance: Set[str] = field(default_factory=set)
+    linked_detectors: set[str] = field(default_factory=set)
+    linked_enforcers: set[str] = field(default_factory=set)
+    linked_governance: set[str] = field(default_factory=set)
 
     # State
     status: SemanticStatus = SemanticStatus.VALID
-    drift_history: List[dict[str, Any]] = field(default_factory=list)
+    drift_history: list[dict[str, Any]] = field(default_factory=list)
 
     def is_orphaned(self) -> bool:
         """Check if category has no live machinery."""
@@ -131,7 +133,7 @@ class ConstitutionalLayer:
     description: str
 
     # What this layer governs
-    governs_layers: Set[int]  # Which layer numbers this can modify
+    governs_layers: set[int]  # Which layer numbers this can modify
 
     # Ratification requirements
     ratification_threshold: str  # "unanimous", "supermajority", "simple", "single"
@@ -146,7 +148,7 @@ class ConstitutionalLayer:
     anchor_justification: str = ""
 
     # Tracking
-    amendments: List[dict[str, Any]] = field(default_factory=list)
+    amendments: list[dict[str, Any]] = field(default_factory=list)
     created_at: float = field(default_factory=time.time)
 
 
@@ -158,14 +160,14 @@ class Actor:
 
     actor_id: str
     name: str
-    capabilities: Set[str]
-    incentives: Dict[str, float]  # incentive → weight
+    capabilities: set[str]
+    incentives: dict[str, float]  # incentive → weight
     time_horizon: str  # "immediate", "short", "medium", "long"
     authority_level: int
 
     # Veto power
     has_veto: bool = False
-    veto_scope: Set[str] = field(default_factory=set)
+    veto_scope: set[str] = field(default_factory=set)
 
     # Coordination costs
     coordination_cost: float = 1.0
@@ -180,25 +182,25 @@ class Coalition:
 
     coalition_id: str
     name: str
-    actors: Set[str]
-    shared_workflows: Set[str]
+    actors: set[str]
+    shared_workflows: set[str]
 
     # Timing alignment
-    timing_windows: Dict[str, tuple[float, float]]  # actor → (start, end)
+    timing_windows: dict[str, tuple[float, float]]  # actor → (start, end)
 
     # Incentive compatibility
     incentive_alignment: float = 1.0  # 0 = conflict, 1 = perfect alignment
 
     # Veto analysis
     veto_required: bool = False
-    veto_actors: Set[str] = field(default_factory=set)
+    veto_actors: set[str] = field(default_factory=set)
 
     # Stability
     stability: CoalitionStability = CoalitionStability.STABLE
 
     # Externality tracking
-    externalized_costs: Dict[str, float] = field(default_factory=dict)
-    successor_burdens: List[dict[str, Any]] = field(default_factory=list)
+    externalized_costs: dict[str, float] = field(default_factory=dict)
+    successor_burdens: list[dict[str, Any]] = field(default_factory=list)
 
 
 @dataclass
@@ -220,7 +222,7 @@ class Evidence:
 
     # Contamination tracking
     derived_from_assumption: str = None  # Self-confirming?
-    cross_sources: Set[str] = field(default_factory=set)  # Mixed sources?
+    cross_sources: set[str] = field(default_factory=set)  # Mixed sources?
 
     # Belief update tracking
     prior_influence: float = 0.5  # How much prior dominated
@@ -237,14 +239,14 @@ class Verdict:
     stage: VerdictStage
 
     # Pipeline
-    evidence: List[str] = field(default_factory=list)
+    evidence: list[str] = field(default_factory=list)
     interpretation_method: str = ""
     judgment_criteria: str = ""
     verdict_strength: str = "provisional"  # provisional, firm, final, constitutional
 
     # Appeals
     appealable: bool = True
-    appeals: List[dict[str, Any]] = field(default_factory=list)
+    appeals: list[dict[str, Any]] = field(default_factory=list)
 
     # Provenance
     formed_by: str = ""
@@ -266,14 +268,14 @@ class Concept:
     definition: str
 
     # Continuity
-    version_history: List[dict[str, Any]] = field(default_factory=list)
+    version_history: list[dict[str, Any]] = field(default_factory=list)
     continuity_path: str = "continuous"  # continuous, replacement, rupture
 
     # Relations
     predecessor: str = None
-    successors: Set[str] = field(default_factory=set)
-    splits_from: Set[str] = field(default_factory=set)
-    merges_into: Set[str] = field(default_factory=set)
+    successors: set[str] = field(default_factory=set)
+    splits_from: set[str] = field(default_factory=set)
+    merges_into: set[str] = field(default_factory=set)
 
     # Governance
     split_versioned: bool = False
@@ -288,18 +290,18 @@ class GraphView:
 
     view_id: str
     view_type: str  # authority, dependency, ownership, truth, audit, runtime
-    nodes: Set[str]
-    edges: List[tuple[str, str, str]]  # (from, to, relation)
+    nodes: set[str]
+    edges: list[tuple[str, str, str]]  # (from, to, relation)
 
     # Dual mappings
-    dual_with: Dict[str, str] = field(default_factory=dict)  # view → mapping
-    mismatch_bounds: Dict[str, Any] = field(default_factory=dict)
+    dual_with: dict[str, str] = field(default_factory=dict)  # view → mapping
+    mismatch_bounds: dict[str, Any] = field(default_factory=dict)
 
     # Shape tracking
     shape_stability_score: float = 1.0
     mutation_rate: float = 0.0
-    hidden_hubs: Set[str] = field(default_factory=set)
-    fragile_bridges: Set[str] = field(default_factory=set)
+    hidden_hubs: set[str] = field(default_factory=set)
+    fragile_bridges: set[str] = field(default_factory=set)
 
 
 @dataclass
@@ -313,12 +315,12 @@ class Purpose:
     serves_invariant: str
 
     # Alignment
-    linked_mechanisms: Set[str] = field(default_factory=set)
+    linked_mechanisms: set[str] = field(default_factory=set)
     effectiveness_score: float = 1.0
 
     # Drift tracking
     last_validated: float = field(default_factory=time.time)
-    validation_history: List[dict[str, Any]] = field(default_factory=list)
+    validation_history: list[dict[str, Any]] = field(default_factory=list)
 
     # Status
     is_means_not_end: bool = False
@@ -334,28 +336,28 @@ class MetaSemanticState:
     timestamp: float
 
     # Semantic layer
-    categories: Dict[str, SemanticCategory]
-    concepts: Dict[str, Concept]
+    categories: dict[str, SemanticCategory]
+    concepts: dict[str, Concept]
 
     # Constitutional layer
-    constitutional_layers: Dict[str, ConstitutionalLayer]
+    constitutional_layers: dict[str, ConstitutionalLayer]
 
     # Coalition layer
-    actors: Dict[str, Actor]
-    coalitions: Dict[str, Coalition]
+    actors: dict[str, Actor]
+    coalitions: dict[str, Coalition]
 
     # Verdict layer
-    evidence_pool: Dict[str, Evidence]
-    verdicts: Dict[str, Verdict]
+    evidence_pool: dict[str, Evidence]
+    verdicts: dict[str, Verdict]
 
     # Topology layer
-    graph_views: Dict[str, GraphView]
+    graph_views: dict[str, GraphView]
 
     # Purpose layer
-    purposes: Dict[str, Purpose]
+    purposes: dict[str, Purpose]
 
     # Integrity scores
-    scores: Dict[str, float] = field(default_factory=dict)
+    scores: dict[str, float] = field(default_factory=dict)
 
 
 class MetaSemanticEngine:
@@ -375,28 +377,28 @@ class MetaSemanticEngine:
 
     def __init__(self):
         # Semantic layer
-        self._categories: Dict[str, SemanticCategory] = {}
-        self._concepts: Dict[str, Concept] = {}
+        self._categories: dict[str, SemanticCategory] = {}
+        self._concepts: dict[str, Concept] = {}
 
         # Constitutional layer
-        self._constitutional_layers: Dict[str, ConstitutionalLayer] = {}
+        self._constitutional_layers: dict[str, ConstitutionalLayer] = {}
 
         # Coalition layer
-        self._actors: Dict[str, Actor] = {}
-        self._coalitions: Dict[str, Coalition] = {}
+        self._actors: dict[str, Actor] = {}
+        self._coalitions: dict[str, Coalition] = {}
 
         # Verdict layer
-        self._evidence: Dict[str, Evidence] = {}
-        self._verdicts: Dict[str, Verdict] = {}
+        self._evidence: dict[str, Evidence] = {}
+        self._verdicts: dict[str, Verdict] = {}
 
         # Topology layer
-        self._graph_views: Dict[str, GraphView] = {}
+        self._graph_views: dict[str, GraphView] = {}
 
         # Purpose layer
-        self._purposes: Dict[str, Purpose] = {}
+        self._purposes: dict[str, Purpose] = {}
 
         # State tracking
-        self._history: List[MetaSemanticState] = []
+        self._history: list[MetaSemanticState] = []
         self._lock = threading.RLock()
 
         # Initialize with constitutional anchors
@@ -533,7 +535,7 @@ class MetaSemanticEngine:
 
     # ==================== VALIDATION METHODS ====================
 
-    def validate_category_integrity(self) -> Dict[str, Any]:
+    def validate_category_integrity(self) -> dict[str, Any]:
         """
         Validate semantic category integrity.
 
@@ -580,7 +582,7 @@ class MetaSemanticEngine:
             "score": 1.0 - (len(violations) * 0.1),
         }
 
-    def validate_constitutional_recursion(self) -> Dict[str, Any]:
+    def validate_constitutional_recursion(self) -> dict[str, Any]:
         """
         Validate constitutional recursion integrity.
 
@@ -629,7 +631,7 @@ class MetaSemanticEngine:
             "score": 1.0 - (len(violations) * 0.2),
         }
 
-    def validate_coalition_stability(self) -> Dict[str, Any]:
+    def validate_coalition_stability(self) -> dict[str, Any]:
         """
         Validate coalition stability.
 
@@ -690,7 +692,7 @@ class MetaSemanticEngine:
             "score": 1.0 - (len(violations) * 0.1),
         }
 
-    def validate_verdict_formation(self) -> Dict[str, Any]:
+    def validate_verdict_formation(self) -> dict[str, Any]:
         """
         Validate verdict formation integrity.
 
@@ -735,7 +737,7 @@ class MetaSemanticEngine:
             "score": 1.0 - (len(violations) * 0.15),
         }
 
-    def validate_concept_continuity(self) -> Dict[str, Any]:
+    def validate_concept_continuity(self) -> dict[str, Any]:
         """
         Validate concept continuity.
 
@@ -776,7 +778,7 @@ class MetaSemanticEngine:
             "score": 1.0 - (len(violations) * 0.1),
         }
 
-    def validate_graph_topology(self) -> Dict[str, Any]:
+    def validate_graph_topology(self) -> dict[str, Any]:
         """
         Validate graph topology integrity.
 
@@ -831,7 +833,7 @@ class MetaSemanticEngine:
             "score": 1.0 - (len(violations) * 0.1),
         }
 
-    def validate_purpose_preservation(self) -> Dict[str, Any]:
+    def validate_purpose_preservation(self) -> dict[str, Any]:
         """
         Validate purpose preservation.
 
@@ -873,7 +875,7 @@ class MetaSemanticEngine:
             "score": 1.0 - (len(violations) * 0.1),
         }
 
-    def validate_epistemic_integrity(self) -> Dict[str, Any]:
+    def validate_epistemic_integrity(self) -> dict[str, Any]:
         """
         Validate epistemic integrity.
 
@@ -930,7 +932,7 @@ class MetaSemanticEngine:
 
     # ==================== FULL VALIDATION ====================
 
-    def validate_all(self) -> Dict[str, Any]:
+    def validate_all(self) -> dict[str, Any]:
         """Run all meta-semantic validations."""
         results = {
             "category_integrity": self.validate_category_integrity(),
@@ -992,7 +994,7 @@ class MetaSemanticEngine:
         state = self.capture_state()
         self._history.append(state)
 
-    def get_history(self) -> List[MetaSemanticState]:
+    def get_history(self) -> list[MetaSemanticState]:
         """Get state history."""
         return self._history.copy()
 

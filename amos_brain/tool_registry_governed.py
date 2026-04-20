@@ -7,11 +7,10 @@ This is the ONLY tool registry in the SuperBrain.
 
 from __future__ import annotations
 
-
 from collections.abc import Callable
 from dataclasses import dataclass
 from threading import Lock
-from typing import Any
+from typing import Any, Optional
 
 
 @dataclass

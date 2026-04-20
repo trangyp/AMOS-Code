@@ -18,9 +18,11 @@ import threading
 from collections import deque
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import UTC, datetime
+
+UTC = UTC, timedelta
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 # ============================================================================
 # 1. DATA INGESTION - Market Signals & Opportunity Detection
@@ -51,7 +53,7 @@ class DataIngestionEngine:
     """
 
     def __init__(self):
-        self.sources: Dict[str, DataSource] = {}
+        self.sources: dict[str, DataSource] = {}
         self.ingestion_queue: queue.Queue = queue.Queue()
         self.signal_history: deque = deque(maxlen=1000)
         self.running = False
@@ -164,7 +166,7 @@ class DataIngestionEngine:
         if self.ingestion_thread:
             self.ingestion_thread.join(timeout=5)
 
-    def get_latest_signals(self, n: int = 100) -> List[dict]:
+    def get_latest_signals(self, n: int = 100) -> list[dict]:
         """Get latest N signals from all sources."""
         return list(self.signal_history)[-n:]
 
@@ -219,7 +221,7 @@ class ExecutionManager:
     """
 
     def __init__(self):
-        self.hooks: Dict[str, ExecutionHook] = {}
+        self.hooks: dict[str, ExecutionHook] = {}
         self.execution_log: deque = deque(maxlen=500)
 
     def register_hook(self, hook: ExecutionHook):
@@ -315,7 +317,7 @@ class NotificationSystem:
     """
 
     def __init__(self):
-        self.channels: Dict[str, dict] = {}
+        self.channels: dict[str, dict] = {}
         self.notification_log: deque = deque(maxlen=200)
 
     def register_channel(self, channel_id: str, channel_type: str, config: dict):
@@ -506,7 +508,7 @@ class PersistenceLayer:
         conn.commit()
         conn.close()
 
-    def get_decision_history(self, n: int = 100) -> List[dict]:
+    def get_decision_history(self, n: int = 100) -> list[dict]:
         """Get recent decision history."""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
@@ -537,7 +539,7 @@ class PersistenceLayer:
             for row in rows
         ]
 
-    def get_metrics_timeseries(self, metric_type: str, hours: int = 24) -> List[dict]:
+    def get_metrics_timeseries(self, metric_type: str, hours: int = 24) -> list[dict]:
         """Get metrics timeseries."""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()

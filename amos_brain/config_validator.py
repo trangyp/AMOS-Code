@@ -4,10 +4,12 @@ Validates environment variables and settings before runtime initialization
 to provide early, actionable error messages.
 """
 
+from __future__ import annotations
+
 import os
 import re
 from dataclasses import dataclass
-from typing import Any, Dict, List
+from typing import Any
 
 
 @dataclass
@@ -15,9 +17,9 @@ class ValidationResult:
     """Result of configuration validation."""
 
     valid: bool
-    errors: List[str]
-    warnings: List[str]
-    config: Dict[str, Any]
+    errors: list[str]
+    warnings: list[str]
+    config: dict[str, Any]
 
 
 class ConfigValidator:
@@ -33,9 +35,9 @@ class ConfigValidator:
     }
 
     def __init__(self):
-        self.errors: List[str] = []
-        self.warnings: List[str] = []
-        self.config: Dict[str, Any] = {}
+        self.errors: list[str] = []
+        self.warnings: list[str] = []
+        self.config: dict[str, Any] = {}
 
     def validate(self) -> ValidationResult:
         """Validate all configuration settings.

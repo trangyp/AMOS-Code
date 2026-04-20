@@ -9,15 +9,17 @@ References:
 - Multi-Agent Orchestration Best Practices 2025
 """
 
+from __future__ import annotations
 
-import json
 import threading
 import uuid
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any
+
+UTC = UTC
 
 from amos_brain import get_super_brain
 from amos_brain.tools_extended import calculate
@@ -25,6 +27,7 @@ from amos_brain.tools_extended import calculate
 
 class TaskState(Enum):
     """A2A Protocol task states."""
+
     SUBMITTED = "submitted"
     WORKING = "working"
     INPUT_REQUIRED = "input_required"
@@ -34,6 +37,7 @@ class TaskState(Enum):
 
 class MessageRole(Enum):
     """A2A message roles."""
+
     SYSTEM = "system"
     USER = "user"
     AGENT = "agent"
@@ -45,15 +49,16 @@ class AgentCard:
 
     Used for agent discovery and capability advertisement.
     """
+
     name: str
     description: str
     version: str
-    capabilities: List[str]
-    skills: List[dict[str, Any]]
+    capabilities: list[str]
+    skills: list[dict[str, Any]]
     endpoint: str
-    authentication: Dict[str, Any] = field(default_factory=dict)
+    authentication: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "name": self.name,
@@ -72,18 +77,16 @@ class A2AMessage:
 
     Standard message format for agent communication.
     """
+
     id: str
     role: MessageRole
     content: str
     timestamp: datetime
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
     def create(
-        cls,
-        role: MessageRole,
-        content: str,
-        metadata: Dict[str, Any]  = None
+        cls, role: MessageRole, content: str, metadata: dict[str, Any] | None = None
     ) -> A2AMessage:
         """Create a new message."""
         return cls(
@@ -94,7 +97,7 @@ class A2AMessage:
             metadata=metadata or {},
         )
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "id": self.id,
@@ -111,20 +114,17 @@ class A2ATask:
 
     Represents a unit of work assigned to an agent.
     """
+
     id: str
     state: TaskState
-    messages: List[A2AMessage]
-    artifacts: List[dict[str, Any]]
+    messages: list[A2AMessage]
+    artifacts: list[dict[str, Any]]
     created_at: datetime
     updated_at: datetime
-    assigned_agent: str  = None
+    assigned_agent: str | None = None
 
     @classmethod
-    def create(
-        cls,
-        initial_message: str,
-        assigned_agent: str  = None
-    ) -> A2ATask:
+    def create(cls, initial_message: str, assigned_agent: str | None = None) -> A2ATask:
         """Create a new task."""
         now = datetime.now(timezone.utc)
         return cls(
@@ -147,7 +147,7 @@ class A2ATask:
         self.state = state
         self.updated_at = datetime.now(timezone.utc)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "id": self.id,
@@ -167,11 +167,7 @@ class A2AAgent:
     """
 
     def __init__(
-        self,
-        name: str,
-        description: str,
-        capabilities: List[str],
-        tools: List[Callable]  = None
+        self, name: str, description: str, capabilities: list[str], tools: list[Callable] = None
     ):
         """Initialize agent.
 
@@ -193,7 +189,7 @@ class A2AAgent:
             skills=[{"name": c, "description": f"Can perform {c}"} for c in capabilities],
             endpoint=f"/a2a/agents/{name.lower().replace(' ', '-')}",
         )
-        self.tasks: Dict[str, A2ATask] = {}
+        self.tasks: dict[str, A2ATask] = {}
         self._lock = threading.Lock()
 
     def get_card(self) -> AgentCard:
@@ -227,7 +223,7 @@ class A2AAgent:
         response = A2AMessage.create(
             MessageRole.AGENT,
             f"Agent {self.name} received task: {task.messages[0].content[:50]}...",
-            {"agent": self.name}
+            {"agent": self.name},
         )
         task.add_message(response)
 
@@ -277,13 +273,11 @@ class AMOSSuperBrainAgent(A2AAgent):
             response = A2AMessage.create(
                 MessageRole.AGENT,
                 tool_result,
-                {"agent": self.name, "tools_used": self._detect_tools(user_message)}
+                {"agent": self.name, "tools_used": self._detect_tools(user_message)},
             )
         except Exception as e:
             response = A2AMessage.create(
-                MessageRole.AGENT,
-                f"Error processing task: {e}",
-                {"error": True}
+                MessageRole.AGENT, f"Error processing task: {e}", {"error": True}
             )
 
         task.add_message(response)
@@ -307,7 +301,7 @@ class AMOSSuperBrainAgent(A2AAgent):
 
         return f"AMOS SuperBrain processed: {message[:100]}..."
 
-    def _detect_tools(self, message: str) -> List[str]:
+    def _detect_tools(self, message: str) -> list[str]:
         """Detect which tools would be used."""
         msg_lower = message.lower()
         tools = []
@@ -330,8 +324,8 @@ class A2AHostAgent:
 
     def __init__(self):
         """Initialize host agent."""
-        self.agents: Dict[str, A2AAgent] = {}
-        self.tasks: Dict[str, A2ATask] = {}
+        self.agents: dict[str, A2AAgent] = {}
+        self.tasks: dict[str, A2ATask] = {}
         self._lock = threading.Lock()
 
     def register_agent(self, agent: A2AAgent) -> bool:
@@ -348,7 +342,7 @@ class A2AHostAgent:
         print(f"✅ A2A: Agent '{agent.name}' registered")
         return True
 
-    def discover_agents(self, capability: str  = None) -> List[AgentCard]:
+    def discover_agents(self, capability: str | None = None) -> list[AgentCard]:
         """Discover available agents.
 
         Args:
@@ -363,7 +357,7 @@ class A2AHostAgent:
                 cards.append(agent.get_card())
         return cards
 
-    def route_task(self, message: str, capability: str  = None) -> A2ATask:
+    def route_task(self, message: str, capability: str | None = None) -> A2ATask:
         """Route task to appropriate agent.
 
         Args:
@@ -401,7 +395,7 @@ class A2AHostAgent:
 
         return task
 
-    def get_task_status(self, task_id: str) -> Dict[str, Any] :
+    def get_task_status(self, task_id: str) -> dict[str, Any]:
         """Get task status.
 
         Args:
@@ -423,20 +417,24 @@ class A2AHostAgent:
             }
         return None
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get orchestrator statistics."""
         with self._lock:
             return {
                 "registered_agents": len(self.agents),
                 "agent_names": list(self.agents.keys()),
                 "total_tasks": len(self.tasks),
-                "completed_tasks": sum(1 for t in self.tasks.values() if t.state == TaskState.COMPLETED),
-                "working_tasks": sum(1 for t in self.tasks.values() if t.state == TaskState.WORKING),
+                "completed_tasks": sum(
+                    1 for t in self.tasks.values() if t.state == TaskState.COMPLETED
+                ),
+                "working_tasks": sum(
+                    1 for t in self.tasks.values() if t.state == TaskState.WORKING
+                ),
             }
 
 
 # Global orchestrator instance
-_orchestrator: Optional[A2AHostAgent] = None
+_orchestrator: A2AHostAgent | None = None
 
 
 def get_a2a_orchestrator() -> A2AHostAgent:
@@ -455,7 +453,7 @@ def get_a2a_orchestrator() -> A2AHostAgent:
     return _orchestrator
 
 
-def initialize_a2a_protocol() -> Dict[str, Any]:
+def initialize_a2a_protocol() -> dict[str, Any]:
     """Initialize A2A protocol and return status.
 
     Returns:

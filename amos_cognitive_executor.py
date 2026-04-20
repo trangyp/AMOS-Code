@@ -5,6 +5,8 @@ This is a REAL implementation, not a demo or mock.
 Uses the AMOS brain to guide code generation, validation, and execution.
 """
 
+from __future__ import annotations
+
 import ast
 import hashlib
 import json
@@ -12,9 +14,10 @@ import sys
 import traceback
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
-from typing import Any, Dict, List, Optional
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
+from typing import Any, Optional
 
 # Use the actual AMOS brain
 from amos_brain import BrainClient, get_brain
@@ -33,9 +36,7 @@ class ExecutionResult:
     execution_time_ms: float
     brain_guidance: Optional[BrainResponse]
     safety_checks_passed: bool
-    timestamp: str = field(
-        default_factory=lambda: datetime.now(timezone.utc).isoformat()
-    )
+    timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     execution_id: str = field(
         default_factory=lambda: hashlib.sha256(
             str(datetime.now(timezone.utc)).encode()
@@ -65,8 +66,8 @@ class CognitiveExecutor:
     def __init__(self):
         self.brain = BrainClient()
         _ = get_brain()  # Ensure brain is loaded
-        self.execution_history: List[ExecutionResult] = []
-        self._safety_hooks: List[Callable[[str], SafetyCheck]] = [
+        self.execution_history: list[ExecutionResult] = []
+        self._safety_hooks: list[Callable[[str], SafetyCheck]] = [
             self._check_imports,
             self._check_system_calls,
             self._check_file_operations,
@@ -76,7 +77,7 @@ class CognitiveExecutor:
     def execute_with_brain_guidance(
         self,
         task_description: str,
-        context: Optional[Dict[str, Any] ] = None,
+        context: dict[str, Optional[Any]] = None,
         language: str = "python",
         require_brain_validation: bool = True,
     ) -> ExecutionResult:
@@ -102,9 +103,7 @@ class CognitiveExecutor:
                 success=False,
                 code="",
                 stdout="",
-                stderr=(
-                    f"Brain generation failed: {brain_response.content}"
-                ),
+                stderr=(f"Brain generation failed: {brain_response.content}"),
                 return_value=None,
                 execution_time_ms=0.0,
                 brain_guidance=brain_response,
@@ -122,9 +121,7 @@ class CognitiveExecutor:
                 success=False,
                 code=generated_code,
                 stdout="",
-                stderr=(
-                    f"Safety checks failed: {[r for r in safety_results if not r.passed]}"
-                ),
+                stderr=(f"Safety checks failed: {[r for r in safety_results if not r.passed]}"),
                 return_value=None,
                 execution_time_ms=0.0,
                 brain_guidance=brain_response,
@@ -132,9 +129,7 @@ class CognitiveExecutor:
             )
 
         # Step 3: Actual code execution in isolated environment
-        execution_result = self._execute_code_isolated(
-            generated_code, context or {}, language
-        )
+        execution_result = self._execute_code_isolated(generated_code, context or {}, language)
 
         # Step 4: Store in history
         self.execution_history.append(execution_result)
@@ -142,7 +137,7 @@ class CognitiveExecutor:
         return execution_result
 
     def _generate_code_with_brain(
-        self, task: str, context: Dict[str, Any], language: str
+        self, task: str, context: dict[str, Any], language: str
     ) -> BrainResponse:
         """Use brain to generate code."""
         context_str = json.dumps(context, indent=2, default=str) if context else "{}"
@@ -179,7 +174,7 @@ Return ONLY the code, no explanation."""
                 metadata={},
             )
 
-    def _run_safety_checks(self, code: str) -> List[SafetyCheck]:
+    def _run_safety_checks(self, code: str) -> list[SafetyCheck]:
         """Run all safety validation hooks."""
         return [hook(code) for hook in self._safety_hooks]
 
@@ -194,9 +189,15 @@ Return ONLY the code, no explanation."""
                             return SafetyCheck("imports", False, f"Import of {alias.name} detected")
                 elif isinstance(node, ast.ImportFrom):
                     if node.module in ("os", "subprocess"):
-                        return SafetyCheck("imports", False, f"From import of {node.module} detected")
+                        return SafetyCheck(
+                            "imports", False, f"From import of {node.module} detected"
+                        )
                 elif isinstance(node, ast.Call):
-                    if isinstance(node.func, ast.Name) and node.func.id in ("eval", "exec", "compile"):
+                    if isinstance(node.func, ast.Name) and node.func.id in (
+                        "eval",
+                        "exec",
+                        "compile",
+                    ):
                         return SafetyCheck("imports", False, f"Call to {node.func.id} detected")
         except SyntaxError:
             return SafetyCheck("imports", False, "Syntax error in code")
@@ -231,7 +232,7 @@ Return ONLY the code, no explanation."""
         return SafetyCheck("network", True, "No network operations")
 
     def _execute_code_isolated(
-        self, code: str, context: Dict[str, Any], language: str
+        self, code: str, context: dict[str, Any], language: str
     ) -> ExecutionResult:
         """Execute code in isolated environment and return real results."""
         import time
@@ -286,6 +287,7 @@ Return ONLY the code, no explanation."""
 
         # Capture stdout/stderr
         import io
+
         stdout_capture = io.StringIO()
         stderr_capture = io.StringIO()
 
@@ -331,7 +333,7 @@ Return ONLY the code, no explanation."""
             sys.stdout = old_stdout
             sys.stderr = old_stderr
 
-    def get_execution_history(self) -> List[ExecutionResult]:
+    def get_execution_history(self) -> list[ExecutionResult]:
         """Get history of all executions."""
         return self.execution_history.copy()
 
@@ -355,7 +357,7 @@ def get_cognitive_executor() -> CognitiveExecutor:
 # Convenience function for direct use
 def cognitive_execute(
     task: str,
-    context: Optional[Dict[str, Any] ] = None,
+    context: dict[str, Optional[Any]] = None,
     language: str = "python",
 ) -> ExecutionResult:
     """Execute a task with cognitive guidance.

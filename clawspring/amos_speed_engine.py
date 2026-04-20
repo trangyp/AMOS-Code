@@ -1,12 +1,15 @@
 """AMOS Speed Engine - Cross-cutting optimization for all engines."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class SpeedMode(Enum):
     """Speed optimization modes."""
+
     MAX_SAFE_SPEED = "max_safe_speed"
     BALANCED_FAST = "balanced_fast"
     PRECISION_PRIORITY = "precision_priority"
@@ -14,6 +17,7 @@ class SpeedMode(Enum):
 
 class ResponseTier(Enum):
     """Response tiering levels."""
+
     T1_FLASH = "T1_flash_answer"
     T2_SUMMARY = "T2_structured_summary"
     T3_FULL = "T3_full_framework"
@@ -37,7 +41,7 @@ class SpeedEngine:
     NAME = "AMOS_SPEED_OMEGA"
 
     def __init__(self):
-        self.profiles: Dict[str, OptimizationProfile] = {
+        self.profiles: dict[str, OptimizationProfile] = {
             "max_safe_speed": OptimizationProfile(
                 name="max_safe_speed",
                 mode=SpeedMode.MAX_SAFE_SPEED,
@@ -60,11 +64,13 @@ class SpeedEngine:
                 max_tokens=2200,
             ),
         }
-        self.metrics: List[dict] = []
+        self.metrics: list[dict] = []
         self.cache_hits: int = 0
         self.cache_misses: int = 0
 
-    def select_profile(self, query_complexity: str, user_preference: str  = None) -> OptimizationProfile:
+    def select_profile(
+        self, query_complexity: str, user_preference: str = None
+    ) -> OptimizationProfile:
         """Select optimization profile based on query and preference."""
         if user_preference and user_preference in self.profiles:
             return self.profiles[user_preference]
@@ -74,9 +80,7 @@ class SpeedEngine:
             return self.profiles["precision_priority"]
         return self.profiles["balanced_fast"]
 
-    def select_response_tier(
-        self, user_request_type: str, available_tokens: int
-    ) -> dict:
+    def select_response_tier(self, user_request_type: str, available_tokens: int) -> dict:
         """Select response tier based on user request."""
         tiers = {
             "T1_flash_answer": {
@@ -95,13 +99,21 @@ class SpeedEngine:
                 "style": "full",
             },
         }
-        if "short" in user_request_type or "quick" in user_request_type or "tldr" in user_request_type:
+        if (
+            "short" in user_request_type
+            or "quick" in user_request_type
+            or "tldr" in user_request_type
+        ):
             return tiers["T1_flash_answer"]
-        elif "full" in user_request_type or "breakdown" in user_request_type or "plan" in user_request_type:
+        elif (
+            "full" in user_request_type
+            or "breakdown" in user_request_type
+            or "plan" in user_request_type
+        ):
             return tiers["T3_full_framework"]
         return tiers["T2_structured_summary"]
 
-    def prune_reasoning(self, reasoning_steps: List[str], max_branches: int = 3) -> dict:
+    def prune_reasoning(self, reasoning_steps: list[str], max_branches: int = 3) -> dict:
         """Prune reasoning steps to essential branches."""
         original_count = len(reasoning_steps)
         pruned = reasoning_steps[:max_branches]
@@ -113,7 +125,7 @@ class SpeedEngine:
             "pruned": pruned,
         }
 
-    def compress_decision_tree(self, branches: List[dict]) -> dict:
+    def compress_decision_tree(self, branches: list[dict]) -> dict:
         """Compress decision tree by merging equivalent paths."""
         unique_branches = []
         seen = set()
@@ -129,7 +141,7 @@ class SpeedEngine:
             "branches": unique_branches,
         }
 
-    def check_cache(self, query_hash: str, recent_analyses: List[dict]) -> dict:
+    def check_cache(self, query_hash: str, recent_analyses: list[dict]) -> dict:
         """Check if similar query exists in cache."""
         for analysis in recent_analyses:
             if analysis.get("query_hash") == query_hash:
@@ -181,7 +193,7 @@ class SpeedEngine:
             },
         }
 
-    def analyze_speed(self, description: str, mode: str  = None) -> Dict[str, Any]:
+    def analyze_speed(self, description: str, mode: str = None) -> dict[str, Any]:
         """Run speed optimization analysis."""
         profile = self.select_profile("medium", mode)
         tier = self.select_response_tier(description, profile.max_tokens)
@@ -218,24 +230,26 @@ class SpeedEngine:
         for key, display_name in optimization_aspects.items():
             if key in results:
                 lines.append(f"- **{display_name}**: {results[key]}")
-        lines.extend([
-            "",
-            "## Gaps and Limitations",
-            "- Real-time latency measurement requires instrumentation",
-            "- Cache invalidation on canon updates not automated",
-            "- Parallel session management is conceptual only",
-            "- Token counting is approximate",
-            "",
-            "## Safety Disclaimer",
-            "Speed optimization never overrides domain engine logic or values. "
-            "All optimizations preserve correctness while improving efficiency. "
-            "Domain engines always take precedence over speed preferences.",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Gaps and Limitations",
+                "- Real-time latency measurement requires instrumentation",
+                "- Cache invalidation on canon updates not automated",
+                "- Parallel session management is conceptual only",
+                "- Token counting is approximate",
+                "",
+                "## Safety Disclaimer",
+                "Speed optimization never overrides domain engine logic or values. "
+                "All optimizations preserve correctness while improving efficiency. "
+                "Domain engines always take precedence over speed preferences.",
+            ]
+        )
         return "\n".join(lines)
 
 
 # Singleton instance
-_speed_engine: Optional[SpeedEngine] = None
+_speed_engine: SpeedEngine | None = None
 
 
 def get_speed_engine() -> SpeedEngine:

@@ -11,11 +11,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List
-
-sys.path.insert(0, ".")
-sys.path.insert(0, "clawspring")
-sys.path.insert(0, "clawspring/amos_brain")
+from typing import Any
 
 
 class WorkflowStatus(Enum):
@@ -36,8 +32,8 @@ class WorkflowStep:
     name: str
     module: str  # Which v2.8 module handles this
     action: str  # What action to perform
-    params: Dict[str, Any]
-    depends_on: List[str]
+    params: dict[str, Any]
+    depends_on: list[str]
     status: WorkflowStatus = WorkflowStatus.PENDING
     result: dict = None
     error: str = None
@@ -52,7 +48,7 @@ class WorkflowDefinition:
     id: str
     name: str
     description: str
-    steps: List[WorkflowStep]
+    steps: list[WorkflowStep]
     created_at: datetime
     version: str = "2.8"
 
@@ -61,8 +57,8 @@ class WorkflowEngine:
     """Execute workflows using v2.8 ecosystem modules."""
 
     def __init__(self):
-        self.active_workflows: Dict[str, WorkflowDefinition] = {}
-        self.step_handlers: Dict[str, Callable] = {}
+        self.active_workflows: dict[str, WorkflowDefinition] = {}
+        self.step_handlers: dict[str, Callable] = {}
         self._register_handlers()
 
     def _register_handlers(self) -> None:
@@ -79,7 +75,7 @@ class WorkflowEngine:
         }
 
     def create_workflow(
-        self, name: str, description: str, steps_config: List[dict]
+        self, name: str, description: str, steps_config: list[dict]
     ) -> WorkflowDefinition:
         """Create a new workflow definition."""
         steps = []
@@ -105,7 +101,7 @@ class WorkflowEngine:
         self.active_workflows[workflow.id] = workflow
         return workflow
 
-    def execute_workflow(self, workflow_id: str) -> Dict[str, Any]:
+    def execute_workflow(self, workflow_id: str) -> dict[str, Any]:
         """Execute a workflow."""
         if workflow_id not in self.active_workflows:
             return {"error": "Workflow not found"}

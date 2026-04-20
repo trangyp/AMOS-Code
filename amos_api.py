@@ -20,15 +20,10 @@ Interactive docs:
   http://localhost:8000/redoc (ReDoc)
 """
 
-import os
-import sys
+from datetime import UTC, datetime, timezone
 
-# Add project to path
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-
-from datetime import datetime, timezone
-UTC = timezone.utc
-from typing import Any, Dict, List
+UTC = UTC
+from typing import Any
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -50,17 +45,17 @@ from amos_brain.memory import get_brain_memory
 
 class DecideRequest(BaseModel):
     problem: str = Field(..., description="The decision or problem to analyze")
-    context: Dict[str, Any] = Field(default={}, description="Optional context")
-    options: List[str] = Field(default=[], description="Optional options to consider")
+    context: dict[str, Any] = Field(default={}, description="Optional context")
+    options: list[str] = Field(default=[], description="Optional options to consider")
 
 
 class DecideResponse(BaseModel):
     problem: str
-    rule_of_two: Dict[str, Any]
-    rule_of_four: Dict[str, Any]
-    recommendations: List[str]
-    assumptions: List[str]
-    uncertainties: List[str]
+    rule_of_two: dict[str, Any]
+    rule_of_four: dict[str, Any]
+    recommendations: list[str]
+    assumptions: list[str]
+    uncertainties: list[str]
     processed_at: str
 
 

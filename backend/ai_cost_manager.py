@@ -22,15 +22,17 @@ Creator: Trang Phan
 Version: 3.0.0
 """
 
+from __future__ import annotations
+
 import os
-import time
-from typing import Any, Dict, List, Optional
 from dataclasses import dataclass, field
-from datetime import datetime, timezone, timedelta
-UTC = timezone.utc
-from enum import Enum
-from collections import defaultdict
+from datetime import UTC, datetime, timedelta, timezone
+from typing import Any
+
+UTC = UTC
 import asyncio
+from collections import defaultdict
+from enum import Enum
 
 # Cost configuration
 DEFAULT_BUDGET_USD = float(os.getenv("DEFAULT_AI_BUDGET_USD", "100.0"))
@@ -52,6 +54,7 @@ LLM_PRICING = {
 
 class BudgetPeriod(Enum):
     """Budget period types."""
+
     DAILY = "daily"
     WEEKLY = "weekly"
     MONTHLY = "monthly"
@@ -60,6 +63,7 @@ class BudgetPeriod(Enum):
 
 class AlertLevel(Enum):
     """Alert severity levels."""
+
     INFO = "info"
     WARNING = "warning"
     CRITICAL = "critical"
@@ -68,6 +72,7 @@ class AlertLevel(Enum):
 @dataclass
 class TokenUsage:
     """Tracks token usage for a request."""
+
     model: str
     input_tokens: int
     output_tokens: int
@@ -94,6 +99,7 @@ class TokenUsage:
 @dataclass
 class Budget:
     """Represents a budget allocation."""
+
     budget_id: str
     name: str
     allocated_usd: float
@@ -104,7 +110,7 @@ class Budget:
     alerts_enabled: bool = True
     alert_threshold: float = 0.8
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     def remaining(self) -> float:
         """Get remaining budget."""
@@ -128,6 +134,7 @@ class Budget:
 @dataclass
 class CostAlert:
     """Represents a cost alert."""
+
     alert_id: str
     budget_id: str
     alert_level: str
@@ -141,12 +148,12 @@ class AICostManager:
     """Manages AI costs and budgets."""
 
     def __init__(self):
-        self.token_usage: List[TokenUsage] = []
-        self.budgets: Dict[str, Budget] = {}
-        self.alerts: List[CostAlert] = []
-        self.usage_by_agent: Dict[str, list[TokenUsage]] = defaultdict(list)
-        self.usage_by_model: Dict[str, list[TokenUsage]] = defaultdict(list)
-        self.daily_usage: Dict[str, float] = defaultdict(float)
+        self.token_usage: list[TokenUsage] = []
+        self.budgets: dict[str, Budget] = {}
+        self.alerts: list[CostAlert] = []
+        self.usage_by_agent: dict[str, list[TokenUsage]] = defaultdict(list)
+        self.usage_by_model: dict[str, list[TokenUsage]] = defaultdict(list)
+        self.daily_usage: dict[str, float] = defaultdict(float)
         self.max_history = 10000
         self._lock = asyncio.Lock()
 
@@ -155,13 +162,12 @@ class AICostManager:
 
     def _init_default_budget(self):
         """Initialize default system budget."""
-        import uuid
         default_budget = Budget(
             budget_id="default",
             name="System Default Budget",
             allocated_usd=DEFAULT_BUDGET_USD,
             period=BudgetPeriod.MONTHLY.value,
-            alert_threshold=BUDGET_ALERT_THRESHOLD
+            alert_threshold=BUDGET_ALERT_THRESHOLD,
         )
         self.budgets["default"] = default_budget
 
@@ -171,7 +177,7 @@ class AICostManager:
         input_tokens: int,
         output_tokens: int,
         agent_id: str = "",
-        request_id: str = ""
+        request_id: str = "",
     ) -> TokenUsage:
         """Track token usage and calculate cost."""
         if not COST_TRACKING_ENABLED:
@@ -180,7 +186,7 @@ class AICostManager:
                 input_tokens=input_tokens,
                 output_tokens=output_tokens,
                 agent_id=agent_id,
-                request_id=request_id
+                request_id=request_id,
             )
 
         async with self._lock:
@@ -189,7 +195,7 @@ class AICostManager:
                 input_tokens=input_tokens,
                 output_tokens=output_tokens,
                 agent_id=agent_id,
-                request_id=request_id
+                request_id=request_id,
             )
 
             # Add to history
@@ -197,7 +203,7 @@ class AICostManager:
 
             # Trim history if needed
             if len(self.token_usage) > self.max_history:
-                self.token_usage = self.token_usage[-self.max_history:]
+                self.token_usage = self.token_usage[-self.max_history :]
 
             # Track by agent
             if agent_id:
@@ -245,7 +251,7 @@ class AICostManager:
             budget_id=budget.budget_id,
             alert_level=level,
             message=message,
-            utilization_percent=utilization
+            utilization_percent=utilization,
         )
 
         self.alerts.append(alert)
@@ -259,7 +265,7 @@ class AICostManager:
         allocated_usd: float,
         period: str = "monthly",
         alert_threshold: float = 0.8,
-        metadata: Dict[str, Any ] = None
+        metadata: dict[str, Any] = None,
     ) -> Budget:
         """Create a new budget."""
         import uuid
@@ -288,21 +294,23 @@ class AICostManager:
             start_date=start,
             end_date=end,
             alert_threshold=alert_threshold,
-            metadata=metadata or {}
+            metadata=metadata or {},
         )
 
         self.budgets[budget.budget_id] = budget
         return budget
 
-    def get_budget(self, budget_id: str) -> Optional[Budget]:
+    def get_budget(self, budget_id: str) -> Budget:
         """Get budget by ID."""
         return self.budgets.get(budget_id)
 
-    def list_budgets(self) -> List[Budget]:
+    def list_budgets(self) -> list[Budget]:
         """List all budgets."""
         return list(self.budgets.values())
 
-    def check_budget_available(self, budget_id: str = "default", estimated_cost: float = 0.0) -> bool:
+    def check_budget_available(
+        self, budget_id: str = "default", estimated_cost: float = 0.0
+    ) -> bool:
         """Check if budget has remaining funds."""
         budget = self.budgets.get(budget_id)
         if not budget:
@@ -310,7 +318,7 @@ class AICostManager:
 
         return budget.remaining() >= estimated_cost
 
-    def get_cost_summary(self, days: int = 30) -> Dict[str, Any]:
+    def get_cost_summary(self, days: int = 30) -> dict[str, Any]:
         """Get cost summary for specified period."""
         if not self.token_usage:
             return {
@@ -318,15 +326,12 @@ class AICostManager:
                 "total_tokens": 0,
                 "request_count": 0,
                 "models_used": [],
-                "daily_average": 0.0
+                "daily_average": 0.0,
             }
 
         # Filter by date
         cutoff = datetime.now(timezone.utc) - timedelta(days=days)
-        recent_usage = [
-            u for u in self.token_usage
-            if datetime.fromisoformat(u.timestamp) > cutoff
-        ]
+        recent_usage = [u for u in self.token_usage if datetime.fromisoformat(u.timestamp) > cutoff]
 
         total_cost = sum(u.cost_usd for u in recent_usage)
         total_tokens = sum(u.total_tokens for u in recent_usage)
@@ -347,23 +352,17 @@ class AICostManager:
             "total_cost_usd": round(total_cost, 4),
             "total_tokens": total_tokens,
             "request_count": len(recent_usage),
-            "models_used": [
-                {"model": m, "cost_usd": round(c, 4)}
-                for m, c in model_costs.items()
-            ],
+            "models_used": [{"model": m, "cost_usd": round(c, 4)} for m, c in model_costs.items()],
             "daily_average": round(total_cost / days, 4) if days > 0 else 0,
-            "daily_breakdown": dict(daily_costs)
+            "daily_breakdown": dict(daily_costs),
         }
 
-    def get_agent_costs(self, agent_id: str, days: int = 30) -> Dict[str, Any]:
+    def get_agent_costs(self, agent_id: str, days: int = 30) -> dict[str, Any]:
         """Get cost breakdown for a specific agent."""
         usage = self.usage_by_agent.get(agent_id, [])
 
         cutoff = datetime.now(timezone.utc) - timedelta(days=days)
-        recent_usage = [
-            u for u in usage
-            if datetime.fromisoformat(u.timestamp) > cutoff
-        ]
+        recent_usage = [u for u in usage if datetime.fromisoformat(u.timestamp) > cutoff]
 
         total_cost = sum(u.cost_usd for u in recent_usage)
         total_tokens = sum(u.total_tokens for u in recent_usage)
@@ -383,10 +382,10 @@ class AICostManager:
             "by_model": {
                 m: {"cost_usd": round(d["cost"], 4), "tokens": d["tokens"]}
                 for m, d in by_model.items()
-            }
+            },
         }
 
-    def get_optimization_recommendations(self) -> List[dict[str, Any]]:
+    def get_optimization_recommendations(self) -> list[dict[str, Any]]:
         """Get cost optimization recommendations."""
         recommendations = []
 
@@ -395,12 +394,14 @@ class AICostManager:
         # Check for expensive models
         expensive_models = [m for m in summary.get("models_used", []) if m["cost_usd"] > 10.0]
         if expensive_models:
-            recommendations.append({
-                "type": "model_optimization",
-                "priority": "high",
-                "message": f"High spending on premium models: {', '.join(m['model'] for m in expensive_models)}. Consider using smaller models for non-critical tasks.",
-                "potential_savings": "60-80%"
-            })
+            recommendations.append(
+                {
+                    "type": "model_optimization",
+                    "priority": "high",
+                    "message": f"High spending on premium models: {', '.join(m['model'] for m in expensive_models)}. Consider using smaller models for non-critical tasks.",
+                    "potential_savings": "60-80%",
+                }
+            )
 
         # Check for high daily variance
         daily = summary.get("daily_breakdown", {})
@@ -409,40 +410,43 @@ class AICostManager:
             avg = sum(costs) / len(costs)
             variance = max(costs) - min(costs)
             if variance > avg * 2:
-                recommendations.append({
-                    "type": "usage_pattern",
-                    "priority": "medium",
-                    "message": "High variance in daily spending detected. Consider implementing rate limiting or caching.",
-                    "potential_savings": "20-40%"
-                })
+                recommendations.append(
+                    {
+                        "type": "usage_pattern",
+                        "priority": "medium",
+                        "message": "High variance in daily spending detected. Consider implementing rate limiting or caching.",
+                        "potential_savings": "20-40%",
+                    }
+                )
 
         # Check budget utilization
         for budget in self.budgets.values():
             if budget.utilization_percent() > 90:
-                recommendations.append({
-                    "type": "budget_alert",
-                    "priority": "critical",
-                    "message": f"Budget '{budget.name}' at {budget.utilization_percent():.1f}%. Consider increasing budget or reducing usage.",
-                    "budget_id": budget.budget_id
-                })
+                recommendations.append(
+                    {
+                        "type": "budget_alert",
+                        "priority": "critical",
+                        "message": f"Budget '{budget.name}' at {budget.utilization_percent():.1f}%. Consider increasing budget or reducing usage.",
+                        "budget_id": budget.budget_id,
+                    }
+                )
 
         # General recommendations
         if summary["total_tokens"] > 1000000:  # 1M tokens
-            recommendations.append({
-                "type": "caching",
-                "priority": "medium",
-                "message": "High token volume detected. Implement response caching for repeated queries.",
-                "potential_savings": "30-50%"
-            })
+            recommendations.append(
+                {
+                    "type": "caching",
+                    "priority": "medium",
+                    "message": "High token volume detected. Implement response caching for repeated queries.",
+                    "potential_savings": "30-50%",
+                }
+            )
 
         return recommendations
 
     def get_alerts(
-        self,
-        level: str  = None,
-        acknowledged: bool  = None,
-        limit: int = 50
-    ) -> List[dict[str, Any]]:
+        self, level: str = None, acknowledged: bool = None, limit: int = 50
+    ) -> list[dict[str, Any]]:
         """Get cost alerts with filtering."""
         alerts = self.alerts
 
@@ -462,7 +466,7 @@ class AICostManager:
                 "message": a.message,
                 "utilization_percent": a.utilization_percent,
                 "timestamp": a.timestamp,
-                "acknowledged": a.acknowledged
+                "acknowledged": a.acknowledged,
             }
             for a in alerts
         ]
@@ -490,29 +494,22 @@ cost_manager = AICostManager()
 
 # Convenience functions
 async def track_llm_cost(
-    model: str,
-    input_tokens: int,
-    output_tokens: int,
-    agent_id: str = ""
+    model: str, input_tokens: int, output_tokens: int, agent_id: str = ""
 ) -> TokenUsage:
     """Track LLM usage cost."""
     return await cost_manager.track_usage(model, input_tokens, output_tokens, agent_id)
 
 
-def create_budget(
-    name: str,
-    amount_usd: float,
-    period: str = "monthly"
-) -> Budget:
+def create_budget(name: str, amount_usd: float, period: str = "monthly") -> Budget:
     """Create a budget."""
     return cost_manager.create_budget(name, amount_usd, period)
 
 
-def get_cost_report(days: int = 30) -> Dict[str, Any]:
+def get_cost_report(days: int = 30) -> dict[str, Any]:
     """Get cost report."""
     return cost_manager.get_cost_summary(days)
 
 
-def get_optimization_tips() -> List[dict[str, Any]]:
+def get_optimization_tips() -> list[dict[str, Any]]:
     """Get optimization recommendations."""
     return cost_manager.get_optimization_recommendations()

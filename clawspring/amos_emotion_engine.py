@@ -1,9 +1,11 @@
 """AMOS Emotion Engine - Affective, somatic, and motivational analysis."""
 
-from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
 
-from amos_runtime import get_runtime
+from dataclasses import dataclass
+from typing import Any
+
+from clawspring.amos_runtime import get_runtime
 
 
 @dataclass
@@ -12,9 +14,9 @@ class EmotionAnalysis:
 
     domain: str
     input_data: str
-    findings: List[dict]
+    findings: list[dict]
     confidence: float
-    limitations: List[str]
+    limitations: list[str]
     law_compliance: dict
     gap_acknowledgment: str
 
@@ -65,7 +67,7 @@ class AffectiveKernel:
             ),
         )
 
-    def _get_primitives(self, category: str) -> List[str]:
+    def _get_primitives(self, category: str) -> list[str]:
         """Get affective primitives for category."""
         primitives = {
             "valence": ["pleasantness", "appetitiveness", "aversiveness"],
@@ -138,7 +140,7 @@ class SomaticKernel:
             ),
         )
 
-    def _get_primitives(self, category: str) -> List[str]:
+    def _get_primitives(self, category: str) -> list[str]:
         """Get somatic primitives for category."""
         primitives = {
             "tension": ["contraction", "guarding", "preparation"],
@@ -195,7 +197,7 @@ class MotivationKernel:
             ),
         )
 
-    def _get_primitives(self, category: str) -> List[str]:
+    def _get_primitives(self, category: str) -> list[str]:
         """Get motivation primitives for category."""
         primitives = {
             "approach": ["appetitive", "seeking", "exploration"],
@@ -251,7 +253,7 @@ class EmpathyKernel:
             ),
         )
 
-    def _get_primitives(self, category: str) -> List[str]:
+    def _get_primitives(self, category: str) -> list[str]:
         """Get empathy primitives for category."""
         primitives = {
             "resonance": ["affective_attunement", "synchrony", "matching"],
@@ -284,7 +286,7 @@ class AMOSEmotionEngine:
 
     def __init__(self):
         self.runtime = get_runtime()
-        self.kernels: Dict[str, Any] = {}
+        self.kernels: dict[str, Any] = {}
         self._init_kernels()
 
     def _init_kernels(self):
@@ -295,8 +297,8 @@ class AMOSEmotionEngine:
     def analyze(
         self,
         description: str,
-        domains: Optional[List[str]] = None,
-    ) -> Dict[str, EmotionAnalysis]:
+        domains: list[str | None] = None,
+    ) -> dict[str, EmotionAnalysis]:
         """Run emotion analysis across specified domains."""
         domains = domains or list(self.DOMAINS.keys())
         results = {}
@@ -308,7 +310,7 @@ class AMOSEmotionEngine:
 
         return results
 
-    def get_findings_summary(self, results: Dict[str, EmotionAnalysis]) -> str:
+    def get_findings_summary(self, results: dict[str, EmotionAnalysis]) -> str:
         """Generate human-readable findings summary."""
         lines = [
             "# AMOS Emotion Analysis Summary",
@@ -401,7 +403,7 @@ class AMOSEmotionEngine:
 
 
 # Singleton
-_emotion_engine: Optional[AMOSEmotionEngine] = None
+_emotion_engine: AMOSEmotionEngine | None = None
 
 
 def get_emotion_engine() -> AMOSEmotionEngine:
@@ -414,9 +416,9 @@ def get_emotion_engine() -> AMOSEmotionEngine:
 
 def analyze_emotion(
     description: str,
-    domains: Optional[List[str]] = None,
-) -> Dict[str, EmotionAnalysis]:
-    """Quick helper for emotion analysis."""
+    domains: list[str | None] = None,
+) -> dict[str, EmotionAnalysis]:
+    """Quick helper.*?"""
     return get_emotion_engine().analyze(description, domains)
 
 

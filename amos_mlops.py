@@ -105,13 +105,15 @@ Author: AMOS MLOps Team
 Version: 30.0.0
 """
 
+from __future__ import annotations
+
 import hashlib
 import random
 import secrets
 import time
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Optional
 
 
 class ModelStage(Enum):
@@ -151,9 +153,9 @@ class ModelVersion:
     version: str
     model_path: str
     model_hash: str
-    metrics: Dict[str, float] = field(default_factory=dict)
-    parameters: Dict[str, Any] = field(default_factory=dict)
-    tags: List[str] = field(default_factory=list)
+    metrics: dict[str, float] = field(default_factory=dict)
+    parameters: dict[str, Any] = field(default_factory=dict)
+    tags: list[str] = field(default_factory=list)
     stage: ModelStage = ModelStage.DEVELOPMENT
     experiment_id: str = None
     created_at: float = field(default_factory=lambda: time.time())
@@ -168,9 +170,9 @@ class Experiment:
     experiment_id: str
     name: str
     status: ExperimentStatus
-    parameters: Dict[str, Any] = field(default_factory=dict)
-    metrics: Dict[str, list[float]] = field(default_factory=dict)
-    artifacts: Dict[str, str] = field(default_factory=dict)
+    parameters: dict[str, Any] = field(default_factory=dict)
+    metrics: dict[str, list[float]] = field(default_factory=dict)
+    artifacts: dict[str, str] = field(default_factory=dict)
     created_at: float = field(default_factory=lambda: time.time())
     completed_at: float = None
     parent_experiment_id: str = None
@@ -182,12 +184,12 @@ class Deployment:
 
     deployment_id: str
     strategy: DeploymentStrategy
-    model_versions: List[tuple[str, str]]  # [(name, version), ...]
-    traffic_split: Dict[str, float]  # version -> percentage
+    model_versions: list[tuple[str, str]]  # [(name, version), ...]
+    traffic_split: dict[str, float]  # version -> percentage
     status: str = "pending"  # pending, running, completed, rolled_back
     start_time: float = field(default_factory=lambda: time.time())
     end_time: float = None
-    metrics: Dict[str, Any] = field(default_factory=dict)
+    metrics: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -221,18 +223,18 @@ class AMOSMLOps:
         self.enable_monitoring = enable_monitoring
 
         # Model registry
-        self.registered_models: Dict[str, dict[str, ModelVersion]] = {}  # name -> version -> model
-        self.model_aliases: Dict[str, tuple[str, str]] = {}  # alias -> (name, version)
+        self.registered_models: dict[str, dict[str, ModelVersion]] = {}  # name -> version -> model
+        self.model_aliases: dict[str, tuple[str, str]] = {}  # alias -> (name, version)
 
         # Experiments
-        self.experiments: Dict[str, Experiment] = {}
+        self.experiments: dict[str, Experiment] = {}
 
         # Deployments
-        self.deployments: Dict[str, Deployment] = {}
-        self.active_deployments: Dict[str, str] = {}  # model_name -> deployment_id
+        self.deployments: dict[str, Deployment] = {}
+        self.active_deployments: dict[str, str] = {}  # model_name -> deployment_id
 
         # Performance monitoring
-        self.performance_history: Dict[str, list[ModelPerformance]] = {}
+        self.performance_history: dict[str, list[ModelPerformance]] = {}
         self.drift_threshold: float = 0.1
 
         # Statistics
@@ -248,9 +250,9 @@ class AMOSMLOps:
         name: str,
         version: str,
         model_path: str,
-        metrics: Dict[str, float] = None,
-        parameters: Dict[str, Any] = None,
-        tags: List[str] = None,
+        metrics: dict[str, float] = None,
+        parameters: dict[str, Any] = None,
+        tags: list[str] = None,
         experiment_id: str = None,
         description: str = "",
     ) -> ModelVersion:
@@ -341,9 +343,9 @@ class AMOSMLOps:
         self,
         name_pattern: str = None,
         stage: Optional[ModelStage] = None,
-        tags: List[str] = None,
-        min_metric: Tuple[str, float] = None,
-    ) -> List[ModelVersion]:
+        tags: list[str] = None,
+        min_metric: tuple[str, float] = None,
+    ) -> list[ModelVersion]:
         """Search registered models with filters."""
         results = []
 
@@ -371,8 +373,8 @@ class AMOSMLOps:
         return sorted(results, key=lambda m: m.created_at, reverse=True)
 
     def compare_models(
-        self, model_refs: List[tuple[str, str]], metrics: List[str] = None
-    ) -> Dict[str, Any]:
+        self, model_refs: list[tuple[str, str]], metrics: list[str] = None
+    ) -> dict[str, Any]:
         """Compare multiple model versions."""
         models = []
         for name, version in model_refs:
@@ -415,7 +417,7 @@ class AMOSMLOps:
     # ==================== Experiment Tracking ====================
 
     def create_experiment(
-        self, name: str, parameters: Dict[str, Any] = None, parent_experiment_id: str = None
+        self, name: str, parameters: dict[str, Any] = None, parent_experiment_id: str = None
     ) -> Experiment:
         """Create new experiment."""
         experiment_id = f"exp_{secrets.token_hex(8)}"
@@ -461,7 +463,7 @@ class AMOSMLOps:
             exp.status = status
             exp.completed_at = time.time()
 
-    def compare_experiments(self, experiment_ids: List[str], metric: str = None) -> Dict[str, Any]:
+    def compare_experiments(self, experiment_ids: list[str], metric: str = None) -> dict[str, Any]:
         """Compare multiple experiments."""
         experiments = [self.experiments.get(eid) for eid in experiment_ids]
         experiments = [e for e in experiments if e]
@@ -486,9 +488,11 @@ class AMOSMLOps:
         if metric:
             best_exp = max(
                 experiments,
-                key=lambda e: e.metrics.get(metric, [float("-inf")])[-1]
-                if e.metrics.get(metric)
-                else float("-inf"),
+                key=lambda e: (
+                    e.metrics.get(metric, [float("-inf")])[-1]
+                    if e.metrics.get(metric)
+                    else float("-inf")
+                ),
             )
             comparison["best_by_metric"] = {
                 "metric": metric,
@@ -527,8 +531,8 @@ class AMOSMLOps:
 
     def deploy_ab_test(
         self,
-        model_a: Tuple[str, str],
-        model_b: Tuple[str, str],
+        model_a: tuple[str, str],
+        model_b: tuple[str, str],
         traffic_split: float = 0.5,
         duration_hours: float = 24.0,
     ) -> Deployment:
@@ -609,7 +613,7 @@ class AMOSMLOps:
         self.total_rollbacks += 1
         return True
 
-    def get_deployment_metrics(self, deployment_id: str) -> Dict[str, Any]:
+    def get_deployment_metrics(self, deployment_id: str) -> dict[str, Any]:
         """Get deployment performance metrics."""
         if deployment_id not in self.deployments:
             return None
@@ -656,8 +660,8 @@ class AMOSMLOps:
             self.performance_history[model_id] = self.performance_history[model_id][-1000:]
 
     def detect_drift(
-        self, model_id: str, reference_data: List[Any], current_data: List[Any]
-    ) -> Dict[str, Any]:
+        self, model_id: str, reference_data: list[Any], current_data: list[Any]
+    ) -> dict[str, Any]:
         """Detect data/concept drift."""
         # Simplified drift detection using statistical comparison
         if not reference_data or not current_data:
@@ -678,7 +682,7 @@ class AMOSMLOps:
             "current_mean": curr_mean,
         }
 
-    def get_model_performance(self, model_id: str, last_n_hours: float = 24.0) -> Dict[str, Any]:
+    def get_model_performance(self, model_id: str, last_n_hours: float = 24.0) -> dict[str, Any]:
         """Get aggregated model performance."""
         if model_id not in self.performance_history:
             return None
@@ -710,7 +714,7 @@ class AMOSMLOps:
 
     # ==================== Statistics & Health ====================
 
-    def get_mlops_stats(self) -> Dict[str, Any]:
+    def get_mlops_stats(self) -> dict[str, Any]:
         """Get comprehensive MLOps statistics."""
         # Count models by stage
         stage_counts = {stage.value: 0 for stage in ModelStage}

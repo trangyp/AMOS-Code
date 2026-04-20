@@ -14,8 +14,9 @@ Registries initialized:
 
 import json
 import sys
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 from pathlib import Path
 
 # Registry paths
@@ -69,8 +70,13 @@ REGISTRIES = {
             },
         },
         "primary_loop": [
-            "01_BRAIN", "02_SENSES", "03_IMMUNE", "04_BLOOD",
-            "05_NERVES", "06_MUSCLE", "07_METABOLISM"
+            "01_BRAIN",
+            "02_SENSES",
+            "03_IMMUNE",
+            "04_BLOOD",
+            "05_NERVES",
+            "06_MUSCLE",
+            "07_METABOLISM",
         ],
     },
     "agent_registry.json": {
@@ -98,10 +104,7 @@ REGISTRIES = {
         "version": "14.0.0",
         "created": datetime.now(timezone.utc).isoformat(),
         "engines": {
-            "coherence": {
-                "enabled": True,
-                "config": {"validation_level": "strict"}
-            },
+            "coherence": {"enabled": True, "config": {"validation_level": "strict"}},
             "axiom": {"enabled": True, "config": {"check_all": True}},
             "knowledge": {"enabled": True, "config": {"auto_load": True}},
         },
@@ -114,11 +117,7 @@ REGISTRIES = {
             "cycle_count": 0,
             "last_update": datetime.now(timezone.utc).isoformat(),
         },
-        "context": {
-            "environment": "production",
-            "domain": "neurosyncai.tech",
-            "version": "14.0.0"
-        },
+        "context": {"environment": "production", "domain": "neurosyncai.tech", "version": "14.0.0"},
     },
     "operator_profile.json": {
         "version": "14.0.0",
@@ -126,11 +125,7 @@ REGISTRIES = {
         "operator": {
             "name": "System Operator",
             "role": "administrator",
-            "preferences": {
-                "auto_start": True,
-                "notification_level": "all",
-                "default_cycles": 1
-            },
+            "preferences": {"auto_start": True, "notification_level": "all", "default_cycles": 1},
         },
     },
 }

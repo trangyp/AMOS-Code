@@ -13,11 +13,8 @@ Usage:
     result = kernel.execute("rsa_decrypt", {...})
 """
 
-
 import math
-import random
-from dataclasses import dataclass
-from typing import Any, Callable, Tuple
+from collections.abc import Callable
 
 import numpy as np
 from numpy.typing import NDArray
@@ -25,14 +22,18 @@ from numpy.typing import NDArray
 # Optional Numba for performance
 try:
     from numba import jit, prange
+
     NUMBA_AVAILABLE = True
 except ImportError:
     NUMBA_AVAILABLE = False
+
     # Create dummy decorator
     def jit(*args, **kwargs):
         def decorator(func):
             return func
+
         return decorator if args and callable(args[0]) else decorator
+
 
 from amos_equation_kernel import (
     EquationKernel,
@@ -104,9 +105,9 @@ class ExtendedEquationKernel(EquationKernel):
                 formula=r"\sigma(x) = \frac{1}{1 + e^{-x}}",
                 description="Sigmoid activation function",
                 invariants=["output in (0, 1)", "sigma(0) = 0.5"],
-                parameters={"x": "input value"}
+                parameters={"x": "input value"},
             ),
-            self._sigmoid
+            self._sigmoid,
         )
 
         self._register(
@@ -117,9 +118,9 @@ class ExtendedEquationKernel(EquationKernel):
                 formula=r"ReLU(x) = max(0, x)",
                 description="Rectified Linear Unit",
                 invariants=["output >= 0", "linear for x > 0"],
-                parameters={"x": "input value"}
+                parameters={"x": "input value"},
             ),
-            self._relu
+            self._relu,
         )
 
         self._register(
@@ -130,9 +131,9 @@ class ExtendedEquationKernel(EquationKernel):
                 formula=r"L = -\sum y_i \log(\hat{y}_i)",
                 description="Cross-entropy loss for classification",
                 invariants=["L >= 0", "L = 0 when perfect prediction"],
-                parameters={"y_true": "true labels", "y_pred": "predictions"}
+                parameters={"y_true": "true labels", "y_pred": "predictions"},
             ),
-            self._cross_entropy_loss
+            self._cross_entropy_loss,
         )
 
         self._register(
@@ -143,9 +144,9 @@ class ExtendedEquationKernel(EquationKernel):
                 formula=r"MSE = \frac{1}{n}\sum (y_i - \hat{y}_i)^2",
                 description="Mean Squared Error loss",
                 invariants=["MSE >= 0", "MSE = 0 when perfect"],
-                parameters={"y_true": "true values", "y_pred": "predictions"}
+                parameters={"y_true": "true values", "y_pred": "predictions"},
             ),
-            self._mse_loss
+            self._mse_loss,
         )
 
         self._register(
@@ -156,9 +157,9 @@ class ExtendedEquationKernel(EquationKernel):
                 formula=r"\hat{x} = \frac{x - \mu_B}{\sqrt{\sigma_B^2 + \epsilon}}",
                 description="Batch normalization",
                 invariants=["mean ≈ 0", "std ≈ 1"],
-                parameters={"x": "input", "mean": "batch mean", "var": "batch variance"}
+                parameters={"x": "input", "mean": "batch mean", "var": "batch variance"},
             ),
-            self._batchnorm
+            self._batchnorm,
         )
 
         self._register(
@@ -169,9 +170,9 @@ class ExtendedEquationKernel(EquationKernel):
                 formula=r"w_{t+1} = w_t - \eta \nabla L(w_t)",
                 description="Single gradient descent step",
                 invariants=["loss decreases with proper learning rate"],
-                parameters={"w": "weights", "grad": "gradient", "lr": "learning rate"}
+                parameters={"w": "weights", "grad": "gradient", "lr": "learning rate"},
             ),
-            self._gradient_descent_step
+            self._gradient_descent_step,
         )
 
         self._register(
@@ -182,9 +183,14 @@ class ExtendedEquationKernel(EquationKernel):
                 formula=r"m_t = \beta_1 m_{t-1} + (1-\beta_1)g_t",
                 description="Adam optimizer update rule",
                 invariants=["adaptive learning rates"],
-                parameters={"m": "first moment", "v": "second moment", "g": "gradient", "t": "timestep"}
+                parameters={
+                    "m": "first moment",
+                    "v": "second moment",
+                    "g": "gradient",
+                    "t": "timestep",
+                },
             ),
-            self._adam_update
+            self._adam_update,
         )
 
         self._register(
@@ -195,9 +201,9 @@ class ExtendedEquationKernel(EquationKernel):
                 formula=r"O = \frac{I - K + 2P}{S} + 1",
                 description="2D convolution output size",
                 invariants=["O > 0 for valid parameters"],
-                parameters={"input_size": "I", "kernel": "K", "padding": "P", "stride": "S"}
+                parameters={"input_size": "I", "kernel": "K", "padding": "P", "stride": "S"},
             ),
-            self._conv2d_output_size
+            self._conv2d_output_size,
         )
 
         # =========================================================================
@@ -212,9 +218,9 @@ class ExtendedEquationKernel(EquationKernel):
                 formula=r"D_{KL}(P||Q) = \sum p(x) \log\frac{p(x)}{q(x)}",
                 description="Kullback-Leibler divergence",
                 invariants=["D_KL >= 0", "D_KL = 0 iff P = Q"],
-                parameters={"p": "distribution P", "q": "distribution Q"}
+                parameters={"p": "distribution P", "q": "distribution Q"},
             ),
-            self._kl_divergence
+            self._kl_divergence,
         )
 
         self._register(
@@ -225,9 +231,9 @@ class ExtendedEquationKernel(EquationKernel):
                 formula=r"H(Y|X) = -\sum p(x,y) \log p(y|x)",
                 description="Conditional entropy",
                 invariants=["0 <= H(Y|X) <= H(Y)"],
-                parameters={"joint_prob": "joint distribution"}
+                parameters={"joint_prob": "joint distribution"},
             ),
-            self._conditional_entropy
+            self._conditional_entropy,
         )
 
         # =========================================================================
@@ -242,9 +248,9 @@ class ExtendedEquationKernel(EquationKernel):
                 formula=r"a^b \mod n",
                 description="Fast modular exponentiation",
                 invariants=["result in [0, n-1]"],
-                parameters={"base": "a", "exp": "b", "mod": "n"}
+                parameters={"base": "a", "exp": "b", "mod": "n"},
             ),
-            self._modular_exponentiation
+            self._modular_exponentiation,
         )
 
         self._register(
@@ -255,9 +261,9 @@ class ExtendedEquationKernel(EquationKernel):
                 formula=r"gcd(a, b) = gcd(b, a \mod b)",
                 description="Euclidean algorithm for GCD",
                 invariants=["gcd divides both a and b"],
-                parameters={"a": "first number", "b": "second number"}
+                parameters={"a": "first number", "b": "second number"},
             ),
-            self._gcd
+            self._gcd,
         )
 
         # =========================================================================
@@ -272,9 +278,9 @@ class ExtendedEquationKernel(EquationKernel):
                 formula=r"p_c = 1 - \frac{1}{R_0}",
                 description="Herd immunity threshold",
                 invariants=["0 <= p_c < 1 for R_0 > 1"],
-                parameters={"R0": "basic reproduction number"}
+                parameters={"R0": "basic reproduction number"},
             ),
-            self._herd_immunity_threshold
+            self._herd_immunity_threshold,
         )
 
         self._register(
@@ -285,9 +291,9 @@ class ExtendedEquationKernel(EquationKernel):
                 formula=r"T_d = \frac{\ln(2)}{r}",
                 description="Epidemic doubling time",
                 invariants=["T_d > 0 for r > 0"],
-                parameters={"growth_rate": "r"}
+                parameters={"growth_rate": "r"},
             ),
-            self._doubling_time
+            self._doubling_time,
         )
 
         # =========================================================================
@@ -302,9 +308,9 @@ class ExtendedEquationKernel(EquationKernel):
                 formula=r"\rho = \frac{\lambda}{\mu}",
                 description="M/M/1 queue utilization",
                 invariants=["0 <= rho < 1 for stability"],
-                parameters={"arrival_rate": "lambda", "service_rate": "mu"}
+                parameters={"arrival_rate": "lambda", "service_rate": "mu"},
             ),
-            self._mm1_utilization
+            self._mm1_utilization,
         )
 
         self._register(
@@ -315,9 +321,9 @@ class ExtendedEquationKernel(EquationKernel):
                 formula=r"W = \frac{1}{\mu - \lambda}",
                 description="M/M/1 average wait time",
                 invariants=["W > 0 for stable system"],
-                parameters={"arrival_rate": "lambda", "service_rate": "mu"}
+                parameters={"arrival_rate": "lambda", "service_rate": "mu"},
             ),
-            self._mm1_avg_wait
+            self._mm1_avg_wait,
         )
 
         # =========================================================================
@@ -332,9 +338,9 @@ class ExtendedEquationKernel(EquationKernel):
                 formula=r"X_k = \sum_{n=0}^{N-1} x_n e^{-i2\pi kn/N}",
                 description="Discrete Fourier Transform",
                 invariants=["invertible", "Parseval's theorem holds"],
-                parameters={"x": "time domain signal"}
+                parameters={"x": "time domain signal"},
             ),
-            self._dft
+            self._dft,
         )
 
         self._register(
@@ -345,9 +351,9 @@ class ExtendedEquationKernel(EquationKernel):
                 formula=r"G(x) = \frac{1}{\sqrt{2\pi}\sigma} e^{-\frac{x^2}{2\sigma^2}}",
                 description="1D Gaussian filter",
                 invariants=["integral = 1", "symmetric"],
-                parameters={"x": "position", "sigma": "standard deviation"}
+                parameters={"x": "position", "sigma": "standard deviation"},
             ),
-            self._gaussian_filter
+            self._gaussian_filter,
         )
 
         # =========================================================================
@@ -362,9 +368,9 @@ class ExtendedEquationKernel(EquationKernel):
                 formula=r"v' = -e \cdot v",
                 description="Post-collision velocity with restitution",
                 invariants=["|v'| <= |v| for e <= 1"],
-                parameters={"velocity": "v", "restitution": "e"}
+                parameters={"velocity": "v", "restitution": "e"},
             ),
-            self._restitution_velocity
+            self._restitution_velocity,
         )
 
         self._register(
@@ -375,9 +381,9 @@ class ExtendedEquationKernel(EquationKernel):
                 formula=r"F = -kx",
                 description="Hooke's law spring force",
                 invariants=["F = 0 at equilibrium", "restoring force"],
-                parameters={"displacement": "x", "spring_constant": "k"}
+                parameters={"displacement": "x", "spring_constant": "k"},
             ),
-            self._spring_force
+            self._spring_force,
         )
 
         # =========================================================================
@@ -392,9 +398,9 @@ class ExtendedEquationKernel(EquationKernel):
                 formula=r"x_{t+1} = Ax_t + Bu_t",
                 description="Discrete-time state transition",
                 invariants=["linear dynamics"],
-                parameters={"A": "state matrix", "B": "input matrix", "x": "state", "u": "input"}
+                parameters={"A": "state matrix", "B": "input matrix", "x": "state", "u": "input"},
             ),
-            self._state_transition
+            self._state_transition,
         )
 
     # ========================================================================
@@ -424,21 +430,12 @@ class ExtendedEquationKernel(EquationKernel):
         return float(np.mean((y_true - y_pred) ** 2))
 
     @staticmethod
-    def _batchnorm(
-        x: ArrayType,
-        mean: float,
-        var: float,
-        eps: float = 1e-5
-    ) -> ArrayType:
+    def _batchnorm(x: ArrayType, mean: float, var: float, eps: float = 1e-5) -> ArrayType:
         """Batch normalization."""
         return (x - mean) / np.sqrt(var + eps)
 
     @staticmethod
-    def _gradient_descent_step(
-        w: ArrayType,
-        grad: ArrayType,
-        lr: float
-    ) -> ArrayType:
+    def _gradient_descent_step(w: ArrayType, grad: ArrayType, lr: float) -> ArrayType:
         """Single gradient descent step."""
         return w - lr * grad
 
@@ -450,23 +447,18 @@ class ExtendedEquationKernel(EquationKernel):
         t: int,
         beta1: float = 0.9,
         beta2: float = 0.999,
-        eps: float = 1e-8
-    ) -> Tuple[ArrayType, ArrayType, ArrayType]:
+        eps: float = 1e-8,
+    ) -> tuple[ArrayType, ArrayType, ArrayType]:
         """Adam optimizer update."""
         m_new = beta1 * m + (1 - beta1) * g
-        v_new = beta2 * v + (1 - beta2) * (g ** 2)
-        m_hat = m_new / (1 - beta1 ** t)
-        v_hat = v_new / (1 - beta2 ** t)
+        v_new = beta2 * v + (1 - beta2) * (g**2)
+        m_hat = m_new / (1 - beta1**t)
+        v_hat = v_new / (1 - beta2**t)
         update = m_hat / (np.sqrt(v_hat) + eps)
         return m_new, v_new, update
 
     @staticmethod
-    def _conv2d_output_size(
-        input_size: int,
-        kernel: int,
-        padding: int = 0,
-        stride: int = 1
-    ) -> int:
+    def _conv2d_output_size(input_size: int, kernel: int, padding: int = 0, stride: int = 1) -> int:
         """Calculate 2D convolution output size."""
         return (input_size - kernel + 2 * padding) // stride + 1
 
@@ -517,7 +509,7 @@ class ExtendedEquationKernel(EquationKernel):
     def _doubling_time(growth_rate: float) -> float:
         """Epidemic doubling time."""
         if growth_rate <= 0:
-            return float('inf')
+            return float("inf")
         return math.log(2) / growth_rate
 
     @staticmethod
@@ -547,7 +539,7 @@ class ExtendedEquationKernel(EquationKernel):
     @staticmethod
     def _gaussian_filter(x: ArrayType, sigma: float) -> ArrayType:
         """1D Gaussian filter."""
-        return np.exp(-x**2 / (2 * sigma**2)) / (np.sqrt(2 * np.pi) * sigma)
+        return np.exp(-(x**2) / (2 * sigma**2)) / (np.sqrt(2 * np.pi) * sigma)
 
     @staticmethod
     def _restitution_velocity(velocity: float, restitution: float) -> float:
@@ -560,12 +552,7 @@ class ExtendedEquationKernel(EquationKernel):
         return -spring_constant * displacement
 
     @staticmethod
-    def _state_transition(
-        A: ArrayType,
-        B: ArrayType,
-        x: ArrayType,
-        u: ArrayType
-    ) -> ArrayType:
+    def _state_transition(A: ArrayType, B: ArrayType, x: ArrayType, u: ArrayType) -> ArrayType:
         """Discrete-time state transition."""
         return A @ x + B @ u
 
@@ -587,6 +574,7 @@ if __name__ == "__main__":
 
     # Count by domain
     from collections import Counter
+
     domains = Counter(eq.domain for eq in all_eqs)
     print("\nBy domain:")
     for domain, count in domains.most_common():

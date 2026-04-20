@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 #!/usr/bin/env python3
 """AMOS Event Bus - Asynchronous messaging for 58+ components."""
 
@@ -6,7 +8,7 @@ import time
 from collections import defaultdict, deque
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 try:
     import redis
@@ -33,7 +35,7 @@ class EventSubscription:
     """Subscription to event types."""
 
     subscriber_id: str
-    event_types: List[str]
+    event_types: list[str]
     callback: Callable[[Event], Any]
     async_callback: bool = False
 
@@ -54,7 +56,7 @@ class AMOSEventBus:
 
     def __init__(self, redis_url: str = None):
         """Initialize the event bus."""
-        self.subscriptions: Dict[str, list[EventSubscription]] = defaultdict(list)
+        self.subscriptions: dict[str, list[EventSubscription]] = defaultdict(list)
         self.event_history: deque[Event] = deque(maxlen=1000)
         self.max_history = 1000
         self.event_count = 0
@@ -72,7 +74,7 @@ class AMOSEventBus:
     def subscribe(
         self,
         subscriber_id: str,
-        event_types: List[str],
+        event_types: list[str],
         callback: Callable[[Event], Any],
         async_callback: bool = False,
     ) -> EventSubscription:
@@ -96,7 +98,7 @@ class AMOSEventBus:
 
         return subscription
 
-    def unsubscribe(self, subscriber_id: str, event_types: List[str] = None):
+    def unsubscribe(self, subscriber_id: str, event_types: list[str] = None):
         """Unsubscribe from events."""
         types_to_check = event_types or list(self.subscriptions.keys())
 
@@ -148,14 +150,14 @@ class AMOSEventBus:
         event = Event(type=event_type, payload=payload, source=source, priority=priority)
         return self.publish(event)
 
-    def get_event_history(self, event_type: str = None, limit: int = 100) -> List[Event]:
+    def get_event_history(self, event_type: str = None, limit: int = 100) -> list[Event]:
         """Get event history, optionally filtered by type."""
         events = self.event_history
         if event_type:
             events = [e for e in events if e.type == event_type]
         return events[-limit:]
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get event bus statistics."""
         subscriber_count = sum(len(subs) for subs in self.subscriptions.values())
         unique_subscribers = len(

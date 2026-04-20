@@ -1,4 +1,6 @@
-from typing import Any, Dict, Optional
+from __future__ import annotations
+
+from typing import Any
 
 """Resilient WebSocket handling with error recovery.
 
@@ -18,8 +20,8 @@ class WebSocketConnectionManager:
     """Manage WebSocket connections with resilience features."""
 
     def __init__(self):
-        self.active_connections: Dict[str, WebSocket] = {}
-        self.connection_metadata: Dict[str, dict[str, Any]] = {}
+        self.active_connections: dict[str, WebSocket] = {}
+        self.connection_metadata: dict[str, dict[str, Any]] = {}
 
     async def connect(self, websocket: WebSocket, client_id: str) -> None:
         """Accept and track a new WebSocket connection."""
@@ -49,7 +51,7 @@ class WebSocketConnectionManager:
                 )
                 del self.connection_metadata[client_id]
 
-    async def send_personal_message(self, message: Dict[str, Any], client_id: str) -> bool:
+    async def send_personal_message(self, message: dict[str, Any], client_id: str) -> bool:
         """Send message to specific client with error handling."""
         if client_id not in self.active_connections:
             return False
@@ -64,7 +66,7 @@ class WebSocketConnectionManager:
             self.disconnect(client_id)
             return False
 
-    async def broadcast(self, message: Dict[str, Any]) -> int:
+    async def broadcast(self, message: dict[str, Any]) -> int:
         """Broadcast message to all connected clients.
 
         Returns number of successful deliveries.
@@ -118,7 +120,7 @@ class WebSocketConnectionManager:
 
         return len(stale_clients)
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get WebSocket connection statistics."""
         return {
             "active_connections": len(self.active_connections),
@@ -139,7 +141,7 @@ async def handle_websocket_with_resilience(
     websocket: WebSocket,
     client_id: str,
     message_handler: callable,
-    manager: Optional[WebSocketConnectionManager] = None,
+    manager: WebSocketConnectionManager = None,
 ) -> None:
     """Handle WebSocket connection with full error resilience.
 

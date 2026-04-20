@@ -87,14 +87,14 @@ class ChaosEngine:
         success_rate = sum(checks) / len(checks)
         passed = success_rate >= 0.95
 
-        print(f"Steady state: {success_rate*100:.1f}% healthy - {'PASS' if passed else 'FAIL'}")
+        print(f"Steady state: {success_rate * 100:.1f}% healthy - {'PASS' if passed else 'FAIL'}")
         return passed
 
     async def experiment_cpu_stress(
         self, duration: int = 300, intensity: float = 0.8
     ) -> ExperimentResult:
         """CPU stress test."""
-        print(f"Starting CPU stress: {intensity*100}% for {duration}s")
+        print(f"Starting CPU stress: {intensity * 100}% for {duration}s")
 
         # Inject CPU stress
         process = subprocess.Popen(
@@ -108,7 +108,7 @@ class ChaosEngine:
         while time.time() - start < duration:
             health = await self.check_health()
             if not health["healthy"]:
-                errors.append(f"Health check failed at {time.time()-start:.0f}s")
+                errors.append(f"Health check failed at {time.time() - start:.0f}s")
             await asyncio.sleep(10)
 
         process.terminate()

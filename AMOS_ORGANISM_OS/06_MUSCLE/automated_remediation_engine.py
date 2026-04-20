@@ -22,16 +22,11 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Dict, List, Optional
-
-# Add paths for imports
-sys.path.insert(0, str(Path(__file__).parent.parent / "01_BRAIN"))
-sys.path.insert(0, str(Path(__file__).parent.parent / "03_IMMUNE"))
-
+from typing import Any
 
 try:
-    from cognitive_equation_layer import CognitiveEquationLayer
-    from equation_knowledge_bridge import EquationEntry
+    from AMOS_ORGANISM_OS.BRAIN.cognitive_equation_layer import CognitiveEquationLayer
+    from AMOS_ORGANISM_OS.BRAIN.equation_knowledge_bridge import EquationEntry
 
     BRAIN_AVAILABLE = True
 except ImportError:
@@ -81,7 +76,7 @@ class FixProposal:
     original_code: str
     proposed_code: str
     confidence: float
-    equation_refs: List[str] = field(default_factory=list)
+    equation_refs: list[str] = field(default_factory=list)
     validation_passed: bool = False
 
 
@@ -93,17 +88,17 @@ class RemediationRecord:
     timestamp: str
     original_code: str
     language: str
-    violations: List[VerificationResult]
-    fixes: List[FixProposal]
+    violations: list[VerificationResult]
+    fixes: list[FixProposal]
     status: RemediationStatus
-    applied_fix: Optional[FixProposal] = None
+    applied_fix: FixProposal = None
     error_message: str = None
 
 
 class CodeFixGenerator:
     """Generates fixes based on violation type and equation knowledge."""
 
-    def __init__(self, equation_layer: Optional[CognitiveEquationLayer] = None):
+    def __init__(self, equation_layer: CognitiveEquationLayer = None):
         self.equation_layer = equation_layer
 
     def generate_fix(
@@ -111,7 +106,7 @@ class CodeFixGenerator:
         violation: VerificationResult,
         code_context: str,
         language: str,
-    ) -> Optional[FixProposal]:
+    ) -> FixProposal:
         """Generate appropriate fix for violation."""
         if violation.category == InvariantCategory.MEMORY_SAFETY:
             return self._fix_memory_safety(violation, code_context, language)
@@ -126,7 +121,7 @@ class CodeFixGenerator:
         violation: VerificationResult,
         code: str,
         language: str,
-    ) -> Optional[FixProposal]:
+    ) -> FixProposal:
         """Generate memory safety fix."""
         # Python: Fix mutable default arguments
         if language == "python" and "mutable default" in str(violation.violations):
@@ -188,7 +183,7 @@ class CodeFixGenerator:
         violation: VerificationResult,
         code: str,
         language: str,
-    ) -> Optional[FixProposal]:
+    ) -> FixProposal:
         """Generate type safety fix."""
         if language == "python":
             # Add type hints to function
@@ -237,7 +232,7 @@ class CodeFixGenerator:
         violation: VerificationResult,
         code: str,
         language: str,
-    ) -> Optional[FixProposal]:
+    ) -> FixProposal:
         """Generate correctness fix."""
         if "recursion" in str(violation.evidence).lower():
             # Add base case for recursion
@@ -272,11 +267,11 @@ class AutomatedRemediationEngine:
     Closes the loop between detection and repair.
     """
 
-    def __init__(self, organism_root: Optional[Path] = None):
+    def __init__(self, organism_root: Path = None):
         self.organism_root = organism_root or Path(__file__).parent.parent
-        self.verifier: Optional[InvariantVerificationEngine] = None
-        self.fix_generator: Optional[CodeFixGenerator] = None
-        self.history: List[RemediationRecord] = []
+        self.verifier: InvariantVerificationEngine = None
+        self.fix_generator: CodeFixGenerator = None
+        self.history: list[RemediationRecord] = []
 
         if IMMUNE_AVAILABLE:
             self.verifier = InvariantVerificationEngine(self.organism_root)
@@ -379,7 +374,7 @@ class AutomatedRemediationEngine:
         # Check if original violation is resolved
         return len(new_violations) < fix.confidence
 
-    def get_remediation_report(self) -> Dict[str, Any]:
+    def get_remediation_report(self) -> dict[str, Any]:
         """Generate summary report."""
         total = len(self.history)
         applied = sum(1 for r in self.history if r.status == RemediationStatus.APPLIED)
@@ -393,7 +388,7 @@ class AutomatedRemediationEngine:
             "fix_types": self._count_fix_types(),
         }
 
-    def _count_fix_types(self) -> Dict[str, int]:
+    def _count_fix_types(self) -> dict[str, int]:
         """Count fix types in history."""
         counts = {}
         for record in self.history:

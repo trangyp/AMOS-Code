@@ -1,4 +1,6 @@
-from typing import Any, Dict, Optional, Set
+from __future__ import annotations
+
+from typing import Any
 
 """Proactive Inference Engine for AMOS Brain
 
@@ -11,10 +13,12 @@ Architecture:
 - Refinement: Update response if deep path finds better answer
 """
 
+
 import asyncio
 import time
 from dataclasses import dataclass
 from datetime import datetime, timezone
+
 UTC = timezone.utc
 from enum import Enum, auto
 
@@ -52,15 +56,14 @@ class DeliberationState:
     deliberation_id: str
     query: str
     start_time: datetime
-    fast_result: Optional[InferenceResult] = None
-    refined_result: Optional[InferenceResult] = None
+    fast_result: InferenceResult | None = None
+    refined_result: InferenceResult | None = None
     complete: bool = False
     iterations: int = 0
 
 
 class ProactiveInferenceEngine:
-    """
-    Proactive inference with bounded latency.
+    """Proactive inference with bounded latency.
 
     Strategy:
     1. Return fast provisional response immediately
@@ -70,7 +73,7 @@ class ProactiveInferenceEngine:
 
     def __init__(
         self,
-        kernel: Optional[AMOSKernelRuntime] = None,
+        kernel: AMOSKernelRuntime | None = None,
         fast_budget_ms: float = 100.0,
         max_background_time_ms: float = 5000.0,
         refinement_threshold: float = 0.3,
@@ -81,12 +84,11 @@ class ProactiveInferenceEngine:
         self.refinement_threshold = refinement_threshold
 
         # Background deliberations
-        self._deliberations: Dict[str, DeliberationState] = {}
-        self._background_tasks: Set[asyncio.Task[Any]] = set()
+        self._deliberations: dict[str, DeliberationState] = {}
+        self._background_tasks: set[asyncio.Task[Any]] = set()
 
-    async def infer(self, query: str, context: Dict[str, Any] = None) -> InferenceResult:
-        """
-        Main inference entry point.
+    async def infer(self, query: str, context: dict[str, Any] = None) -> InferenceResult:
+        """Main inference entry point.
 
         Returns fast result immediately, starts background refinement.
         """
@@ -117,7 +119,7 @@ class ProactiveInferenceEngine:
     async def _fast_inference(
         self,
         query: str,
-        context: Dict[str, Any],
+        context: dict[str, Any],
         start_time: float,
     ) -> InferenceResult:
         """Fast inference under budget constraint."""
@@ -162,7 +164,7 @@ class ProactiveInferenceEngine:
         self,
         deliberation_id: str,
         query: str,
-        context: Dict[str, Any],
+        context: dict[str, Any],
     ) -> None:
         """Background deep deliberation."""
         state = self._deliberations.get(deliberation_id)
@@ -205,7 +207,7 @@ class ProactiveInferenceEngine:
         state.complete = True
         state.iterations += 1
 
-    def get_refinement(self, deliberation_id: str) -> Optional[InferenceResult]:
+    def get_refinement(self, deliberation_id: str) -> InferenceResult | None:
         """Get refined result if available."""
         state = self._deliberations.get(deliberation_id)
         if state and state.refined_result:
@@ -219,7 +221,7 @@ class ProactiveInferenceEngine:
 
 
 # Global engine instance
-_global_engine: Optional[ProactiveInferenceEngine] = None
+_global_engine: ProactiveInferenceEngine | None = None
 
 
 def get_proactive_engine() -> ProactiveInferenceEngine:

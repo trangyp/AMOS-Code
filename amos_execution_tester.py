@@ -28,13 +28,14 @@ import sys
 import time
 import traceback
 import uuid
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 
 # Test configuration
 TEST_CODE = """
 import sys
 import time
-from typing import List
 
 print("Starting execution test...")
 for i in range(5):
@@ -73,7 +74,7 @@ class ExecutionTester:
     """Integration tester for AMOS Execution System."""
 
     def __init__(self):
-        self.results: List[TestResult] = []
+        self.results: list[TestResult] = []
         self.base_url = "http://localhost:8000"
 
     async def run_all_tests(self) -> bool:

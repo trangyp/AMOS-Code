@@ -31,20 +31,153 @@ classifiers = [
     "Intended Audience :: Developers",
     "License :: OSI Approved :: Apache Software License",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dependencies = [
     "pydantic>=2.0.0",
     "typing-extensions>=4.0.0",
+    "numpy>=1.24.0",
+    "pyyaml>=6.0",
+    "structlog>=23.0.0",
+    "prometheus-client>=0.19.0",
+    "httpx>=0.25.0",
+    "python-dotenv>=1.0.0",
+    "tenacity>=8.2.0",
+    "cachetools>=5.3.0",
+    # Core runtime dependencies (previously in requirements.txt)
+    "aiohttp>=3.9.0",
+    "orjson>=3.9.0",
+    "pandas>=2.1.0",
+    "python-dateutil>=2.8.0",
+    "pytz>=2023.3",
+    "requests>=2.31.0",
+    "rich>=13.7.0",
+    "typer[all]>=0.9.0",
+    "ujson>=5.8.0",
 ]
 
 [project.optional-dependencies]
+server = [
+    "fastapi>=0.104.0",
+    "uvicorn[standard]>=0.24.0",
+    "websockets>=12.0",
+    "python-multipart>=0.0.6",
+    "starlette>=0.27.0",
+]
+database = [
+    "sqlalchemy[asyncio]>=2.0.0",
+    "asyncpg>=0.29.0",
+    "alembic>=1.12.0",
+    "pgvector>=0.2.0",
+]
+security = [
+    "python-jose[cryptography]>=3.3.0",
+    "passlib[bcrypt]>=1.7.4",
+    "slowapi>=0.1.0",
+    "bcrypt>=4.0.0",
+    "cryptography>=41.0.0",
+    "secure>=0.3.0",
+]
+events = [
+    "redis>=5.0.0",
+    "celery>=5.3.0",
+    "kafka-python>=2.0.0",
+    "aiokafka>=0.9.0",
+    "kombu>=5.3.0",
+    "nats-py>=2.5.0",
+]
+ml = [
+    "torch>=2.0.0",
+    "transformers>=4.35.0",
+    "sentence-transformers>=2.2.0",
+    "openai>=1.0.0",
+]
+graphql = [
+    "strawberry-graphql[fastapi]>=0.213.0",
+]
+observability = [
+    "opentelemetry-api>=1.21.0",
+    "opentelemetry-exporter-otlp>=1.21.0",
+    "opentelemetry-instrumentation-fastapi>=0.42b0",
+    "opentelemetry-sdk>=1.21.0",
+]
+search = [
+    "elasticsearch[async]>=8.11.0",
+    "neo4j>=5.15.0",
+]
+reports = [
+    "xlsxwriter>=3.1.0",
+    "openpyxl>=3.1.0",
+    "reportlab>=4.0.0",
+]
+# ============================================================================
+# AMOS NUMERIC KERNEL - High-performance computation layer
+# Use: pip install -e ".[numeric]"
+# ============================================================================
+numeric = [
+    "numpy>=1.26.0",           # Vectorized array computing
+    "polars>=0.20.0",          # High-performance DataFrames
+    "numba>=0.59.0",           # JIT compilation for hot loops
+    "jax[cpu]>=0.4.20",        # JIT + autodiff (CPU baseline)
+    "jaxlib>=0.4.20",          # JAX runtime
+]
+numeric-gpu = [
+    "numpy>=1.26.0",
+    "polars>=0.20.0",
+    "numba>=0.59.0",
+    "jax[cuda12_pip]>=0.4.20", # JIT + autodiff with CUDA
+    "jaxlib>=0.4.20",
+]
+testing = [
+    "faker>=22.0.0",
+]
 clawspring = ["clawspring"]
+
+# ============================================================================
+# AMOS TOOL LATTICE - Six-Kernel Architecture (Non-negotiable first order)
+# ============================================================================
+
+# Kernel 1: Bootstrap (uv, pre-commit installed via system)
+bootstrap = []
+
+# Kernel 2: Schema & Deterministic Core (Pydantic, Hypothesis)
+schema = ["pydantic>=2.5.0", "hypothesis>=6.92.0"]
+
+# Kernel 3: Numeric Speed (NumPy, Polars, Numba, JAX)
+numeric = ["numpy>=1.26.0", "polars>=0.20.0", "numba>=0.59.0"]
+numeric-gpu = ["numpy>=1.26.0", "polars>=0.20.0", "numba>=0.59.0", "jax[cuda12_pip]>=0.4.20", "jaxlib>=0.4.20"]
+
+# Kernel 4: Code-Agent (Aider)
+agent = ["aider-chat>=0.24.0"]
+
+# Kernel 5: Enforcement (Ruff, Import Linter, jscpd, deptry, Bandit, pip-audit)
+enforcement = [
+    "ruff>=0.1.0", "mypy>=1.7.0", "bandit[toml]>=1.7.7",
+    "pip-audit>=2.7.0", "import-linter>=2.0.0", "jscpd>=3.5.0",
+    "deptry>=0.15.0", "pre-commit>=3.6.0"
+]
+
+# Kernel 6: Test & Async (pytest, pytest-asyncio)
+test = ["pytest>=7.4.0", "pytest-asyncio>=0.21.0", "pytest-cov>=4.1.0"]
+
+# Layer-based extras (L0-L15 mapped to layers)
+l0-l1 = ["pydantic>=2.5.0", "hypothesis>=6.92.0", "import-linter>=2.0.0"]  # Law, Invariants
+l2-l3 = ["pydantic>=2.5.0", "ruff>=0.1.0", "mypy>=1.7.0", "deptry>=0.15.0"]  # State, Semantics
+l4-l5 = ["numpy>=1.26.0", "polars>=0.20.0", "numba>=0.59.0"]  # Dynamics, Math
+l6-l7 = ["pytest>=7.4.0", "pytest-asyncio>=0.21.0", "polars>=0.20.0"]  # Observation
+l8-l9 = ["hypothesis>=6.92.0", "pytest>=7.4.0", "import-linter>=2.0.0"]  # Constraints
+l10-l11 = ["aider-chat>=0.24.0"]  # Planning, Code-Agent
+l12-l15 = ["pydantic>=2.5.0", "hypothesis>=6.92.0", "pytest>=7.4.0", "bandit[toml]>=1.7.7"]  # Governance
+
+# Full tool lattice
+tool-lattice = ["amos-brain[schema,numeric,test,enforcement]"]
+tool-lattice-full = ["amos-brain[schema,numeric,test,enforcement,agent]"]
+
 dev = [
     "pytest>=7.0.0",
     "pytest-asyncio>=0.21.0",
@@ -56,12 +189,27 @@ dev = [
     "black>=23.0.0",
     "flake8>=6.0.0",
     "pre-commit>=3.5.0",
+    "faker>=22.0.0",
+    # AMOS Architecture Enforcement Kernel
+    "import-linter>=2.0.0",    # Layer architecture enforcement
+    "jscpd>=3.5.0",            # Duplicate code detection
+    "deptry>=0.15.0",          # Missing/unused dependency check
+    "bandit[toml]>=1.7.7",     # Security linting
+    "pip-audit>=2.7.0",        # Vulnerability scanning
+    "radon>=6.0.1",            # Complexity analysis
+    "scalene>=1.5.0",          # CPU/GPU/Memory profiler
+    "py-spy>=0.3.14",           # Sampling profiler (requires Rust)
+    "hypothesis>=6.92.0",      # Property-based testing
+]
+# Full installation: pip install -e ".[all]"
+all = [
+    "amos-brain[server,database,security,events,ml,graphql,observability,search,reports,testing]",
 ]
 
 [project.scripts]
-amos-brain = "amos_brain_launcher:main"
-amos-tutorial = "amos_brain_tutorial:main"
-amos-cli = "amos_brain_cli:main"
+# Primary AMOS Brain CLI - unified command surface
+amos-brain = "amos_brain.cli:main"
+# AMOSL Domain Specific Language (separate concern)
 amosl = "amosl.cli:main"
 
 [project.urls]
@@ -71,30 +219,28 @@ Repository = "https://github.com/trangyp/AMOS-Code"
 
 [tool.setuptools]
 include-package-data = true
-py-modules = [
-    "amos",
-    "amos_clawspring",
-    "amos_mcp_server",
-    "demo_amos_brain",
-    "amos_brain_launcher",
-    "amos_brain_tutorial",
-    "amos_brain_cli",
-    "amos_canon_integration",
-    "amos_cognitive_bridge",
-    "amos_core",
-    "amos_model_router",
-    "amos_cognitive_architecture",
-    "amos_action_gate",
-    "amos_kernel_router",
-    "amos_tool_registry",
-    "amos_fast_thinking",
-    "amos_super_brain",
-    "amos_brain_coding_tools",
-]
+# Note: Root-level py-modules removed to eliminate mixed packaging strategy.
+# All modules must be proper packages (directories with __init__.py).
+# Migration: move root .py files into appropriate packages.
 
 [tool.setuptools.packages.find]
-include = ["amos_brain", "amos_brain.*", "amosl", "amosl.*", "amos_model_fabric", "amos_model_fabric.*"]
-exclude = ["tests", "tests.*"]
+include = [
+    "amos_brain", "amos_brain.*",
+    "amosl", "amosl.*",
+    "amos_model_fabric", "amos_model_fabric.*",
+    "amos_self_evolution",
+    "amos_platform",
+    "multi_agent",
+    "skill",
+    "search",
+    "streaming",
+    "memory",
+    "analytics",
+    "repo_doctor", "repo_doctor.*",
+    "clawspring", "clawspring.*",
+    "AMOS_ORGANISM_OS", "AMOS_ORGANISM_OS.*",
+]
+exclude = ["tests", "tests.*", "server", "server.*", "backend", "backend.*"]
 
 [tool.setuptools.package-data]
 amos_brain = ["*.json", "*.md", "**/*.json", "**/*.md"]
@@ -149,20 +295,19 @@ ignore = [
     "D401",  # Non-imperative mood
     "S101",  # Use of assert detected
     "S311",  # Pseudo-random generators (acceptable for non-crypto)
-    "E402",  # Module level import not at top of file (intentional for sys.path.insert patterns)
     "F401",  # Unused import (intentional for optional dependency checking)
     "E501",  # Line too long (style issue)
     "SIM102", # collapsible-if (style issue)
     "E741",  # Ambiguous variable name (style issue)
     "N806",  # Non-lowercase variable in function (style issue)
-    "UP017", # datetime-timezone-utc (requires Python 3.11+, target is 3.9)
-    "UP045", # non-pep604-annotation-optional (style issue)
+    "UP017", # datetime-timezone-utc (requires Python 3.11+, target is 3.10)
+    "# UP045", # non-pep604-annotation-optional - Python 3.10+ supports X | None
     "UP028", # yield-in-for-loop (style issue)
     "E722",  # bare-except (style issue)
     "UP031", # printf-string-formatting (style issue)
     "UP035", # deprecated-import (style issue)
     "B007",  # unused-loop-control-variable (style issue)
-    "UP007", # non-pep604-annotation-union (style issue)
+    "# UP007", # non-pep604-annotation-union - Python 3.10+ supports X | Y
     "UP015", # redundant-open-modes (style issue)
 ]
 
@@ -196,7 +341,7 @@ skip-magic-trailing-comma = false
 line-ending = "auto"
 
 [tool.mypy]
-python_version = "3.9"
+python_version = "3.10"
 warn_return_any = true
 warn_unused_ignores = true
 disallow_untyped_defs = true
@@ -248,7 +393,7 @@ filterwarnings = [
 ]
 
 [tool.coverage.run]
-source = ["amos_brain", "amosl", "amos"]
+source = ["amos_brain", "amosl", "amos_model_fabric", "amos_self_evolution", "amos_platform"]
 branch = true
 omit = [
     "*/tests/*",

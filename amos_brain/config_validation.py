@@ -10,10 +10,11 @@ References:
 - Production schema validation patterns
 """
 
+from __future__ import annotations
 
 import os
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from pydantic import BaseModel, Field, ValidationError, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -199,7 +200,7 @@ class AMOSSettings(BaseSettings):
     # Observability
     observability: ObservabilityConfig = Field(default_factory=ObservabilityConfig)
 
-    def get_enabled_providers(self) -> List[LLMProviderConfig]:
+    def get_enabled_providers(self) -> list[LLMProviderConfig]:
         """Get list of enabled LLM providers with valid API keys."""
         providers = [self.openai, self.anthropic, self.kimi, self.ollama]
 
@@ -212,7 +213,7 @@ class AMOSSettings(BaseSettings):
 
         return enabled
 
-    def validate_for_production(self) -> List[str]:
+    def validate_for_production(self) -> list[str]:
         """Validate configuration for production deployment.
 
         Returns:
@@ -262,7 +263,7 @@ class ConfigValidator:
         """
         self.settings = settings or AMOSSettings()
 
-    def validate(self) -> Dict[str, Any]:
+    def validate(self) -> dict[str, Any]:
         """Run full validation and return report.
 
         Returns:

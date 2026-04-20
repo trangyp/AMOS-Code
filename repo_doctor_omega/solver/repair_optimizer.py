@@ -7,7 +7,7 @@ Computes optimal repair plans using:
 """
 
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Optional
 
 from .z3_model import RepairCandidate, Z3Model
 

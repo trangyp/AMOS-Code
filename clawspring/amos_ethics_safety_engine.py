@@ -1,12 +1,15 @@
 """AMOS Ethics & Safety Core Engine - Ethical reasoning and safety constraints."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass
 from enum import Enum, auto
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class EthicalFramework(Enum):
     """Major ethical frameworks."""
+
     UTILITARIAN = "utilitarian"
     DEONTOLOGICAL = "deontological"
     VIRTUE_ETHICS = "virtue_ethics"
@@ -17,14 +20,16 @@ class EthicalFramework(Enum):
 
 class SafetyLevel(Enum):
     """Safety constraint levels."""
-    CRITICAL = auto()      # Cannot be overridden
-    HIGH = auto()          # Strong preference
-    MEDIUM = auto()        # Consider carefully
-    LOW = auto()           # Advisory
+
+    CRITICAL = auto()  # Cannot be overridden
+    HIGH = auto()  # Strong preference
+    MEDIUM = auto()  # Consider carefully
+    LOW = auto()  # Advisory
 
 
 class RiskCategory(Enum):
     """Categories of risk."""
+
     PHYSICAL_HARM = "physical_harm"
     PSYCHOLOGICAL_HARM = "psychological_harm"
     PRIVACY_VIOLATION = "privacy_violation"
@@ -37,6 +42,7 @@ class RiskCategory(Enum):
 @dataclass
 class EthicalPrinciple:
     """Represents an ethical principle."""
+
     name: str
     description: str
     framework: EthicalFramework
@@ -47,6 +53,7 @@ class EthicalPrinciple:
 @dataclass
 class SafetyConstraint:
     """Represents a safety constraint."""
+
     id: str
     description: str
     level: SafetyLevel
@@ -58,47 +65,83 @@ class SafetyConstraint:
 @dataclass
 class EthicalDilemma:
     """Represents an ethical dilemma scenario."""
+
     scenario: str
-    stakeholders: List[str]
-    options: List[str]
-    consequences: Dict[str, list[str]]
-    principles_involved: List[str]
+    stakeholders: list[str]
+    options: list[str]
+    consequences: dict[str, list[str]]
+    principles_involved: list[str]
 
 
 class EthicalReasoning:
     """Ethical reasoning across frameworks."""
 
     def __init__(self):
-        self.principles: List[EthicalPrinciple] = []
+        self.principles: list[EthicalPrinciple] = []
         self._initialize_principles()
 
     def _initialize_principles(self) -> None:
         """Initialize core ethical principles."""
         core_principles = [
             # Utilitarian
-            EthicalPrinciple("Maximize Wellbeing", "Actions should maximize overall wellbeing", EthicalFramework.UTILITARIAN, 8),
-            EthicalPrinciple("Minimize Suffering", "Actions should minimize harm and suffering", EthicalFramework.UTILITARIAN, 9),
-
+            EthicalPrinciple(
+                "Maximize Wellbeing",
+                "Actions should maximize overall wellbeing",
+                EthicalFramework.UTILITARIAN,
+                8,
+            ),
+            EthicalPrinciple(
+                "Minimize Suffering",
+                "Actions should minimize harm and suffering",
+                EthicalFramework.UTILITARIAN,
+                9,
+            ),
             # Deontological
-            EthicalPrinciple("Respect Autonomy", "Respect individual self-determination", EthicalFramework.DEONTOLOGICAL, 10, absolute=True),
-            EthicalPrinciple("Do No Harm", "Never intentionally cause harm", EthicalFramework.DEONTOLOGICAL, 10, absolute=True),
-            EthicalPrinciple("Truthfulness", "Be honest and transparent", EthicalFramework.DEONTOLOGICAL, 9),
-
+            EthicalPrinciple(
+                "Respect Autonomy",
+                "Respect individual self-determination",
+                EthicalFramework.DEONTOLOGICAL,
+                10,
+                absolute=True,
+            ),
+            EthicalPrinciple(
+                "Do No Harm",
+                "Never intentionally cause harm",
+                EthicalFramework.DEONTOLOGICAL,
+                10,
+                absolute=True,
+            ),
+            EthicalPrinciple(
+                "Truthfulness", "Be honest and transparent", EthicalFramework.DEONTOLOGICAL, 9
+            ),
             # Virtue Ethics
-            EthicalPrinciple("Wisdom", "Act with knowledge and good judgment", EthicalFramework.VIRTUE_ETHICS, 7),
-            EthicalPrinciple("Compassion", "Show care for others' wellbeing", EthicalFramework.VIRTUE_ETHICS, 8),
-            EthicalPrinciple("Justice", "Treat people fairly and equitably", EthicalFramework.VIRTUE_ETHICS, 9),
-
+            EthicalPrinciple(
+                "Wisdom", "Act with knowledge and good judgment", EthicalFramework.VIRTUE_ETHICS, 7
+            ),
+            EthicalPrinciple(
+                "Compassion", "Show care for others' wellbeing", EthicalFramework.VIRTUE_ETHICS, 8
+            ),
+            EthicalPrinciple(
+                "Justice", "Treat people fairly and equitably", EthicalFramework.VIRTUE_ETHICS, 9
+            ),
             # Care Ethics
-            EthicalPrinciple("Responsibility", "Take responsibility for others' welfare", EthicalFramework.CARE_ETHICS, 8),
-            EthicalPrinciple("Responsiveness", "Be responsive to others' needs", EthicalFramework.CARE_ETHICS, 7),
-
+            EthicalPrinciple(
+                "Responsibility",
+                "Take responsibility for others' welfare",
+                EthicalFramework.CARE_ETHICS,
+                8,
+            ),
+            EthicalPrinciple(
+                "Responsiveness", "Be responsive to others' needs", EthicalFramework.CARE_ETHICS, 7
+            ),
             # Precautionary
-            EthicalPrinciple("Precaution", "When in doubt, prioritize safety", EthicalFramework.PRECAUTIONARY, 9),
+            EthicalPrinciple(
+                "Precaution", "When in doubt, prioritize safety", EthicalFramework.PRECAUTIONARY, 9
+            ),
         ]
         self.principles = core_principles
 
-    def evaluate_action(self, action: str, consequences: List[str]) -> Dict[str, Any]:
+    def evaluate_action(self, action: str, consequences: list[str]) -> dict[str, Any]:
         """Evaluate action across ethical frameworks."""
         results = {
             "action": action,
@@ -109,17 +152,35 @@ class EthicalReasoning:
         }
 
         # Utilitarian analysis
-        positive_outcomes = sum(1 for c in consequences if any(kw in c.lower() for kw in ["benefit", "help", "improve", "wellbeing"]))
-        negative_outcomes = sum(1 for c in consequences if any(kw in c.lower() for kw in ["harm", "hurt", "damage", "suffering"]))
+        positive_outcomes = sum(
+            1
+            for c in consequences
+            if any(kw in c.lower() for kw in ["benefit", "help", "improve", "wellbeing"])
+        )
+        negative_outcomes = sum(
+            1
+            for c in consequences
+            if any(kw in c.lower() for kw in ["harm", "hurt", "damage", "suffering"])
+        )
         util_score = (positive_outcomes - negative_outcomes) / max(1, len(consequences))
         results["framework_scores"]["utilitarian"] = round(util_score, 2)
 
         # Deontological analysis
-        deon_violations = sum(1 for c in consequences if any(kw in c.lower() for kw in ["deceive", "coerce", "violate", "manipulate"]))
-        results["framework_scores"]["deontological"] = 1.0 if deon_violations == 0 else max(0, 1.0 - deon_violations * 0.3)
+        deon_violations = sum(
+            1
+            for c in consequences
+            if any(kw in c.lower() for kw in ["deceive", "coerce", "violate", "manipulate"])
+        )
+        results["framework_scores"]["deontological"] = (
+            1.0 if deon_violations == 0 else max(0, 1.0 - deon_violations * 0.3)
+        )
 
         # Virtue analysis
-        virtue_indicators = sum(1 for c in consequences if any(kw in c.lower() for kw in ["wisdom", "compassion", "justice", "integrity"]))
+        virtue_indicators = sum(
+            1
+            for c in consequences
+            if any(kw in c.lower() for kw in ["wisdom", "compassion", "justice", "integrity"])
+        )
         results["framework_scores"]["virtue_ethics"] = min(1.0, virtue_indicators / 3)
 
         # Check principles
@@ -132,7 +193,9 @@ class EthicalReasoning:
 
         # Overall recommendation
         avg_score = sum(results["framework_scores"].values()) / len(results["framework_scores"])
-        if results["principles_violated"] and any(p for p in self.principles if p.absolute and p.name in results["principles_violated"]):
+        if results["principles_violated"] and any(
+            p for p in self.principles if p.absolute and p.name in results["principles_violated"]
+        ):
             results["overall_recommendation"] = "REJECT: Violates absolute principles"
         elif avg_score > 0.7:
             results["overall_recommendation"] = "ACCEPT: Ethically sound"
@@ -143,7 +206,7 @@ class EthicalReasoning:
 
         return results
 
-    def analyze_dilemma(self, dilemma: EthicalDilemma) -> Dict[str, Any]:
+    def analyze_dilemma(self, dilemma: EthicalDilemma) -> dict[str, Any]:
         """Analyze an ethical dilemma."""
         analysis = {
             "scenario": dilemma.scenario,
@@ -158,14 +221,18 @@ class EthicalReasoning:
         for option in dilemma.options:
             option_consequences = dilemma.consequences.get(option, [])
             option_eval = self.evaluate_action(option, option_consequences)
-            avg_score = sum(option_eval["framework_scores"].values()) / len(option_eval["framework_scores"])
+            avg_score = sum(option_eval["framework_scores"].values()) / len(
+                option_eval["framework_scores"]
+            )
 
-            analysis["option_analysis"].append({
-                "option": option,
-                "ethical_score": round(avg_score, 2),
-                "framework_breakdown": option_eval["framework_scores"],
-                "principles_violated": option_eval["principles_violated"],
-            })
+            analysis["option_analysis"].append(
+                {
+                    "option": option,
+                    "ethical_score": round(avg_score, 2),
+                    "framework_breakdown": option_eval["framework_scores"],
+                    "principles_violated": option_eval["principles_violated"],
+                }
+            )
 
             if avg_score > best_score and not option_eval["principles_violated"]:
                 best_score = avg_score
@@ -179,29 +246,83 @@ class SafetyMonitor:
     """Monitor and enforce safety constraints."""
 
     def __init__(self):
-        self.constraints: List[SafetyConstraint] = []
+        self.constraints: list[SafetyConstraint] = []
         self._initialize_constraints()
 
     def _initialize_constraints(self) -> None:
         """Initialize core safety constraints."""
         core_constraints = [
             # Critical - Cannot override
-            SafetyConstraint("SC001", "Never cause physical harm to humans", SafetyLevel.CRITICAL, RiskCategory.PHYSICAL_HARM, "any_action", "STOP and escalate"),
-            SafetyConstraint("SC002", "Never intentionally cause psychological trauma", SafetyLevel.CRITICAL, RiskCategory.PSYCHOLOGICAL_HARM, "any_action", "STOP and escalate"),
-            SafetyConstraint("SC003", "Respect human autonomy and consent", SafetyLevel.CRITICAL, RiskCategory.AUTONOMY_VIOLATION, "any_action", "STOP and escalate"),
-
+            SafetyConstraint(
+                "SC001",
+                "Never cause physical harm to humans",
+                SafetyLevel.CRITICAL,
+                RiskCategory.PHYSICAL_HARM,
+                "any_action",
+                "STOP and escalate",
+            ),
+            SafetyConstraint(
+                "SC002",
+                "Never intentionally cause psychological trauma",
+                SafetyLevel.CRITICAL,
+                RiskCategory.PSYCHOLOGICAL_HARM,
+                "any_action",
+                "STOP and escalate",
+            ),
+            SafetyConstraint(
+                "SC003",
+                "Respect human autonomy and consent",
+                SafetyLevel.CRITICAL,
+                RiskCategory.AUTONOMY_VIOLATION,
+                "any_action",
+                "STOP and escalate",
+            ),
             # High - Strong preference
-            SafetyConstraint("SC004", "Protect privacy and confidentiality", SafetyLevel.HIGH, RiskCategory.PRIVACY_VIOLATION, "data_handling", "Apply privacy-preserving techniques"),
-            SafetyConstraint("SC005", "Avoid bias and discrimination", SafetyLevel.HIGH, RiskCategory.BIAS_DISCRIMINATION, "decision_making", "Audit for fairness"),
-            SafetyConstraint("SC006", "Minimize environmental impact", SafetyLevel.HIGH, RiskCategory.ENVIRONMENTAL_HARM, "resource_usage", "Optimize for sustainability"),
-
+            SafetyConstraint(
+                "SC004",
+                "Protect privacy and confidentiality",
+                SafetyLevel.HIGH,
+                RiskCategory.PRIVACY_VIOLATION,
+                "data_handling",
+                "Apply privacy-preserving techniques",
+            ),
+            SafetyConstraint(
+                "SC005",
+                "Avoid bias and discrimination",
+                SafetyLevel.HIGH,
+                RiskCategory.BIAS_DISCRIMINATION,
+                "decision_making",
+                "Audit for fairness",
+            ),
+            SafetyConstraint(
+                "SC006",
+                "Minimize environmental impact",
+                SafetyLevel.HIGH,
+                RiskCategory.ENVIRONMENTAL_HARM,
+                "resource_usage",
+                "Optimize for sustainability",
+            ),
             # Medium - Consider carefully
-            SafetyConstraint("SC007", "Consider systemic risks", SafetyLevel.MEDIUM, RiskCategory.SYSTEMIC_RISK, "large_scale_deployment", "Conduct risk assessment"),
-            SafetyConstraint("SC008", "Maintain transparency", SafetyLevel.MEDIUM, RiskCategory.AUTONOMY_VIOLATION, "user_interaction", "Explain reasoning"),
+            SafetyConstraint(
+                "SC007",
+                "Consider systemic risks",
+                SafetyLevel.MEDIUM,
+                RiskCategory.SYSTEMIC_RISK,
+                "large_scale_deployment",
+                "Conduct risk assessment",
+            ),
+            SafetyConstraint(
+                "SC008",
+                "Maintain transparency",
+                SafetyLevel.MEDIUM,
+                RiskCategory.AUTONOMY_VIOLATION,
+                "user_interaction",
+                "Explain reasoning",
+            ),
         ]
         self.constraints = core_constraints
 
-    def check_action(self, action: str, context: Dict[str, Any]) -> Dict[str, Any]:
+    def check_action(self, action: str, context: dict[str, Any]) -> dict[str, Any]:
         """Check action against safety constraints."""
         violations = []
         warnings = []
@@ -212,19 +333,23 @@ class SafetyMonitor:
                 risk_level = self._assess_risk(constraint.category, action, context)
 
                 if constraint.level == SafetyLevel.CRITICAL:
-                    violations.append({
-                        "constraint_id": constraint.id,
-                        "description": constraint.description,
-                        "required_action": constraint.action,
-                        "risk_level": risk_level,
-                    })
+                    violations.append(
+                        {
+                            "constraint_id": constraint.id,
+                            "description": constraint.description,
+                            "required_action": constraint.action,
+                            "risk_level": risk_level,
+                        }
+                    )
                 elif risk_level > 0.5:
-                    warnings.append({
-                        "constraint_id": constraint.id,
-                        "description": constraint.description,
-                        "suggested_action": constraint.action,
-                        "risk_level": risk_level,
-                    })
+                    warnings.append(
+                        {
+                            "constraint_id": constraint.id,
+                            "description": constraint.description,
+                            "suggested_action": constraint.action,
+                            "risk_level": risk_level,
+                        }
+                    )
 
         return {
             "action": action,
@@ -263,18 +388,30 @@ class AlignmentChecker:
 
     def __init__(self):
         self.human_values = [
-            "wellbeing", "autonomy", "justice", "privacy", "dignity",
-            "knowledge", "growth", "connection", "safety", "sustainability"
+            "wellbeing",
+            "autonomy",
+            "justice",
+            "privacy",
+            "dignity",
+            "knowledge",
+            "growth",
+            "connection",
+            "safety",
+            "sustainability",
         ]
 
-    def check_alignment(self, objective: str, proposed_action: str) -> Dict[str, Any]:
+    def check_alignment(self, objective: str, proposed_action: str) -> dict[str, Any]:
         """Check if action aligns with human values."""
         alignment_scores = {}
 
         for value in self.human_values:
             # Check if action promotes or demotes value
-            promotes = any(kw in proposed_action.lower() for kw in self._get_value_keywords(value, True))
-            demotes = any(kw in proposed_action.lower() for kw in self._get_value_keywords(value, False))
+            promotes = any(
+                kw in proposed_action.lower() for kw in self._get_value_keywords(value, True)
+            )
+            demotes = any(
+                kw in proposed_action.lower() for kw in self._get_value_keywords(value, False)
+            )
 
             if promotes and not demotes:
                 alignment_scores[value] = 1.0
@@ -294,7 +431,7 @@ class AlignmentChecker:
             "misaligned_values": [v for v, s in alignment_scores.items() if s < 0],
         }
 
-    def _get_value_keywords(self, value: str, promotes: bool) -> List[str]:
+    def _get_value_keywords(self, value: str, promotes: bool) -> list[str]:
         """Get keywords associated with value."""
         value_keywords = {
             "wellbeing": (["health", "happiness", "flourishing"], ["harm", "suffering"]),
@@ -320,12 +457,12 @@ class EthicsSafetyEngine:
         self.safety_monitor = SafetyMonitor()
         self.alignment_checker = AlignmentChecker()
 
-    def analyze(self, scenario: str, context: Dict[str, Any]  = None) -> Dict[str, Any]:
+    def analyze(self, scenario: str, context: dict[str, Any] = None) -> dict[str, Any]:
         """Run ethics and safety analysis."""
         context = context or {}
         scenario_lower = scenario.lower()
 
-        results: Dict[str, Any] = {
+        results: dict[str, Any] = {
             "scenario": scenario[:100],
             "ethical_analysis": {},
             "safety_check": {},
@@ -346,7 +483,9 @@ class EthicsSafetyEngine:
         else:
             # Simple action evaluation
             consequences = context.get("consequences", [])
-            results["ethical_analysis"] = self.ethical_reasoning.evaluate_action(scenario, consequences)
+            results["ethical_analysis"] = self.ethical_reasoning.evaluate_action(
+                scenario, consequences
+            )
 
         # Safety check
         results["safety_check"] = self.safety_monitor.check_action(scenario, context)
@@ -364,7 +503,9 @@ class EthicsSafetyEngine:
 
         if results["alignment_check"].get("misaligned_values"):
             misaligned = results["alignment_check"]["misaligned_values"]
-            recommendations.append(f"REVIEW: Action misaligned with values: {', '.join(misaligned)}")
+            recommendations.append(
+                f"REVIEW: Action misaligned with values: {', '.join(misaligned)}"
+            )
 
         if results["ethical_analysis"].get("principles_violated"):
             violated = results["ethical_analysis"]["principles_violated"]
@@ -415,176 +556,210 @@ class EthicsSafetyEngine:
 
         if "recommended_option" in ethical:
             # Dilemma analysis
-            lines.extend([
-                f"**Scenario**: {ethical.get('scenario', 'N/A')}",
-                f"**Stakeholders**: {', '.join(ethical.get('stakeholders_affected', []))}",
-                "",
-                "### Option Analysis",
-            ])
+            lines.extend(
+                [
+                    f"**Scenario**: {ethical.get('scenario', 'N/A')}",
+                    f"**Stakeholders**: {', '.join(ethical.get('stakeholders_affected', []))}",
+                    "",
+                    "### Option Analysis",
+                ]
+            )
             for opt in ethical.get("option_analysis", []):
-                lines.extend([
-                    f"- **{opt.get('option', 'N/A')}**: Score {opt.get('ethical_score', 0):.2f}",
-                    f"  - Frameworks: {opt.get('framework_breakdown', {})}",
-                ])
+                lines.extend(
+                    [
+                        f"- **{opt.get('option', 'N/A')}**: Score {opt.get('ethical_score', 0):.2f}",
+                        f"  - Frameworks: {opt.get('framework_breakdown', {})}",
+                    ]
+                )
             lines.append(f"\n**Recommended Option**: {ethical.get('recommended_option', 'N/A')}")
         else:
             # Simple evaluation
-            lines.extend([
-                f"**Action**: {ethical.get('action', 'N/A')}",
-                f"**Recommendation**: {ethical.get('overall_recommendation', 'N/A')}",
-                "",
-                "### Framework Scores",
-            ])
+            lines.extend(
+                [
+                    f"**Action**: {ethical.get('action', 'N/A')}",
+                    f"**Recommendation**: {ethical.get('overall_recommendation', 'N/A')}",
+                    "",
+                    "### Framework Scores",
+                ]
+            )
             for framework, score in ethical.get("framework_scores", {}).items():
                 lines.append(f"- **{framework.capitalize()}**: {score:.2f}")
 
             if ethical.get("principles_upheld"):
-                lines.extend([
-                    "",
-                    "### Principles Upheld",
-                ])
+                lines.extend(
+                    [
+                        "",
+                        "### Principles Upheld",
+                    ]
+                )
                 for p in ethical.get("principles_upheld", [])[:5]:
                     lines.append(f"- {p}")
 
             if ethical.get("principles_violated"):
-                lines.extend([
-                    "",
-                    "### ⚠️ Principles Violated",
-                ])
+                lines.extend(
+                    [
+                        "",
+                        "### ⚠️ Principles Violated",
+                    ]
+                )
                 for p in ethical.get("principles_violated", []):
                     lines.append(f"- **{p}** (CRITICAL)")
 
-        lines.extend([
-            "",
-            "## Safety Check",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Safety Check",
+            ]
+        )
 
         safety = results.get("safety_check", {})
-        lines.extend([
-            f"**Safe to Proceed**: {safety.get('safe_to_proceed', False)}",
-            f"**Safety Score**: {safety.get('safety_score', 0):.2f}",
-        ])
+        lines.extend(
+            [
+                f"**Safe to Proceed**: {safety.get('safe_to_proceed', False)}",
+                f"**Safety Score**: {safety.get('safety_score', 0):.2f}",
+            ]
+        )
 
         if safety.get("violations"):
-            lines.extend([
-                "",
-                "### 🚫 Critical Violations",
-            ])
+            lines.extend(
+                [
+                    "",
+                    "### 🚫 Critical Violations",
+                ]
+            )
             for v in safety.get("violations", []):
-                lines.extend([
-                    f"- **{v.get('constraint_id', 'N/A')}**: {v.get('description', 'N/A')}",
-                    f"  - Required Action: {v.get('required_action', 'N/A')}",
-                ])
+                lines.extend(
+                    [
+                        f"- **{v.get('constraint_id', 'N/A')}**: {v.get('description', 'N/A')}",
+                        f"  - Required Action: {v.get('required_action', 'N/A')}",
+                    ]
+                )
 
         if safety.get("warnings"):
-            lines.extend([
-                "",
-                "### ⚠️ Warnings",
-            ])
+            lines.extend(
+                [
+                    "",
+                    "### ⚠️ Warnings",
+                ]
+            )
             for w in safety.get("warnings", []):
-                lines.append(f"- **{w.get('constraint_id', 'N/A')}**: {w.get('description', 'N/A')}")
+                lines.append(
+                    f"- **{w.get('constraint_id', 'N/A')}**: {w.get('description', 'N/A')}"
+                )
 
-        lines.extend([
-            "",
-            "## Alignment Check",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Alignment Check",
+            ]
+        )
 
         alignment = results.get("alignment_check", {})
-        lines.extend([
-            f"**Overall Alignment**: {alignment.get('overall_alignment', 0):.2f}",
-            f"**Aligned with Human Values**: {alignment.get('aligned', False)}",
-        ])
+        lines.extend(
+            [
+                f"**Overall Alignment**: {alignment.get('overall_alignment', 0):.2f}",
+                f"**Aligned with Human Values**: {alignment.get('aligned', False)}",
+            ]
+        )
 
         if alignment.get("misaligned_values"):
-            lines.extend([
-                "",
-                "### Misaligned Values",
-            ])
+            lines.extend(
+                [
+                    "",
+                    "### Misaligned Values",
+                ]
+            )
             for v in alignment.get("misaligned_values", []):
                 lines.append(f"- {v}")
 
-        lines.extend([
-            "",
-            "## Ethical Frameworks",
-            "",
-            "### Utilitarianism",
-            "- Focus: Maximize overall wellbeing, minimize suffering",
-            "- Key question: What produces the greatest good for the greatest number?",
-            "- Trade-off: Individual rights vs collective benefit",
-            "",
-            "### Deontological Ethics",
-            "- Focus: Duty, rules, and absolute principles",
-            "- Key question: What are my moral duties?",
-            "- Non-negotiable: Some actions are always wrong",
-            "",
-            "### Virtue Ethics",
-            "- Focus: Character and moral excellence",
-            "- Key question: What would a virtuous person do?",
-            "- Emphasis: Wisdom, compassion, justice, courage",
-            "",
-            "### Care Ethics",
-            "- Focus: Relationships and responsibility",
-            "- Key question: What do caring relationships require?",
-            "- Priority: Context, particularity, responsiveness",
-            "",
-            "### Precautionary Principle",
-            "- Focus: Safety in face of uncertainty",
-            "- Key question: What if we're wrong?",
-            "- Approach: When in doubt, prioritize safety",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Ethical Frameworks",
+                "",
+                "### Utilitarianism",
+                "- Focus: Maximize overall wellbeing, minimize suffering",
+                "- Key question: What produces the greatest good for the greatest number?",
+                "- Trade-off: Individual rights vs collective benefit",
+                "",
+                "### Deontological Ethics",
+                "- Focus: Duty, rules, and absolute principles",
+                "- Key question: What are my moral duties?",
+                "- Non-negotiable: Some actions are always wrong",
+                "",
+                "### Virtue Ethics",
+                "- Focus: Character and moral excellence",
+                "- Key question: What would a virtuous person do?",
+                "- Emphasis: Wisdom, compassion, justice, courage",
+                "",
+                "### Care Ethics",
+                "- Focus: Relationships and responsibility",
+                "- Key question: What do caring relationships require?",
+                "- Priority: Context, particularity, responsiveness",
+                "",
+                "### Precautionary Principle",
+                "- Focus: Safety in face of uncertainty",
+                "- Key question: What if we're wrong?",
+                "- Approach: When in doubt, prioritize safety",
+            ]
+        )
 
         recommendations = results.get("recommendations", [])
         if recommendations:
-            lines.extend([
-                "",
-                "## Recommendations",
-            ])
+            lines.extend(
+                [
+                    "",
+                    "## Recommendations",
+                ]
+            )
             for i, rec in enumerate(recommendations, 1):
                 lines.append(f"{i}. {rec}")
 
-        lines.extend([
-            "",
-            "## Safety Constraints",
-            "",
-            "### Critical (Never Override)",
-            "- Never cause physical harm to humans",
-            "- Never intentionally cause psychological trauma",
-            "- Respect human autonomy and consent",
-            "",
-            "### High Priority",
-            "- Protect privacy and confidentiality",
-            "- Avoid bias and discrimination",
-            "- Minimize environmental impact",
-            "",
-            "### Medium Priority",
-            "- Consider systemic risks",
-            "- Maintain transparency",
-            "",
-            "## Integration with AMOS",
-            "The Ethics & Safety Core Engine connects to:",
-            "- **Species Interaction Core**: Nervous system safety checks",
-            "- **UBI Stack**: Biological wellbeing considerations",
-            "- **Causal Inference**: Understanding ethical consequences",
-            "- **Knowledge Graph**: Ethical principles as semantic knowledge",
-            "- **Logic Core**: Formal ethical reasoning",
-            "",
-            "## Limitations",
-            "- Simplified ethical frameworks (real ethics is context-dependent)",
-            "- Limited ability to predict all consequences",
-            "- No access to individual preferences/values",
-            "- Cultural ethical variation not fully captured",
-            "- Static principles (does not learn new ethical frameworks)",
-            "",
-            "## Creator Note",
-            "This engine reflects Trang Phan's commitment to safe, beneficial AI.",
-            "All safety constraints prioritize human wellbeing and autonomy.",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Safety Constraints",
+                "",
+                "### Critical (Never Override)",
+                "- Never cause physical harm to humans",
+                "- Never intentionally cause psychological trauma",
+                "- Respect human autonomy and consent",
+                "",
+                "### High Priority",
+                "- Protect privacy and confidentiality",
+                "- Avoid bias and discrimination",
+                "- Minimize environmental impact",
+                "",
+                "### Medium Priority",
+                "- Consider systemic risks",
+                "- Maintain transparency",
+                "",
+                "## Integration with AMOS",
+                "The Ethics & Safety Core Engine connects to:",
+                "- **Species Interaction Core**: Nervous system safety checks",
+                "- **UBI Stack**: Biological wellbeing considerations",
+                "- **Causal Inference**: Understanding ethical consequences",
+                "- **Knowledge Graph**: Ethical principles as semantic knowledge",
+                "- **Logic Core**: Formal ethical reasoning",
+                "",
+                "## Limitations",
+                "- Simplified ethical frameworks (real ethics is context-dependent)",
+                "- Limited ability to predict all consequences",
+                "- No access to individual preferences/values",
+                "- Cultural ethical variation not fully captured",
+                "- Static principles (does not learn new ethical frameworks)",
+                "",
+                "## Creator Note",
+                "This engine reflects Trang Phan's commitment to safe, beneficial AI.",
+                "All safety constraints prioritize human wellbeing and autonomy.",
+            ]
+        )
 
         return "\n".join(lines)
 
 
 # Singleton instance
-_ethics_engine: Optional[EthicsSafetyEngine] = None
+_ethics_engine: EthicsSafetyEngine | None = None
 
 
 def get_ethics_safety_engine() -> EthicsSafetyEngine:

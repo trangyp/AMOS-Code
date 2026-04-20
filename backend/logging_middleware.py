@@ -1,4 +1,6 @@
-from typing import Any, Dict, Set
+from __future__ import annotations
+
+from typing import Any, Optional
 
 """Production-grade structured logging middleware for FastAPI.
 
@@ -11,6 +13,7 @@ State-of-art implementation using structlog with:
 
 Based on 2024 FastAPI logging best practices.
 """
+
 
 import time
 import uuid
@@ -59,7 +62,7 @@ class StructuredLoggingMiddleware(BaseHTTPMiddleware):
         app: FastAPI,
         *,
         log_level: str = "INFO",
-        exclude_paths: Optional[Set[str] ] = None,
+        exclude_paths: set[Optional[str]] = None,
         max_body_size: int = 10000,
     ):
         super().__init__(app)
@@ -78,7 +81,7 @@ class StructuredLoggingMiddleware(BaseHTTPMiddleware):
 
         client_host = request.client.host if request.client else "unknown"
 
-        log_data: Dict[str, Any] = {
+        log_data: dict[str, Any] = {
             "request_id": request_id,
             "method": request.method,
             "path": request.url.path,

@@ -23,7 +23,8 @@ import os
 import sys
 
 from amos_brain.config_validator import validate_config
-from amos_brain.local_runtime import create_local_runtime, main as runtime_main
+from amos_brain.local_runtime import create_local_runtime
+from amos_brain.local_runtime import main as runtime_main
 
 
 def print_local_banner():

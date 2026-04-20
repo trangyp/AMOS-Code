@@ -9,11 +9,11 @@ Version: 3.0.0
 """
 
 import uuid
-from datetime import datetime, timezone
-
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException
+
+UTC = UTC
 
 from .schemas import AgentTaskRequest, AgentTaskResponse, TaskListResponse
 

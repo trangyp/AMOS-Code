@@ -26,32 +26,32 @@ Version: 1.0.0
 Date: April 2026
 """
 
-
-import re
-import json
-from pathlib import Path
-from dataclasses import dataclass, field, asdict
-from typing import Any, Callable, Dict, List, Optional
-from enum import Enum, auto
-from functools import lru_cache
 import hashlib
-from datetime import datetime, timezone
-UTC = timezone.utc
+import json
+import re
+from dataclasses import asdict, dataclass, field
+from datetime import UTC, datetime, timezone
+from enum import Enum
+from pathlib import Path
+from typing import Any, Optional
 
+UTC = UTC
 # Import SuperBrain bridge for integration
 try:
     from amos_superbrain_bridge import (
-        MathematicalPattern,
+        CoreMLEquations,
+        DistributedSystemsEquations,
         Domain,
         EquationMetadata,
         ExecutionResult,
-        CoreMLEquations,
-        DistributedSystemsEquations,
         InformationTheoryEquations,
+        MathematicalPattern,
     )
+
     SUPERBRAIN_AVAILABLE = True
 except ImportError:
     SUPERBRAIN_AVAILABLE = False
+
     # Define minimal enums for standalone operation
     class MathematicalPattern(Enum):
         CONVEX_OPTIMIZATION = "convex_optimization"
@@ -136,6 +136,7 @@ class AIFrameworkCategory(Enum):
 @dataclass
 class AIFrameworkEntry:
     """Structured representation of an AI framework equation."""
+
     id: str
     section_number: int
     name: str
@@ -143,11 +144,11 @@ class AIFrameworkEntry:
     latex_formula: str
     description: str
     implementation_hint: str
-    invariants: List[str] = field(default_factory=list)
-    cross_references: List[str] = field(default_factory=list)  # Other section IDs
+    invariants: list[str] = field(default_factory=list)
+    cross_references: list[str] = field(default_factory=list)  # Other section IDs
     source_framework: str = ""  # e.g., "PyTorch", "LangChain", "Paper"
     paper_reference: str = ""  # e.g., "Vaswani et al. 2017"
-    tags: List[str] = field(default_factory=list)
+    tags: list[str] = field(default_factory=list)
 
     def __post_init__(self):
         if not self.id:
@@ -158,7 +159,7 @@ class AIFrameworkEntry:
         content = f"{self.section_number}:{self.name}:{self.category.value}"
         return hashlib.md5(content.encode()).hexdigest()[:12]
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "id": self.id,
             "section_number": self.section_number,
@@ -178,13 +179,14 @@ class AIFrameworkEntry:
 @dataclass
 class AIFRameworkMetadata:
     """Metadata for the entire AI frameworks document."""
+
     total_sections: int = 77
     total_equations: int = 0
-    categories_covered: List[str] = field(default_factory=list)
+    categories_covered: list[str] = field(default_factory=list)
     last_updated: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     document_path: str = "GLOBAL_AI_FRAMEWORKS_EQUATIONS_AND_INVARIANTS.md"
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
@@ -200,13 +202,13 @@ class AIFrameworkKnowledgeGraph:
     """
 
     def __init__(self):
-        self.frameworks: Dict[str, AIFrameworkEntry] = {}
-        self.section_index: Dict[int, str] = {}  # section_num -> id
-        self.category_index: Dict[AIFrameworkCategory, set[str]] = {
+        self.frameworks: dict[str, AIFrameworkEntry] = {}
+        self.section_index: dict[int, str] = {}  # section_num -> id
+        self.category_index: dict[AIFrameworkCategory, set[str]] = {
             cat: set() for cat in AIFrameworkCategory
         }
-        self.tag_index: Dict[str, set[str]] = {}
-        self.paper_index: Dict[str, set[str]] = {}
+        self.tag_index: dict[str, set[str]] = {}
+        self.paper_index: dict[str, set[str]] = {}
         self.metadata = AIFRameworkMetadata()
 
     def add_framework(self, fw: AIFrameworkEntry) -> str:
@@ -235,17 +237,17 @@ class AIFrameworkKnowledgeGraph:
         fw_id = self.section_index.get(section_num)
         return self.frameworks.get(fw_id) if fw_id else None
 
-    def get_by_category(self, category: AIFrameworkCategory) -> List[AIFrameworkEntry]:
+    def get_by_category(self, category: AIFrameworkCategory) -> list[AIFrameworkEntry]:
         """Get all frameworks in a category."""
         ids = self.category_index.get(category, set())
         return [self.frameworks[fid] for fid in ids if fid in self.frameworks]
 
-    def get_by_tag(self, tag: str) -> List[AIFrameworkEntry]:
+    def get_by_tag(self, tag: str) -> list[AIFrameworkEntry]:
         """Get frameworks by tag."""
         ids = self.tag_index.get(tag, set())
         return [self.frameworks[fid] for fid in ids if fid in self.frameworks]
 
-    def find_cross_references(self, fw_id: str, depth: int = 2) -> List[AIFrameworkEntry]:
+    def find_cross_references(self, fw_id: str, depth: int = 2) -> list[AIFrameworkEntry]:
         """Find related frameworks via cross-references."""
         if fw_id not in self.frameworks:
             return []
@@ -273,7 +275,7 @@ class AIFrameworkKnowledgeGraph:
         visited.remove(fw_id)
         return [self.frameworks[fid] for fid in visited if fid in self.frameworks]
 
-    def search_by_formula_pattern(self, pattern: str) -> List[AIFrameworkEntry]:
+    def search_by_formula_pattern(self, pattern: str) -> list[AIFrameworkEntry]:
         """Search frameworks by LaTeX formula pattern."""
         results = []
         for fw in self.frameworks.values():
@@ -281,7 +283,7 @@ class AIFrameworkKnowledgeGraph:
                 results.append(fw)
         return results
 
-    def get_implementation_roadmap(self, category: AIFrameworkCategory) -> List[Dict]:
+    def get_implementation_roadmap(self, category: AIFrameworkCategory) -> list[dict]:
         """Get ordered implementation steps for a category."""
         frameworks = self.get_by_category(category)
         # Sort by section number for logical progression
@@ -289,14 +291,32 @@ class AIFrameworkKnowledgeGraph:
 
         roadmap = []
         for fw in frameworks:
-            roadmap.append({
-                "step": len(roadmap) + 1,
-                "section": fw.section_number,
-                "name": fw.name,
-                "formula": fw.latex_formula[:50] + "..." if len(fw.latex_formula) > 50 else fw.latex_formula,
-                "implementation_hint": fw.implementation_hint,
-                "prerequisites": [self.frameworks.get(ref, AIFrameworkEntry(id="", section_number=0, name="Unknown", category=fw.category, latex_formula="", description="", implementation_hint="")).name for ref in fw.cross_references[:3]],
-            })
+            roadmap.append(
+                {
+                    "step": len(roadmap) + 1,
+                    "section": fw.section_number,
+                    "name": fw.name,
+                    "formula": fw.latex_formula[:50] + "..."
+                    if len(fw.latex_formula) > 50
+                    else fw.latex_formula,
+                    "implementation_hint": fw.implementation_hint,
+                    "prerequisites": [
+                        self.frameworks.get(
+                            ref,
+                            AIFrameworkEntry(
+                                id="",
+                                section_number=0,
+                                name="Unknown",
+                                category=fw.category,
+                                latex_formula="",
+                                description="",
+                                implementation_hint="",
+                            ),
+                        ).name
+                        for ref in fw.cross_references[:3]
+                    ],
+                }
+            )
         return roadmap
 
     def to_json(self, path: Path) -> None:
@@ -308,7 +328,7 @@ class AIFrameworkKnowledgeGraph:
                 "by_category": {cat.value: len(ids) for cat, ids in self.category_index.items()},
                 "by_tag": {tag: len(ids) for tag, ids in self.tag_index.items()},
                 "by_paper": {paper: len(ids) for paper, ids in self.paper_index.items()},
-            }
+            },
         }
         path.write_text(json.dumps(data, indent=2))
 
@@ -346,10 +366,10 @@ class AIFrameworkParser:
     """
 
     # Regex patterns for parsing
-    SECTION_PATTERN = re.compile(r'^##+\s+(\d+)\.\s+(.+)$', re.MULTILINE)
-    SUBSECTION_PATTERN = re.compile(r'^###\s+(\d+\.\d+)\s+(.+)$', re.MULTILINE)
-    FORMULA_BLOCK_PATTERN = re.compile(r'```\s*\n(.*?)\n```', re.DOTALL)
-    INVARIANT_BLOCK_PATTERN = re.compile(r'```\s*\n([^`]*?Invariant[^`]*?)\n```', re.DOTALL)
+    SECTION_PATTERN = re.compile(r"^##+\s+(\d+)\.\s+(.+)$", re.MULTILINE)
+    SUBSECTION_PATTERN = re.compile(r"^###\s+(\d+\.\d+)\s+(.+)$", re.MULTILINE)
+    FORMULA_BLOCK_PATTERN = re.compile(r"```\s*\n(.*?)\n```", re.DOTALL)
+    INVARIANT_BLOCK_PATTERN = re.compile(r"```\s*\n([^`]*?Invariant[^`]*?)\n```", re.DOTALL)
 
     def __init__(self, doc_path: Path):
         self.doc_path = doc_path
@@ -367,149 +387,169 @@ class AIFrameworkParser:
 
         return graph
 
-    def _extract_key_frameworks(self) -> List[AIFrameworkEntry]:
+    def _extract_key_frameworks(self) -> list[AIFrameworkEntry]:
         """Extract key frameworks from the 77 sections."""
         frameworks = []
 
         # Section 2: Transformer Attention
-        frameworks.append(AIFrameworkEntry(
-            id="",
-            section_number=2,
-            name="Scaled Dot-Product Attention",
-            category=AIFrameworkCategory.TRANSFORMERS,
-            latex_formula=r"Attention(Q,K,V) = softmax(QK^T/\sqrt{d_k})V",
-            description="Core attention mechanism in Transformers",
-            implementation_hint="Use einsum for efficient matrix multiplication",
-            invariants=["Attention weights sum to 1", "Output dimension matches V"],
-            source_framework="PyTorch/TensorFlow",
-            paper_reference="Vaswani et al. 2017",
-            tags=["attention", "transformer", "core"],
-        ))
+        frameworks.append(
+            AIFrameworkEntry(
+                id="",
+                section_number=2,
+                name="Scaled Dot-Product Attention",
+                category=AIFrameworkCategory.TRANSFORMERS,
+                latex_formula=r"Attention(Q,K,V) = softmax(QK^T/\sqrt{d_k})V",
+                description="Core attention mechanism in Transformers",
+                implementation_hint="Use einsum for efficient matrix multiplication",
+                invariants=["Attention weights sum to 1", "Output dimension matches V"],
+                source_framework="PyTorch/TensorFlow",
+                paper_reference="Vaswani et al. 2017",
+                tags=["attention", "transformer", "core"],
+            )
+        )
 
         # Section 21: Gradient Descent
-        frameworks.append(AIFrameworkEntry(
-            id="",
-            section_number=21,
-            name="Gradient Descent",
-            category=AIFrameworkCategory.OPTIMIZATION,
-            latex_formula=r"w_{t+1} = w_t - \eta \cdot \nabla_w L(w_t)",
-            description="Fundamental optimization algorithm for neural networks",
-            implementation_hint="Use learning rate scheduling for convergence",
-            invariants=["Loss decreases monotonically (with proper LR)"],
-            source_framework="PyTorch/TensorFlow",
-            paper_reference="Gradient Descent",
-            tags=["optimization", "training", "core"],
-        ))
+        frameworks.append(
+            AIFrameworkEntry(
+                id="",
+                section_number=21,
+                name="Gradient Descent",
+                category=AIFrameworkCategory.OPTIMIZATION,
+                latex_formula=r"w_{t+1} = w_t - \eta \cdot \nabla_w L(w_t)",
+                description="Fundamental optimization algorithm for neural networks",
+                implementation_hint="Use learning rate scheduling for convergence",
+                invariants=["Loss decreases monotonically (with proper LR)"],
+                source_framework="PyTorch/TensorFlow",
+                paper_reference="Gradient Descent",
+                tags=["optimization", "training", "core"],
+            )
+        )
 
         # Section 38: RLHF
-        frameworks.append(AIFrameworkEntry(
-            id="",
-            section_number=38,
-            name="RLHF Reward Model",
-            category=AIFrameworkCategory.ALIGNMENT,
-            latex_formula=r"L_R = -E[log \sigma(r_\theta(x, y_w) - r_\theta(x, y_l))]",
-            description="Reward modeling for human feedback alignment",
-            implementation_hint="Use pairwise comparison data for training",
-            invariants=["Bradley-Terry consistency"],
-            source_framework="OpenAI",
-            paper_reference="Ouyang et al. 2022",
-            tags=["rlhf", "alignment", "reward_model"],
-        ))
+        frameworks.append(
+            AIFrameworkEntry(
+                id="",
+                section_number=38,
+                name="RLHF Reward Model",
+                category=AIFrameworkCategory.ALIGNMENT,
+                latex_formula=r"L_R = -E[log \sigma(r_\theta(x, y_w) - r_\theta(x, y_l))]",
+                description="Reward modeling for human feedback alignment",
+                implementation_hint="Use pairwise comparison data for training",
+                invariants=["Bradley-Terry consistency"],
+                source_framework="OpenAI",
+                paper_reference="Ouyang et al. 2022",
+                tags=["rlhf", "alignment", "reward_model"],
+            )
+        )
 
         # Section 39: LoRA
-        frameworks.append(AIFrameworkEntry(
-            id="",
-            section_number=39,
-            name="LoRA Adaptation",
-            category=AIFrameworkCategory.FINE_TUNING,
-            latex_formula=r"W' = W_0 + BA \text{ where } B \in \mathbb{R}^{d \times r}, A \in \mathbb{R}^{r \times k}",
-            description="Low-rank adaptation for efficient fine-tuning",
-            implementation_hint="Only train A and B matrices, freeze W_0",
-            invariants=["rank r << min(d,k)", "W_0 frozen during training"],
-            source_framework="Hugging Face",
-            paper_reference="Hu et al. 2021",
-            tags=["lora", "peft", "fine_tuning"],
-        ))
+        frameworks.append(
+            AIFrameworkEntry(
+                id="",
+                section_number=39,
+                name="LoRA Adaptation",
+                category=AIFrameworkCategory.FINE_TUNING,
+                latex_formula=r"W' = W_0 + BA \text{ where } B \in \mathbb{R}^{d \times r}, A \in \mathbb{R}^{r \times k}",
+                description="Low-rank adaptation for efficient fine-tuning",
+                implementation_hint="Only train A and B matrices, freeze W_0",
+                invariants=["rank r << min(d,k)", "W_0 frozen during training"],
+                source_framework="Hugging Face",
+                paper_reference="Hu et al. 2021",
+                tags=["lora", "peft", "fine_tuning"],
+            )
+        )
 
         # Section 58: GPTQ
-        frameworks.append(AIFrameworkEntry(
-            id="",
-            section_number=58,
-            name="GPTQ Quantization",
-            category=AIFrameworkCategory.QUANTIZATION,
-            latex_formula=r"w_{i+1} = argmin_w ||Xw - X\hat{w}_{i+1}||^2_2 + \lambda ||w||^2_2",
-            description="Post-training quantization with Hessian compensation",
-            implementation_hint="Use Optimal Brain Surgeon for weight updates",
-            invariants=["Quantization error minimized layer-wise"],
-            source_framework="AutoGPTQ",
-            paper_reference="Frantar et al. 2022",
-            tags=["quantization", "gptq", "compression"],
-        ))
+        frameworks.append(
+            AIFrameworkEntry(
+                id="",
+                section_number=58,
+                name="GPTQ Quantization",
+                category=AIFrameworkCategory.QUANTIZATION,
+                latex_formula=r"w_{i+1} = argmin_w ||Xw - X\hat{w}_{i+1}||^2_2 + \lambda ||w||^2_2",
+                description="Post-training quantization with Hessian compensation",
+                implementation_hint="Use Optimal Brain Surgeon for weight updates",
+                invariants=["Quantization error minimized layer-wise"],
+                source_framework="AutoGPTQ",
+                paper_reference="Frantar et al. 2022",
+                tags=["quantization", "gptq", "compression"],
+            )
+        )
 
         # Section 60: GANs
-        frameworks.append(AIFrameworkEntry(
-            id="",
-            section_number=60,
-            name="GAN Minimax Game",
-            category=AIFrameworkCategory.GANS,
-            latex_formula=r"\min_G \max_D V(D,G) = E[log D(x)] + E[log(1-D(G(z)))]",
-            description="Adversarial training between generator and discriminator",
-            implementation_hint="Alternate between D and G updates",
-            invariants=["Nash equilibrium at D(x)=0.5"],
-            source_framework="PyTorch",
-            paper_reference="Goodfellow et al. 2014",
-            tags=["gan", "generative", "adversarial"],
-        ))
+        frameworks.append(
+            AIFrameworkEntry(
+                id="",
+                section_number=60,
+                name="GAN Minimax Game",
+                category=AIFrameworkCategory.GANS,
+                latex_formula=r"\min_G \max_D V(D,G) = E[log D(x)] + E[log(1-D(G(z)))]",
+                description="Adversarial training between generator and discriminator",
+                implementation_hint="Alternate between D and G updates",
+                invariants=["Nash equilibrium at D(x)=0.5"],
+                source_framework="PyTorch",
+                paper_reference="Goodfellow et al. 2014",
+                tags=["gan", "generative", "adversarial"],
+            )
+        )
 
         # Section 75: MAML
-        frameworks.append(AIFrameworkEntry(
-            id="",
-            section_number=75,
-            name="MAML Meta-Learning",
-            category=AIFrameworkCategory.META_LEARNING,
-            latex_formula=r"\min_\theta \sum_{T_i} L(\theta - \alpha \nabla_\theta L(\theta, D_i^{support}), D_i^{query})",
-            description="Model-agnostic meta-learning for few-shot adaptation",
-            implementation_hint="Compute second-order gradients for meta-update",
-            invariants=["Fast adaptation with K-shot examples"],
-            source_framework="PyTorch",
-            paper_reference="Finn et al. 2017",
-            tags=["maml", "meta_learning", "few_shot"],
-        ))
+        frameworks.append(
+            AIFrameworkEntry(
+                id="",
+                section_number=75,
+                name="MAML Meta-Learning",
+                category=AIFrameworkCategory.META_LEARNING,
+                latex_formula=r"\min_\theta \sum_{T_i} L(\theta - \alpha \nabla_\theta L(\theta, D_i^{support}), D_i^{query})",
+                description="Model-agnostic meta-learning for few-shot adaptation",
+                implementation_hint="Compute second-order gradients for meta-update",
+                invariants=["Fast adaptation with K-shot examples"],
+                source_framework="PyTorch",
+                paper_reference="Finn et al. 2017",
+                tags=["maml", "meta_learning", "few_shot"],
+            )
+        )
 
         # Section 76: SimCLR
-        frameworks.append(AIFrameworkEntry(
-            id="",
-            section_number=76,
-            name="SimCLR NT-Xent Loss",
-            category=AIFrameworkCategory.SELF_SUPERVISED,
-            latex_formula=r"l_{i,j} = -log[exp(sim(z_i,z_j)/\tau) / \sum_{k=1}^{2N} 1_{k \neq i} exp(sim(z_i,z_k)/\tau)]",
-            description="Contrastive learning for visual representations",
-            implementation_hint="Use large batch sizes for more negatives",
-            invariants=["Temperature controls distribution concentration"],
-            source_framework="PyTorch",
-            paper_reference="Chen et al. 2020",
-            tags=["simclr", "contrastive", "self_supervised"],
-        ))
+        frameworks.append(
+            AIFrameworkEntry(
+                id="",
+                section_number=76,
+                name="SimCLR NT-Xent Loss",
+                category=AIFrameworkCategory.SELF_SUPERVISED,
+                latex_formula=r"l_{i,j} = -log[exp(sim(z_i,z_j)/\tau) / \sum_{k=1}^{2N} 1_{k \neq i} exp(sim(z_i,z_k)/\tau)]",
+                description="Contrastive learning for visual representations",
+                implementation_hint="Use large batch sizes for more negatives",
+                invariants=["Temperature controls distribution concentration"],
+                source_framework="PyTorch",
+                paper_reference="Chen et al. 2020",
+                tags=["simclr", "contrastive", "self_supervised"],
+            )
+        )
 
         # Section 77: Causal Inference
-        frameworks.append(AIFrameworkEntry(
-            id="",
-            section_number=77,
-            name="Backdoor Adjustment",
-            category=AIFrameworkCategory.CAUSAL_INFERENCE,
-            latex_formula=r"P(y|do(x)) = \sum_z P(y|x,z) \cdot P(z)",
-            description="Identify causal effects from observational data",
-            implementation_hint="Check backdoor criterion before adjustment",
-            invariants=["Z blocks all backdoor paths", "No descendants of X"],
-            source_framework="DoWhy/PyCausal",
-            paper_reference="Pearl 2009",
-            tags=["causal", "do_calculus", "pearl"],
-        ))
+        frameworks.append(
+            AIFrameworkEntry(
+                id="",
+                section_number=77,
+                name="Backdoor Adjustment",
+                category=AIFrameworkCategory.CAUSAL_INFERENCE,
+                latex_formula=r"P(y|do(x)) = \sum_z P(y|x,z) \cdot P(z)",
+                description="Identify causal effects from observational data",
+                implementation_hint="Check backdoor criterion before adjustment",
+                invariants=["Z blocks all backdoor paths", "No descendants of X"],
+                source_framework="DoWhy/PyCausal",
+                paper_reference="Pearl 2009",
+                tags=["causal", "do_calculus", "pearl"],
+            )
+        )
 
         # Add cross-references
         frameworks[0].cross_references = [frameworks[1].id]  # Attention -> LoRA
         frameworks[4].cross_references = [frameworks[5].id]  # GPTQ -> GANs (both optimization)
-        frameworks[6].cross_references = [frameworks[7].id]  # MAML -> SimCLR (both learning representations)
+        frameworks[6].cross_references = [
+            frameworks[7].id
+        ]  # MAML -> SimCLR (both learning representations)
 
         return frameworks
 
@@ -526,7 +566,7 @@ class AIFrameworkSuperBrainIntegration:
         self.ai_graph = ai_graph
         self.domain_mappings = self._build_domain_mappings()
 
-    def _build_domain_mappings(self) -> Dict[AIFrameworkCategory, Domain]:
+    def _build_domain_mappings(self) -> dict[AIFrameworkCategory, Domain]:
         """Map AI framework categories to SuperBrain domains."""
         return {
             AIFrameworkCategory.TRANSFORMERS: Domain.TRANSFORMER_CIRCUITS,
@@ -547,7 +587,7 @@ class AIFrameworkSuperBrainIntegration:
         """Get corresponding SuperBrain domain for AI category."""
         return self.domain_mappings.get(category)
 
-    def find_cross_domain_equations(self, fw_id: str) -> List[dict[str, Any]]:
+    def find_cross_domain_equations(self, fw_id: str) -> list[dict[str, Any]]:
         """Find equations in other domains related to an AI framework."""
         if fw_id not in self.ai_graph.frameworks:
             return []
@@ -558,32 +598,38 @@ class AIFrameworkSuperBrainIntegration:
         # Map to SuperBrain domain
         sb_domain = self.get_superbrain_domain(fw.category)
         if sb_domain:
-            cross_domain.append({
-                "ai_framework": fw.name,
-                "ai_category": fw.category.value,
-                "superbrain_domain": sb_domain.value,
-                "integration_note": f"AI framework maps to SuperBrain domain: {sb_domain.value}"
-            })
+            cross_domain.append(
+                {
+                    "ai_framework": fw.name,
+                    "ai_category": fw.category.value,
+                    "superbrain_domain": sb_domain.value,
+                    "integration_note": f"AI framework maps to SuperBrain domain: {sb_domain.value}",
+                }
+            )
 
         # Check for distributed systems connections
         if "distributed" in fw.tags or "federated" in fw.tags:
-            cross_domain.append({
-                "ai_framework": fw.name,
-                "related_domain": "distributed_systems",
-                "connection": "Federated learning uses consensus algorithms"
-            })
+            cross_domain.append(
+                {
+                    "ai_framework": fw.name,
+                    "related_domain": "distributed_systems",
+                    "connection": "Federated learning uses consensus algorithms",
+                }
+            )
 
         # Check for optimization connections
         if fw.category in [AIFrameworkCategory.QUANTIZATION, AIFrameworkCategory.MODEL_MERGING]:
-            cross_domain.append({
-                "ai_framework": fw.name,
-                "related_domain": "optimization",
-                "connection": "Weight quantization uses optimization techniques"
-            })
+            cross_domain.append(
+                {
+                    "ai_framework": fw.name,
+                    "related_domain": "optimization",
+                    "connection": "Weight quantization uses optimization techniques",
+                }
+            )
 
         return cross_domain
 
-    def generate_implementation_plan(self, framework_name: str) -> Dict[str, Any]:
+    def generate_implementation_plan(self, framework_name: str) -> dict[str, Any]:
         """Generate step-by-step implementation plan for a framework."""
         # Find framework by name
         fw = None
@@ -622,8 +668,7 @@ class AIFrameworkSuperBrainIntegration:
 
 
 def build_ai_frameworks_knowledge_base(
-    doc_path: Path,
-    output_path: Path
+    doc_path: Path, output_path: Path
 ) -> AIFrameworkKnowledgeGraph:
     """
     Build and save the AI frameworks knowledge base.
@@ -638,17 +683,17 @@ def build_ai_frameworks_knowledge_base(
     graph = parser.parse()
     graph.to_json(output_path)
 
-    print(f"[AIFrameworksBridge] Built knowledge graph:")
+    print("[AIFrameworksBridge] Built knowledge graph:")
     print(f"  - Total frameworks: {graph.metadata.total_equations}")
-    print(f"  - Categories covered: {len([c for c in graph.category_index if graph.category_index[c]])}")
+    print(
+        f"  - Categories covered: {len([c for c in graph.category_index if graph.category_index[c]])}"
+    )
     print(f"  - Saved to: {output_path}")
 
     return graph
 
 
-def integrate_with_superbrain(
-    ai_graph: AIFrameworkKnowledgeGraph
-) -> Dict[str, Any]:
+def integrate_with_superbrain(ai_graph: AIFrameworkKnowledgeGraph) -> dict[str, Any]:
     """
     Integrate AI frameworks knowledge graph with AMOS SuperBrain.
 
@@ -661,7 +706,7 @@ def integrate_with_superbrain(
         "ai_frameworks_count": len(ai_graph.frameworks),
         "domain_mappings": {},
         "cross_domain_links": [],
-        "sample_implementation_plans": []
+        "sample_implementation_plans": [],
     }
 
     # Build domain mappings
@@ -670,7 +715,7 @@ def integrate_with_superbrain(
         result["domain_mappings"][cat.value] = {
             "superbrain_domain": domain.value,
             "framework_count": len(frameworks),
-            "frameworks": [f.name for f in frameworks[:3]]  # Sample
+            "frameworks": [f.name for f in frameworks[:3]],  # Sample
         }
 
     # Generate sample implementation plans
@@ -693,8 +738,6 @@ def integrate_with_superbrain(
 
 # CLI interface
 if __name__ == "__main__":
-    from typing import Callable, Dict
-
     if len(sys.argv) > 1 and sys.argv[1] == "build":
         # Build knowledge base
         doc_path = Path("GLOBAL_AI_FRAMEWORKS_EQUATIONS_AND_INVARIANTS.md")

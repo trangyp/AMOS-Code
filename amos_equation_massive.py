@@ -10,7 +10,6 @@ import numpy as np
 
 from amos_equation_jax import JAXEquationKernel
 from amos_equation_kernel import EquationMetadata, MathematicalPattern
-from typing import Dict, List
 
 
 class MassiveEquationKernel(JAXEquationKernel):
@@ -92,14 +91,14 @@ class MassiveEquationKernel(JAXEquationKernel):
             return m_new, v_new, update
 
         # Regularization
-        def l1_reg(weights: List[float], lam: float = 0.01) -> float:
+        def l1_reg(weights: list[float], lam: float = 0.01) -> float:
             return lam * sum(abs(w) for w in weights)
 
-        def l2_reg(weights: List[float], lam: float = 0.01) -> float:
+        def l2_reg(weights: list[float], lam: float = 0.01) -> float:
             return lam * sum(w**2 for w in weights)
 
         # Normalization
-        def layer_norm(x: List[float], gamma: float = 1.0, beta: float = 0.0) -> list:
+        def layer_norm(x: list[float], gamma: float = 1.0, beta: float = 0.0) -> list:
             mean = sum(x) / len(x)
             var = sum((xi - mean) ** 2 for xi in x) / len(x)
             return [gamma * (xi - mean) / math.sqrt(var + 1e-5) + beta for xi in x]
@@ -116,7 +115,7 @@ class MassiveEquationKernel(JAXEquationKernel):
         def f1_score(precision: float, recall: float) -> float:
             return 0.0 if precision + recall == 0 else 2 * precision * recall / (precision + recall)
 
-        def auc_trapz(fpr: List[float], tpr: List[float]) -> float:
+        def auc_trapz(fpr: list[float], tpr: list[float]) -> float:
             return sum(
                 (fpr[i] - fpr[i - 1]) * (tpr[i] + tpr[i - 1]) / 2 for i in range(1, len(fpr))
             )
@@ -135,7 +134,7 @@ class MassiveEquationKernel(JAXEquationKernel):
         def relu(x: float) -> float:
             return max(0.0, x)
 
-        def softmax_list(x: List[float]) -> List[float]:
+        def softmax_list(x: list[float]) -> list[float]:
             exp_x = [math.exp(xi - max(x)) for xi in x]
             sum_exp = sum(exp_x)
             return [e / sum_exp for e in exp_x]
@@ -149,7 +148,7 @@ class MassiveEquationKernel(JAXEquationKernel):
         def rmse(y_true: float, y_pred: float) -> float:
             return math.sqrt((y_true - y_pred) ** 2)
 
-        def cross_entropy(y_true: int, y_pred: List[float]) -> float:
+        def cross_entropy(y_true: int, y_pred: list[float]) -> float:
             return -math.log(y_pred[y_true] + 1e-15)
 
         def log_loss(y_true: int, y_prob: float) -> float:
@@ -200,19 +199,19 @@ class MassiveEquationKernel(JAXEquationKernel):
                 else 0.0
             )
 
-        def cosine_similarity(a: List[float], b: List[float]) -> float:
+        def cosine_similarity(a: list[float], b: list[float]) -> float:
             dot = sum(x * y for x, y in zip(a, b))
             norm_a = math.sqrt(sum(x * x for x in a))
             norm_b = math.sqrt(sum(x * x for x in b))
             return dot / (norm_a * norm_b) if norm_a > 0 and norm_b > 0 else 0.0
 
-        def euclidean_distance(a: List[float], b: List[float]) -> float:
+        def euclidean_distance(a: list[float], b: list[float]) -> float:
             return math.sqrt(sum((x - y) ** 2 for x, y in zip(a, b)))
 
-        def manhattan_distance(a: List[float], b: List[float]) -> float:
+        def manhattan_distance(a: list[float], b: list[float]) -> float:
             return sum(abs(x - y) for x, y in zip(a, b))
 
-        def chebyshev_distance(a: List[float], b: List[float]) -> float:
+        def chebyshev_distance(a: list[float], b: list[float]) -> float:
             return max(abs(x - y) for x, y in zip(a, b))
 
         def hamming_distance(a: str, b: str) -> int:
@@ -224,14 +223,14 @@ class MassiveEquationKernel(JAXEquationKernel):
         def perplexity_ml(loss: float) -> float:
             return math.exp(loss)
 
-        def bleu_score(bp: float, precisions: List[float]) -> float:
+        def bleu_score(bp: float, precisions: list[float]) -> float:
             import functools
             import operator
 
             geo_mean = functools.reduce(operator.mul, precisions) ** (1.0 / len(precisions))
             return bp * geo_mean
 
-        def ndcg_at_k(relevances: List[float], k: int) -> float:
+        def ndcg_at_k(relevances: list[float], k: int) -> float:
             ideal = sorted(relevances, reverse=True)[:k]
             dcg = sum((2**r - 1) / math.log2(i + 2) for i, r in enumerate(relevances[:k]))
             idcg = sum((2**r - 1) / math.log2(i + 2) for i, r in enumerate(ideal))
@@ -240,7 +239,7 @@ class MassiveEquationKernel(JAXEquationKernel):
         def reciprocal_rank(rank: int) -> float:
             return 1.0 / rank if rank > 0 else 0.0
 
-        def average_precision(precisions: List[float], recalls: List[float]) -> float:
+        def average_precision(precisions: list[float], recalls: list[float]) -> float:
             return sum(
                 p * (r - recalls[i - 1] if i > 0 else r)
                 for i, (p, r) in enumerate(zip(precisions, recalls))
@@ -249,15 +248,15 @@ class MassiveEquationKernel(JAXEquationKernel):
         def kl_divergence_ml(p: float, q: float) -> float:
             return p * math.log(p / q) if p > 0 and q > 0 else 0.0
 
-        def total_variation_distance(p: List[float], q: List[float]) -> float:
+        def total_variation_distance(p: list[float], q: list[float]) -> float:
             return 0.5 * sum(abs(pi - qi) for pi, qi in zip(p, q))
 
-        def hellinger_distance(p: List[float], q: List[float]) -> float:
+        def hellinger_distance(p: list[float], q: list[float]) -> float:
             return math.sqrt(
                 0.5 * sum((math.sqrt(pi) - math.sqrt(qi)) ** 2 for pi, qi in zip(p, q))
             )
 
-        def wasserstein_distance_1d(u: List[float], v: List[float]) -> float:
+        def wasserstein_distance_1d(u: list[float], v: list[float]) -> float:
             u_sorted = sorted(u)
             v_sorted = sorted(v)
             return sum(abs(a - b) for a, b in zip(u_sorted, v_sorted)) / len(u)
@@ -474,7 +473,7 @@ class MassiveEquationKernel(JAXEquationKernel):
     def _register_info_theory_equations(self) -> None:
         """Register 15+ information theory equations."""
 
-        def perplexity(probs: List[float]) -> float:
+        def perplexity(probs: list[float]) -> float:
             entropy = -sum(p * math.log2(p) for p in probs if p > 0)
             return 2**entropy
 
@@ -485,10 +484,10 @@ class MassiveEquationKernel(JAXEquationKernel):
             y_hat = max(1e-15, min(1 - 1e-15, y_hat))
             return -math.log(y_hat) if y == 1 else -math.log(1 - y_hat)
 
-        def kl_div(p: List[float], q: List[float]) -> float:
+        def kl_div(p: list[float], q: list[float]) -> float:
             return sum(pi * math.log(pi / qi) for pi, qi in zip(p, q) if pi > 0 and qi > 0)
 
-        def js_divergence(p: List[float], q: List[float]) -> float:
+        def js_divergence(p: list[float], q: list[float]) -> float:
             m = [(pi + qi) / 2 for pi, qi in zip(p, q)]
             return 0.5 * kl_div(p, m) + 0.5 * kl_div(q, m)
 
@@ -857,9 +856,9 @@ class MassiveEquationKernel(JAXEquationKernel):
                 parameters={},
             )
 
-    def count_equations_by_domain(self) -> Dict[str, int]:
+    def count_equations_by_domain(self) -> dict[str, int]:
         """Count equations in each domain."""
-        counts: Dict[str, int] = {}
+        counts: dict[str, int] = {}
         for meta in self._metadata.values():
             counts[meta.domain] = counts.get(meta.domain, 0) + 1
         return counts

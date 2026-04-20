@@ -13,7 +13,7 @@ Version: 3.0.0
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Optional
 
 from amos_brain.canon_bridge import get_canon_bridge
 from amos_brain.cognitive_engine import get_cognitive_engine
@@ -60,7 +60,7 @@ class CanonQueryEngine:
         self,
         query: str,
         domain: str = "general",
-        context: Optional[dict[str, Any] ] = None,
+        context: dict[str, Optional[Any]] = None,
     ) -> CanonQueryResult:
         """Process a query with Canon context enrichment.
 
@@ -114,7 +114,7 @@ class CanonQueryEngine:
         self,
         query: str,
         domains: list[str],
-        context: Optional[dict[str, Any] ] = None,
+        context: dict[str, Optional[Any]] = None,
     ) -> list[CanonQueryResult]:
         """Query across multiple domains and aggregate results.
 
@@ -180,7 +180,7 @@ async def get_canon_query_engine() -> CanonQueryEngine:
 async def canon_query(
     query: str,
     domain: str = "general",
-    context: Optional[dict[str, Any] ] = None,
+    context: dict[str, Optional[Any]] = None,
 ) -> CanonQueryResult:
     """Convenience function for Canon-aware queries.
 

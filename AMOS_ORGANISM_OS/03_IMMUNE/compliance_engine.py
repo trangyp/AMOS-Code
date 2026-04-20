@@ -1,7 +1,7 @@
 """Compliance Engine — Regulatory and policy compliance."""
 
 from dataclasses import dataclass
-from typing import Any, Dict, List
+from typing import Any
 
 
 @dataclass
@@ -20,8 +20,8 @@ class ComplianceEngine:
     """Checks compliance with regulations and policies."""
 
     def __init__(self):
-        self._rules: List[ComplianceRule] = []
-        self._violations: List[dict] = []
+        self._rules: list[ComplianceRule] = []
+        self._violations: list[dict] = []
         self._setup_default_rules()
 
     def _setup_default_rules(self):
@@ -53,8 +53,8 @@ class ComplianceEngine:
     def check_compliance(
         self,
         action: str,
-        context: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        context: dict[str, Any],
+    ) -> dict[str, Any]:
         """Check if an action complies with rules."""
         violations = []
 
@@ -97,7 +97,7 @@ class ComplianceEngine:
         """Add a compliance rule."""
         self._rules.append(rule)
 
-    def status(self) -> Dict[str, Any]:
+    def status(self) -> dict[str, Any]:
         """Get compliance status."""
         return {
             "total_rules": len(self._rules),

@@ -1,4 +1,6 @@
-from typing import Any, Dict, Optional
+from __future__ import annotations
+
+from typing import Any
 
 """Brain Tasks API - Production task processing via AMOS brain.
 
@@ -8,23 +10,16 @@ Real implementation using:
 - Proper error handling and monitoring
 """
 
-import sys
-from datetime import datetime, timezone
-
-UTC = timezone.utc
-from pathlib import Path
+from datetime import UTC, datetime
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
-# Add clawspring to path
-CLAWSPRING_PATH = Path(__file__).parent.parent.parent / "clawspring"
-if str(CLAWSPRING_PATH) not in sys.path:
-    sys.path.insert(0, str(CLAWSPRING_PATH))
+UTC = UTC
 
-AMOS_BRAIN_PATH = CLAWSPRING_PATH / "amos_brain"
-if str(AMOS_BRAIN_PATH) not in sys.path:
-    sys.path.insert(0, str(AMOS_BRAIN_PATH))
+# Import alias modules to set up paths
+import clawspring  # noqa: F401
+import clawspring.amos_brain  # noqa: F401
 
 try:
     from amos_brain.api_integration import brain_get_result, brain_submit_task
@@ -43,7 +38,7 @@ class TaskSubmitRequest(BaseModel):
 
     description: str = Field(..., min_length=1, max_length=1000)
     priority: str = Field(default="MEDIUM", pattern="^(LOW|MEDIUM|HIGH|CRITICAL)$")
-    context: Dict[str, Any] = Field(default_factory=dict)
+    context: dict[str, Any] = Field(default_factory=dict)
 
 
 class TaskResponse(BaseModel):
@@ -60,26 +55,26 @@ class TaskResultResponse(BaseModel):
 
     task_id: str
     status: str
-    result: Dict[str, Any] = None
-    error: Optional[str] = None
-    completed_at: Optional[str] = None
+    result: dict[str, Any] = None
+    error: str = None
+    completed_at: str = None
 
 
 class BrainThinkRequest(BaseModel):
     """Request for immediate brain processing."""
 
     request: str = Field(..., min_length=1, max_length=2000)
-    context: Dict[str, Any] = Field(default_factory=dict)
+    context: dict[str, Any] = Field(default_factory=dict)
 
 
 class BrainThinkResponse(BaseModel):
     """Response from immediate brain processing."""
 
     brain_used: bool
-    status: Optional[str] = None
-    legality: Optional[float] = None
-    sigma: Optional[float] = None
-    mode: Optional[str] = None
+    status: str = None
+    legality: float = None
+    sigma: float = None
+    mode: str = None
     timestamp: str
 
 
@@ -190,7 +185,7 @@ async def brain_think_fast_endpoint(request: BrainThinkRequest) -> BrainThinkRes
 
 
 @router.get("/status")
-async def brain_tasks_status() -> Dict[str, Any]:
+async def brain_tasks_status() -> dict[str, Any]:
     """Get brain tasks API status."""
 
     # Check fast thinking availability

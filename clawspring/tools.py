@@ -1,5 +1,7 @@
 """Tool definitions and implementations for ClawSpring."""
 
+from __future__ import annotations
+
 import difflib
 import glob as _glob
 import json
@@ -10,12 +12,12 @@ import threading
 from collections.abc import Callable
 from pathlib import Path
 
-from tool_registry import ToolDef, register_tool
-from tool_registry import execute_tool as _registry_execute
+from clawspring.tool_registry import ToolDef, register_tool
+from clawspring.tool_registry import execute_tool as _registry_execute
 
 # ── AskUserQuestion state ──────────────────────────────────────────────────────
 # The main REPL loop drains _pending_questions and fills _question_answers.
-_pending_questions: List[
+_pending_questions: list[
     dict
 ] = []  # [{id, question, options, allow_freetext, event, result_holder}]
 _ask_lock = threading.Lock()
@@ -500,9 +502,13 @@ def _edit(file_path: str, old_string: str, new_string: str, replace_all: bool = 
 
 def _bash(command: str, timeout: int = 30) -> str:
     try:
+        # SECURITY: Use shlex.split() and shell=False to prevent injection
+        import shlex
+
+        cmd_parts = shlex.split(command)
         r = subprocess.run(
-            command,
-            shell=True,
+            cmd_parts,
+            shell=False,
             capture_output=True,
             text=True,
             timeout=timeout,
@@ -623,7 +629,7 @@ def _websearch(query: str) -> str:
 # ── NotebookEdit implementation ────────────────────────────────────────────
 
 
-def _parse_cell_id(cell_id: str) -> int :
+def _parse_cell_id(cell_id: str) -> int:
     """Convert 'cell-N' shorthand to integer index; return None if not that form."""
     m = re.fullmatch(r"cell-(\d+)", cell_id)
     return int(m.group(1)) if m else None
@@ -650,7 +656,7 @@ def _notebook_edit(
     cells = nb.get("cells", [])
 
     # Resolve cell index
-    def _resolve_index(cid: str) -> int :
+    def _resolve_index(cid: str) -> int:
         # Try exact id match first
         for i, c in enumerate(cells):
             if c.get("id") == cid:
@@ -748,7 +754,7 @@ def _detect_language(file_path: str) -> str:
     }.get(ext, "unknown")
 
 
-def _run_quietly(cmd: List[str], cwd: str  = None, timeout: int = 30) -> Tuple[int, str]:
+def _run_quietly(cmd: list[str], cwd: str = None, timeout: int = 30) -> tuple[int, str]:
     """Run a command, return (returncode, combined_output)."""
     try:
         r = subprocess.run(
@@ -775,7 +781,7 @@ def _get_diagnostics(file_path: str, language: str = None) -> str:
 
     lang = language or _detect_language(file_path)
     abs_path = str(p.resolve())
-    results: List[str] = []
+    results: list[str] = []
 
     if lang == "python":
         # Try pyright first (most comprehensive)
@@ -853,7 +859,7 @@ def _get_diagnostics(file_path: str, language: str = None) -> str:
 
 def _ask_user_question(
     question: str,
-    options: List[dict ] = None,
+    options: list[dict] = None,
     allow_freetext: bool = True,
 ) -> str:
     """Block the agent loop and surface a question to the user in the terminal.
@@ -863,7 +869,7 @@ def _ask_user_question(
     block this call until the user responds.
     """
     event = threading.Event()
-    result_holder: List[str] = []
+    result_holder: list[str] = []
     entry = {
         "question": question,
         "options": options or [],
@@ -979,7 +985,7 @@ def execute_tool(
     name: str,
     inputs: dict,
     permission_mode: str = "auto",
-    ask_permission: Callable[[str , bool]] = None,
+    ask_permission: Callable[[str, bool]] = None,
     config: dict = None,
 ) -> str:
     """Dispatch tool execution; ask permission for write/destructive ops.
@@ -1144,7 +1150,6 @@ _register_builtins()
 # mcp/tools.py connects to configured MCP servers and registers their tools.
 # Connection happens in a background thread so startup is not blocked.
 import mcp.tools as _mcp_tools  # noqa: F401
-
 import memory.tools as _memory_tools  # noqa: F401
 
 # ── Multi-agent tools (Agent, SendMessage, CheckAgentResult, ListAgentTasks, ListAgentTypes) ──
@@ -1171,7 +1176,6 @@ except Exception as _plugin_err:
 # ── Task tools (TaskCreate, TaskUpdate, TaskGet, TaskList) ─────────────────────
 # task/tools.py registers all four tools into the central registry on import.
 import task.tools as _task_tools  # noqa: F401
-from typing import List, Tuple
 
 # ── AMOS Brain Integration ────────────────────────────────────────────────────
 # AMOS cognitive runtime integration - provides Rule of 2/4 reasoning with

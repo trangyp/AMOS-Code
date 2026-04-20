@@ -57,7 +57,7 @@ class CanonAgent:
         self,
         task_description: str,
         task_type: str,
-        context: Optional[dict[str, Any] ] = None,
+        context: dict[str, Any | None] = None,
     ) -> TaskPlan:
         """Create a task plan enriched with Canon context.
 

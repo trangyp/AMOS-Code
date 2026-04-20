@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 """
 AMOS Reasoning Kernel
@@ -41,8 +41,9 @@ import uuid
 from collections import defaultdict
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 from enum import Enum
 from functools import lru_cache
 
@@ -145,10 +146,10 @@ class Premise:
     confidence: float = field(default=1.0)
     source: str = field(default="")
     active: bool = field(default=True)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert premise to dictionary representation."""
         return {
             "id": self.id,
@@ -182,7 +183,7 @@ class Hypothesis:
     contradiction_penalty: float = field(default=0.0)
     cost: float = field(default=0.0)
     score: float = field(default=0.0)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
     def calculate_score(self) -> float:
@@ -194,7 +195,7 @@ class Hypothesis:
         )
         return self.score
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert hypothesis to dictionary representation."""
         return {
             "id": self.id,
@@ -225,22 +226,22 @@ class InferenceRule:
     id: str = field(default_factory=lambda: str(uuid.uuid4()))
     name: str = field(default="")
     mode: ReasoningMode = field(default=ReasoningMode.DEDUCTIVE)
-    input_types: List[str] = field(default_factory=list)
+    input_types: list[str] = field(default_factory=list)
     output_type: str = field(default="")
-    preconditions: List[Callable[..., bool]] = field(default_factory=list)
+    preconditions: list[Callable[..., bool]] = field(default_factory=list)
     transformation: Callable[..., Any] = field(default=None)
-    validity_conditions: List[str] = field(default_factory=list)
+    validity_conditions: list[str] = field(default_factory=list)
     uncertainty_update: str = field(default="multiply")
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
-    def check_preconditions(self, premises: List[Premise]) -> bool:
+    def check_preconditions(self, premises: list[Premise]) -> bool:
         """Check if all preconditions are satisfied."""
         for precondition in self.preconditions:
             if not precondition(premises):
                 return False
         return True
 
-    def apply(self, premises: List[Premise]) -> Optional[Any]:
+    def apply(self, premises: list[Premise]) -> Any:
         """Apply the rule to premises."""
         if not self.check_preconditions(premises):
             return None
@@ -252,7 +253,7 @@ class InferenceRule:
             logger.debug(f"Rule application failed: {e}")
             return None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert rule to dictionary representation."""
         return {
             "id": self.id,
@@ -281,15 +282,15 @@ class Conclusion:
     justified: bool = field(default=False)
     committed: bool = field(default=False)
     status: ConclusionStatus = field(default=ConclusionStatus.PROPOSED)
-    premise_ids: List[str] = field(default_factory=list)
-    rule_ids: List[str] = field(default_factory=list)
-    justification_id: Optional[str] = field(default=None)
+    premise_ids: list[str] = field(default_factory=list)
+    rule_ids: list[str] = field(default_factory=list)
+    justification_id: str = field(default=None)
     uncertainty_propagated: bool = field(default=False)
     contradiction_checked: bool = field(default=False)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert conclusion to dictionary representation."""
         return {
             "id": self.id,
@@ -319,15 +320,15 @@ class Justification:
 
     id: str = field(default_factory=lambda: str(uuid.uuid4()))
     conclusion_id: str = field(default="")
-    premise_ids: List[str] = field(default_factory=list)
+    premise_ids: list[str] = field(default_factory=list)
     rule_id: str = field(default="")
     confidence_update: float = field(default=1.0)
     reasoning_mode: ReasoningMode = field(default=ReasoningMode.DEDUCTIVE)
-    chain: List[dict[str, Any]] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    chain: list[dict[str, Any]] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert justification to dictionary representation."""
         return {
             "id": self.id,
@@ -349,16 +350,16 @@ class Conflict:
     """
 
     id: str = field(default_factory=lambda: str(uuid.uuid4()))
-    conclusion_ids: List[str] = field(default_factory=list)
-    premise_ids: List[str] = field(default_factory=list)
+    conclusion_ids: list[str] = field(default_factory=list)
+    premise_ids: list[str] = field(default_factory=list)
     severity: ConflictSeverity = field(default=ConflictSeverity.HARD)
     conflict_score: float = field(default=0.0)
     description: str = field(default="")
-    resolution_strategy: Optional[str] = field(default=None)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    resolution_strategy: str = field(default=None)
+    metadata: dict[str, Any] = field(default_factory=dict)
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert conflict to dictionary representation."""
         return {
             "id": self.id,
@@ -380,9 +381,9 @@ class UncertaintyState:
     """
 
     global_uncertainty: float = field(default=0.0)
-    claim_uncertainties: Dict[str, float] = field(default_factory=dict)
+    claim_uncertainties: dict[str, float] = field(default_factory=dict)
     entropy: float = field(default=0.0)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     def update_claim_uncertainty(self, claim_id: str, uncertainty: float) -> None:
         """Update uncertainty for a specific claim."""
@@ -398,7 +399,7 @@ class UncertaintyState:
             self.claim_uncertainties
         )
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert uncertainty state to dictionary representation."""
         return {
             "global_uncertainty": self.global_uncertainty,
@@ -423,9 +424,9 @@ class CausalLink:
     mechanism: str = field(default="")
     confidence: float = field(default=0.0)
     intervention_tested: bool = field(default=False)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert causal link to dictionary representation."""
         return {
             "id": self.id,
@@ -448,14 +449,14 @@ class CounterfactualBranch:
     """
 
     id: str = field(default_factory=lambda: str(uuid.uuid4()))
-    intervention: Dict[str, Any] = field(default_factory=dict)
-    predicted_world: Dict[str, Any] = field(default_factory=dict)
-    difference_from_actual: Dict[str, Any] = field(default_factory=dict)
+    intervention: dict[str, Any] = field(default_factory=dict)
+    predicted_world: dict[str, Any] = field(default_factory=dict)
+    difference_from_actual: dict[str, Any] = field(default_factory=dict)
     utility_change: float = field(default=0.0)
     confidence: float = field(default=0.0)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert counterfactual branch to dictionary representation."""
         return {
             "id": self.id,
@@ -481,9 +482,9 @@ class ConstraintCheck:
     status: str = field(default="unknown")  # satisfied, violated, unknown
     severity: ConflictSeverity = field(default=ConflictSeverity.SOFT)
     violation_score: float = field(default=0.0)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert constraint check to dictionary representation."""
         return {
             "constraint_id": self.constraint_id,
@@ -503,10 +504,10 @@ class DeductiveStep:
     P₁, P₂, ..., Pₙ ⊨ C
     """
 
-    premise_ids: List[str] = field(default_factory=list)
+    premise_ids: list[str] = field(default_factory=list)
     rule_id: str = field(default="")
     conclusion: Any = field(default=None)
-    sound_if: List[str] = field(
+    sound_if: list[str] = field(
         default_factory=lambda: [
             "all_premises_active",
             "all_preconditions_met",
@@ -515,7 +516,7 @@ class DeductiveStep:
     )
     is_sound: bool = field(default=False)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert deductive step to dictionary representation."""
         return {
             "premise_ids": self.premise_ids,
@@ -534,8 +535,8 @@ class InductiveGeneralization:
     Induction generalizes from evidence with confidence updates.
     """
 
-    examples_supporting: List[Any] = field(default_factory=list)
-    examples_against: List[Any] = field(default_factory=list)
+    examples_supporting: list[Any] = field(default_factory=list)
+    examples_against: list[Any] = field(default_factory=list)
     coverage: float = field(default=0.0)
     stability: float = field(default=0.0)
     confidence: float = field(default=0.0)
@@ -547,7 +548,7 @@ class InductiveGeneralization:
         self.confidence = max(0.0, min(1.0, self.confidence + eta * (support - counterevidence)))
         return self.confidence
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert inductive generalization to dictionary representation."""
         return {
             "examples_supporting": self.examples_supporting,
@@ -568,9 +569,9 @@ class TruthMaintenanceEntry:
     """
 
     premise_id: str = field(default="")
-    dependent_conclusion_ids: List[str] = field(default_factory=list)
+    dependent_conclusion_ids: list[str] = field(default_factory=list)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert truth maintenance entry to dictionary representation."""
         return {
             "premise_id": self.premise_id,
@@ -588,7 +589,7 @@ class Retraction:
     reason: RetractionReason = field(default=RetractionReason.PREMISE_CHANGED)
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert retraction to dictionary representation."""
         return {
             "conclusion_id": self.conclusion_id,
@@ -611,36 +612,36 @@ class ReasoningState:
     """
 
     # P_t: premises
-    premises: Dict[str, Premise] = field(default_factory=dict)
+    premises: dict[str, Premise] = field(default_factory=dict)
 
     # H_t: hypotheses
-    hypotheses: Dict[str, Hypothesis] = field(default_factory=dict)
+    hypotheses: dict[str, Hypothesis] = field(default_factory=dict)
 
     # I_t: inference graph (nodes and edges)
-    inference_graph: Dict[str, Any] = field(default_factory=lambda: {"nodes": [], "edges": []})
+    inference_graph: dict[str, Any] = field(default_factory=lambda: {"nodes": [], "edges": []})
 
     # J_t: justification objects
-    justifications: Dict[str, Justification] = field(default_factory=dict)
+    justifications: dict[str, Justification] = field(default_factory=dict)
 
     # U_t: uncertainty distribution
     uncertainty_state: UncertaintyState = field(default_factory=UncertaintyState)
 
     # K_t: contradictions / conflicts
-    conflicts: Dict[str, Conflict] = field(default_factory=dict)
+    conflicts: dict[str, Conflict] = field(default_factory=dict)
 
     # X_t: active conclusions
-    conclusions: Dict[str, Conclusion] = field(default_factory=dict)
+    conclusions: dict[str, Conclusion] = field(default_factory=dict)
 
     # Additional tracking structures
-    causal_links: Dict[str, CausalLink] = field(default_factory=dict)
-    counterfactual_branches: Dict[str, CounterfactualBranch] = field(default_factory=dict)
-    inductive_generalizations: Dict[str, InductiveGeneralization] = field(default_factory=dict)
-    constraint_checks: Dict[str, ConstraintCheck] = field(default_factory=dict)
-    truth_maintenance: Dict[str, TruthMaintenanceEntry] = field(default_factory=dict)
-    retractions: List[Retraction] = field(default_factory=list)
+    causal_links: dict[str, CausalLink] = field(default_factory=dict)
+    counterfactual_branches: dict[str, CounterfactualBranch] = field(default_factory=dict)
+    inductive_generalizations: dict[str, InductiveGeneralization] = field(default_factory=dict)
+    constraint_checks: dict[str, ConstraintCheck] = field(default_factory=dict)
+    truth_maintenance: dict[str, TruthMaintenanceEntry] = field(default_factory=dict)
+    retractions: list[Retraction] = field(default_factory=list)
 
     # Inference rules registry
-    rules: Dict[str, InferenceRule] = field(default_factory=dict)
+    rules: dict[str, InferenceRule] = field(default_factory=dict)
 
     # State metadata
     state_id: str = field(default_factory=lambda: str(uuid.uuid4()))
@@ -698,7 +699,7 @@ class ReasoningState:
         self.reasoning_quality = max(0.0, quality)
         return self.reasoning_quality
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert reasoning state to dictionary representation."""
         return {
             "state_id": self.state_id,
@@ -728,8 +729,8 @@ class JustificationGraph:
     """
 
     def __init__(self):
-        self.nodes: Dict[str, dict[str, Any]] = {}
-        self.edges: List[dict[str, str]] = []
+        self.nodes: dict[str, dict[str, Any]] = {}
+        self.edges: list[dict[str, str]] = []
 
     def add_node(self, node_id: str, node_type: str, content: Any) -> None:
         """Add a node to the justification graph."""
@@ -739,7 +740,7 @@ class JustificationGraph:
         """Add an edge to the justification graph."""
         self.edges.append({"source": source, "relation": relation.value, "target": target})
 
-    def get_justification_path(self, conclusion_id: str) -> List[dict[str, Any]]:
+    def get_justification_path(self, conclusion_id: str) -> list[dict[str, Any]]:
         """
         Get the justification path for a conclusion.
 
@@ -765,7 +766,7 @@ class JustificationGraph:
         traverse(conclusion_id)
         return list(reversed(path))
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert graph to dictionary representation."""
         return {"nodes": list(self.nodes.values()), "edges": self.edges}
 
@@ -784,24 +785,24 @@ class TruthMaintenanceSystem:
     """
 
     def __init__(self):
-        self.dependencies: Dict[str, list[str]] = defaultdict(list)
-        self.retractions: List[Retraction] = []
+        self.dependencies: dict[str, list[str]] = defaultdict(list)
+        self.retractions: list[Retraction] = []
 
     def register_dependency(self, premise_id: str, conclusion_id: str) -> None:
         """Register that a conclusion depends on a premise."""
         self.dependencies[premise_id].append(conclusion_id)
 
-    def get_dependent_conclusions(self, premise_id: str) -> List[str]:
+    def get_dependent_conclusions(self, premise_id: str) -> list[str]:
         """Get all conclusions that depend on a given premise."""
         return self.dependencies[premise_id].copy()
 
-    def premise_changed(self, premise_id: str, state: ReasoningState) -> List[Retraction]:
+    def premise_changed(self, premise_id: str, state: ReasoningState) -> list[Retraction]:
         """
         Handle premise change - reevaluate dependent conclusions.
 
         Returns list of retractions performed.
         """
-        retractions: List[Retraction] = []
+        retractions: list[Retraction] = []
         dependent_ids = self.get_dependent_conclusions(premise_id)
 
         for conclusion_id in dependent_ids:
@@ -821,7 +822,7 @@ class TruthMaintenanceSystem:
 
         return retractions
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert TMS to dictionary representation."""
         return {
             "dependencies": dict(self.dependencies),
@@ -853,7 +854,7 @@ class ReasoningModeController:
     """
 
     def __init__(self):
-        self.mode_scores: Dict[ReasoningMode, dict[str, float]] = {
+        self.mode_scores: dict[ReasoningMode, dict[str, float]] = {
             ReasoningMode.DEDUCTIVE: {"fit": 0.9, "yield": 0.95, "cost": 0.3, "risk": 0.1},
             ReasoningMode.ABDUCTIVE: {"fit": 0.8, "yield": 0.7, "cost": 0.6, "risk": 0.4},
             ReasoningMode.INDUCTIVE: {"fit": 0.7, "yield": 0.6, "cost": 0.5, "risk": 0.3},
@@ -892,7 +893,7 @@ class ReasoningModeController:
         logger.debug(f"Selected reasoning mode: {best_mode.value} (score: {best_score:.3f})")
         return best_mode
 
-    def get_mode_characteristics(self, mode: ReasoningMode) -> Dict[str, float]:
+    def get_mode_characteristics(self, mode: ReasoningMode) -> dict[str, float]:
         """Get characteristics for a specific mode."""
         return self.mode_scores.get(mode, {}).copy()
 
@@ -985,7 +986,7 @@ class ReasoningKernel:
         premise_type: PremiseType = PremiseType.FACT,
         confidence: float = 1.0,
         source: str = "",
-        metadata: Dict[str, Any] = None,
+        metadata: dict[str, Any] = None,
     ) -> Premise:
         """
         Assert a premise into the reasoning state.
@@ -1011,8 +1012,8 @@ class ReasoningKernel:
         return premise
 
     async def select_inference_rules(
-        self, reasoning_mode: ReasoningMode, premises: List[Premise], goals: Optional[List[Any] ] = None
-    ) -> List[InferenceRule]:
+        self, reasoning_mode: ReasoningMode, premises: list[Premise, goals : list[Any]] = None
+    ) -> list[InferenceRule]:
         """
         Select applicable inference rules.
 
@@ -1033,8 +1034,8 @@ class ReasoningKernel:
         return applicable_rules
 
     async def derive_candidate_conclusions(
-        self, premises: List[Premise], rules: List[InferenceRule]
-    ) -> List[Conclusion]:
+        self, premises: list[Premise], rules: list[InferenceRule]
+    ) -> list[Conclusion]:
         """
         Derive candidate conclusions from premises using rules.
 
@@ -1075,8 +1076,8 @@ class ReasoningKernel:
         return conclusions
 
     async def attach_justifications(
-        self, conclusions: List[Conclusion], premises: List[Premise], rules: List[InferenceRule]
-    ) -> List[Justification]:
+        self, conclusions: list[Conclusion], premises: list[Premise], rules: list[InferenceRule]
+    ) -> list[Justification]:
         """
         Attach justifications to conclusions.
 
@@ -1135,7 +1136,7 @@ class ReasoningKernel:
         return justifications
 
     async def propagate_uncertainty(
-        self, premises: List[Premise], conclusions: List[Conclusion], rules: List[InferenceRule]
+        self, premises: list[Premise], conclusions: list[Conclusion], rules: list[InferenceRule]
     ) -> UncertaintyState:
         """
         Propagate uncertainty through the reasoning chain.
@@ -1170,8 +1171,8 @@ class ReasoningKernel:
         return self.state.uncertainty_state
 
     async def detect_reasoning_conflicts(
-        self, conclusions: List[Conclusion], constraints: Optional[List[ConstraintCheck] ] = None
-    ) -> List[Conflict]:
+        self, conclusions: list[Conclusion, constraints : list[ConstraintCheck]] = None
+    ) -> list[Conflict]:
         """
         Detect conflicts and contradictions.
 
@@ -1242,8 +1243,8 @@ class ReasoningKernel:
         return False
 
     async def search_counterexamples(
-        self, conclusion: Conclusion, world_model: Dict[str, Any] = None
-    ) -> List[dict[str, Any]]:
+        self, conclusion: Conclusion, world_model: dict[str, Any] = None
+    ) -> list[dict[str, Any]]:
         """
         Search for counterexamples to a conclusion.
 
@@ -1292,10 +1293,10 @@ class ReasoningKernel:
 
     async def retract_invalid_conclusions(
         self,
-        conclusions: List[Conclusion],
-        conflict_state: List[Conflict],
-        tms: Optional[TruthMaintenanceSystem] = None,
-    ) -> List[Retraction]:
+        conclusions: list[Conclusion],
+        conflict_state: list[Conflict],
+        tms: TruthMaintenanceSystem = None,
+    ) -> list[Retraction]:
         """
         Retract conclusions that are invalid.
 
@@ -1328,10 +1329,10 @@ class ReasoningKernel:
 
     async def commit_reasoned_conclusions(
         self,
-        conclusions: List[Conclusion],
-        justifications: List[Justification],
-        verification: Dict[str, Any] = None,
-    ) -> List[Conclusion]:
+        conclusions: list[Conclusion],
+        justifications: list[Justification],
+        verification: dict[str, Any] = None,
+    ) -> list[Conclusion]:
         """
         Commit conclusions that have passed all checks.
 
@@ -1385,8 +1386,8 @@ class ReasoningKernel:
     # ===================================================================
 
     async def abductive_inference(
-        self, observations: List[Premise], candidate_hypotheses: List[Hypothesis]
-    ) -> Optional[Hypothesis]:
+        self, observations: list[Premise], candidate_hypotheses: list[Hypothesis]
+    ) -> Hypothesis:
         """
         Perform abductive inference (inference to best explanation).
 
@@ -1486,7 +1487,7 @@ class ReasoningKernel:
         )
 
     async def inductive_generalization(
-        self, examples: List[Premise], target_property: str
+        self, examples: list[Premise], target_property: str
     ) -> InductiveGeneralization:
         """
         Perform inductive generalization from examples.
@@ -1548,7 +1549,7 @@ class ReasoningKernel:
         return causal_link
 
     async def counterfactual_reasoning(
-        self, actual_world: Dict[str, Any], intervention: Dict[str, Any]
+        self, actual_world: dict[str, Any], intervention: dict[str, Any]
     ) -> CounterfactualBranch:
         """
         Perform counterfactual reasoning.
@@ -1586,7 +1587,7 @@ class ReasoningKernel:
     # ===================================================================
 
     async def reasoning_step(
-        self, goals: Optional[List[Any] ] = None, constraints: Optional[List[ConstraintCheck] ] = None
+        self, goals: list[Any] = None, constraints: list[ConstraintCheck] = None
     ) -> ReasoningState:
         """
         Execute one step of the reasoning cycle.
@@ -1656,7 +1657,7 @@ class ReasoningKernel:
         return self.state
 
     async def run_reasoning(
-        self, max_steps: int = 10, quality_threshold: float = 0.8, goals: Optional[List[Any] ] = None
+        self, max_steps: int = 10, quality_threshold: float = 0.8, goals: list[Any] = None
     ) -> ReasoningState:
         """
         Run multi-step reasoning until convergence or max steps.
@@ -1694,15 +1695,15 @@ class ReasoningKernel:
     # UTILITY METHODS
     # ===================================================================
 
-    def get_committed_conclusions(self) -> List[Conclusion]:
+    def get_committed_conclusions(self) -> list[Conclusion]:
         """Get all committed conclusions."""
         return [c for c in self.state.conclusions.values() if c.committed]
 
-    def get_justification_path(self, conclusion_id: str) -> List[dict[str, Any]]:
+    def get_justification_path(self, conclusion_id: str) -> list[dict[str, Any]]:
         """Get justification path for a conclusion."""
         return self.justification_graph.get_justification_path(conclusion_id)
 
-    def premise_changed(self, premise_id: str) -> List[Retraction]:
+    def premise_changed(self, premise_id: str) -> list[Retraction]:
         """Handle premise change - trigger TMS."""
         retractions = self.tms.premise_changed(premise_id, self.state)
         self.state.update_timestamp()
@@ -1712,7 +1713,7 @@ class ReasoningKernel:
         """Get current reasoning state."""
         return self.state
 
-    def export_state(self) -> Dict[str, Any]:
+    def export_state(self) -> dict[str, Any]:
         """Export complete reasoning state."""
         return {
             "reasoning_state": self.state.to_dict(),
@@ -1769,7 +1770,7 @@ def verify_invariant_rei04(kernel: ReasoningKernel) -> bool:
     return True
 
 
-def verify_all_invariants(kernel: ReasoningKernel) -> Dict[str, bool]:
+def verify_all_invariants(kernel: ReasoningKernel) -> dict[str, bool]:
     """Verify all reasoning invariants."""
     return {"REI01": verify_invariant_rei01(kernel), "REI04": verify_invariant_rei04(kernel)}
 

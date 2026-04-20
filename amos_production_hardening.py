@@ -14,9 +14,11 @@ import re
 import sys
 import time
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
+
+UTC = UTC
 
 
 def _now_utc() -> str:
@@ -41,10 +43,10 @@ class HardeningReport:
     """Production hardening report."""
 
     timestamp: str
-    security_findings: List[SecurityFinding]
+    security_findings: list[SecurityFinding]
     reliability_score: float
-    performance_baseline: Dict[str, float]
-    recommendations: List[str]
+    performance_baseline: dict[str, float]
+    recommendations: list[str]
     passed: bool = False
 
 
@@ -68,9 +70,9 @@ class SecurityAuditor:
 
     def __init__(self, root_path: str = "."):
         self.root_path = Path(root_path)
-        self.findings: List[SecurityFinding] = []
+        self.findings: list[SecurityFinding] = []
 
-    def scan_file(self, filepath: Path) -> List[SecurityFinding]:
+    def scan_file(self, filepath: Path) -> list[SecurityFinding]:
         """Scan a single file for security issues."""
         findings = []
 
@@ -113,7 +115,7 @@ class SecurityAuditor:
 
         return findings
 
-    def scan_repository(self) -> List[SecurityFinding]:
+    def scan_repository(self) -> list[SecurityFinding]:
         """Scan entire repository."""
         print("🔒 Starting security audit...")
 
@@ -138,7 +140,7 @@ class SecurityAuditor:
 
         return self.findings
 
-    def generate_report(self) -> Dict[str, Any]:
+    def generate_report(self) -> dict[str, Any]:
         """Generate security audit report."""
         critical = len([f for f in self.findings if f.severity == "critical"])
         high = len([f for f in self.findings if f.severity == "high"])
@@ -174,7 +176,7 @@ class ReliabilityVerifier:
     def __init__(self, root_path: str = "."):
         self.root_path = Path(root_path)
 
-    def verify_imports(self) -> Dict[str, Any]:
+    def verify_imports(self) -> dict[str, Any]:
         """Verify critical imports work."""
         print("🔍 Verifying critical imports...")
 
@@ -195,7 +197,7 @@ class ReliabilityVerifier:
 
         return results
 
-    def verify_health_checks(self) -> Dict[str, Any]:
+    def verify_health_checks(self) -> dict[str, Any]:
         """Verify health check endpoints are defined."""
         print("🏥 Verifying health checks...")
 
@@ -217,7 +219,7 @@ class ReliabilityVerifier:
 
         return results
 
-    def generate_report(self) -> Dict[str, Any]:
+    def generate_report(self) -> dict[str, Any]:
         """Generate reliability report."""
         imports = self.verify_imports()
         health = self.verify_health_checks()
@@ -239,7 +241,7 @@ class ReliabilityVerifier:
 class PerformanceBenchmark:
     """Basic performance benchmarking."""
 
-    def benchmark_imports(self) -> Dict[str, float]:
+    def benchmark_imports(self) -> dict[str, float]:
         """Benchmark import times."""
         print("⚡ Benchmarking import performance...")
 
@@ -254,7 +256,7 @@ class PerformanceBenchmark:
 
         return times
 
-    def generate_report(self) -> Dict[str, Any]:
+    def generate_report(self) -> dict[str, Any]:
         """Generate performance report."""
         times = self.benchmark_imports()
 

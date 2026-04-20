@@ -44,10 +44,10 @@ jobs:
 
       - name: Run Bandit scan
         run: |
-          bandit -r . -f json -o bandit-report.json \
-            --skip B101 \
-            || true
-          bandit -r . -f screen || true
+          # Run bandit security scan on actual packages - blocking on issues
+          bandit -r amos_brain amosl amos_model_fabric amos_self_evolution amos_platform -f json -o bandit-report.json \
+            --skip B101
+          bandit -r amos_brain amosl amos_model_fabric amos_self_evolution amos_platform -f screen
 
       - name: Upload Bandit report
         uses: actions/upload-artifact@v4
@@ -78,11 +78,10 @@ jobs:
 
       - name: Check dependencies for vulnerabilities
         run: |
-          if [ -f requirements.txt ]; then
-            safety check -r requirements.txt --full-report || true
-          else
-            echo "No requirements.txt found"
-          fi
+          # Install package to check its dependencies
+          pip install -e ".[all]"
+          # Safety check for known vulnerabilities - blocking for critical issues
+          safety check
 
   secret-scan:
     name: Secret Detection

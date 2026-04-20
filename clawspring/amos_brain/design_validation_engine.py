@@ -4,10 +4,11 @@ This engine leverages the Mathematical Framework Engine to validate UI/UX design
 code structures, and AI architectures against established mathematical principles.
 """
 
+from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class ValidationSeverity(Enum):
@@ -36,11 +37,11 @@ class ValidationResult:
     """Result of design validation."""
 
     is_valid: bool
-    violations: List[ValidationViolation]
-    passed_checks: List[str]
+    violations: list[ValidationViolation]
+    passed_checks: list[str]
     score: float  # 0.0 to 1.0
-    recommendations: List[str] = field(default_factory=list)
-    mathematical_analysis: Dict[str, Any] = field(default_factory=dict)
+    recommendations: list[str] = field(default_factory=list)
+    mathematical_analysis: dict[str, Any] = field(default_factory=dict)
 
 
 class DesignValidationEngine:
@@ -56,7 +57,7 @@ class DesignValidationEngine:
     def __init__(self):
         self._math_engine: Any = None
         self._initialize_math_engine()
-        self._validation_history: List[ValidationResult] = []
+        self._validation_history: list[ValidationResult] = []
 
     def _initialize_math_engine(self) -> None:
         """Initialize mathematical framework engine."""
@@ -69,10 +70,10 @@ class DesignValidationEngine:
 
     def validate_ui_design(
         self,
-        spacing_values: List[int] = None,
-        typography_sizes: List[float] = None,
-        color_contrasts: List[tuple[float, float]] = None,
-        layout_grids: List[dict] = None,
+        spacing_values: list[int] = None,
+        typography_sizes: list[float] = None,
+        color_contrasts: list[tuple[float, float]] = None,
+        layout_grids: list[dict] = None,
     ) -> ValidationResult:
         """Validate UI design against mathematical invariants.
 
@@ -84,10 +85,11 @@ class DesignValidationEngine:
 
         Returns:
             ValidationResult with violations and recommendations
+
         """
-        violations: List[ValidationViolation] = []
-        passed_checks: List[str] = []
-        recommendations: List[str] = []
+        violations: list[ValidationViolation] = []
+        passed_checks: list[str] = []
+        recommendations: list[str] = []
 
         if not self._math_engine:
             return ValidationResult(
@@ -233,7 +235,7 @@ class DesignValidationEngine:
         self,
         code_description: str,
         complexity_metrics: dict = None,
-        security_keywords: List[str] = None,
+        security_keywords: list[str] = None,
     ) -> ValidationResult:
         """Validate code architecture against mathematical principles.
 
@@ -244,10 +246,11 @@ class DesignValidationEngine:
 
         Returns:
             ValidationResult with architectural recommendations
+
         """
-        violations: List[ValidationViolation] = []
-        passed_checks: List[str] = []
-        recommendations: List[str] = []
+        violations: list[ValidationViolation] = []
+        passed_checks: list[str] = []
+        recommendations: list[str] = []
 
         if not self._math_engine:
             return ValidationResult(
@@ -311,7 +314,7 @@ class DesignValidationEngine:
         )
 
     def validate_ai_architecture(
-        self, model_description: str, parameter_count: int = None, layer_config: List[int] = None
+        self, model_description: str, parameter_count: int = None, layer_config: list[int] = None
     ) -> ValidationResult:
         """Validate AI model architecture against mathematical principles.
 
@@ -322,10 +325,11 @@ class DesignValidationEngine:
 
         Returns:
             ValidationResult with AI-specific recommendations
+
         """
-        violations: List[ValidationViolation] = []
-        passed_checks: List[str] = []
-        recommendations: List[str] = []
+        violations: list[ValidationViolation] = []
+        passed_checks: list[str] = []
+        recommendations: list[str] = []
 
         if not self._math_engine:
             return ValidationResult(
@@ -417,6 +421,7 @@ def format_validation_report(result: ValidationResult) -> str:
 
     Returns:
         Formatted string report
+
     """
     lines = [
         "DESIGN VALIDATION REPORT",
@@ -462,7 +467,7 @@ def format_validation_report(result: ValidationResult) -> str:
 
 
 # Global singleton instance
-_design_validation_engine: Optional[DesignValidationEngine] = None
+_design_validation_engine: DesignValidationEngine | None = None
 
 
 def get_design_validation_engine() -> DesignValidationEngine:

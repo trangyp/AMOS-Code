@@ -17,6 +17,8 @@ Owner: Trang
 Version: 9.2.0
 """
 
+from __future__ import annotations
+
 import asyncio
 import json
 import threading
@@ -26,7 +28,7 @@ from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Optional
 
 
 class SagaStatus(Enum):
@@ -107,7 +109,7 @@ class SagaDefinition:
     """Definition of a saga transaction."""
 
     name: str
-    steps: List[SagaStep]
+    steps: list[SagaStep]
     parallel: bool = False  # If True, steps run in parallel
     timeout_seconds: int = 300
     persistence_enabled: bool = True
@@ -122,12 +124,12 @@ class SagaInstance:
     context: Any
     status: SagaStatus = SagaStatus.PENDING
     current_step_index: int = 0
-    completed_steps: List[str] = field(default_factory=list)
+    completed_steps: list[str] = field(default_factory=list)
     failed_step: Optional[str] = None
     error_message: Optional[str] = None
     started_at: float = field(default_factory=time.time)
     completed_at: Optional[float] = None
-    execution_log: List[dict] = field(default_factory=list)
+    execution_log: list[dict] = field(default_factory=list)
 
     def log(self, message: str, level: str = "info") -> None:
         """Add to execution log."""
@@ -139,7 +141,7 @@ class SagaInstance:
             }
         )
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "id": self.id,
             "name": self.definition.name,
@@ -159,11 +161,11 @@ class SagaOrchestrator:
     """Production saga orchestrator for distributed transactions."""
 
     def __init__(self, max_workers: int = 10):
-        self._sagas: Dict[str, SagaDefinition] = {}
-        self._instances: Dict[str, SagaInstance] = {}
+        self._sagas: dict[str, SagaDefinition] = {}
+        self._instances: dict[str, SagaInstance] = {}
         self._executor = ThreadPoolExecutor(max_workers=max_workers)
         self._lock = threading.RLock()
-        self._running: Set[str] = set()
+        self._running: set[str] = set()
 
         # Persistence
         self._persistence_file: Optional[str] = None
@@ -257,7 +259,7 @@ class SagaOrchestrator:
         futures = []
         completed_steps = []
 
-        def execute_step(step: SagaStep, index: int) -> Optional[Tuple[int, bool, str ]]:
+        def execute_step(step: SagaStep, index: int) -> tuple[int, bool, Optional[str]]:
             try:
                 step.execute(instance.context)
                 return (index, True, None)
@@ -324,7 +326,7 @@ class SagaOrchestrator:
         instance.status = SagaStatus.COMPENSATED
         instance.log("Compensation completed", "warning")
 
-    def _compensate_parallel(self, instance: SagaInstance, completed_step_names: List[str]) -> None:
+    def _compensate_parallel(self, instance: SagaInstance, completed_step_names: list[str]) -> None:
         """Run compensation for parallel saga."""
         instance.status = SagaStatus.COMPENSATING
         instance.log("Starting parallel compensation", "warning")
@@ -358,7 +360,7 @@ class SagaOrchestrator:
         with self._lock:
             return self._instances.get(instance_id)
 
-    def get_running_sagas(self) -> List[SagaInstance]:
+    def get_running_sagas(self) -> list[SagaInstance]:
         """Get all currently running sagas."""
         with self._lock:
             return [self._instances[iid] for iid in self._running if iid in self._instances]

@@ -30,16 +30,20 @@ Environment Variables:
     API_DEPRECATION_WARNING: Enable deprecation warnings (default: true)
 """
 
+from __future__ import annotations
+
 import os
 import re
-from datetime import datetime, timedelta, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timedelta, timezone
+
+UTC = UTC
+from collections.abc import Callable
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Optional
 
 # FastAPI imports with graceful fallback
 try:
-    from fastapi import FastAPI, Request, Response, HTTPException
+    from fastapi import FastAPI, HTTPException, Request, Response
     from fastapi.routing import APIRoute
 
     FASTAPI_AVAILABLE = True
@@ -79,7 +83,7 @@ class APIVersion:
         status: APIVersionStatus,
         release_date: datetime = None,
         sunset_date: datetime = None,
-        changes: List[str] = None,
+        changes: list[str] = None,
     ):
         self.version = version
         self.status = status
@@ -100,7 +104,7 @@ class APIVersion:
         delta = self.sunset_date - datetime.now(timezone.utc)
         return max(0, delta.days)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "version": self.version,
@@ -118,7 +122,7 @@ class VersionRegistry:
     """Registry for managing API versions."""
 
     def __init__(self) -> None:
-        self.versions: Dict[str, APIVersion] = {}
+        self.versions: dict[str, APIVersion] = {}
         self.default_version = _DEFAULT_VERSION
 
     def register(
@@ -127,7 +131,7 @@ class VersionRegistry:
         status: APIVersionStatus = APIVersionStatus.STABLE,
         release_date: datetime = None,
         sunset_date: datetime = None,
-        changes: List[str] = None,
+        changes: list[str] = None,
     ) -> APIVersion:
         """Register a new API version.
 
@@ -188,7 +192,7 @@ class VersionRegistry:
             return self.register(self.default_version)
         return self.versions[self.default_version]
 
-    def list_active(self) -> List[APIVersion]:
+    def list_active(self) -> list[APIVersion]:
         """List all active (non-sunset) versions."""
         return [v for v in self.versions.values() if v.status != APIVersionStatus.SUNSET]
 
@@ -228,8 +232,8 @@ class VersionRouter:
     def __init__(self, app: Optional[Any] = None) -> None:
         self.app = app
         self.registry = VersionRegistry()
-        self.v1_routes: List[Callable] = []
-        self.v2_routes: List[Callable] = []
+        self.v1_routes: list[Callable] = []
+        self.v2_routes: list[Callable] = []
 
         # Register default versions
         self._setup_default_versions()
@@ -265,7 +269,7 @@ class VersionRouter:
 
         # Version info endpoint
         @app.get("/api/v1/versions")
-        async def list_versions_v1() -> Dict[str, Any]:
+        async def list_versions_v1() -> dict[str, Any]:
             """List available API versions (V1 format)."""
             return {
                 "versions": [v.to_dict() for v in self.registry.list_active()],
@@ -273,7 +277,7 @@ class VersionRouter:
             }
 
         @app.get("/api/v1/versions/current")
-        async def current_version_v1() -> Dict[str, Any]:
+        async def current_version_v1() -> dict[str, Any]:
             """Get current version info (V1 format)."""
             current = self.registry.get_default()
             return {
@@ -289,7 +293,7 @@ class VersionRouter:
 
         # V2 has enhanced version information
         @app.get("/api/v2/versions")
-        async def list_versions_v2() -> Dict[str, Any]:
+        async def list_versions_v2() -> dict[str, Any]:
             """List available API versions (V2 format)."""
             versions = [
                 {
@@ -307,7 +311,7 @@ class VersionRouter:
             }
 
         @app.get("/api/v2/versions/current")
-        async def current_version_v2() -> Dict[str, Any]:
+        async def current_version_v2() -> dict[str, Any]:
             """Get current version info (V2 format)."""
             current = self.registry.get_default()
             return {
@@ -389,7 +393,7 @@ def create_versioned_route(
     path: str,
     version: str,
     endpoint: Callable,
-    methods: List[str] = None,
+    methods: list[str] = None,
 ) -> APIRoute:
     """Create a versioned API route.
 
@@ -462,7 +466,7 @@ def get_global_registry() -> VersionRegistry:
     return _global_registry
 
 
-def get_version_info(version: str = None) -> Dict[str, Any]:
+def get_version_info(version: str = None) -> dict[str, Any]:
     """Get version information.
 
     Args:

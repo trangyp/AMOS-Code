@@ -23,22 +23,17 @@ Version: 3.0.0
 
 from __future__ import annotations
 
-
-
-
 import os
 import sys
 from contextlib import asynccontextmanager
-from datetime import datetime, timezone
-
-UTC = timezone.utc
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
+
+UTC = UTC
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
-sys.path.insert(0, str(project_root))
-
 # Import FastAPI components
 try:
     from fastapi import FastAPI, HTTPException, Request

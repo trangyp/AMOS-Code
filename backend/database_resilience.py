@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any
 
 """Database resilience and connection handling.
 
@@ -66,7 +66,7 @@ async def resilient_session():
         await session.close()
 
 
-async def check_database_health() -> Dict[str, Any]:
+async def check_database_health() -> dict[str, Any]:
     """Comprehensive database health check."""
     from sqlalchemy import text
 
@@ -111,7 +111,7 @@ class ConnectionPoolManager:
         max_overflow: int = 10,
         pool_timeout: int = 30,
         pool_recycle: int = 3600,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Get optimized pool configuration."""
         return {
             "pool_size": pool_size,

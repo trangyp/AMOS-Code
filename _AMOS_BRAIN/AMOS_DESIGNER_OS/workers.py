@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, List
+from typing import Any
 
 
 @dataclass
@@ -7,15 +7,15 @@ class WorkerResponse:
     role: str
     action: str
     summary: str
-    details: Dict[str, Any]
+    details: dict[str, Any]
 
 
-def _ensure_text(payload: Dict[str, Any], key: str, default: str = "") -> str:
+def _ensure_text(payload: dict[str, Any], key: str, default: str = "") -> str:
     value = payload.get(key, default)
     return str(value)
 
 
-def code_worker(action: str, payload: Dict[str, Any]) -> WorkerResponse:
+def code_worker(action: str, payload: dict[str, Any]) -> WorkerResponse:
     description = _ensure_text(payload, "description", "")
     context = _ensure_text(payload, "context", "")
     return WorkerResponse(
@@ -33,7 +33,7 @@ def code_worker(action: str, payload: Dict[str, Any]) -> WorkerResponse:
     )
 
 
-def analyst_worker(action: str, payload: Dict[str, Any]) -> WorkerResponse:
+def analyst_worker(action: str, payload: dict[str, Any]) -> WorkerResponse:
     topic = _ensure_text(payload, "topic", "")
     return WorkerResponse(
         role="analyst",
@@ -52,9 +52,9 @@ def analyst_worker(action: str, payload: Dict[str, Any]) -> WorkerResponse:
     )
 
 
-def auditor_worker(action: str, payload: Dict[str, Any]) -> WorkerResponse:
+def auditor_worker(action: str, payload: dict[str, Any]) -> WorkerResponse:
     plan = payload.get("plan") or []
-    findings: List[str] = []
+    findings: list[str] = []
     if not plan:
         findings.append("No plan provided for audit.")
     else:
@@ -76,7 +76,7 @@ def auditor_worker(action: str, payload: Dict[str, Any]) -> WorkerResponse:
     )
 
 
-def planner_worker(action: str, payload: Dict[str, Any]) -> WorkerResponse:
+def planner_worker(action: str, payload: dict[str, Any]) -> WorkerResponse:
     goal = _ensure_text(payload, "goal", "")
     horizon = _ensure_text(payload, "horizon", "short-term")
     return WorkerResponse(

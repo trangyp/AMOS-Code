@@ -2,7 +2,6 @@ from dataclasses import dataclass
 
 from .commands import PORTED_COMMANDS, execute_command
 from .tools import PORTED_TOOLS, execute_tool
-from typing import Optional, Tuple
 
 
 @dataclass(frozen=True)
@@ -25,8 +24,8 @@ class MirroredTool:
 
 @dataclass(frozen=True)
 class ExecutionRegistry:
-    commands: Tuple[MirroredCommand, ...]
-    tools: Tuple[MirroredTool, ...]
+    commands: tuple[MirroredCommand, ...]
+    tools: tuple[MirroredTool, ...]
 
     def command(self, name: str) -> Optional[MirroredCommand]:
         lowered = name.lower()

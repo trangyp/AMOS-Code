@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 """AMOS File-Brain Integration
 
@@ -12,7 +12,9 @@ import asyncio
 import hashlib
 import time
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 
 # Import file ingestion runtime
 from amos_file_ingestion_runtime import (
@@ -38,7 +40,6 @@ except ImportError:
 
 # Import brain for cognitive processing
 try:
-
     from amos_brain import get_super_brain, think
 
     BRAIN_AVAILABLE = True
@@ -51,13 +52,13 @@ class FileBrainResult:
     """Result of file processing through brain pipeline."""
 
     file_id: str
-    source_path: Optional[str]
+    source_path: str
     total_segments: int
     processed_segments: int
-    stable_reads: List[dict[str, Any]]
-    cognitive_summary: Dict[str, Any]
+    stable_reads: list[dict[str, Any]]
+    cognitive_summary: dict[str, Any]
     processing_time_ms: float
-    errors: List[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
 
 
 class FileBrainProcessor:
@@ -93,13 +94,13 @@ class FileBrainProcessor:
 
     async def process_file(
         self,
-        content: bytes | str,
-        source: Optional[str] = None,
-        context: Dict[str, Any] = None,
+        content: Union[bytes, str],
+        source: str = None,
+        context: dict[str, Any] = None,
     ) -> FileBrainResult:
         """Process file through full pipeline: ingest → segment → brain read."""
         start_time = time.time()
-        errors: List[str] = []
+        errors: list[str] = []
 
         # Initialize if needed
         if not self._initialized:
@@ -122,7 +123,7 @@ class FileBrainProcessor:
             )
 
         # Step 2: Process segments through brain reading kernel
-        stable_reads: List[dict[str, Any]] = []
+        stable_reads: list[dict[str, Any]] = []
         processed_count = 0
 
         for seg_id, segment in doc.segments.items():
@@ -180,7 +181,7 @@ class FileBrainProcessor:
                 processed_count += 1
 
         # Step 3: Generate cognitive summary using brain
-        cognitive_summary: Dict[str, Any] = {
+        cognitive_summary: dict[str, Any] = {
             "file_structure": {
                 "total_segments": doc.index.total_segments,
                 "headings": len(
@@ -218,7 +219,7 @@ class FileBrainProcessor:
             errors=errors,
         )
 
-    async def _analyze_with_brain(self, text: str) -> Dict[str, Any]:
+    async def _analyze_with_brain(self, text: str) -> dict[str, Any]:
         """Use brain to analyze document content."""
         if not BRAIN_AVAILABLE:
             return {"error": "Brain not available"}
@@ -239,7 +240,7 @@ class FileBrainProcessor:
 
     async def query_file(
         self, doc: ParsedDocument, query: str, use_cognitive_search: bool = True
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Query file using both index and brain if available."""
         start_time = time.time()
 
@@ -268,7 +269,7 @@ class FileBrainProcessor:
 
 
 # Global processor instance
-_processor: Optional[FileBrainProcessor] = None
+_processor: FileBrainProcessor = None
 
 
 async def get_file_brain_processor() -> FileBrainProcessor:
@@ -281,14 +282,14 @@ async def get_file_brain_processor() -> FileBrainProcessor:
 
 
 async def process_file_with_brain(
-    content: bytes | str, source: Optional[str] = None, context: Dict[str, Any] = None
+    content: Union[bytes, str], source: str = None, context: dict[str, Any] = None
 ) -> FileBrainResult:
     """Convenience function for file → brain processing."""
     processor = await get_file_brain_processor()
     return await processor.process_file(content, source, context)
 
 
-async def query_file_with_brain(doc: ParsedDocument, query: str) -> Dict[str, Any]:
+async def query_file_with_brain(doc: ParsedDocument, query: str) -> dict[str, Any]:
     """Convenience function for cognitive file query."""
     processor = await get_file_brain_processor()
     return await processor.query_file(doc, query)

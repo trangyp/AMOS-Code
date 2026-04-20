@@ -23,12 +23,8 @@ Usage:
 """
 
 import argparse
+import subprocess
 import sys
-from pathlib import Path
-
-# Add paths
-sys.path.insert(0, str(Path(__file__).parent))
-sys.path.insert(0, str(Path(__file__).parent / "AMOS_ORGANISM_OS"))
 
 
 class AMOSUnifiedRuntime:
@@ -397,12 +393,17 @@ class AMOSUnifiedRuntime:
 
         # Start clawspring agent with AMOS enhancement
         try:
-            import subprocess
+            # Try entry point first, fallback to module import
+            try:
+                subprocess.run(["clawspring", "--amos"])
+            except FileNotFoundError:
+                try:
+                    from clawspring.clawspring import main as clawspring_main
 
-            result = subprocess.run(
-                [sys.executable, "amos_clawspring.py"], cwd=str(Path(__file__).parent)
-            )
-            return result.returncode
+                    clawspring_main()
+                except ImportError:
+                    print("  ! ClawSpring not available")
+            return 0
         except KeyboardInterrupt:
             print("\nShutting down AMOS Unified...")
             return 0
@@ -566,10 +567,11 @@ def main() -> int:
     elif args.demo == "economic":
         # Run v4 demo
         try:
-            import subprocess
+            from amos_v4 import AMOSv4
 
-            result = subprocess.run([sys.executable, "amos_v4.py"])
-            return result.returncode
+            v4 = AMOSv4(name="AMOS_Demo")
+            print(f"  ✓ v4 instantiated: {v4.identity}")
+            return 0
         except Exception as e:
             print(f"Economic demo failed: {e}")
             return 1

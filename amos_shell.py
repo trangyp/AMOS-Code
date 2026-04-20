@@ -29,13 +29,6 @@ Owner: Trang
 import cmd
 import sys
 import traceback
-from pathlib import Path
-
-# Add paths
-REPO_ROOT = Path(__file__).parent
-sys.path.insert(0, str(REPO_ROOT))
-sys.path.insert(0, str(REPO_ROOT / "AMOS_ORGANISM_OS"))
-sys.path.insert(0, str(REPO_ROOT / "amos_brain"))
 
 
 class AMOSShell(cmd.Cmd):

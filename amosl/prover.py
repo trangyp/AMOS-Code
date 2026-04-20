@@ -14,7 +14,7 @@ Implements verification for the 8 AMOSL invariants:
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 
 class ProofStatus(Enum):
@@ -33,10 +33,10 @@ class Proof:
 
     statement: str
     status: ProofStatus
-    assumptions: List[str] = field(default_factory=list)
-    steps: List[str] = field(default_factory=list)
+    assumptions: list[str] = field(default_factory=list)
+    steps: list[str] = field(default_factory=list)
     counterexample: dict = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     def is_valid(self) -> bool:
         return self.status == ProofStatus.PROVEN
@@ -50,7 +50,7 @@ class Constraint:
     predicate: Callable[[Any], tuple[bool, float]]
     description: str
 
-    def check(self, state: Any) -> Tuple[bool, float]:
+    def check(self, state: Any) -> tuple[bool, float]:
         """Check constraint on state. Returns (satisfied, confidence)."""
         return self.predicate(state)
 
@@ -59,9 +59,9 @@ class TheoremProver:
     """Prover for AMOSL invariants and properties."""
 
     def __init__(self):
-        self.constraints: Dict[str, Constraint] = {}
-        self.proof_history: List[Proof] = []
-        self.tactics: Dict[str, Callable] = {}
+        self.constraints: dict[str, Constraint] = {}
+        self.proof_history: list[Proof] = []
+        self.tactics: dict[str, Callable] = {}
         self._register_default_tactics()
         self._register_constraints()
 
@@ -118,7 +118,7 @@ class TheoremProver:
             description="Adapt(X) s.t. Λ(X') = ⊤",
         )
 
-    def prove_valid(self, state: Any, tactics: List[str] = None) -> Proof:
+    def prove_valid(self, state: Any, tactics: list[str] = None) -> Proof:
         """Prove Valid(X) = ∧_i C_i(X)."""
         steps = ["Init: Valid(X) = ∧_i C_i(X)"]
         all_satisfied = True
@@ -188,7 +188,7 @@ class TheoremProver:
                 steps=steps,
             )
 
-    def prove_type_derivation(self, expr: str, gamma: Dict[str, str], expected_type: str) -> Proof:
+    def prove_type_derivation(self, expr: str, gamma: dict[str, str], expected_type: str) -> Proof:
         """Prove Γ ⊢ e:τ."""
         steps = [f"Init: Γ ⊢ {expr}:{expected_type}", f"Context Γ = {gamma}"]
 
@@ -213,7 +213,7 @@ class TheoremProver:
             statement=f"Γ ⊬ {expr}:{expected_type}", status=ProofStatus.UNPROVEN, steps=steps
         )
 
-    def prove_audit(self, ledger: List[dict], outcome: Any) -> Proof:
+    def prove_audit(self, ledger: list[dict], outcome: Any) -> Proof:
         """Prove Explain(L) = Outcome."""
         steps = [
             "Init: Explain(L) = Outcome",
@@ -287,45 +287,45 @@ class TheoremProver:
         )
 
     # Constraint check implementations
-    def _check_semantic_encoding(self, state: Any) -> Tuple[bool, float]:
+    def _check_semantic_encoding(self, state: Any) -> tuple[bool, float]:
         """Check Syntax = Enc(Semantics)."""
         return True, 0.95
 
-    def _check_lawful_transition(self, state: Any) -> Tuple[bool, float]:
+    def _check_lawful_transition(self, state: Any) -> tuple[bool, float]:
         """Check Commit(X') iff Valid(X') = 1."""
         return True, 0.90
 
-    def _check_effect_explicit(self, state: Any) -> Tuple[bool, float]:
+    def _check_effect_explicit(self, state: Any) -> tuple[bool, float]:
         """Check f: τ1 → τ2; !; ε."""
         return True, 0.85
 
-    def _check_observation_perturbs(self, state: Any) -> Tuple[bool, float]:
+    def _check_observation_perturbs(self, state: Any) -> tuple[bool, float]:
         """Check M: X → (X̂, Q, Π, X')."""
         return True, 0.80
 
-    def _check_no_hidden_bridge(self, state: Any) -> Tuple[bool, float]:
+    def _check_no_hidden_bridge(self, state: Any) -> tuple[bool, float]:
         """Check Xi → Xj => Exists B_ij."""
         return True, 0.90
 
-    def _check_uncertainty_propagates(self, state: Any) -> Tuple[bool, float]:
+    def _check_uncertainty_propagates(self, state: Any) -> tuple[bool, float]:
         """Check U(out) = P(U(in), ...)."""
         return True, 0.75
 
-    def _check_traceability(self, state: Any) -> Tuple[bool, float]:
+    def _check_traceability(self, state: Any) -> tuple[bool, float]:
         """Check Outcome => Explain(L)."""
         return True, 0.95
 
-    def _check_adaptation_bounded(self, state: Any) -> Tuple[bool, float]:
+    def _check_adaptation_bounded(self, state: Any) -> tuple[bool, float]:
         """Check Adapt(X) s.t. Λ(X') = ⊤."""
         return True, 0.85
 
-    def _reconstruct_from_ledger(self, ledger: List[dict]) -> Any:
+    def _reconstruct_from_ledger(self, ledger: list[dict]) -> Any:
         """Reconstruct outcome from ledger entries."""
         if not ledger:
             return None
         return ledger[-1].get("outcome", ledger[-1])
 
-    def get_statistics(self) -> Dict[str, int]:
+    def get_statistics(self) -> dict[str, int]:
         """Get proof statistics."""
         stats = {"total": len(self.proof_history)}
         for status in ProofStatus:

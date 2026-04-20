@@ -9,7 +9,9 @@ Demonstrates the three new core capabilities:
 
 import asyncio
 import json
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 
 
 def demo_agent_fabric() -> dict:

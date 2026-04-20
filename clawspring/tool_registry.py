@@ -4,9 +4,11 @@ Provides a central registry for tool definitions, lookup, schema export,
 and dispatch with output truncation.
 """
 
+from __future__ import annotations
+
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 @dataclass
@@ -19,10 +21,11 @@ class ToolDef:
         func: callable(params: dict, config: dict) -> str
         read_only: True if the tool never mutates state
         concurrent_safe: True if safe to run in parallel with other tools
+
     """
 
     name: str
-    schema: Dict[str, Any]
+    schema: dict[str, Any]
     func: Callable[[dict[str, Any], dict[str, Any]], str]
     read_only: bool = False
     concurrent_safe: bool = False
@@ -30,7 +33,7 @@ class ToolDef:
 
 # --------------- internal state ---------------
 
-_registry: Dict[str, ToolDef] = {}
+_registry: dict[str, ToolDef] = {}
 
 
 # --------------- public API ---------------
@@ -41,25 +44,25 @@ def register_tool(tool_def: ToolDef) -> None:
     _registry[tool_def.name] = tool_def
 
 
-def get_tool(name: str) -> Optional[ToolDef]:
+def get_tool(name: str) -> ToolDef | None:
     """Look up a tool by name. Returns None if not found."""
     return _registry.get(name)
 
 
-def get_all_tools() -> List[ToolDef]:
+def get_all_tools() -> list[ToolDef]:
     """Return all registered tools (insertion order)."""
     return list(_registry.values())
 
 
-def get_tool_schemas() -> List[dict[str, Any]]:
+def get_tool_schemas() -> list[dict[str, Any]]:
     """Return the schemas of all registered tools (for API tool parameter)."""
     return [t.schema for t in _registry.values()]
 
 
 def execute_tool(
     name: str,
-    params: Dict[str, Any],
-    config: Dict[str, Any],
+    params: dict[str, Any],
+    config: dict[str, Any],
     max_output: int = 32000,
 ) -> str:
     """Dispatch a tool call by name.
@@ -72,6 +75,7 @@ def execute_tool(
 
     Returns:
         Tool result string, possibly truncated.
+
     """
     tool = get_tool(name)
     if tool is None:

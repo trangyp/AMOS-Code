@@ -45,7 +45,6 @@ jobs:
             --sensors \
             --json \
             --output=repo-health-report.json
-        continue-on-error: true
 
       - name: Upload health report
         uses: actions/upload-artifact@v4
@@ -57,6 +56,7 @@ jobs:
         id: parse
         run: |
           import json
+          import os
           import sys
 
           with open('repo-health-report.json') as f:
@@ -179,4 +179,4 @@ jobs:
       - name: Bisect packaging invariant
         run: |
           # Find first commit that broke packaging
-          repo-doctor bisect packaging . --good v1.0.0 --bad HEAD || true
+          repo-doctor bisect packaging . --good v1.0.0 --bad HEAD

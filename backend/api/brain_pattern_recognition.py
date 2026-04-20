@@ -8,27 +8,27 @@ Provides pattern recognition capabilities:
 - Behavioral clustering
 """
 
+from __future__ import annotations
 
 import asyncio
 import sys
 from collections import Counter
 from collections.abc import AsyncIterator
-from datetime import datetime, timezone
-
-UTC = timezone.utc, timedelta
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from fastapi import APIRouter, Query
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
+UTC = timezone.utc
+
 # Setup paths
 AMOS_ROOT = Path(__file__).parent.parent.parent.resolve()
 for p in [AMOS_ROOT, AMOS_ROOT / "amos_brain"]:
     if str(p) not in sys.path:
-        sys.path.insert(0, str(p))
 
 # Import brain components
 try:
@@ -61,12 +61,12 @@ class DetectedPattern(BaseModel):
     pattern_type: PatternType
     confidence: float = Field(ge=0.0, le=1.0)
     description: str
-    items: List[str] = Field(default_factory=list)
+    items: list[str] = Field(default_factory=list)
     frequency: int = 0
     support: float = Field(ge=0.0, le=1.0)
     first_seen: datetime
     last_seen: datetime
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class AnomalyReport(BaseModel):
@@ -76,11 +76,11 @@ class AnomalyReport(BaseModel):
     severity: str  # low, medium, high, critical
     category: str
     description: str
-    detected_at: datetime
-    expected_value: Optional[float] = None
+    detected_at:datetime
+    expected_value: Optional[float] =None
     actual_value: Optional[float] = None
     deviation_score: float = Field(ge=0.0)
-    related_patterns: List[str] = Field(default_factory=list)
+    related_patterns: list[str] = Field(default_factory=list)
 
 
 class TrendAnalysis(BaseModel):
@@ -93,8 +93,8 @@ class TrendAnalysis(BaseModel):
     confidence: float = Field(ge=0.0, le=1.0)
     start_date: datetime
     end_date: datetime
-    data_points: int
-    prediction_7d: Optional[float] = None
+    data_points:int
+    prediction_7d: Optional[float] =None
     prediction_30d: Optional[float] = None
 
 
@@ -102,7 +102,7 @@ class PatternQuery(BaseModel):
     """Query for pattern detection."""
 
     source_data: str = Field(..., description="Data source to analyze")
-    pattern_types: List[PatternType] = Field(default_factory=list)
+    pattern_types: list[PatternType] = Field(default_factory=list)
     min_confidence: float = Field(default=0.7, ge=0.0, le=1.0)
     time_range_days: int = Field(default=30, ge=1, le=365)
     max_patterns: int = Field(default=20, ge=1, le=100)
@@ -112,9 +112,9 @@ class PatternRecognitionEngine:
     """Engine for detecting patterns in brain data."""
 
     def __init__(self) -> None:
-        self._detected_patterns: List[DetectedPattern] = []
-        self._anomalies: List[AnomalyReport] = []
-        self._trends: List[TrendAnalysis] = []
+        self._detected_patterns: list[DetectedPattern] = []
+        self._anomalies: list[AnomalyReport] = []
+        self._trends: list[TrendAnalysis] = []
         self._cognitive_engine = None
         self._memory = None
         self._lock = asyncio.Lock()
@@ -139,10 +139,10 @@ class PatternRecognitionEngine:
 
     async def detect_frequent_patterns(
         self, data_source: str, min_support: float = 0.1
-    ) -> List[DetectedPattern]:
+    ) -> list[DetectedPattern]:
         """Detect frequently occurring patterns."""
         async with self._lock:
-            patterns: List[DetectedPattern] = []
+            patterns: list[DetectedPattern] = []
 
             # Get data from memory
             memory = await self._get_memory()
@@ -180,17 +180,17 @@ class PatternRecognitionEngine:
 
     async def detect_anomalies(
         self, data_source: str, sensitivity: float = 2.0
-    ) -> List[AnomalyReport]:
+    ) -> list[AnomalyReport]:
         """Detect anomalies in brain data."""
         async with self._lock:
-            anomalies: List[AnomalyReport] = []
+            anomalies: list[AnomalyReport] = []
 
             memory = await self._get_memory()
             if memory and hasattr(memory, "_local_cache"):
                 entries = list(memory._local_cache.values())
 
                 # Check for confidence score anomalies
-                confidences: List[float] = []
+                confidences: list[float] = []
                 for entry in entries:
                     conf = entry.get("confidence_score")
                     if conf is not None:
@@ -224,10 +224,10 @@ class PatternRecognitionEngine:
 
             return anomalies
 
-    async def analyze_trends(self, metric: str, days: int = 30) -> List[TrendAnalysis]:
+    async def analyze_trends(self, metric: str, days: int = 30) -> list[TrendAnalysis]:
         """Analyze trends in brain metrics."""
         async with self._lock:
-            trends: List[TrendAnalysis] = []
+            trends: list[TrendAnalysis] = []
 
             # Simulate trend analysis
             memory = await self._get_memory()
@@ -235,7 +235,7 @@ class PatternRecognitionEngine:
                 entries = list(memory._local_cache.values())
 
                 # Group by date
-                daily_counts: Dict[str, int] = {}
+                daily_counts: dict[str, int] = {}
                 for entry in entries:
                     ts = entry.get("timestamp", "")
                     if ts:
@@ -292,10 +292,10 @@ class PatternRecognitionEngine:
 
     async def find_associations(
         self, item: str, min_confidence: float = 0.5
-    ) -> List[DetectedPattern]:
+    ) -> list[DetectedPattern]:
         """Find items associated with given item."""
         async with self._lock:
-            associations: List[DetectedPattern] = []
+            associations: list[DetectedPattern] = []
 
             memory = await self._get_memory()
             if memory and hasattr(memory, "_local_cache"):
@@ -348,7 +348,7 @@ class PatternRecognitionEngine:
             for pattern in assoc_patterns:
                 yield pattern
 
-    async def get_insights(self) -> Dict[str, Any]:
+    async def get_insights(self) -> dict[str, Any]:
         """Get overall pattern insights."""
         insights = {
             "total_patterns_detected": len(self._detected_patterns),
@@ -372,7 +372,7 @@ class PatternRecognitionEngine:
         return insights
 
 
-# Global engine
+#Global engine
 _pattern_engine: Optional[PatternRecognitionEngine] = None
 
 
@@ -387,7 +387,7 @@ def get_pattern_engine() -> PatternRecognitionEngine:
 @router.post("/detect/frequent", response_model=list[DetectedPattern])
 async def detect_frequent_patterns(
     data_source: str, min_support: float = Query(default=0.1, ge=0.01, le=1.0)
-) -> List[DetectedPattern]:
+) -> list[DetectedPattern]:
     """Detect frequently occurring patterns in brain data."""
     engine = get_pattern_engine()
     return await engine.detect_frequent_patterns(data_source, min_support)
@@ -396,7 +396,7 @@ async def detect_frequent_patterns(
 @router.post("/detect/anomalies", response_model=list[AnomalyReport])
 async def detect_anomalies(
     data_source: str, sensitivity: float = Query(default=2.0, ge=0.5, le=5.0)
-) -> List[AnomalyReport]:
+) -> list[AnomalyReport]:
     """Detect anomalies in brain operations."""
     engine = get_pattern_engine()
     return await engine.detect_anomalies(data_source, sensitivity)
@@ -405,7 +405,7 @@ async def detect_anomalies(
 @router.get("/trends/{metric}", response_model=list[TrendAnalysis])
 async def analyze_trends(
     metric: str, days: int = Query(default=30, ge=7, le=365)
-) -> List[TrendAnalysis]:
+) -> list[TrendAnalysis]:
     """Analyze trends in brain metrics."""
     engine = get_pattern_engine()
     return await engine.analyze_trends(metric, days)
@@ -414,7 +414,7 @@ async def analyze_trends(
 @router.get("/associations/{item}", response_model=list[DetectedPattern])
 async def find_associations(
     item: str, min_confidence: float = Query(default=0.5, ge=0.0, le=1.0)
-) -> List[DetectedPattern]:
+) -> list[DetectedPattern]:
     """Find items associated with given item."""
     engine = get_pattern_engine()
     return await engine.find_associations(item, min_confidence)
@@ -434,14 +434,14 @@ async def stream_patterns(query: PatternQuery) -> StreamingResponse:
 
 
 @router.get("/insights")
-async def get_insights() -> Dict[str, Any]:
+async def get_insights() -> dict[str, Any]:
     """Get overall pattern recognition insights."""
     engine = get_pattern_engine()
     return await engine.get_insights()
 
 
 @router.get("/health")
-async def health_check() -> Dict[str, Any]:
+async def health_check() -> dict[str, Any]:
     """Health check for pattern recognition."""
     engine = get_pattern_engine()
     insights = await engine.get_insights()

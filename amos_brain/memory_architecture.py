@@ -13,14 +13,13 @@ References:
 
 from __future__ import annotations
 
-
 import json
 import sqlite3
 import threading
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Protocol
+from typing import Any, Optional, Protocol
 
 
 @dataclass
@@ -73,12 +72,12 @@ class MemoryBackend(Protocol):
         ...
 
     def search(
-        self, session_id: str = None, memory_type: str = None, limit: int = 100
+        self, session_id: Optional[str] = None, memory_type: Optional[str] = None, limit: int = 100
     ) -> list[MemoryEntry]:
         """Search for entries."""
         ...
 
-    def clear(self, session_id: str = None) -> bool:
+    def clear(self, session_id: Optional[str] = None) -> bool:
         """Clear entries, optionally for a specific session."""
         ...
 
@@ -165,8 +164,8 @@ class SQLiteMemoryBackend:
 
     def search(
         self,
-        session_id: str = None,
-        memory_type: str = None,
+        session_id: Optional[str] = None,
+        memory_type: Optional[str] = None,
         limit: int = 100,
     ) -> list[MemoryEntry]:
         """Search for entries with filters."""
@@ -204,7 +203,7 @@ class SQLiteMemoryBackend:
         except Exception:
             return []
 
-    def clear(self, session_id: str = None) -> bool:
+    def clear(self, session_id: Optional[str] = None) -> bool:
         """Clear entries."""
         try:
             with self._lock, sqlite3.connect(self.db_path) as conn:
@@ -261,8 +260,8 @@ class FileMemoryBackend:
 
     def search(
         self,
-        session_id: str = None,
-        memory_type: str = None,
+        session_id: Optional[str] = None,
+        memory_type: Optional[str] = None,
         limit: int = 100,
     ) -> list[MemoryEntry]:
         """Search entries (scans all files - slow but simple)."""
@@ -294,7 +293,7 @@ class FileMemoryBackend:
 
         return entries
 
-    def clear(self, session_id: str = None) -> bool:
+    def clear(self, session_id: Optional[str] = None) -> bool:
         """Clear entries."""
         try:
             with self._lock:
@@ -395,8 +394,8 @@ class TieredMemoryManager:
 
     def search(
         self,
-        session_id: str = None,
-        memory_type: str = None,
+        session_id: Optional[str] = None,
+        memory_type: Optional[str] = None,
         limit: int = 100,
     ) -> list[MemoryEntry]:
         """Search across all tiers (L2 primary)."""

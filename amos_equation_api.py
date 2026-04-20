@@ -25,7 +25,7 @@ Endpoints:
 """
 
 import json
-from typing import Any, Dict, List
+from typing import Any
 
 import numpy as np
 
@@ -98,28 +98,28 @@ if FASTAPI_AVAILABLE:
         pattern: str
         formula: str
         description: str
-        invariants: List[str]
-        parameters: Dict[str, str]
+        invariants: list[str]
+        parameters: dict[str, str]
 
     class ExecuteRequest(BaseModel):
-        parameters: Dict[str, Any] = Field(default_factory=dict)
+        parameters: dict[str, Any] = Field(default_factory=dict)
         use_jit: bool = Field(default=True, description="Use JIT if available")
 
     class ExecuteResponse(BaseModel):
         equation: str
         value: Any
         invariants_valid: bool
-        errors: List[str]
+        errors: list[str]
         execution_time_ms: float = None
         jax_accelerated: bool = False
 
     class BatchRequest(BaseModel):
         equation: str
-        batch_params: List[dict[str, Any]]
+        batch_params: list[dict[str, Any]]
 
     class BatchResponse(BaseModel):
         equation: str
-        results: List[Any]
+        results: list[Any]
         successful: int
         failed: int
 
@@ -201,7 +201,7 @@ else:
 if FASTAPI_AVAILABLE and app:
 
     @app.get("/")
-    async def root() -> Dict[str, str]:
+    async def root() -> dict[str, str]:
         """Root endpoint with API info."""
         return {
             "name": "AMOS Equation API",
@@ -231,7 +231,7 @@ if FASTAPI_AVAILABLE and app:
         domain: str = Query(None, description="Filter by domain"),
         pattern: str = Query(None, description="Filter by pattern"),
         search: str = Query(None, description="Search in name/description"),
-    ) -> List[dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """List all equations with optional filtering."""
         equations = KERNEL.get_all_equations()
 
@@ -266,7 +266,7 @@ if FASTAPI_AVAILABLE and app:
         return result
 
     @app.get("/api/v1/equations/{name}")
-    async def get_equation(name: str) -> Dict[str, Any]:
+    async def get_equation(name: str) -> dict[str, Any]:
         """Get detailed information about a specific equation."""
         all_eqs = KERNEL.get_all_equations()
         eq = next((e for e in all_eqs if e.name == name), None)
@@ -362,7 +362,7 @@ if FASTAPI_AVAILABLE and app:
         )
 
     @app.get("/api/v1/patterns")
-    async def list_patterns() -> List[dict[str, Any]]:
+    async def list_patterns() -> list[dict[str, Any]]:
         """List all mathematical patterns and their equations."""
 
         from amos_equation_kernel import MathematicalPattern
@@ -382,7 +382,7 @@ if FASTAPI_AVAILABLE and app:
         return patterns
 
     @app.get("/api/v1/isomorphisms")
-    async def get_isomorphisms() -> List[IsomorphismInfo]:
+    async def get_isomorphisms() -> list[IsomorphismInfo]:
         """Get cross-domain equation isomorphisms."""
         isos = KERNEL.find_isomorphisms()
         return [

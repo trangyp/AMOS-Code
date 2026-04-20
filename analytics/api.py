@@ -6,9 +6,10 @@ Author: AMOS Analytics Team
 Version: 2.0.0
 """
 
-from datetime import datetime, timezone, timedelta
-UTC = timezone.utc
+from datetime import UTC, datetime, timedelta, timezone
 from typing import Any
+
+UTC = UTC
 
 from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel
@@ -30,17 +31,17 @@ class TimeSeriesResponse(BaseModel):
 class DashboardMetrics(BaseModel):
     period: str
     api_requests: list[dict[str, Any]]
-    active_users: Dict[str, Any]
-    equations_summary: Dict[str, int]
-    performance: Dict[str, Any]
+    active_users: dict[str, Any]
+    equations_summary: dict[str, int]
+    performance: dict[str, Any]
     generated_at: datetime
 
 
 class WeeklyReport(BaseModel):
     period: str
-    summary: Dict[str, Any]
+    summary: dict[str, Any]
     metrics: DashboardMetrics
-    week_over_week_change: Dict[str, Any]
+    week_over_week_change: dict[str, Any]
 
 
 # Dependency injection
@@ -105,7 +106,7 @@ async def get_aggregations(
     period: str = Query(default="day", regex="^(day|week|month)$"),
     lookback_days: int = Query(default=30, ge=7, le=365),
     warehouse: AnalyticsWarehouse = Depends(get_warehouse),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Get aggregated metrics."""
     metric_enum = MetricType(metric_type)
     aggregations = await warehouse.get_aggregated_metrics(metric_enum, period, lookback_days)
@@ -150,7 +151,7 @@ async def get_weekly_report(
 @router.get("/health")
 async def analytics_health(
     warehouse: AnalyticsWarehouse = Depends(get_warehouse),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Health check for analytics system."""
     try:
         # Try to get recent events count

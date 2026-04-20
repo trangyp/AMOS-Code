@@ -1,4 +1,3 @@
-
 """AMOS Data Pipeline Service v2.0.0
 
 Production-grade ETL and stream processing with:
@@ -15,41 +14,46 @@ Owner: Trang Phan
 Version: 2.0.0
 """
 
+from __future__ import annotations
+
 import asyncio
 import hashlib
 import json
 import logging
 import time
-
 from collections import deque
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Union
+from typing import Any, Optional, Union
 
 logger = logging.getLogger(__name__)
 
 # Optional imports
 try:
     import redis
+
     REDIS_AVAILABLE = True
 except ImportError:
     REDIS_AVAILABLE = False
 
 try:
     import pandas as pd
+
     PANDAS_AVAILABLE = True
 except ImportError:
     PANDAS_AVAILABLE = False
 
 try:
     from amos_brain import get_super_brain
+
     SUPERBRAIN_AVAILABLE = True
 except ImportError:
     SUPERBRAIN_AVAILABLE = False
 
 try:
     from backend.data_pipeline.streaming import publish_event
+
     STREAMING_AVAILABLE = True
 except ImportError:
     STREAMING_AVAILABLE = False
@@ -73,8 +77,8 @@ class PipelineStage:
     stage_id: str
     name: str
     transform: TransformFunction
-    input_schema: Dict[str, Any] = field(default_factory=dict)
-    output_schema: Dict[str, Any] = field(default_factory=dict)
+    input_schema: dict[str, Any] = field(default_factory=dict)
+    output_schema: dict[str, Any] = field(default_factory=dict)
     validate_input: bool = True
     validate_output: bool = True
     max_retries: int = 3
@@ -88,9 +92,9 @@ class PipelineJob:
 
     job_id: str
     name: str
-    stages: List[PipelineStage]
-    source_config: Dict[str, Any] = field(default_factory=dict)
-    sink_config: Dict[str, Any] = field(default_factory=dict)
+    stages: list[PipelineStage]
+    source_config: dict[str, Any] = field(default_factory=dict)
+    sink_config: dict[str, Any] = field(default_factory=dict)
     parallelism: int = 4
     checkpoint_interval: float = 60.0
     created_at: float = field(default_factory=time.time)
@@ -112,7 +116,7 @@ class ETLJob:
     records_failed: int = 0
     started_at: Optional[float] = None
     completed_at: Optional[float] = None
-    error_log: List[dict[str, Any]] = field(default_factory=list)
+    error_log: list[dict[str, Any]] = field(default_factory=list)
 
 
 # Type alias for transform functions - use Union for Python 3.9 compatibility
@@ -143,11 +147,11 @@ class StreamProcessor:
         self.max_buffer_size = max_buffer_size
 
         self._buffer: deque[dict[str, Any]] = deque(maxlen=max_buffer_size)
-        self._handlers: List[Callable[[list[dict[str, Any]]], Any]] = []
+        self._handlers: list[Callable[[list[dict[str, Any]]], Any]] = []
         self._running = False
-        self._task: asyncio.Task  = None
+        self._task: asyncio.Task = None
         self._lock = asyncio.Lock()
-        self._state: Dict[str, Any] = {}
+        self._state: dict[str, Any] = {}
 
         # Metrics
         self._records_in = 0
@@ -159,7 +163,7 @@ class StreamProcessor:
         """Add window processing handler."""
         self._handlers.append(handler)
 
-    async def ingest(self, record: Dict[str, Any]) -> bool:
+    async def ingest(self, record: dict[str, Any]) -> bool:
         """Ingest record into stream buffer."""
         async with self._lock:
             if len(self._buffer) >= self.max_buffer_size:
@@ -243,7 +247,7 @@ class StreamProcessor:
             if time.time() - self._last_checkpoint > 60:
                 await self._checkpoint()
 
-    async def _dead_letter(self, records: List[dict[str, Any]], error: str) -> None:
+    async def _dead_letter(self, records: list[dict[str, Any]], error: str) -> None:
         """Send failed records to dead letter queue."""
         if REDIS_AVAILABLE:
             try:
@@ -280,7 +284,7 @@ class StreamProcessor:
             except Exception:
                 pass
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get processor statistics."""
         return {
             "name": self.name,
@@ -300,11 +304,11 @@ class DataPipelineService:
     """
 
     def __init__(self):
-        self._jobs: Dict[str, ETLJob] = {}
-        self._pipelines: Dict[str, PipelineJob] = {}
-        self._processors: Dict[str, StreamProcessor] = {}
-        self._running_jobs: Set[str] = set()
-        self._redis: redis.Redis  = None
+        self._jobs: dict[str, ETLJob] = {}
+        self._pipelines: dict[str, PipelineJob] = {}
+        self._processors: dict[str, StreamProcessor] = {}
+        self._running_jobs: set[str] = set()
+        self._redis: redis.Redis = None
 
         if REDIS_AVAILABLE:
             try:
@@ -392,7 +396,7 @@ class DataPipelineService:
 
         return job_id
 
-    async def run_job(self, job_id: str) -> Dict[str, Any]:
+    async def run_job(self, job_id: str) -> dict[str, Any]:
         """Execute an ETL job."""
         job = self._jobs.get(job_id)
         if not job:
@@ -505,7 +509,7 @@ class DataPipelineService:
         self._processors[name] = processor
         return processor
 
-    def get_job_status(self, job_id: str) -> Dict[str, Any] :
+    def get_job_status(self, job_id: str) -> dict[str, Any]:
         """Get ETL job status."""
         job = self._jobs.get(job_id)
         if not job:
@@ -522,7 +526,7 @@ class DataPipelineService:
             "error_count": len(job.error_log),
         }
 
-    def list_jobs(self) -> List[dict[str, Any]]:
+    def list_jobs(self) -> list[dict[str, Any]]:
         """List all ETL jobs."""
         return [
             {
@@ -534,7 +538,7 @@ class DataPipelineService:
             for job in self._jobs.values()
         ]
 
-    def get_processor_stats(self, name: str) -> Dict[str, Any] :
+    def get_processor_stats(self, name: str) -> dict[str, Any]:
         """Get stream processor statistics."""
         processor = self._processors.get(name)
         if not processor:

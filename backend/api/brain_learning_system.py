@@ -9,28 +9,21 @@ Provides learning capabilities:
 - Learning rate optimization
 """
 
+from __future__ import annotations
 
 import asyncio
 import hashlib
-import sys
 import uuid
 from collections.abc import AsyncIterator
-from datetime import datetime, timezone
-
-UTC = timezone.utc
+from datetime import UTC, datetime
 from enum import Enum
-from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
-# Setup paths
-AMOS_ROOT = Path(__file__).parent.parent.parent.resolve()
-for p in [AMOS_ROOT, AMOS_ROOT / "amos_brain"]:
-    if str(p) not in sys.path:
-        sys.path.insert(0, str(p))
+UTC = UTC
 
 # Import brain components
 try:
@@ -74,18 +67,18 @@ class TrainingJob(BaseModel):
     job_type: JobType
     status: JobStatus = JobStatus.PENDING
     dataset_id: str = ""
-    model_config: Dict[str, Any] = Field(default_factory=dict)
-    hyperparameters: Dict[str, Any] = Field(default_factory=dict)
+    model_config: dict[str, Any] = Field(default_factory=dict)
+    hyperparameters: dict[str, Any] = Field(default_factory=dict)
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
-    started_at: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
+    started_at: datetime = None
+    completed_at: datetime = None
     progress_percent: float = Field(default=0.0, ge=0.0, le=100.0)
     epochs_total: int = Field(default=10, ge=1)
     epochs_completed: int = Field(default=0, ge=0)
-    loss_history: List[float] = Field(default_factory=list)
-    metrics: Dict[str, float] = Field(default_factory=dict)
-    error_message: Optional[str] = None
-    model_id: Optional[str] = None
+    loss_history: list[float] = Field(default_factory=list)
+    metrics: dict[str, float] = Field(default_factory=dict)
+    error_message: str = None
+    model_id: str = None
 
 
 class Dataset(BaseModel):
@@ -100,8 +93,8 @@ class Dataset(BaseModel):
     size_mb: float = 0.0
     hash: str = ""
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
-    tags: List[str] = Field(default_factory=list)
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    tags: list[str] = Field(default_factory=list)
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class ModelVersion(BaseModel):
@@ -114,12 +107,12 @@ class ModelVersion(BaseModel):
     architecture: str = ""
     parameters_count: int = 0
     training_duration_seconds: float = 0.0
-    final_loss: Optional[float] = None
-    accuracy: Optional[float] = Field(default=None, ge=0.0, le=1.0)
+    final_loss: float = None
+    accuracy: float = Field(default=None, ge=0.0, le=1.0)
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     is_deployed: bool = False
-    deployment_date: Optional[datetime] = None
-    tags: List[str] = Field(default_factory=list)
+    deployment_date: datetime = None
+    tags: list[str] = Field(default_factory=list)
 
 
 class LearningMetrics(BaseModel):
@@ -140,9 +133,9 @@ class LearningEngine:
     """Brain learning engine."""
 
     def __init__(self) -> None:
-        self._jobs: Dict[str, TrainingJob] = {}
-        self._datasets: Dict[str, Dataset] = {}
-        self._models: Dict[str, ModelVersion] = {}
+        self._jobs: dict[str, TrainingJob] = {}
+        self._datasets: dict[str, Dataset] = {}
+        self._models: dict[str, ModelVersion] = {}
         self._lock = asyncio.Lock()
         self._cognitive_engine = None
         self._memory = None
@@ -188,13 +181,13 @@ class LearningEngine:
 
             return job
 
-    async def get_job(self, job_id: str) -> Optional[TrainingJob]:
+    async def get_job(self, job_id: str) -> TrainingJob:
         """Get training job by ID."""
         return self._jobs.get(job_id)
 
     async def list_jobs(
-        self, status: Optional[JobStatus] = None, job_type: Optional[JobType] = None, limit: int = 50
-    ) -> List[TrainingJob]:
+        self, status: JobStatus = None, job_type: JobType = None, limit: int = 50
+    ) -> list[TrainingJob]:
         """List training jobs with optional filtering."""
         jobs = list(self._jobs.values())
 
@@ -317,21 +310,21 @@ class LearningEngine:
             self._datasets[dataset.dataset_id] = dataset
             return dataset
 
-    async def get_dataset(self, dataset_id: str) -> Optional[Dataset]:
+    async def get_dataset(self, dataset_id: str) -> Dataset:
         """Get dataset by ID."""
         return self._datasets.get(dataset_id)
 
-    async def list_datasets(self, limit: int = 50) -> List[Dataset]:
+    async def list_datasets(self, limit: int = 50) -> list[Dataset]:
         """List datasets."""
         datasets = list(self._datasets.values())
         datasets.sort(key=lambda d: d.created_at, reverse=True)
         return datasets[:limit]
 
-    async def get_model(self, model_id: str) -> Optional[ModelVersion]:
+    async def get_model(self, model_id: str) -> ModelVersion:
         """Get model by ID."""
         return self._models.get(model_id)
 
-    async def list_models(self, deployed_only: bool = False, limit: int = 50) -> List[ModelVersion]:
+    async def list_models(self, deployed_only: bool = False, limit: int = 50) -> list[ModelVersion]:
         """List models."""
         models = list(self._models.values())
 
@@ -429,7 +422,7 @@ class LearningEngine:
 
 
 # Global engine
-_learning_engine: Optional[LearningEngine] = None
+_learning_engine: LearningEngine = None
 
 
 def get_learning_engine() -> LearningEngine:
@@ -459,10 +452,10 @@ async def get_job(job_id: str) -> TrainingJob:
 
 @router.get("/jobs", response_model=list[TrainingJob])
 async def list_jobs(
-    status: Optional[JobStatus] = None,
-    job_type: Optional[JobType] = None,
+    status: JobStatus = None,
+    job_type: JobType = None,
     limit: int = Query(default=50, ge=1, le=200),
-) -> List[TrainingJob]:
+) -> list[TrainingJob]:
     """List training jobs."""
     engine = get_learning_engine()
     return await engine.list_jobs(status, job_type, limit)
@@ -520,7 +513,7 @@ async def get_dataset(dataset_id: str) -> Dataset:
 
 
 @router.get("/datasets", response_model=list[Dataset])
-async def list_datasets(limit: int = Query(default=50, ge=1, le=200)) -> List[Dataset]:
+async def list_datasets(limit: int = Query(default=50, ge=1, le=200)) -> list[Dataset]:
     """List datasets."""
     engine = get_learning_engine()
     return await engine.list_datasets(limit)
@@ -539,7 +532,7 @@ async def get_model(model_id: str) -> ModelVersion:
 @router.get("/models", response_model=list[ModelVersion])
 async def list_models(
     deployed_only: bool = False, limit: int = Query(default=50, ge=1, le=200)
-) -> List[ModelVersion]:
+) -> list[ModelVersion]:
     """List trained models."""
     engine = get_learning_engine()
     return await engine.list_models(deployed_only, limit)
@@ -560,7 +553,7 @@ async def get_metrics() -> LearningMetrics:
 
 
 @router.get("/health")
-async def health_check() -> Dict[str, Any]:
+async def health_check() -> dict[str, Any]:
     """Health check for learning system."""
     engine = get_learning_engine()
     metrics = await engine.get_metrics()

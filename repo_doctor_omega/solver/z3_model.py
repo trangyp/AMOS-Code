@@ -6,7 +6,6 @@ Encodes repository invariants as SMT constraints and provides:
 - Unsat core extraction for diagnosis
 """
 
-
 from dataclasses import dataclass, field
 from typing import Any
 

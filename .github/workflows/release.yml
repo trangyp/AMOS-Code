@@ -39,7 +39,7 @@ jobs:
         TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
       run: |
         twine upload dist/*
-      continue-on-error: true
+      # Note: Removed continue-on-error - releases should fail if package doesn't publish
 
   docker-release:
     runs-on: ubuntu-latest

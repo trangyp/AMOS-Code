@@ -14,7 +14,9 @@ import json
 import sys
 import threading
 import webbrowser
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from typing import Any
 from urllib.parse import urlparse

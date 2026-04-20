@@ -1,4 +1,6 @@
-from typing import Any, Dict, List, Optional, Tuple
+from __future__ import annotations
+
+from typing import Any, Optional
 
 """
 AMOS Knowledge Graph & GraphRAG Service v2.0.0
@@ -21,6 +23,7 @@ import re
 import time
 from collections import defaultdict
 from dataclasses import dataclass, field
+
 import redis.asyncio as redis
 
 try:
@@ -51,6 +54,7 @@ try:
 except ImportError:
     STREAMING_AVAILABLE = False
 
+
 @dataclass
 class GraphNode:
     """Node in knowledge graph."""
@@ -58,10 +62,11 @@ class GraphNode:
     node_id: str
     node_type: str  # entity, concept, document, chunk
     name: str
-    properties: Dict[str, Any] = field(default_factory=dict)
-    vector: Optional[list[float]] = None
-    source_doc: Optional[str] = None
+    properties: dict[str, Any] = field(default_factory=dict)
+    vector: list[Optional[float]] = None
+    source_doc: str = None
     created_at: float = field(default_factory=time.time)
+
 
 @dataclass
 class GraphRelationship:
@@ -71,21 +76,23 @@ class GraphRelationship:
     source_id: str
     target_id: str
     rel_type: str  # part_of, relates_to, implements, depends_on, etc.
-    properties: Dict[str, Any] = field(default_factory=dict)
+    properties: dict[str, Any] = field(default_factory=dict)
     weight: float = 1.0
     created_at: float = field(default_factory=time.time)
+
 
 @dataclass
 class GraphQuery:
     """Graph query specification."""
 
-    node_types: Optional[list[str]] = None
-    rel_types: Optional[list[str]] = None
-    node_properties: Dict[str, Any] = field(default_factory=dict)
-    start_node: Optional[str] = None
+    node_types: list[Optional[str]] = None
+    rel_types: list[Optional[str]] = None
+    node_properties: dict[str, Any] = field(default_factory=dict)
+    start_node: str = None
     depth: int = 2
     min_weight: float = 0.0
     limit: int = 100
+
 
 class EntityExtractor:
     """Extract entities and relationships from text."""
@@ -110,14 +117,14 @@ class EntityExtractor:
     }
 
     def extract(
-        self, text: str, doc_id: Optional[str] = None
-    ) -> Tuple[list[GraphNode], list[GraphRelationship]]:
+        self, text: str, doc_id: str = None
+    ) -> tuple[list[GraphNode], list[GraphRelationship]]:
         """Extract entities and relationships from text."""
         import hashlib
 
-        nodes: List[GraphNode] = []
-        relationships: List[GraphRelationship] = []
-        seen_entities: Dict[str, str] = {}  # name -> node_id
+        nodes: list[GraphNode] = []
+        relationships: list[GraphRelationship] = []
+        seen_entities: dict[str, str] = {}  # name -> node_id
 
         # Extract entities
         for entity_type, pattern in self.ENTITY_PATTERNS.items():
@@ -162,7 +169,7 @@ class EntityExtractor:
 
         return nodes, relationships
 
-    def _detect_relationship(self, text: str, entity1: str, entity2: str) -> Optional[str]:
+    def _detect_relationship(self, text: str, entity1: str, entity2: str) -> str:
         """Detect relationship type between two entities based on context."""
         # Find positions of entities
         pos1 = text.lower().find(entity1.lower())
@@ -184,6 +191,7 @@ class EntityExtractor:
         # Default relationship
         return "relates_to"
 
+
 class GraphRAGEngine:
     """GraphRAG: Graph-based retrieval for RAG.
 
@@ -195,8 +203,12 @@ class GraphRAGEngine:
         self._graph = graph_service
 
     def retrieve(
-        self, query: str, query_vector: Optional[list[float]] = None, depth: int = 2, top_k: int = 10
-    ) -> List[dict[str, Any]]:
+        self,
+        query: str,
+        query_vector: list[Optional[float]] = None,
+        depth: int = 2,
+        top_k: int = 10,
+    ) -> list[dict[str, Any]]:
         """Retrieve context using graph traversal + vector similarity.
 
         Args:
@@ -289,17 +301,18 @@ class GraphRAGEngine:
 
         return density * 10.0  # Simple scoring
 
+
 class KnowledgeGraphService:
     """Knowledge graph management service.
 
     Supports NetworkX (in-memory) and Neo4j (persistent) backends.
     """
 
-    def __init__(self, backend: str = "networkx", neo4j_uri: Optional[str] = None):
+    def __init__(self, backend: str = "networkx", neo4j_uri: str = None):
         self.backend = backend
         self._graph: nx.Optional[DiGraph] = None
-        self._nodes: Dict[str, GraphNode] = {}
-        self._relationships: Dict[str, GraphRelationship] = {}
+        self._nodes: dict[str, GraphNode] = {}
+        self._relationships: dict[str, GraphRelationship] = {}
         self._redis: redis.Optional[Redis] = None
 
         if backend == "networkx" and NETWORKX_AVAILABLE:
@@ -440,22 +453,22 @@ class KnowledgeGraphService:
 
         return True
 
-    def get_node(self, node_id: str) -> Optional[GraphNode]:
+    def get_node(self, node_id: str) -> GraphNode:
         """Get node by ID."""
         return self._nodes.get(node_id)
 
-    def get_node_by_name(self, name: str) -> Optional[GraphNode]:
+    def get_node_by_name(self, name: str) -> GraphNode:
         """Get node by name."""
         for node in self._nodes.values():
             if node.name.lower() == name.lower():
                 return node
         return None
 
-    def vector_search(self, query_vector: List[float], top_k: int = 10) -> List[GraphNode]:
+    def vector_search(self, query_vector: list[float], top_k: int = 10) -> list[GraphNode]:
         """Search nodes by vector similarity."""
         import math
 
-        def cosine_similarity(v1: List[float], v2: List[float]) -> float:
+        def cosine_similarity(v1: list[float], v2: list[float]) -> float:
             dot = sum(a * b for a, b in zip(v1, v2))
             norm1 = math.sqrt(sum(a * a for a in v1))
             norm2 = math.sqrt(sum(a * a for a in v2))
@@ -511,7 +524,7 @@ class KnowledgeGraphService:
 
         return subgraph
 
-    def query(self, query: GraphQuery) -> List[dict[str, Any]]:
+    def query(self, query: GraphQuery) -> list[dict[str, Any]]:
         """Query the graph."""
         results = []
 
@@ -554,13 +567,13 @@ class KnowledgeGraphService:
 
         return results[: query.limit]
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get graph statistics."""
-        by_type: Dict[str, int] = defaultdict(int)
+        by_type: dict[str, int] = defaultdict(int)
         for node in self._nodes.values():
             by_type[node.node_type] += 1
 
-        by_rel_type: Dict[str, int] = defaultdict(int)
+        by_rel_type: dict[str, int] = defaultdict(int)
         for rel in self._relationships.values():
             by_rel_type[rel.rel_type] += 1
 
@@ -572,19 +585,22 @@ class KnowledgeGraphService:
             "backend": self.backend,
         }
 
+
 # Global instance
 knowledge_graph = KnowledgeGraphService()
 
+
 def extract_entities(
-    text: str, doc_id: Optional[str] = None
-) -> Tuple[list[GraphNode], list[GraphRelationship]]:
+    text: str, doc_id: str = None
+) -> tuple[list[GraphNode], list[GraphRelationship]]:
     """Extract entities from text (convenience function)."""
     extractor = EntityExtractor()
     return extractor.extract(text, doc_id)
 
+
 def graph_retrieval(
-    query: str, query_vector: Optional[list[float]] = None, depth: int = 2, top_k: int = 10
-) -> List[dict[str, Any]]:
+    query: str, query_vector: list[Optional[float]] = None, depth: int = 2, top_k: int = 10
+) -> list[dict[str, Any]]:
     """GraphRAG retrieval (convenience function)."""
     engine = GraphRAGEngine(knowledge_graph)
     return engine.retrieve(query, query_vector, depth, top_k)

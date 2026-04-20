@@ -24,10 +24,11 @@ Usage:
 """
 
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from amos_axiom_validator import AxiomCheck, AxiomValidator, ValidationLevel, ValidationReport
 from amos_coherence_engine import (
@@ -63,7 +64,7 @@ class CoherenceOmegaResult:
     coherence_result: CoherenceResult
     validation_report: ValidationReport
     omega_state: State
-    axioms_satisfied: Dict[str, bool]
+    axioms_satisfied: dict[str, bool]
     timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
     @property
@@ -106,7 +107,7 @@ class CoherenceOmega:
 
         # Tracking
         self.last_validation: Optional[ValidationReport] = None
-        self.interaction_history: List[CoherenceOmegaResult] = []
+        self.interaction_history: list[CoherenceOmegaResult] = []
 
     # --------------------------------------------------------------------
     # Core Processing with Ω Validation
@@ -441,11 +442,11 @@ class CoherenceOmega:
         """Get validation report from last operation."""
         return self.last_validation
 
-    def get_history(self) -> List[CoherenceOmegaResult]:
+    def get_history(self) -> list[CoherenceOmegaResult]:
         """Get interaction history."""
         return self.interaction_history
 
-    def get_compliance_stats(self) -> Dict[str, Any]:
+    def get_compliance_stats(self) -> dict[str, Any]:
         """Get Master Law compliance statistics."""
         if not self.interaction_history:
             return {"total": 0, "compliant": 0, "rate": 0.0}
@@ -460,7 +461,7 @@ class CoherenceOmega:
             "axiom_breakdown": self._calculate_axiom_breakdown(),
         }
 
-    def _calculate_axiom_breakdown(self) -> Dict[str, float]:
+    def _calculate_axiom_breakdown(self) -> dict[str, float]:
         """Calculate satisfaction rate per coherence axiom."""
         if not self.interaction_history:
             return {}

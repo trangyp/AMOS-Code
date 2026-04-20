@@ -3,7 +3,9 @@
 Provides execution context management.
 """
 
-from typing import Any, Dict, Optional
+from __future__ import annotations
+
+from typing import Any, Optional
 
 
 class Context:
@@ -26,7 +28,7 @@ class ContextManager:
     """Manages execution contexts."""
 
     def __init__(self):
-        self._contexts: Dict[str, Context] = {}
+        self._contexts: dict[str, Context] = {}
 
     def create_context(self, session_id: str, **kwargs: Any) -> Context:
         """Create new context."""

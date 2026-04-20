@@ -7,15 +7,19 @@ Owner: Trang
 Version: 1.0.0
 """
 
+from __future__ import annotations
+
 import asyncio
 import json
 import logging
 import uuid
 from collections import defaultdict
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -58,7 +62,7 @@ class TelemetryPoint:
     component: str
     metric_name: str
     value: float | str | dict
-    labels: Dict[str, str] = field(default_factory=dict)
+    labels: dict[str, str] = field(default_factory=dict)
     trace_id: str = None
     span_id: str = None
 
@@ -97,9 +101,9 @@ class AMOSTelemetryCollector:
     """Collects telemetry from all 26 AMOS phases."""
 
     def __init__(self):
-        self.metrics: Dict[str, list[TelemetryPoint]] = defaultdict(list)
-        self.logs: List[TelemetryPoint] = []
-        self.traces: Dict[str, list[TelemetryPoint]] = defaultdict(list)
+        self.metrics: dict[str, list[TelemetryPoint]] = defaultdict(list)
+        self.logs: list[TelemetryPoint] = []
+        self.traces: dict[str, list[TelemetryPoint]] = defaultdict(list)
         self._lock = asyncio.Lock()
 
     async def collect_metric(self, phase: int, component: str, metric: str, value: float) -> None:
@@ -116,7 +120,7 @@ class AMOSTelemetryCollector:
             key = f"{phase}:{component}:{metric}"
             self.metrics[key].append(point)
 
-    def get_metrics(self, phase: int = None, limit: int = 100) -> Dict[str, list[TelemetryPoint]]:
+    def get_metrics(self, phase: int = None, limit: int = 100) -> dict[str, list[TelemetryPoint]]:
         """Get metrics with optional filtering."""
         if phase is None:
             return dict(self.metrics)
@@ -128,7 +132,7 @@ class AMOSAlertManager:
 
     def __init__(self, collector: AMOSTelemetryCollector):
         self.collector = collector
-        self.alerts: Dict[str, Alert] = {}
+        self.alerts: dict[str, Alert] = {}
         self._running = False
 
     def create_alert(
@@ -147,7 +151,7 @@ class AMOSAlertManager:
         self.alerts[alert.alert_id] = alert
         return alert
 
-    async def evaluate_alerts(self) -> List[Alert]:
+    async def evaluate_alerts(self) -> list[Alert]:
         """Evaluate all alert rules."""
         firing = []
         for alert in self.alerts.values():
@@ -178,7 +182,7 @@ class AMOSDashboard:
     def __init__(self, collector: AMOSTelemetryCollector, alert_manager: AMOSAlertManager):
         self.collector = collector
         self.alert_manager = alert_manager
-        self.clients: Set[Any] = set()
+        self.clients: set[Any] = set()
         self._running = False
 
     async def broadcast(self, message: dict) -> None:

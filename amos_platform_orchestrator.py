@@ -8,12 +8,15 @@ Author: AMOS System
 Version: 1.0.0
 """
 
+from __future__ import annotations
+
 import asyncio
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
-from typing import Any, Dict, Optional
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
+from typing import Any, Optional
 
 from amos_circuit_breaker import get_circuit_breaker_registry
 from amos_tracing import init_tracing, shutdown_tracing
@@ -43,7 +46,7 @@ class PlatformComponent:
     health: str = "unknown"  # healthy, degraded, unhealthy
     initialized_at: datetime = None
     last_error: str = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -51,7 +54,7 @@ class PlatformState:
     """Complete state of the AMOS platform."""
 
     started_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    components: Dict[str, PlatformComponent] = field(default_factory=dict)
+    components: dict[str, PlatformComponent] = field(default_factory=dict)
     overall_health: str = "initializing"
     version: str = "1.0.0"
 
@@ -104,7 +107,7 @@ class AMOSPlatformOrchestrator:
     def __init__(self):
         self.state = PlatformState()
         self.logger = get_logger("platform.orchestrator")
-        self._components: Dict[str, Any] = {}
+        self._components: dict[str, Any] = {}
         self._running = False
         self._lock = asyncio.Lock()
 
@@ -356,7 +359,7 @@ class AMOSPlatformOrchestrator:
     # Health & Status
     # ========================================================================
 
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """
         Comprehensive health check of all components.
 
@@ -402,7 +405,7 @@ class AMOSPlatformOrchestrator:
             "platform_version": self.state.version,
         }
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get current platform status."""
         return {
             "running": self._running,
@@ -461,9 +464,7 @@ class AMOSPlatformOrchestrator:
 
 # ============================================================================
 # Global Orchestrator Instance
-# ============================================================================
-
-_orchestrator: Optional[AMOSPlatformOrchestrator] = None
+# ============================================================================_orchestrator: Optional[AMOSPlatformOrchestrator] = None
 
 
 def get_platform_orchestrator() -> AMOSPlatformOrchestrator:

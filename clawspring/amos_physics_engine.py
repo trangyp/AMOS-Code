@@ -1,9 +1,10 @@
 """AMOS Physics & Cosmos Engine - Physical system modeling and analysis."""
 
+from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 
 class PhysicsDomain(Enum):
@@ -24,7 +25,7 @@ class PhysicalSystem:
     domain: PhysicsDomain
     state_variables: dict = field(default_factory=dict)
     parameters: dict = field(default_factory=dict)
-    constraints: List[str] = field(default_factory=list)
+    constraints: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -33,8 +34,8 @@ class Force:
 
     name: str
     magnitude: float
-    direction: Tuple[float, float, float] = (0.0, 0.0, 1.0)
-    application_point: Tuple[float, float, float] = (0.0, 0.0, 0.0)
+    direction: tuple[float, float, float] = (0.0, 0.0, 1.0)
+    application_point: tuple[float, float, float] = (0.0, 0.0, 0.0)
 
 
 class ClassicalDynamicsKernel:
@@ -43,14 +44,14 @@ class ClassicalDynamicsKernel:
     PRIMITIVES = ["state_vector", "force", "momentum", "energy", "constraint"]
 
     def __init__(self):
-        self.systems: Dict[str, PhysicalSystem] = {}
-        self.forces: List[Force] = []
+        self.systems: dict[str, PhysicalSystem] = {}
+        self.forces: list[Force] = []
 
     def define_system(
         self,
         name: str,
         state_vars: dict,
-        parameters: dict  = None,
+        parameters: dict = None,
     ) -> PhysicalSystem:
         """Define a classical physical system."""
         system = PhysicalSystem(
@@ -66,7 +67,7 @@ class ClassicalDynamicsKernel:
         self,
         name: str,
         magnitude: float,
-        direction: Tuple[float, float, float] = (0.0, 0.0, 1.0),
+        direction: tuple[float, float, float] = (0.0, 0.0, 1.0),
     ) -> Force:
         """Add a force to the system."""
         force = Force(name=name, magnitude=magnitude, direction=direction)
@@ -102,7 +103,7 @@ class ClassicalDynamicsKernel:
             "forces": len(self.forces),
         }
 
-    def _get_principles(self) -> List[str]:
+    def _get_principles(self) -> list[str]:
         """Return kernel principles."""
         return [
             "Newtonian mechanics: F = ma",
@@ -118,15 +119,15 @@ class ElectromagnetismKernel:
     PRIMITIVES = ["field", "charge", "potential", "flux", "impedance"]
 
     def __init__(self):
-        self.fields: Dict[str, dict] = {}
-        self.circuits: List[dict] = []
+        self.fields: dict[str, dict] = {}
+        self.circuits: list[dict] = []
 
     def define_field(
         self,
         name: str,
         field_type: str,
         strength: float,
-        direction: Tuple[float, float, float] = (0.0, 0.0, 1.0),
+        direction: tuple[float, float, float] = (0.0, 0.0, 1.0),
     ) -> dict:
         """Define an electromagnetic field."""
         field = {
@@ -142,7 +143,7 @@ class ElectromagnetismKernel:
         self,
         element_type: str,
         value: float,
-        connections: List[str],
+        connections: list[str],
     ) -> dict:
         """Add a circuit element."""
         element = {
@@ -169,7 +170,7 @@ class ElectromagnetismKernel:
             "total_resistance": total_resistance,
         }
 
-    def _get_principles(self) -> List[str]:
+    def _get_principles(self) -> list[str]:
         """Return kernel principles."""
         return [
             "Maxwell's equations foundation",
@@ -185,14 +186,14 @@ class QuantumKernel:
     PRIMITIVES = ["hilbert_space", "observable", "superposition", "entanglement"]
 
     def __init__(self):
-        self.wavefunctions: Dict[str, dict] = {}
-        self.observables: List[dict] = []
+        self.wavefunctions: dict[str, dict] = {}
+        self.observables: list[dict] = []
 
     def define_wavefunction(
         self,
         name: str,
         state: str,
-        amplitudes: Optional[List[complex]] = None,
+        amplitudes: list[complex | None] = None,
     ) -> dict:
         """Define a quantum state/wavefunction."""
         wf = {
@@ -204,7 +205,7 @@ class QuantumKernel:
         self.wavefunctions[name] = wf
         return wf
 
-    def add_observable(self, name: str, operator: str, eigenvalues: List[float]) -> dict:
+    def add_observable(self, name: str, operator: str, eigenvalues: list[float]) -> dict:
         """Add a quantum observable."""
         obs = {
             "name": name,
@@ -232,7 +233,7 @@ class QuantumKernel:
             "observables_defined": len(self.observables),
         }
 
-    def _get_principles(self) -> List[str]:
+    def _get_principles(self) -> list[str]:
         """Return kernel principles."""
         return [
             "Wavefunction collapse on measurement",
@@ -248,8 +249,8 @@ class StatisticalPhysicsKernel:
     PRIMITIVES = ["ensemble", "partition_function", "entropy", "temperature"]
 
     def __init__(self):
-        self.ensembles: Dict[str, dict] = {}
-        self.systems: List[dict] = []
+        self.ensembles: dict[str, dict] = {}
+        self.systems: list[dict] = []
 
     def define_ensemble(
         self,
@@ -287,7 +288,7 @@ class StatisticalPhysicsKernel:
             "num_particles": n,
         }
 
-    def _get_principles(self) -> List[str]:
+    def _get_principles(self) -> list[str]:
         """Return kernel principles."""
         return [
             "Entropy and the Second Law",
@@ -303,8 +304,8 @@ class CosmologyKernel:
     PRIMITIVES = ["metric", "curvature", "scale_factor", "horizon"]
 
     def __init__(self):
-        self.models: Dict[str, dict] = {}
-        self.objects: List[dict] = []
+        self.models: dict[str, dict] = {}
+        self.objects: list[dict] = []
 
     def define_model(
         self,
@@ -355,7 +356,7 @@ class CosmologyKernel:
             "total_mass_solar": total_mass,
         }
 
-    def _get_principles(self) -> List[str]:
+    def _get_principles(self) -> list[str]:
         """Return kernel principles."""
         return [
             "Cosmic expansion and redshift",
@@ -381,8 +382,8 @@ class PhysicsCosmosEngine:
     def analyze(
         self,
         description: str,
-        domains: Optional[List[str]] = None,
-    ) -> Dict[str, Any]:
+        domains: list[str | None] = None,
+    ) -> dict[str, Any]:
         """Run physics analysis across specified domains."""
         domains = domains or [
             "classical",
@@ -391,7 +392,7 @@ class PhysicsCosmosEngine:
             "statistical",
             "cosmology",
         ]
-        results: Dict[str, Any] = {}
+        results: dict[str, Any] = {}
 
         if "classical" in domains:
             results["classical"] = self._analyze_classical(description)
@@ -520,7 +521,7 @@ class PhysicsCosmosEngine:
 
 
 # Singleton
-_physics_engine: Optional[PhysicsCosmosEngine] = None
+_physics_engine: PhysicsCosmosEngine | None = None
 
 
 def get_physics_engine() -> PhysicsCosmosEngine:

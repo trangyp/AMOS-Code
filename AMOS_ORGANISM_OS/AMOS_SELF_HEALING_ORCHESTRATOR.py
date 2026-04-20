@@ -18,22 +18,17 @@ Architecture: Closed-Loop Self-Healing System
 
 import sys
 from pathlib import Path
-from typing import Any, Dict, Optional
-
-# Add subsystem paths
-sys.path.insert(0, str(Path(__file__).parent / "01_BRAIN"))
-sys.path.insert(0, str(Path(__file__).parent / "03_IMMUNE"))
-sys.path.insert(0, str(Path(__file__).parent / "06_MUSCLE"))
+from typing import Any, Optional
 
 try:
-    from unified_equation_api import UnifiedEquationAPI
+    from AMOS_ORGANISM_OS.unified_equation_api import UnifiedEquationAPI
 
     API_AVAILABLE = True
 except ImportError:
     API_AVAILABLE = False
 
 try:
-    from automated_remediation_engine import AutomatedRemediationEngine
+    from AMOS_ORGANISM_OS.MUSCLE.automated_remediation_engine import AutomatedRemediationEngine
 
     REMEDIATION_AVAILABLE = True
 except ImportError:
@@ -58,7 +53,7 @@ class SelfHealingOrchestrator:
         if REMEDIATION_AVAILABLE:
             self.remediation_engine = AutomatedRemediationEngine(self.organism_root)
 
-    def get_system_status(self) -> Dict[str, Any]:
+    def get_system_status(self) -> dict[str, Any]:
         """Get complete system status."""
         status = {
             "equation_api": API_AVAILABLE,
@@ -80,7 +75,7 @@ class SelfHealingOrchestrator:
         code: str,
         language: str,
         auto_fix: bool = False,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Full analysis and remediation pipeline.
 

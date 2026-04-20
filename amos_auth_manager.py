@@ -25,25 +25,24 @@ Phase: 13
 
 
 import hashlib
-import hmac
-import json
 import logging
 import secrets
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timedelta, timezone
+
+UTC = UTC
 from enum import Enum
 from functools import wraps
-
 from typing import Any
 
-from fastapi import Depends, HTTPException, Request, Security, status
-from fastapi.security import APIKeyHeader, HTTPBearer, OAuth2PasswordBearer
+from fastapi import Depends, HTTPException, Request, status
+from fastapi.security import APIKeyHeader, HTTPBearer
 
 # Optional imports
 try:
     from jose import JWTError, jwt
+
     JWT_AVAILABLE = True
 except ImportError:
     JWT_AVAILABLE = False
@@ -51,6 +50,7 @@ except ImportError:
 
 try:
     from passlib.context import CryptContext
+
     PASSLIB_AVAILABLE = True
 except ImportError:
     PASSLIB_AVAILABLE = False
@@ -59,6 +59,7 @@ except ImportError:
 try:
     from slowapi import Limiter
     from slowapi.util import get_remote_address
+
     RATE_LIMIT_AVAILABLE = True
 except ImportError:
     RATE_LIMIT_AVAILABLE = False
@@ -77,6 +78,7 @@ API_KEY_PREFIX = "amos_"
 
 class UserRole(Enum):
     """User roles for RBAC."""
+
     ADMIN = "admin"
     USER = "user"
     SERVICE = "service"
@@ -85,6 +87,7 @@ class UserRole(Enum):
 
 class Permission(Enum):
     """Permissions for fine-grained access control."""
+
     # Runtime permissions
     RUNTIME_READ = "runtime:read"
     RUNTIME_CONTROL = "runtime:control"
@@ -144,26 +147,28 @@ ROLE_PERMISSIONS = {
 @dataclass
 class APIKey:
     """API key data model."""
+
     key_id: str
     hashed_key: str
     name: str
     owner: str
     role: UserRole
     created_at: datetime
-    expires_at: datetime  = None
-    last_used: datetime  = None
+    expires_at: datetime = None
+    last_used: datetime = None
     is_active: bool = True
     rate_limit: int = 1000  # requests per hour
-    permissions: List[str] = field(default_factory=list)
+    permissions: list[str] = field(default_factory=list)
 
 
 @dataclass
 class TokenData:
     """JWT token payload."""
+
     sub: str  # user id
     username: str
     role: str
-    permissions: List[str]
+    permissions: list[str]
     iat: float  # issued at
     exp: float  # expiration
     jti: str  # unique token id
@@ -172,16 +177,17 @@ class TokenData:
 @dataclass
 class AuditEvent:
     """Security audit event."""
+
     event_type: str
     timestamp: datetime
-    user_id: str  = None
-    api_key_id: str  = None
-    ip_address: str  = None
-    user_agent: str  = None
-    resource: str  = None
-    action: str  = None
+    user_id: str = None
+    api_key_id: str = None
+    ip_address: str = None
+    user_agent: str = None
+    resource: str = None
+    action: str = None
     success: bool = True
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: dict[str, Any] = field(default_factory=dict)
 
 
 class AMOSAuthManager:
@@ -192,11 +198,11 @@ class AMOSAuthManager:
     """
 
     def __init__(self):
-        self._api_keys: Dict[str, APIKey] = {}  # key_id -> APIKey
-        self._key_lookup: Dict[str, str] = {}   # hashed_key -> key_id
-        self._audit_log: List[AuditEvent] = []
+        self._api_keys: dict[str, APIKey] = {}  # key_id -> APIKey
+        self._key_lookup: dict[str, str] = {}  # hashed_key -> key_id
+        self._audit_log: list[AuditEvent] = []
         self._token_blacklist: Set[str] = set()  # revoked token jtis
-        self._rate_limit_store: Dict[str, list[float]] = {}  # key -> timestamps
+        self._rate_limit_store: dict[str, list[float]] = {}  # key -> timestamps
 
         if PASSLIB_AVAILABLE:
             self._pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -210,17 +216,13 @@ class AMOSAuthManager:
     # ============================================
 
     def create_access_token(
-        self,
-        username: str,
-        user_id: str,
-        role: UserRole,
-        expires_delta: timedelta  = None
+        self, username: str, user_id: str, role: UserRole, expires_delta: timedelta = None
     ) -> str:
         """Create a JWT access token."""
         if not JWT_AVAILABLE:
             raise HTTPException(
                 status_code=status.HTTP_501_NOT_IMPLEMENTED,
-                detail="JWT not available. Install python-jose."
+                detail="JWT not available. Install python-jose.",
             )
 
         if expires_delta:
@@ -238,7 +240,7 @@ class AMOSAuthManager:
             "iat": datetime.now(timezone.utc).timestamp(),
             "exp": expire.timestamp(),
             "jti": secrets.token_urlsafe(16),
-            "type": "access"
+            "type": "access",
         }
 
         token = jwt.encode(token_data, SECRET_KEY, algorithm=ALGORITHM)
@@ -246,7 +248,7 @@ class AMOSAuthManager:
         self._log_audit(
             event_type="token_created",
             user_id=user_id,
-            details={"token_type": "access", "expires": expire.isoformat()}
+            details={"token_type": "access", "expires": expire.isoformat()},
         )
 
         return token
@@ -256,7 +258,7 @@ class AMOSAuthManager:
         if not JWT_AVAILABLE:
             raise HTTPException(
                 status_code=status.HTTP_501_NOT_IMPLEMENTED,
-                detail="JWT not available. Install python-jose."
+                detail="JWT not available. Install python-jose.",
             )
 
         expire = datetime.now(timezone.utc) + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
@@ -265,7 +267,7 @@ class AMOSAuthManager:
             "sub": user_id,
             "exp": expire.timestamp(),
             "jti": secrets.token_urlsafe(16),
-            "type": "refresh"
+            "type": "refresh",
         }
 
         return jwt.encode(token_data, SECRET_KEY, algorithm=ALGORITHM)
@@ -275,7 +277,7 @@ class AMOSAuthManager:
         if not JWT_AVAILABLE:
             raise HTTPException(
                 status_code=status.HTTP_501_NOT_IMPLEMENTED,
-                detail="JWT not available. Install python-jose."
+                detail="JWT not available. Install python-jose.",
             )
 
         try:
@@ -284,8 +286,7 @@ class AMOSAuthManager:
             # Check if token is blacklisted
             if payload.get("jti") in self._token_blacklist:
                 raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Token has been revoked"
+                    status_code=status.HTTP_401_UNAUTHORIZED, detail="Token has been revoked"
                 )
 
             return TokenData(
@@ -295,7 +296,7 @@ class AMOSAuthManager:
                 permissions=payload.get("permissions", []),
                 iat=payload["iat"],
                 exp=payload["exp"],
-                jti=payload["jti"]
+                jti=payload["jti"],
             )
         except JWTError:
             raise HTTPException(
@@ -313,7 +314,7 @@ class AMOSAuthManager:
             self._log_audit(
                 event_type="token_revoked",
                 user_id=payload.get("sub"),
-                details={"jti": payload["jti"]}
+                details={"jti": payload["jti"]},
             )
         except JWTError:
             pass  # Token is already invalid
@@ -327,8 +328,8 @@ class AMOSAuthManager:
         name: str,
         owner: str,
         role: UserRole = UserRole.SERVICE,
-        expires_days: int  = None,
-        rate_limit: int = 1000
+        expires_days: int = None,
+        rate_limit: int = 1000,
     ) -> Tuple[str, APIKey]:
         """
         Create a new API key.
@@ -356,7 +357,7 @@ class AMOSAuthManager:
             created_at=datetime.now(timezone.utc),
             expires_at=expires_at,
             rate_limit=rate_limit,
-            permissions=[p.value for p in ROLE_PERMISSIONS.get(role, [])]
+            permissions=[p.value for p in ROLE_PERMISSIONS.get(role, [])],
         )
 
         # Store
@@ -366,7 +367,7 @@ class AMOSAuthManager:
         self._log_audit(
             event_type="apikey_created",
             user_id=owner,
-            details={"key_id": key_id, "name": name, "role": role.value}
+            details={"key_id": key_id, "name": name, "role": role.value},
         )
 
         return raw_key, api_key
@@ -377,14 +378,8 @@ class AMOSAuthManager:
         key_id = self._key_lookup.get(hashed_key)
 
         if not key_id:
-            self._log_audit(
-                event_type="apikey_verify_failed",
-                details={"reason": "key_not_found"}
-            )
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid API key"
-            )
+            self._log_audit(event_type="apikey_verify_failed", details={"reason": "key_not_found"})
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid API key")
 
         api_key = self._api_keys[key_id]
 
@@ -393,11 +388,10 @@ class AMOSAuthManager:
             self._log_audit(
                 event_type="apikey_verify_failed",
                 api_key_id=key_id,
-                details={"reason": "key_inactive"}
+                details={"reason": "key_inactive"},
             )
             raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="API key has been revoked"
+                status_code=status.HTTP_403_FORBIDDEN, detail="API key has been revoked"
             )
 
         # Check expiration
@@ -405,20 +399,15 @@ class AMOSAuthManager:
             self._log_audit(
                 event_type="apikey_verify_failed",
                 api_key_id=key_id,
-                details={"reason": "key_expired"}
+                details={"reason": "key_expired"},
             )
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="API key has expired"
-            )
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="API key has expired")
 
         # Update last used
         api_key.last_used = datetime.now(timezone.utc)
 
         self._log_audit(
-            event_type="apikey_verify_success",
-            api_key_id=key_id,
-            details={"name": api_key.name}
+            event_type="apikey_verify_success", api_key_id=key_id, details={"name": api_key.name}
         )
 
         return api_key
@@ -436,14 +425,12 @@ class AMOSAuthManager:
             del self._key_lookup[api_key.hashed_key]
 
         self._log_audit(
-            event_type="apikey_revoked",
-            api_key_id=key_id,
-            details={"name": api_key.name}
+            event_type="apikey_revoked", api_key_id=key_id, details={"name": api_key.name}
         )
 
         return True
 
-    def list_api_keys(self, owner: str  = None) -> List[APIKey]:
+    def list_api_keys(self, owner: str = None) -> list[APIKey]:
         """List API keys, optionally filtered by owner."""
         keys = list(self._api_keys.values())
         if owner:
@@ -461,8 +448,8 @@ class AMOSAuthManager:
     def has_permission(self, token_data: TokenData, permission: Permission) -> bool:
         """Check if user has a specific permission."""
         return (
-            Permission.ADMIN_FULL.value in token_data.permissions or
-            permission.value in token_data.permissions
+            Permission.ADMIN_FULL.value in token_data.permissions
+            or permission.value in token_data.permissions
         )
 
     def has_role(self, token_data: TokenData, role: UserRole) -> bool:
@@ -471,13 +458,15 @@ class AMOSAuthManager:
 
     def require_permission(self, permission: Permission):
         """Dependency to require a specific permission."""
+
         def checker(token_data: TokenData = Depends(self.get_current_user)):
             if not self.has_permission(token_data, permission):
                 raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN,
-                    detail=f"Permission denied: {permission.value} required"
+                    detail=f"Permission denied: {permission.value} required",
                 )
             return token_data
+
         return checker
 
     # ============================================
@@ -515,7 +504,7 @@ class AMOSAuthManager:
             "limit": limit,
             "remaining": max(0, limit - len(requests_in_window)),
             "reset": int(window_start + window_seconds),
-            "window": window_seconds
+            "window": window_seconds,
         }
 
     # ============================================
@@ -524,22 +513,15 @@ class AMOSAuthManager:
 
     def _log_audit(self, **kwargs) -> None:
         """Log a security audit event."""
-        event = AuditEvent(
-            timestamp=datetime.now(timezone.utc),
-            **kwargs
-        )
+        event = AuditEvent(timestamp=datetime.now(timezone.utc), **kwargs)
         self._audit_log.append(event)
 
         # Log to standard logger
         logger.info(f"Security event: {event.event_type} - {event.details}")
 
     def get_audit_log(
-        self,
-        user_id: str  = None,
-        event_type: str  = None,
-        since: datetime  = None,
-        limit: int = 100
-    ) -> List[AuditEvent]:
+        self, user_id: str = None, event_type: str = None, since: datetime = None, limit: int = 100
+    ) -> list[AuditEvent]:
         """Query audit log with filters."""
         events = self._audit_log
 
@@ -557,17 +539,13 @@ class AMOSAuthManager:
     # FastAPI Dependencies
     # ============================================
 
-    async def get_current_user(
-        self,
-        token: str = Depends(HTTPBearer())
-    ) -> TokenData:
+    async def get_current_user(self, token: str = Depends(HTTPBearer())) -> TokenData:
         """FastAPI dependency to get current authenticated user."""
         return self.verify_token(token)
 
     async def get_current_user_optional(
-        self,
-        token: str  = Depends(HTTPBearer(auto_error=False))
-    ) -> Optional[TokenData]:
+        self, token: str = Depends(HTTPBearer(auto_error=False))
+    ) -> TokenData:
         """FastAPI dependency to get current user (optional)."""
         if not token:
             return None
@@ -579,8 +557,8 @@ class AMOSAuthManager:
     async def verify_api_key_dependency(
         self,
         request: Request,
-        api_key: str = Depends(APIKeyHeader(name="X-API-Key", auto_error=False))
-    ) -> Optional[APIKey]:
+        api_key: str = Depends(APIKeyHeader(name="X-API-Key", auto_error=False)),
+    ) -> APIKey:
         """FastAPI dependency to verify API key."""
         if not api_key:
             return None
@@ -591,8 +569,7 @@ class AMOSAuthManager:
             # Check rate limit
             if not self.check_rate_limit(key_data.key_id, key_data.rate_limit):
                 raise HTTPException(
-                    status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                    detail="Rate limit exceeded"
+                    status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail="Rate limit exceeded"
                 )
 
             # Log request
@@ -602,7 +579,7 @@ class AMOSAuthManager:
                 ip_address=request.client.host if request.client else None,
                 user_agent=request.headers.get("user-agent"),
                 resource=str(request.url.path),
-                action=request.method
+                action=request.method,
             )
 
             return key_data
@@ -611,7 +588,7 @@ class AMOSAuthManager:
 
 
 # Global auth manager instance
-_auth_manager: Optional[AMOSAuthManager] = None
+_auth_manager: AMOSAuthManager = None
 
 
 def get_auth_manager() -> AMOSAuthManager:
@@ -626,30 +603,33 @@ def get_auth_manager() -> AMOSAuthManager:
 # Convenience decorators
 # ============================================
 
-def require_auth(permission: Optional[Permission] = None):
+
+def require_auth(permission: Permission = None):
     """Decorator to require authentication for a route."""
+
     def decorator(func):
         @wraps(func)
         async def wrapper(*args, **kwargs):
             auth_manager = get_auth_manager()
 
             # Get token from kwargs or args
-            token_data = kwargs.get('current_user')
+            token_data = kwargs.get("current_user")
             if not token_data:
                 raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Authentication required"
+                    status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required"
                 )
 
             # Check permission if specified
             if permission and not auth_manager.has_permission(token_data, permission):
                 raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN,
-                    detail=f"Permission required: {permission.value}"
+                    detail=f"Permission required: {permission.value}",
                 )
 
             return await func(*args, **kwargs)
+
         return wrapper
+
     return decorator
 
 
@@ -666,10 +646,7 @@ if __name__ == "__main__":
 
     # Create API key
     raw_key, api_key = auth.create_api_key(
-        name="Test Key",
-        owner="admin",
-        role=UserRole.SERVICE,
-        expires_days=30
+        name="Test Key", owner="admin", role=UserRole.SERVICE, expires_days=30
     )
 
     print(f"\n✅ Created API key: {raw_key[:20]}...")
@@ -683,11 +660,7 @@ if __name__ == "__main__":
 
     # Create JWT token
     if JWT_AVAILABLE:
-        token = auth.create_access_token(
-            username="admin",
-            user_id="user_123",
-            role=UserRole.ADMIN
-        )
+        token = auth.create_access_token(username="admin", user_id="user_123", role=UserRole.ADMIN)
         print(f"\n✅ Created JWT token: {token[:50]}...")
 
         # Verify token

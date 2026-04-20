@@ -1,5 +1,6 @@
+from __future__ import annotations
 
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 """Backend Brain Integration - Real AMOS brain integration for FastAPI backend.
 
@@ -10,17 +11,12 @@ Provides:
 - Integration with existing backend infrastructure
 """
 
-import asyncio
-import sys
-from datetime import datetime, timezone
-UTC = timezone.utc
-from pathlib import Path
 
-# Setup paths
-AMOS_ROOT = Path(__file__).parent.parent.resolve()
-for p in [AMOS_ROOT, AMOS_ROOT / "clawspring", AMOS_ROOT / "clawspring" / "amos_brain"]:
-    if str(p) not in sys.path:
-        sys.path.insert(0, str(p))
+import asyncio
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
+
 
 # Lazy imports
 _brain_available: Optional[bool] = None
@@ -73,8 +69,8 @@ class BrainIntegration:
             return False
 
     async def cognitive_cycle(
-        self, observation: Dict[str, Any], goal: Dict[str, Any], timeout_ms: int = 5000
-    ) -> Dict[str, Any]:
+        self, observation: dict[str, Any], goal: dict[str, Any], timeout_ms: int = 5000
+    ) -> dict[str, Any]:
         """Execute cognitive cycle with real brain kernel."""
         if not self._initialized:
             await self.initialize()
@@ -92,7 +88,7 @@ class BrainIntegration:
         except Exception as e:
             return {"error": str(e), "status": "error"}
 
-    async def get_dashboard_data(self, days: int = 7) -> Dict[str, Any]:
+    async def get_dashboard_data(self, days: int = 7) -> dict[str, Any]:
         """Get dashboard analytics data."""
         if not self._initialized:
             await self.initialize()
@@ -105,7 +101,7 @@ class BrainIntegration:
         except Exception as e:
             return {"error": str(e)}
 
-    def get_health(self) -> Dict[str, Any]:
+    def get_health(self) -> dict[str, Any]:
         """Get brain health status."""
         available = _ensure_brain()
         return {
@@ -128,14 +124,14 @@ def get_brain_integration() -> BrainIntegration:
 
 
 async def brain_cognitive_cycle(
-    observation: Dict[str, Any], goal: Dict[str, Any], timeout_ms: int = 5000
-) -> Dict[str, Any]:
+    observation: dict[str, Any], goal: dict[str, Any], timeout_ms: int = 5000
+) -> dict[str, Any]:
     """Convenience function to run cognitive cycle."""
     brain = get_brain_integration()
     return await brain.cognitive_cycle(observation, goal, timeout_ms)
 
 
-async def get_brain_dashboard(days: int = 7) -> Dict[str, Any]:
+async def get_brain_dashboard(days: int = 7) -> dict[str, Any]:
     """Convenience function to get dashboard data."""
     brain = get_brain_integration()
     return await brain.get_dashboard_data(days)

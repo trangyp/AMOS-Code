@@ -7,17 +7,14 @@ Provides WebSocket endpoints for real-time cognitive processing:
 """
 
 import json
-import sys
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
 
 # Add brain path
 _AMOS_ROOT = Path(__file__).parent.parent.parent.resolve()
-sys.path.insert(0, str(_AMOS_ROOT / "clawspring" / "amos_brain"))
-
 from amos_brain_working import think as brain_think
 
 router = APIRouter(prefix="/ws/brain", tags=["brain-websocket"])
@@ -29,7 +26,7 @@ class BrainAnalysisMessage(BaseModel):
     type: str
     code: str = ""
     language: str = "python"
-    context: Dict[str, Any] = {}
+    context: dict[str, Any] = {}
 
 
 async def stream_brain_analysis(websocket: WebSocket, code: str, language: str):
@@ -130,7 +127,7 @@ async def brain_architecture_websocket(websocket: WebSocket):
                 options = message.get("options", [])
 
                 # REAL BRAIN USAGE
-                options_text = "\n".join([f"{i+1}. {opt}" for i, opt in enumerate(options)])
+                options_text = "\n".join([f"{i + 1}. {opt}" for i, opt in enumerate(options)])
                 brain_input = f"Architecture decision: {decision}\nOptions:\n{options_text}"
 
                 result = brain_think(brain_input, {"domain": "architecture"})

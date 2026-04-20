@@ -1,4 +1,6 @@
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
+
+from typing import Any
 
 """Task Processor API - Production task queue with brain integration.
 
@@ -9,17 +11,16 @@ with proper timeout handling and progress tracking.
 import asyncio
 import uuid
 from dataclasses import dataclass
-from datetime import datetime, timezone
-
-UTC = timezone.utc
+from datetime import UTC, datetime
 from enum import Enum
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException
 from pydantic import BaseModel, Field
 
+UTC = UTC
+
 # Import AMOS brain
 try:
-
     from amos_brain import process_task, think
 
     BRAIN_AVAILABLE = True
@@ -58,14 +59,14 @@ class Task:
     status: TaskStatus
     priority: TaskPriority
     created_at: str
-    started_at: Optional[str] = None
-    completed_at: Optional[str] = None
+    started_at: str = None
+    completed_at: str = None
     result: Any = None
-    error: Optional[str] = None
+    error: str = None
 
 
 # In-memory task store (replace with Redis/DB in production)
-_task_store: Dict[str, Task] = {}
+_task_store: dict[str, Task] = {}
 
 
 class TaskRequest(BaseModel):
@@ -76,7 +77,7 @@ class TaskRequest(BaseModel):
     priority: TaskPriority = TaskPriority.MEDIUM
     timeout_seconds: float = Field(default=60.0, ge=1.0, le=300.0)
     use_brain: bool = Field(default=True)
-    brain_query: Optional[str] = None
+    brain_query: str = None
 
 
 class TaskResponse(BaseModel):
@@ -88,10 +89,10 @@ class TaskResponse(BaseModel):
     status: str
     priority: int
     created_at: str
-    started_at: Optional[str] = None
-    completed_at: Optional[str] = None
+    started_at: str = None
+    completed_at: str = None
     result: Any = None
-    error: Optional[str] = None
+    error: str = None
 
 
 class TaskCreateResponse(BaseModel):
@@ -214,7 +215,7 @@ async def get_task(task_id: str) -> TaskResponse:
 
 
 @router.get("/", response_model=list[TaskResponse])
-async def list_tasks(limit: int = 100) -> List[TaskResponse]:
+async def list_tasks(limit: int = 100) -> list[TaskResponse]:
     """List all tasks."""
     tasks = sorted(_task_store.values(), key=lambda t: t.created_at, reverse=True)[:limit]
 
@@ -236,7 +237,7 @@ async def list_tasks(limit: int = 100) -> List[TaskResponse]:
 
 
 @router.delete("/{task_id}")
-async def delete_task(task_id: str) -> Dict[str, str]:
+async def delete_task(task_id: str) -> dict[str, str]:
     """Delete a completed or failed task."""
     task = _task_store.get(task_id)
     if not task:
@@ -250,7 +251,7 @@ async def delete_task(task_id: str) -> Dict[str, str]:
 
 
 @router.get("/health/brain")
-async def brain_health() -> Dict[str, Any]:
+async def brain_health() -> dict[str, Any]:
     """Check brain availability for tasks."""
     return {
         "brain_available": BRAIN_AVAILABLE,

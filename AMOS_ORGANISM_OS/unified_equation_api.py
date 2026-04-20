@@ -14,19 +14,14 @@ Provides single interface for equation queries, verification, and reasoning.
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional
-
-# Add subsystem paths
-sys.path.insert(0, str(Path(__file__).parent / "01_BRAIN"))
-sys.path.insert(0, str(Path(__file__).parent / "03_IMMUNE"))
-sys.path.insert(0, str(Path(__file__).parent.parent))
+from typing import Any, Protocol
 
 
 class EquationSource(Protocol):
     """Protocol for equation sources."""
 
-    def query(self, domain: Optional[str], pattern: Optional[str]) -> List[dict]: ...
-    def get_status(self) -> Dict[str, Any]: ...
+    def query(self, domain: str, pattern: str) -> list[dict]: ...
+    def get_status(self) -> dict[str, Any]: ...
 
 
 @dataclass
@@ -39,8 +34,8 @@ class UnifiedEquation:
     source: str  # 'superbrain' | 'knowledge_bridge' | 'verification'
     domain: str
     description: str
-    invariants: List[str] = field(default_factory=list)
-    language: Optional[str] = None
+    invariants: list[str] = field(default_factory=list)
+    language: str = None
 
 
 class UnifiedEquationAPI:
@@ -53,9 +48,9 @@ class UnifiedEquationAPI:
     - Verification Engine (neural-symbolic checking)
     """
 
-    def __init__(self, organism_root: Optional[Path] = None):
+    def __init__(self, organism_root: Path = None):
         self.organism_root = organism_root or Path(__file__).parent
-        self.sources: Dict[str, EquationSource] = {}
+        self.sources: dict[str, EquationSource] = {}
         self._initialize_sources()
 
     def _initialize_sources(self) -> None:
@@ -81,10 +76,10 @@ class UnifiedEquationAPI:
 
     def query_all(
         self,
-        domain: Optional[str] = None,
-        language: Optional[str] = None,
-        pattern: Optional[str] = None,
-    ) -> List[UnifiedEquation]:
+        domain: str = None,
+        language: str = None,
+        pattern: str = None,
+    ) -> list[UnifiedEquation]:
         """Query all equation sources."""
         results = []
 
@@ -112,8 +107,8 @@ class UnifiedEquationAPI:
         self,
         code: str,
         language: str,
-        categories: Optional[List[str] ] = None,
-    ) -> Dict[str, Any]:
+        categories: list[str] = None,
+    ) -> dict[str, Any]:
         """Verify code using verification engine."""
         if "verification" not in self.sources:
             return {"error": "Verification engine not available"}
@@ -121,7 +116,7 @@ class UnifiedEquationAPI:
         engine = self.sources["verification"]
         return engine.get_verification_report(code, language)
 
-    def get_dashboard_data(self) -> Dict[str, Any]:
+    def get_dashboard_data(self) -> dict[str, Any]:
         """Get aggregated dashboard data."""
         total_equations = 0
         by_source = {}
@@ -144,7 +139,7 @@ class UnifiedEquationAPI:
             },
         }
 
-    def suggest_equations(self, context: str, language: Optional[str] = None) -> List[dict]:
+    def suggest_equations(self, context: str, language: str = None) -> list[dict]:
         """Suggest relevant equations for code context."""
         if "knowledge_bridge" not in self.sources:
             return []

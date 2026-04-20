@@ -8,8 +8,8 @@ Version: 3.0.0
 """
 
 from amos_brain.canon_reasoning_engine import (
-    get_canon_reasoning_engine,
     canon_reason,
+    get_canon_reasoning_engine,
 )
 
 
@@ -56,7 +56,7 @@ def test_canon_reasoning():
         print(f"  Options considered: {len(result.options_considered)}")
 
         # Show reasoning path
-        print(f"  Reasoning path:")
+        print("  Reasoning path:")
         for step in result.reasoning_path[:3]:
             print(f"    - {step}")
 

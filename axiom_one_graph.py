@@ -23,12 +23,14 @@ Where:
     Λ: lineage (data provenance tracking)
 """
 
+from __future__ import annotations
+
 import hashlib
 import json
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
 from enum import Enum, auto
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Optional
 
 import neo4j
 from neo4j import AsyncGraphDatabase
@@ -269,8 +271,8 @@ class AxiomNode:
     domain: DomainType
     node_type: NodeType
     name: str
-    properties: Dict[str, Any] = field(default_factory=dict)
-    source_location: Dict[str, Any] = None  # file, line, url, etc.
+    properties: dict[str, Any] = field(default_factory=dict)
+    source_location: dict[str, Any] = None  # file, line, url, etc.
     created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     modified_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     valid_from: str = None  # Temporal versioning
@@ -291,7 +293,7 @@ class AxiomNode:
             return datetime.now(UTC).isoformat() < self.valid_until
         return True
 
-    def to_neo4j_dict(self) -> Dict[str, Any]:
+    def to_neo4j_dict(self) -> dict[str, Any]:
         """Convert to Neo4j-compatible dictionary."""
         return {
             "id": self.id,
@@ -338,13 +340,13 @@ class AxiomEdge:
     source: str
     target: str
     edge_type: EdgeType
-    properties: Dict[str, Any] = field(default_factory=dict)
+    properties: dict[str, Any] = field(default_factory=dict)
     weight: float = 1.0
     created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     valid_from: str = None
     valid_until: str = None
 
-    def to_neo4j_dict(self) -> Dict[str, Any]:
+    def to_neo4j_dict(self) -> dict[str, Any]:
         """Convert to Neo4j-compatible dictionary."""
         return {
             "source": self.source,
@@ -378,12 +380,12 @@ class AxiomGraph:
     - Neo4j backend for graph queries
     """
 
-    def __init__(self, neo4j_uri: str = None, neo4j_auth: Tuple[str, str] = None):
+    def __init__(self, neo4j_uri: str = None, neo4j_auth: tuple[str, str] = None):
         self.neo4j_uri = neo4j_uri or "bolt://localhost:7687"
         self.neo4j_auth = neo4j_auth or ("neo4j", "password")
         self._driver: Optional[AsyncGraphDatabase] = None
-        self._local_nodes: Dict[str, AxiomNode] = {}  # Cache for local operations
-        self._local_edges: List[AxiomEdge] = []
+        self._local_nodes: dict[str, AxiomNode] = {}  # Cache for local operations
+        self._local_edges: list[AxiomEdge] = []
 
     async def connect(self) -> bool:
         """Connect to Neo4j database."""
@@ -491,7 +493,7 @@ class AxiomGraph:
         node_id: str,
         edge_type: Optional[EdgeType] = None,
         direction: str = "out",  # out, in, both
-    ) -> List[AxiomNode]:
+    ) -> list[AxiomNode]:
         """Get neighboring nodes."""
         if not self._driver:
             return []
@@ -531,8 +533,8 @@ class AxiomGraph:
         source: str,
         target: str,
         max_depth: int = 10,
-        allowed_edge_types: List[EdgeType] = None,
-    ) -> List[AxiomEdge]:
+        allowed_edge_types: list[EdgeType] = None,
+    ) -> list[AxiomEdge]:
         """Find path between two nodes using BFS."""
         if not self._driver:
             return None
@@ -579,7 +581,7 @@ class AxiomGraph:
 
     async def query_cross_domain(
         self, start_domain: DomainType, target_domain: DomainType, start_node_id: str
-    ) -> List[dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Query across domains - the key Axiom One capability.
 
@@ -612,7 +614,7 @@ class AxiomGraph:
 
             return paths
 
-    async def get_impact_analysis(self, node_id: str) -> Dict[str, Any]:
+    async def get_impact_analysis(self, node_id: str) -> dict[str, Any]:
         """
         Analyze impact of a node across all domains.
 
@@ -713,7 +715,7 @@ def create_service_node(service_name: str, environment: str, repo_id: str = None
     )
 
 
-def create_agent_node(agent_name: str, agent_type: str, scope: List[str]) -> AxiomNode:
+def create_agent_node(agent_name: str, agent_type: str, scope: list[str]) -> AxiomNode:
     """Create an AI agent node."""
     return AxiomNode(
         id=generate_node_id(DomainType.AI, NodeType.AGENT, agent_name),

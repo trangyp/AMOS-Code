@@ -34,7 +34,7 @@ def test_canon_cognitive_processor_api():
 
     result = canon_process("How should we design brain architecture?", domain="cognitive")
 
-    print(f"✅ Canon processing successful")
+    print("✅ Canon processing successful")
     print(f"   Confidence: {result.confidence:.0%}")
     print(f"   Canon sources: {len(result.canon_sources)}")
     print(f"   Canon terms: {len(result.canon_terms_used)}")
@@ -58,7 +58,7 @@ def test_canon_reasoning_api():
         options=["Unified engine", "Microservices", "Serverless"],
     )
 
-    print(f"✅ Canon reasoning successful")
+    print("✅ Canon reasoning successful")
     print(f"   Decision: {result.decision[:40]}...")
     print(f"   Confidence: {result.confidence:.0%}")
     print(f"   Options considered: {len(result.options_considered)}")
@@ -75,7 +75,7 @@ def test_canon_query_api():
 
         result = canon_query("brain cognitive engine design", domain="core")
 
-        print(f"✅ Canon query successful")
+        print("✅ Canon query successful")
         print(f"   Domain: {result.domain}")
         print(f"   Canon terms: {len(result.canon_terms)}")
         print(f"   Processing time: {result.processing_time_ms:.2f}ms")

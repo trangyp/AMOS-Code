@@ -16,9 +16,8 @@ Version: 3.0.0
 """
 
 import asyncio
-import sys
 import json
-from typing import Dict
+import sys
 
 # Test Configuration
 API_BASE = "http://localhost:8000"
@@ -27,6 +26,7 @@ WS_URL = "ws://localhost:8000/ws/dashboard"
 
 class Colors:
     """Terminal colors for output."""
+
     GREEN = "\033[92m"
     RED = "\033[91m"
     YELLOW = "\033[93m"
@@ -60,13 +60,14 @@ class IntegrationTester:
     """Test AMOS integration end-to-end."""
 
     def __init__(self):
-        self.results: Dict[str, bool] = {}
-        self.errors: Dict[str, str] = {}
+        self.results: dict[str, bool] = {}
+        self.errors: dict[str, str] = {}
 
     async def test_backend_health(self) -> bool:
         """Test backend health endpoint."""
         try:
             import aiohttp
+
             async with aiohttp.ClientSession() as session:
                 async with session.get(f"{API_BASE}/health") as resp:
                     if resp.status == 200:
@@ -84,11 +85,12 @@ class IntegrationTester:
         """Test LLM providers endpoint."""
         try:
             import aiohttp
+
             async with aiohttp.ClientSession() as session:
                 async with session.get(f"{API_BASE}/api/v1/llm/providers") as resp:
                     if resp.status == 200:
                         data = await resp.json()
-                        providers = data.get('providers', [])
+                        providers = data.get("providers", [])
                         print_success(f"Found {len(providers)} LLM provider(s)")
                         for p in providers:
                             print(f"  - {p['name']}: {', '.join(p['models'][:3])}")
@@ -104,18 +106,14 @@ class IntegrationTester:
         """Test chat completion with mock provider."""
         try:
             import aiohttp
+
             async with aiohttp.ClientSession() as session:
                 payload = {
-                    "messages": [
-                        {"role": "user", "content": "Hello AMOS!"}
-                    ],
+                    "messages": [{"role": "user", "content": "Hello AMOS!"}],
                     "model": "mock-gpt",
-                    "provider": "mock"
+                    "provider": "mock",
                 }
-                async with session.post(
-                    f"{API_BASE}/api/v1/llm/chat",
-                    json=payload
-                ) as resp:
+                async with session.post(f"{API_BASE}/api/v1/llm/chat", json=payload) as resp:
                     if resp.status == 200:
                         data = await resp.json()
                         print_success(f"Chat completion: {data['content'][:50]}...")
@@ -134,28 +132,28 @@ class IntegrationTester:
         """Test agent task endpoints."""
         try:
             import aiohttp
+
             async with aiohttp.ClientSession() as session:
                 # Create task
                 payload = {
                     "name": "Test Task",
                     "description": "Integration test task",
                     "agent_type": "general",
-                    "priority": "normal"
+                    "priority": "normal",
                 }
-                async with session.post(
-                    f"{API_BASE}/api/v1/agents/tasks",
-                    json=payload
-                ) as resp:
+                async with session.post(f"{API_BASE}/api/v1/agents/tasks", json=payload) as resp:
                     if resp.status == 200:
                         data = await resp.json()
-                        task_id = data['id']
+                        task_id = data["id"]
                         print_success(f"Created agent task: {task_id}")
 
                         # List tasks
                         async with session.get(f"{API_BASE}/api/v1/agents/tasks") as list_resp:
                             if list_resp.status == 200:
                                 list_data = await list_resp.json()
-                                print_success(f"Task list: {list_data['total']} total, {list_data['running']} running")
+                                print_success(
+                                    f"Task list: {list_data['total']} total, {list_data['running']} running"
+                                )
                                 return True
                     else:
                         error = await resp.text()
@@ -169,6 +167,7 @@ class IntegrationTester:
         """Test system status endpoint."""
         try:
             import aiohttp
+
             async with aiohttp.ClientSession() as session:
                 async with session.get(f"{API_BASE}/api/v1/system/status") as resp:
                     if resp.status == 200:
@@ -189,12 +188,13 @@ class IntegrationTester:
         """Test WebSocket connection."""
         try:
             import websockets
+
             async with websockets.connect(WS_URL) as ws:
                 # Wait for connection confirmation
                 response = await asyncio.wait_for(ws.recv(), timeout=5.0)
                 data = json.loads(response)
 
-                if data.get('type') == 'connection':
+                if data.get("type") == "connection":
                     print_success(f"WebSocket connected: {data.get('channel')}")
 
                     # Send ping
@@ -202,7 +202,7 @@ class IntegrationTester:
                     pong = await asyncio.wait_for(ws.recv(), timeout=5.0)
                     pong_data = json.loads(pong)
 
-                    if pong_data.get('type') == 'pong':
+                    if pong_data.get("type") == "pong":
                         print_success("WebSocket ping/pong successful")
                         return True
 
@@ -250,7 +250,9 @@ class IntegrationTester:
         total = len(self.results)
 
         for name, result in self.results.items():
-            status = f"{Colors.GREEN}PASS{Colors.RESET}" if result else f"{Colors.RED}FAIL{Colors.RESET}"
+            status = (
+                f"{Colors.GREEN}PASS{Colors.RESET}" if result else f"{Colors.RED}FAIL{Colors.RESET}"
+            )
             print(f"  {status} - {name}")
 
         print(f"\n{Colors.BLUE}Results: {passed}/{total} tests passed{Colors.RESET}")

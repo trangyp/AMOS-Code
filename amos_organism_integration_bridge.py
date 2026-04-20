@@ -3,7 +3,7 @@
 
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any
 
 
 @dataclass
@@ -13,7 +13,7 @@ class SubsystemBridge:
     subsystem_id: str
     subsystem_name: str
     status: str = "disconnected"
-    engines_available: List[str] = field(default_factory=list)
+    engines_available: list[str] = field(default_factory=list)
     last_sync: str = ""
 
 
@@ -52,7 +52,7 @@ class OrganismIntegrationBridge:
     def __init__(self, master_orchestrator=None, organism_orchestrator=None):
         self.master = master_orchestrator
         self.organism = organism_orchestrator
-        self.bridges: Dict[str, SubsystemBridge] = {}
+        self.bridges: dict[str, SubsystemBridge] = {}
         self.integration_active = False
         self._initialize_bridges()
 
@@ -63,7 +63,7 @@ class OrganismIntegrationBridge:
                 subsystem_id=sub_id, subsystem_name=description, status="initialized"
             )
 
-    def connect(self) -> Dict[str, Any]:
+    def connect(self) -> dict[str, Any]:
         """Establish connection between orchestrators."""
         print("\n" + "=" * 70)
         print("AMOS ORGANISM INTEGRATION BRIDGE")
@@ -115,7 +115,7 @@ class OrganismIntegrationBridge:
             "knowledge_files": 659,
         }
 
-    def _assign_engines_to_subsystem(self, subsystem_id: str) -> List[str]:
+    def _assign_engines_to_subsystem(self, subsystem_id: str) -> list[str]:
         """Assign relevant cognitive engines to each subsystem."""
         from amos_cognitive_router import CognitiveRouter
 
@@ -151,7 +151,7 @@ class OrganismIntegrationBridge:
 
     def route_to_subsystem(
         self, subsystem_id: str, task: str, context: dict = None
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Route a task to a specific subsystem with cognitive engine support."""
         if subsystem_id not in self.bridges:
             return {"error": f"Unknown subsystem: {subsystem_id}"}
@@ -177,7 +177,7 @@ class OrganismIntegrationBridge:
 
         return {"error": "Master orchestrator not available"}
 
-    def get_subsystem_status(self, subsystem_id: str) -> Dict[str, Any]:
+    def get_subsystem_status(self, subsystem_id: str) -> dict[str, Any]:
         """Get status of a specific subsystem."""
         if subsystem_id not in self.bridges:
             return {"error": "Unknown subsystem"}
@@ -192,7 +192,7 @@ class OrganismIntegrationBridge:
             "last_sync": bridge.last_sync,
         }
 
-    def get_full_status(self) -> Dict[str, Any]:
+    def get_full_status(self) -> dict[str, Any]:
         """Get status of all subsystems and integration."""
         connected = sum(1 for b in self.bridges.values() if b.status == "connected")
         total_engines_assigned = sum(len(b.engines_available) for b in self.bridges.values())

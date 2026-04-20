@@ -14,7 +14,6 @@ All backends capture raw PCM: 16 kHz, 16-bit signed little-endian, mono.
 import shutil
 import subprocess
 import threading
-from typing import List, Tuple
 
 SAMPLE_RATE = 16000
 CHANNELS = 1
@@ -34,7 +33,7 @@ def _has_cmd(cmd: str) -> bool:
 # ── Availability ──────────────────────────────────────────────────────────
 
 
-def check_recording_availability() -> Tuple[bool, str]:
+def check_recording_availability() -> tuple[bool, str]:
     """Return (available, reason_if_not)."""
     # sounddevice (ImportError = not installed; OSError = PortAudio library missing)
     try:
@@ -75,7 +74,7 @@ def _record_sounddevice(
     silence_chunks_needed = int(SILENCE_DURATION_SECS / CHUNK_SECS)
     max_chunks = int(max_seconds / CHUNK_SECS)
 
-    chunks: List[bytes] = []
+    chunks: list[bytes] = []
     silence_count = 0
     done_evt = threading.Event()
 
@@ -145,7 +144,7 @@ def _record_arecord(
     chunk_bytes = int(SAMPLE_RATE * CHUNK_SECS) * BYTES_PER_SAMPLE
     silence_chunks_needed = int(SILENCE_DURATION_SECS / CHUNK_SECS)
 
-    chunks: List[bytes] = []
+    chunks: list[bytes] = []
     silence_count = 0
 
     try:

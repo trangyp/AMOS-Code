@@ -1,11 +1,6 @@
 #!/usr/bin/env python3
 """Test local LLM integration with AMOS."""
 
-import sys
-from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).parent))
-
 
 def test_local_models_detection():
     """Test that local models are detected."""

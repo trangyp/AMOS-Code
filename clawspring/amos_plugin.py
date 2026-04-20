@@ -15,16 +15,14 @@ Usage:
 """
 
 import os
-import sys
 from datetime import datetime, timezone
-UTC = timezone.utc
-from typing import Any, Dict, List, Optional
 
-# Add parent path for amos_brain
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+UTC = timezone.utc
+from typing import Any
+
+from amos_brain.agent_bridge import AMOSAgentBridge, ToolDecision
 
 from amos_brain import GlobalLaws, get_amos_integration
-from amos_brain.agent_bridge import AMOSAgentBridge, ToolDecision
 
 
 class AMOSPlugin:
@@ -41,7 +39,7 @@ class AMOSPlugin:
         self.bridge = AMOSAgentBridge()
         self.laws = GlobalLaws()
         self.enabled = False
-        self.decision_log: List[ToolDecision] = []
+        self.decision_log: list[ToolDecision] = []
 
     def enable(self) -> None:
         """Enable AMOS brain integration."""
@@ -66,7 +64,7 @@ class AMOSPlugin:
             # Hooks not available - use monkey patching as fallback
             self._patch_tool_execution()
 
-    def _pre_tool_validation(self, tool_name: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
+    def _pre_tool_validation(self, tool_name: str, arguments: dict[str, Any]) -> dict[str, Any]:
         """Pre-tool execution validation.
 
         Checks:
@@ -76,6 +74,7 @@ class AMOSPlugin:
 
         Returns:
             Modified arguments or None to block execution
+
         """
         if not self.enabled:
             return arguments
@@ -115,7 +114,7 @@ class AMOSPlugin:
 
         return arguments
 
-    def _post_tool_audit(self, tool_name: str, arguments: Dict[str, Any], result: Any) -> Any:
+    def _post_tool_audit(self, tool_name: str, arguments: dict[str, Any], result: Any) -> Any:
         """Post-tool execution audit.
 
         Checks:
@@ -147,7 +146,7 @@ class AMOSPlugin:
 
             original_execute = tools_module.execute_tool
 
-            def patched_execute(tool_name: str, arguments: Dict[str, Any]) -> Any:
+            def patched_execute(tool_name: str, arguments: dict[str, Any]) -> Any:
                 # Pre-validation
                 validated = self._pre_tool_validation(tool_name, arguments)
                 if validated is None:
@@ -165,7 +164,7 @@ class AMOSPlugin:
         except Exception as e:
             print(f"[AMOS] Warning: Could not patch tools: {e}")
 
-    def _categorize_action(self, tool_name: str, arguments: Dict[str, Any]) -> str:
+    def _categorize_action(self, tool_name: str, arguments: dict[str, Any]) -> str:
         """Categorize tool action for L1 scope check."""
         destructive = {"Bash", "Write", "Edit", "Delete", "Remove", "Shell"}
         financial = {"Transfer", "Pay", "Purchase", "Trade"}
@@ -187,11 +186,11 @@ class AMOSPlugin:
         """Enhance system prompt with AMOS brain context."""
         return self.amos.enhance_system_prompt(base_prompt)
 
-    def get_decision_log(self) -> List[ToolDecision]:
+    def get_decision_log(self) -> list[ToolDecision]:
         """Get logged tool decisions."""
         return self.decision_log
 
-    def analyze_last_decision(self) -> Dict[str, Any]:
+    def analyze_last_decision(self) -> dict[str, Any]:
         """Analyze the last decision with Rule of 2 and Rule of 4."""
         if not self.decision_log:
             return {"error": "No decisions logged"}
@@ -203,7 +202,7 @@ class AMOSPlugin:
 
 
 # Global plugin instance
-_plugin: Optional[AMOSPlugin] = None
+_plugin: AMOSPlugin | None = None
 
 
 def get_amos_plugin() -> AMOSPlugin:

@@ -11,18 +11,14 @@ Version: 7.0.0
 Date: April 2026
 """
 
-import sys
-from pathlib import Path
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
+
 from dataclasses import dataclass
 from enum import Enum
+from typing import Any, Optional
 
-# Add parent directory to path to import equation bridge
-AMOS_ROOT = Path(__file__).parent.parent
-if str(AMOS_ROOT) not in sys.path:
-    sys.path.insert(0, str(AMOS_ROOT))
-
-from amos_superbrain_equation_bridge import (
+# Import from package-local module (no sys.path hack needed)
+from .superbrain_equation_bridge import (
     AMOSSuperBrainBridge,
     Domain,
     MathematicalPattern,
@@ -31,6 +27,7 @@ from amos_superbrain_equation_bridge import (
 
 class EquationDomain(Enum):
     """Canonical domain categories for AMOS Brain integration."""
+
     ML_AI = "machine_learning"
     DISTRIBUTED_SYSTEMS = "distributed_systems"
     PROGRAMMING_LANGUAGES = "programming_languages"
@@ -67,8 +64,9 @@ class EquationDomain(Enum):
 @dataclass
 class EquationComputeRequest:
     """Request to compute an equation."""
+
     equation_name: str
-    inputs: Dict[str, Any]
+    inputs: dict[str, Any]
     validate_invariants: bool = True
     track_in_history: bool = True
 
@@ -76,15 +74,16 @@ class EquationComputeRequest:
 @dataclass
 class EquationComputeResponse:
     """Response from equation computation."""
+
     equation_name: str
-    outputs: Dict[str, Any]
+    outputs: dict[str, Any]
     invariants_valid: bool
-    invariant_violations: List[str]
+    invariant_violations: list[str]
     execution_time_ms: float
     pattern_detected: str
-    cross_domain_links: List[str]
+    cross_domain_links: list[str]
     success: bool
-    error: str  = None
+    error: Optional[str] = None
 
 
 class EquationBridgeIntegration:
@@ -99,7 +98,7 @@ class EquationBridgeIntegration:
 
     def __init__(self) -> None:
         self._bridge = AMOSSuperBrainBridge()
-        self._execution_history: List[EquationComputeResponse] = []
+        self._execution_history: list[EquationComputeResponse] = []
         self._initialized = False
 
     def initialize(self) -> bool:
@@ -111,15 +110,11 @@ class EquationBridgeIntegration:
             print(f"Equation Bridge initialization failed: {e}")
             return False
 
-    def compute(self, request: EquationComputeRequest
-                ) -> EquationComputeResponse:
+    def compute(self, request: EquationComputeRequest) -> EquationComputeResponse:
         """Execute equation computation with governance integration."""
         try:
             # Execute through the bridge
-            result = self._bridge.compute(
-                request.equation_name,
-                request.inputs
-            )
+            result = self._bridge.compute(request.equation_name, request.inputs)
 
             response = EquationComputeResponse(
                 equation_name=result.equation_name,
@@ -128,11 +123,10 @@ class EquationBridgeIntegration:
                 invariant_violations=result.invariant_violations,
                 execution_time_ms=result.execution_time_ms,
                 pattern_detected=(
-                    result.pattern_detected.value if result.pattern_detected
-                    else None
+                    result.pattern_detected.value if result.pattern_detected else None
                 ),
                 cross_domain_links=result.cross_domain_links,
-                success=True
+                success=True,
             )
 
             if request.track_in_history:
@@ -150,10 +144,10 @@ class EquationBridgeIntegration:
                 pattern_detected=None,
                 cross_domain_links=[],
                 success=False,
-                error=str(e)
+                error=str(e),
             )
 
-    def list_equations(self, domain: str  = None) -> List[str]:
+    def list_equations(self, domain: Optional[str] = None) -> list[str]:
         """List available equations, optionally filtered by domain."""
         if domain:
             try:
@@ -163,8 +157,7 @@ class EquationBridgeIntegration:
                 return []
         return list(self._bridge.registry.equations.keys())
 
-    def get_equation_info(self, equation_name: str
-                          ) -> Dict[str, Any ]:
+    def get_equation_info(self, equation_name: str) -> dict[str, Any]:
         """Get metadata for an equation."""
         if equation_name not in self._bridge.registry.metadata:
             return None
@@ -178,25 +171,24 @@ class EquationBridgeIntegration:
             "description": meta.description,
             "invariants": meta.invariants,
             "phase": meta.phase,
-            "hash": self._bridge.registry.generate_equation_hash(equation_name)
+            "hash": self._bridge.registry.generate_equation_hash(equation_name),
         }
 
-    def get_pattern_analysis(self) -> Dict[str, Any]:
+    def get_pattern_analysis(self) -> dict[str, Any]:
         """Get cross-domain pattern analysis."""
         return self._bridge.get_pattern_analysis()
 
     def batch_compute(
-        self, requests: List[EquationComputeRequest]
-    ) -> List[EquationComputeResponse]:
+        self, requests: list[EquationComputeRequest]
+    ) -> list[EquationComputeResponse]:
         """Execute multiple equation computations."""
         return [self.compute(req) for req in requests]
 
-    def get_execution_history(self, limit: int = 100
-                               ) -> List[EquationComputeResponse]:
+    def get_execution_history(self, limit: int = 100) -> list[EquationComputeResponse]:
         """Get recent execution history."""
         return self._execution_history[-limit:]
 
-    def search_by_pattern(self, pattern: str) -> List[str]:
+    def search_by_pattern(self, pattern: str) -> list[str]:
         """Search equations by mathematical pattern."""
         try:
             pat = MathematicalPattern(pattern)
@@ -204,7 +196,7 @@ class EquationBridgeIntegration:
         except ValueError:
             return []
 
-    def export_knowledge(self) -> Dict[str, Any]:
+    def export_knowledge(self) -> dict[str, Any]:
         """Export equation knowledge for AMOS knowledge loader."""
         return self._bridge.export_to_amos_knowledge()
 
@@ -222,14 +214,12 @@ def get_equation_bridge() -> EquationBridgeIntegration:
 
 
 def compute_equation(
-    equation_name: str, inputs: Dict[str, Any], validate: bool = True
+    equation_name: str, inputs: dict[str, Any], validate: bool = True
 ) -> EquationComputeResponse:
     """Convenience function to compute an equation."""
     bridge = get_equation_bridge()
     request = EquationComputeRequest(
-        equation_name=equation_name,
-        inputs=inputs,
-        validate_invariants=validate
+        equation_name=equation_name, inputs=inputs, validate_invariants=validate
     )
     return bridge.compute(request)
 

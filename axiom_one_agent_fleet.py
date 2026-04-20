@@ -18,11 +18,12 @@ import uuid
 from collections.abc import Callable
 from concurrent.futures import Future, ThreadPoolExecutor
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 # Setup logging
 logging.basicConfig(
@@ -95,10 +96,10 @@ class AgentCapability:
 
     name: str
     description: str
-    skills: List[str] = field(default_factory=list)
-    tools: List[str] = field(default_factory=list)
-    input_schema: Dict[str, Any] = field(default_factory=dict)
-    output_schema: Dict[str, Any] = field(default_factory=dict)
+    skills: list[str] = field(default_factory=list)
+    tools: list[str] = field(default_factory=list)
+    input_schema: dict[str, Any] = field(default_factory=dict)
+    output_schema: dict[str, Any] = field(default_factory=dict)
     max_concurrent: int = 3
 
 
@@ -110,13 +111,13 @@ class Agent:
     name: str
     agent_type: AgentType
     description: str
-    capabilities: List[AgentCapability] = field(default_factory=list)
-    permissions: List[str] = field(default_factory=list)
+    capabilities: list[AgentCapability] = field(default_factory=list)
+    permissions: list[str] = field(default_factory=list)
     budget_limit: float = 100.0  # Cost budget in USD
 
     # Runtime state
     status: AgentStatus = AgentStatus.IDLE
-    current_tasks: List[str] = field(default_factory=list)
+    current_tasks: list[str] = field(default_factory=list)
     completed_tasks: int = 0
     failed_tasks: int = 0
 
@@ -146,22 +147,22 @@ class Task:
     priority: TaskPriority
 
     # Task specification
-    input_data: Dict[str, Any] = field(default_factory=dict)
-    expected_output: Dict[str, Any] = field(default_factory=dict)
+    input_data: dict[str, Any] = field(default_factory=dict)
+    expected_output: dict[str, Any] = field(default_factory=dict)
 
     # Context
-    context: Dict[str, Any] = field(default_factory=dict)
+    context: dict[str, Any] = field(default_factory=dict)
     parent_task_id: str = None
-    dependencies: List[str] = field(default_factory=list)
+    dependencies: list[str] = field(default_factory=list)
 
     # Runtime
     assigned_agent: str = None
     status: AgentStatus = AgentStatus.IDLE
 
     # Results
-    output: Dict[str, Any] = field(default_factory=dict)
+    output: dict[str, Any] = field(default_factory=dict)
     error: str = None
-    logs: List[str] = field(default_factory=list)
+    logs: list[str] = field(default_factory=list)
 
     # Timing
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
@@ -182,18 +183,18 @@ class Workflow:
     description: str
 
     # Steps
-    steps: List[WorkflowStep] = field(default_factory=list)
+    steps: list[WorkflowStep] = field(default_factory=list)
 
     # Tasks
-    tasks: Dict[str, Task] = field(default_factory=dict)
-    task_order: List[str] = field(default_factory=list)
+    tasks: dict[str, Task] = field(default_factory=dict)
+    task_order: list[str] = field(default_factory=list)
 
     # State
     current_step_idx: int = 0
     status: AgentStatus = AgentStatus.IDLE
 
     # Results
-    results: Dict[str, Any] = field(default_factory=dict)
+    results: dict[str, Any] = field(default_factory=dict)
 
     # Policy
     require_approval: bool = False
@@ -214,16 +215,16 @@ class AgentAction:
     action_type: str
 
     # What was done
-    input_snapshot: Dict[str, Any] = field(default_factory=dict)
-    output_snapshot: Dict[str, Any] = field(default_factory=dict)
+    input_snapshot: dict[str, Any] = field(default_factory=dict)
+    output_snapshot: dict[str, Any] = field(default_factory=dict)
 
     # Why it was done
     reasoning: str = ""
-    evidence: List[str] = field(default_factory=list)
+    evidence: list[str] = field(default_factory=list)
 
     # Test results
-    tests_run: List[str] = field(default_factory=list)
-    test_results: Dict[str, bool] = field(default_factory=dict)
+    tests_run: list[str] = field(default_factory=list)
+    test_results: dict[str, bool] = field(default_factory=dict)
 
     # Metadata
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
@@ -239,7 +240,7 @@ class AgentAction:
 class ToolRegistry:
     """Registry of tools available to agents."""
 
-    _tools: Dict[str, Callable] = {}
+    _tools: dict[str, Callable] = {}
 
     @classmethod
     def register(cls, name: str, func: Callable) -> None:
@@ -248,12 +249,12 @@ class ToolRegistry:
         logger.info(f"Tool registered: {name}")
 
     @classmethod
-    def get(cls, name: str) -> Optional[Callable]:
+    def get(cls, name: str) -> Callable:
         """Get a tool by name."""
         return cls._tools.get(name)
 
     @classmethod
-    def list_tools(cls) -> List[str]:
+    def list_tools(cls) -> list[str]:
         """List all available tools."""
         return list(cls._tools.keys())
 
@@ -261,7 +262,7 @@ class ToolRegistry:
 # Define real tools
 
 
-def tool_read_file(path: str, offset: int = 0, limit: int = 100) -> Dict[str, Any]:
+def tool_read_file(path: str, offset: int = 0, limit: int = 100) -> dict[str, Any]:
     """Read a file from the filesystem."""
     try:
         file_path = Path(path)
@@ -288,7 +289,7 @@ def tool_read_file(path: str, offset: int = 0, limit: int = 100) -> Dict[str, An
         return {"success": False, "error": str(e), "traceback": traceback.format_exc()}
 
 
-def tool_write_file(path: str, content: str, append: bool = False) -> Dict[str, Any]:
+def tool_write_file(path: str, content: str, append: bool = False) -> dict[str, Any]:
     """Write content to a file."""
     try:
         file_path = Path(path)
@@ -303,11 +304,15 @@ def tool_write_file(path: str, content: str, append: bool = False) -> Dict[str, 
         return {"success": False, "error": str(e), "traceback": traceback.format_exc()}
 
 
-def tool_run_command(command: str, cwd: str = None, timeout: int = 60) -> Dict[str, Any]:
+def tool_run_command(command: str, cwd: str = None, timeout: int = 60) -> dict[str, Any]:
     """Execute a shell command."""
     try:
+        # SECURITY: Use shlex.split() and shell=False to prevent injection
+        import shlex
+
+        cmd_parts = shlex.split(command)
         result = subprocess.run(
-            command, shell=True, cwd=cwd, capture_output=True, text=True, timeout=timeout
+            cmd_parts, shell=False, cwd=cwd, capture_output=True, text=True, timeout=timeout
         )
 
         return {
@@ -323,11 +328,12 @@ def tool_run_command(command: str, cwd: str = None, timeout: int = 60) -> Dict[s
         return {"success": False, "error": str(e), "traceback": traceback.format_exc()}
 
 
-def tool_search_code(query: str, path: str = ".", file_pattern: str = "*.py") -> Dict[str, Any]:
+def tool_search_code(query: str, path: str = ".", file_pattern: str = "*.py") -> dict[str, Any]:
     """Search code using grep."""
     try:
-        cmd = f"grep -r -l --include={file_pattern} '{query}' {path} 2>/dev/null | head -20"
-        result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+        # SECURITY: Use list args with shell=False to prevent injection
+        cmd = ["grep", "-r", "-l", f"--include={file_pattern}", query, path]
+        result = subprocess.run(cmd, shell=False, capture_output=True, text=True)
 
         files = [f.strip() for f in result.stdout.split("\n") if f.strip()]
 
@@ -336,7 +342,7 @@ def tool_search_code(query: str, path: str = ".", file_pattern: str = "*.py") ->
         return {"success": False, "error": str(e)}
 
 
-def tool_list_directory(path: str = ".") -> Dict[str, Any]:
+def tool_list_directory(path: str = ".") -> dict[str, Any]:
     """List directory contents."""
     try:
         dir_path = Path(path)
@@ -372,7 +378,7 @@ ToolRegistry.register("list_directory", tool_list_directory)
 # Agent Fleet Definitions
 # ─────────────────────────────────────────────────────────────────────────────
 
-AGENT_FLEET: Dict[AgentType, Agent] = {
+AGENT_FLEET: dict[AgentType, Agent] = {
     AgentType.ARCHITECT: Agent(
         agent_id="architect-001",
         name="Architect Agent",
@@ -559,14 +565,14 @@ class AgentExecutor:
     """Executes agent tasks with real tool invocation."""
 
     def __init__(self):
-        self.audit_log: List[AgentAction] = []
+        self.audit_log: list[AgentAction] = []
         self.executor = ThreadPoolExecutor(max_workers=10)
 
     def execute_task(self, agent: Agent, task: Task) -> Future:
         """Execute a task asynchronously."""
         return self.executor.submit(self._run_task, agent, task)
 
-    def _run_task(self, agent: Agent, task: Task) -> Dict[str, Any]:
+    def _run_task(self, agent: Agent, task: Task) -> dict[str, Any]:
         """Run a task with the agent's capabilities."""
         action_id = str(uuid.uuid4())
         start_time = time.time()
@@ -633,13 +639,13 @@ class AgentExecutor:
 
         return task.output
 
-    def _select_capability(self, agent: Agent, task: Task) -> Optional[AgentCapability]:
+    def _select_capability(self, agent: Agent, task: Task) -> AgentCapability:
         """Select the best capability for a task."""
         for cap in agent.capabilities:
             return cap  # Simplified - use first capability
         return None
 
-    def _execute_researcher(self, agent: Agent, task: Task, cap: AgentCapability) -> Dict[str, Any]:
+    def _execute_researcher(self, agent: Agent, task: Task, cap: AgentCapability) -> dict[str, Any]:
         """Execute researcher agent logic."""
         query = task.input_data.get("query", "")
         path = task.input_data.get("path", ".")
@@ -673,7 +679,7 @@ class AgentExecutor:
             "summary": f"Explored {path} and found {len(results)} relevant items for query: {query}",
         }
 
-    def _execute_code_agent(self, agent: Agent, task: Task, cap: AgentCapability) -> Dict[str, Any]:
+    def _execute_code_agent(self, agent: Agent, task: Task, cap: AgentCapability) -> dict[str, Any]:
         """Execute code agent logic."""
         action = task.input_data.get("action", "")
         file_path = task.input_data.get("file_path", "")
@@ -703,7 +709,7 @@ class AgentExecutor:
 
         return {"success": False, "error": f"Unknown action: {action}", "quality_score": 0.0}
 
-    def _execute_reviewer(self, agent: Agent, task: Task, cap: AgentCapability) -> Dict[str, Any]:
+    def _execute_reviewer(self, agent: Agent, task: Task, cap: AgentCapability) -> dict[str, Any]:
         """Execute reviewer agent logic."""
         file_path = task.input_data.get("file_path", "")
 
@@ -753,7 +759,7 @@ class AgentExecutor:
             "recommendation": "APPROVE" if quality_score > 0.8 else "NEEDS_REVIEW",
         }
 
-    def _execute_architect(self, agent: Agent, task: Task, cap: AgentCapability) -> Dict[str, Any]:
+    def _execute_architect(self, agent: Agent, task: Task, cap: AgentCapability) -> dict[str, Any]:
         """Execute architect agent logic."""
         path = task.input_data.get("path", ".")
 
@@ -786,7 +792,7 @@ class AgentExecutor:
             "architecture_notes": f"Found {len(dependencies)} files with import dependencies",
         }
 
-    def _execute_generic(self, agent: Agent, task: Task, cap: AgentCapability) -> Dict[str, Any]:
+    def _execute_generic(self, agent: Agent, task: Task, cap: AgentCapability) -> dict[str, Any]:
         """Execute generic task logic."""
         return {
             "success": True,
@@ -805,11 +811,11 @@ class WorkflowEngine:
     """Deterministic workflow execution engine."""
 
     def __init__(self):
-        self.workflows: Dict[str, Workflow] = {}
+        self.workflows: dict[str, Workflow] = {}
         self.agent_executor = AgentExecutor()
 
     def create_workflow(
-        self, name: str, description: str, steps: List[WorkflowStep], require_approval: bool = False
+        self, name: str, description: str, steps: list[WorkflowStep], require_approval: bool = False
     ) -> Workflow:
         """Create a new workflow."""
         workflow = Workflow(
@@ -827,9 +833,9 @@ class WorkflowEngine:
         workflow: Workflow,
         agent_type: AgentType,
         description: str,
-        input_data: Dict[str, Any],
+        input_data: dict[str, Any],
         priority: TaskPriority = TaskPriority.NORMAL,
-        dependencies: List[str] = None,
+        dependencies: list[str] = None,
     ) -> Task:
         """Add a task to a workflow."""
         task = Task(
@@ -844,7 +850,7 @@ class WorkflowEngine:
         workflow.task_order.append(task.task_id)
         return task
 
-    def execute_workflow(self, workflow: Workflow) -> Dict[str, Any]:
+    def execute_workflow(self, workflow: Workflow) -> dict[str, Any]:
         """Execute a workflow deterministically."""
         logger.info(f"Executing workflow {workflow.workflow_id}: {workflow.name}")
 
@@ -923,11 +929,11 @@ class AxiomOneAgentFleet:
         self.workflow_engine = WorkflowEngine()
         self.agent_executor = AgentExecutor()
 
-    def get_agent(self, agent_type: AgentType) -> Optional[Agent]:
+    def get_agent(self, agent_type: AgentType) -> Agent:
         """Get an agent from the fleet."""
         return AGENT_FLEET.get(agent_type)
 
-    def list_agents(self) -> List[dict[str, Any]]:
+    def list_agents(self) -> list[dict[str, Any]]:
         """List all available agents."""
         return [
             {
@@ -963,7 +969,7 @@ class AxiomOneAgentFleet:
         workflow: Workflow,
         agent_type: AgentType,
         description: str,
-        input_data: Dict[str, Any],
+        input_data: dict[str, Any],
         priority: str = "normal",
     ) -> Task:
         """Assign a task to an agent in a workflow."""
@@ -976,11 +982,11 @@ class AxiomOneAgentFleet:
             priority=priority_enum,
         )
 
-    def execute(self, workflow: Workflow) -> Dict[str, Any]:
+    def execute(self, workflow: Workflow) -> dict[str, Any]:
         """Execute a workflow."""
         return self.workflow_engine.execute_workflow(workflow)
 
-    def get_audit_log(self) -> List[dict[str, Any]]:
+    def get_audit_log(self) -> list[dict[str, Any]]:
         """Get the audit log of all agent actions."""
         return [asdict(action) for action in self.agent_executor.audit_log]
 

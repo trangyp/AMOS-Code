@@ -17,9 +17,10 @@ Params_{t+1} = Params_t + η · UpdateSignal_t
 import statistics
 from collections import defaultdict
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
-from typing import Any, Dict, List, Tuple
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
+from typing import Any
 
 
 @dataclass
@@ -30,7 +31,7 @@ class MetaObservation:
     cycle_id: int
     observation_type: str  # simulation_error, collapse_quality, morph_outcome, energy_use
     value: float
-    context: Dict[str, Any] = field(default_factory=dict)
+    context: dict[str, Any] = field(default_factory=dict)
     expected_outcome: float = None
     actual_outcome: float = None
 
@@ -40,9 +41,9 @@ class ReflectionResult:
     """Result of meta-cognitive reflection."""
 
     reflection_id: str
-    insights: List[str]
-    parameter_updates: Dict[str, float]
-    confidence_calibration: Dict[str, float]
+    insights: list[str]
+    parameter_updates: dict[str, float]
+    confidence_calibration: dict[str, float]
     learning_applied: bool
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
@@ -54,9 +55,9 @@ class PredictionTracker:
 
     def __init__(self, window_size: int = 10):
         self.window_size = window_size
-        self.predictions: List[dict] = []  # {predicted, actual, error, timestamp}
-        self.error_history: List[float] = []
-        self.accuracy_trend: List[float] = []
+        self.predictions: list[dict] = []  # {predicted, actual, error, timestamp}
+        self.error_history: list[float] = []
+        self.accuracy_trend: list[float] = []
 
     def record_prediction(self, predicted: dict, actual: dict, context: str = ""):
         """Record a prediction and its actual outcome."""
@@ -116,7 +117,7 @@ class PredictionTracker:
         else:
             return "well_calibrated"
 
-    def improvement_suggestions(self) -> List[str]:
+    def improvement_suggestions(self) -> list[str]:
         """Generate suggestions for improving predictions."""
         suggestions = []
 
@@ -139,9 +140,9 @@ class BranchEfficiencyAnalyzer:
     """
 
     def __init__(self):
-        self.branch_stats: List[dict] = []
-        self.generation_costs: List[float] = []
-        self.selection_quality: List[float] = []
+        self.branch_stats: list[dict] = []
+        self.generation_costs: list[float] = []
+        self.selection_quality: list[float] = []
 
     def record_branch_generation(
         self, n_branches: int, cost: float, selected_branch_rank: int, outcome_success: bool
@@ -205,9 +206,9 @@ class FailurePatternDetector:
     """
 
     def __init__(self):
-        self.failures: List[dict] = []
-        self.failure_patterns: Dict[str, int] = defaultdict(int)
-        self.context_signatures: Dict[str, list[str]] = {}
+        self.failures: list[dict] = []
+        self.failure_patterns: dict[str, int] = defaultdict(int)
+        self.context_signatures: dict[str, list[str]] = {}
 
     def record_failure(self, failure_type: str, context: dict, action_taken: str, consequence: str):
         """Record a failure for pattern analysis."""
@@ -242,7 +243,7 @@ class FailurePatternDetector:
         values = [str(context[k])[:20] for k in keys if k in context]
         return f"{failure_type}:{':'.join(values)}"
 
-    def detect_repeating_patterns(self) -> List[dict]:
+    def detect_repeating_patterns(self) -> list[dict]:
         """Detect patterns that repeat frequently."""
         repeating = []
         for signature, count in self.failure_patterns.items():
@@ -257,7 +258,7 @@ class FailurePatternDetector:
 
         return sorted(repeating, key=lambda x: x["occurrences"], reverse=True)
 
-    def should_avoid(self, context: dict, action: str) -> Tuple[bool, str]:
+    def should_avoid(self, context: dict, action: str) -> tuple[bool, str]:
         """Check if an action in a context should be avoided."""
         test_sig = self._extract_signature("any", context)
 
@@ -283,15 +284,15 @@ class ParameterAdapter:
 
     def __init__(self, learning_rate: float = 0.1):
         self.learning_rate = learning_rate
-        self.current_params: Dict[str, float] = {
+        self.current_params: dict[str, float] = {
             "branch_count": 3.0,
             "risk_threshold": 0.5,
             "confidence_threshold": 0.6,
             "exploration_rate": 0.3,
             "attention_noise": 0.1,
         }
-        self.param_history: List[dict] = []
-        self.update_signals: Dict[str, list[float]] = defaultdict(list)
+        self.param_history: list[dict] = []
+        self.update_signals: dict[str, list[float]] = defaultdict(list)
 
     def compute_update_signal(
         self, param_name: str, performance_delta: float, gradient: float
@@ -307,7 +308,7 @@ class ParameterAdapter:
 
         return statistics.mean(self.update_signals[param_name])
 
-    def adapt(self, feedback: Dict[str, float]):
+    def adapt(self, feedback: dict[str, float]):
         """Adapt parameters based on feedback."""
         old_params = self.current_params.copy()
 
@@ -338,7 +339,7 @@ class ParameterAdapter:
             }
         )
 
-    def get_params(self) -> Dict[str, float]:
+    def get_params(self) -> dict[str, float]:
         """Get current adapted parameters."""
         return self.current_params.copy()
 
@@ -371,8 +372,8 @@ class ConfidenceCalibrator:
     """
 
     def __init__(self):
-        self.confidence_predictions: List[tuple] = []  # (confidence, outcome)
-        self.calibration_curve: Dict[float, float] = {}
+        self.confidence_predictions: list[tuple] = []  # (confidence, outcome)
+        self.calibration_curve: dict[float, float] = {}
 
     def record(self, confidence: float, success: bool):
         """Record confidence prediction and outcome."""
@@ -451,7 +452,7 @@ class AMOSMetaCognition:
         self.parameter_adapter = ParameterAdapter()
         self.confidence_calibrator = ConfidenceCalibrator()
 
-        self.reflection_history: List[ReflectionResult] = []
+        self.reflection_history: list[ReflectionResult] = []
         self.meta_goals = [
             "improve_prediction",
             "improve_branch_efficiency",
@@ -563,7 +564,7 @@ class AMOSMetaCognition:
             "adaptation_report": self.parameter_adapter.adaptation_report(),
         }
 
-    def suggest_improvements(self) -> List[str]:
+    def suggest_improvements(self) -> list[str]:
         """Generate improvement suggestions across all domains."""
         suggestions = []
 

@@ -15,7 +15,7 @@ import json
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 sys.path.insert(0, str(Path(__file__).parent))
 
@@ -28,18 +28,18 @@ class SystemComponent:
     category: str
     description: str
     status: str
-    capabilities: List[str]
-    dependencies: List[str]
+    capabilities: list[str]
+    dependencies: list[str]
 
 
 class AMOSFullSystemExplorer:
     """Explorer for the complete AMOS ecosystem."""
 
     def __init__(self):
-        self.components: List[SystemComponent] = []
+        self.components: list[SystemComponent] = []
         self.catalog = {}
 
-    def catalog_domain_engines(self) -> Dict[str, Any]:
+    def catalog_domain_engines(self) -> dict[str, Any]:
         """Catalog the 12 domain engines."""
         engines = {
             "AMOS_Biology_And_Cognition_Engine": {
@@ -105,7 +105,7 @@ class AMOSFullSystemExplorer:
         }
         return engines
 
-    def catalog_organism_subsystems(self) -> Dict[str, Any]:
+    def catalog_organism_subsystems(self) -> dict[str, Any]:
         """Catalog the 14 Organism OS subsystems."""
         subsystems = {
             "00_ROOT": {
@@ -179,7 +179,7 @@ class AMOSFullSystemExplorer:
         }
         return subsystems
 
-    def catalog_specialized_engines(self) -> Dict[str, Any]:
+    def catalog_specialized_engines(self) -> dict[str, Any]:
         """Catalog specialized analysis engines."""
         engines = {
             "Coherence Engine": {
@@ -260,7 +260,7 @@ class AMOSFullSystemExplorer:
         }
         return engines
 
-    def catalog_knowledge_systems(self) -> Dict[str, Any]:
+    def catalog_knowledge_systems(self) -> dict[str, Any]:
         """Catalog knowledge bases and storage systems."""
         systems = {
             "Canonical Memory": {
@@ -302,7 +302,7 @@ class AMOSFullSystemExplorer:
         }
         return systems
 
-    def catalog_integration_points(self) -> Dict[str, Any]:
+    def catalog_integration_points(self) -> dict[str, Any]:
         """Catalog all integration interfaces."""
         integrations = {
             "ClawSpring Agent Bridge": {
@@ -325,7 +325,7 @@ class AMOSFullSystemExplorer:
         }
         return integrations
 
-    def generate_full_report(self) -> Dict[str, Any]:
+    def generate_full_report(self) -> dict[str, Any]:
         """Generate comprehensive system report."""
         return {
             "system_name": "AMOS Brain Ecosystem",

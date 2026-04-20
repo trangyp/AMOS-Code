@@ -1,10 +1,11 @@
 """File Ingestion API - Streaming document processing endpoints."""
 
+from __future__ import annotations
+
 import logging
 import re
-import sys
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 from fastapi import APIRouter, File, HTTPException, UploadFile
 from pydantic import BaseModel
@@ -13,8 +14,6 @@ logger = logging.getLogger(__name__)
 
 # Add paths
 _AMOS_ROOT = Path(__file__).parent.parent.parent.resolve()
-sys.path.insert(0, str(_AMOS_ROOT))
-
 from amos_file_ingestion_runtime import (
     DocumentIngestionRuntime,
     FileFormat,
@@ -108,7 +107,7 @@ async def file_ingest_endpoint(request: FileIngestRequest) -> FileIngestResponse
 @router.post("/upload")
 async def file_upload_endpoint(
     file: UploadFile = File(...), task: str = "summarize"
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Upload and process file immediately with streaming for large files."""
     try:
         # Sanitize filename to prevent path traversal
@@ -154,7 +153,7 @@ async def file_upload_endpoint(
 
 
 @router.get("/formats")
-async def file_formats() -> Dict[str, list[str]]:
+async def file_formats() -> dict[str, list[str]]:
     """Get supported file formats."""
     return {
         "formats": [f.name for f in FileFormat],

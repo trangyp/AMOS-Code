@@ -3,12 +3,15 @@
 Type definitions for the unified model fabric.
 """
 
+from __future__ import annotations
 
 from collections.abc import AsyncGenerator
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from enum import Enum, auto
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 
 class ModelCapability(Enum):
@@ -55,19 +58,19 @@ class ProviderType(Enum):
 class CapabilitySet:
     """Set of capabilities a model supports."""
 
-    capabilities: Set[ModelCapability] = field(default_factory=set)
+    capabilities: set[ModelCapability] = field(default_factory=set)
     context_window: int = 4096
     max_output_tokens: int = 4096
     supports_streaming: bool = True
-    quantization: str = None  # "Q4_K_M", "Q8_0", etc.
+    quantization: str | None = None  # "Q4_K_M", "Q8_0", etc.
 
     def has_capability(self, capability: ModelCapability) -> bool:
         return capability in self.capabilities
 
-    def has_all(self, capabilities: List[ModelCapability]) -> bool:
+    def has_all(self, capabilities: list[ModelCapability]) -> bool:
         return all(c in self.capabilities for c in capabilities)
 
-    def has_any(self, capabilities: List[ModelCapability]) -> bool:
+    def has_any(self, capabilities: list[ModelCapability]) -> bool:
         return any(c in self.capabilities for c in capabilities)
 
 
@@ -84,7 +87,7 @@ class ModelInfo:
     # Routing metadata
     priority: int = 100  # Lower = higher priority
     cost_per_1k_tokens: float = 0.0  # For local models, usually 0
-    avg_latency_ms: float = None
+    avg_latency_ms: float | None = None
 
     # Health
     is_available: bool = True
@@ -92,42 +95,42 @@ class ModelInfo:
     error_count: int = 0
 
     # Provider-specific config
-    endpoint_url: str = None
-    api_key: str = None
-    extra_headers: Dict[str, str] = field(default_factory=dict)
+    endpoint_url: str | None = None
+    api_key: str | None = None
+    extra_headers: dict[str, str] = field(default_factory=dict)
 
 
 @dataclass
 class FabricRequest:
     """Unified request to the model fabric."""
 
-    messages: List[dict[str, str]]  # [{"role": "user", "content": "..."}]
-    model: str = None  # Specific model ID, or None for auto-select
+    messages: list[dict[str, str]]  # [{"role": "user", "content": "..."}]
+    model: str | None = None  # Specific model ID, or None for auto-select
 
     # Generation parameters
     temperature: float = 0.7
-    max_tokens: int = None
+    max_tokens: int | None = None
     top_p: float = 1.0
-    top_k: int = None
+    top_k: int | None = None
     repetition_penalty: float = 1.0
 
     # Routing hints
-    required_capabilities: List[ModelCapability] = field(default_factory=list)
-    preferred_providers: List[ProviderType] = field(default_factory=list)
+    required_capabilities: list[ModelCapability] = field(default_factory=list)
+    preferred_providers: list[ProviderType] = field(default_factory=list)
     routing_strategy: RoutingStrategy = RoutingStrategy.CAPABILITY_MATCH
 
     # Features
     stream: bool = False
-    tools: List[dict] = None
-    response_format: Dict[str, Any] = None  # JSON schema for structured output
+    tools: list[dict] | None = None
+    response_format: dict[str, Any] | None = None  # JSON schema for structured output
 
     # Metadata
-    request_id: str = None
-    tenant_id: str = None
+    request_id: str | None = None
+    tenant_id: str | None = None
     timeout_seconds: float = 120.0
 
     # AMOS-specific
-    amos_context: Dict[str, Any] = field(default_factory=dict)  # Repo state, file context, etc.
+    amos_context: dict[str, Any] = field(default_factory=dict)  # Repo state, file context, etc.
 
 
 @dataclass
@@ -139,8 +142,8 @@ class FabricUsage:
     total_tokens: int = 0
 
     # Local model specific
-    load_time_ms: float = None  # Time to load model into VRAM
-    tokens_per_second: float = None
+    load_time_ms: float | None = None  # Time to load model into VRAM
+    tokens_per_second: float | None = None
 
 
 @dataclass
@@ -159,14 +162,14 @@ class FabricResponse:
     timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
 
     # Metadata
-    request_id: str = None
-    finish_reason: str = None  # "stop", "length", "tool_calls", etc.
+    request_id: str | None = None
+    finish_reason: str | None = None  # "stop", "length", "tool_calls", etc.
 
     # Tool calls (if applicable)
-    tool_calls: List[dict] = None
+    tool_calls: list[dict] | None = None
 
     # Raw provider response for debugging
-    raw_response: Dict[str, Any] = None
+    raw_response: dict[str, Any] | None = None
 
 
 @dataclass
@@ -180,10 +183,9 @@ class FabricStreamChunk:
 
     # May be empty for intermediate chunks
     is_finished: bool = False
-    finish_reason: str = None
+    finish_reason: str | None = None
 
-    # Usage (usually only in final chunk)
-    usage: Optional[FabricUsage] = None
+    # Usage (usually only in final chunk)usage: FabricUsage | None = None
 
 
 @dataclass
@@ -195,16 +197,16 @@ class ProviderHealth:
     endpoint_url: str
 
     # Models available on this provider
-    available_models: List[str] = field(default_factory=list)
+    available_models: list[str] = field(default_factory=list)
 
     # Performance metrics
-    avg_latency_ms: float = None
+    avg_latency_ms: float | None = None
     error_rate_5m: float = 0.0
 
     # Resources (for local GPU servers)
-    gpu_utilization: float = None  # 0-100%
-    vram_used_gb: float = None
-    vram_total_gb: float = None
+    gpu_utilization: float | None = None  # 0-100%
+    vram_used_gb: float | None = None
+    vram_total_gb: float | None = None
 
     # Timestamp
     checked_at: datetime = field(default_factory=lambda: datetime.now(UTC))

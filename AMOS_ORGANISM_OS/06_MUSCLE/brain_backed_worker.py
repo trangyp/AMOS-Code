@@ -12,7 +12,7 @@ Version: 1.0.0
 import json
 import sys
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 # Add paths for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "01_BRAIN"))
@@ -32,7 +32,7 @@ class BrainBackedWorker(AmosWorkerEngine):
         self.brain_bridge = BrainWorkerBridge(organism_root)
         self._brain_enabled = True
 
-    def execute_with_brain(self, plan: Dict[str, Any], context: dict = None) -> WorkerResult:
+    def execute_with_brain(self, plan: dict[str, Any], context: dict = None) -> WorkerResult:
         """Execute a plan with brain knowledge enrichment."""
         print("\n[BRAIN-BACKED] Enriching plan with brain knowledge...")
 

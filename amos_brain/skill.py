@@ -115,6 +115,8 @@ Use tools if needed to gather context about the problem domain.
 
 
 _ANALYZE_PROMPT = """\
+from __future__ import annotations
+
 Perform deep systems analysis on the user's topic using AMOS Brain cognitive stack.
 
 Topic: $ARGUMENTS

@@ -45,10 +45,11 @@ import json
 import uuid
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
 from enum import Enum, auto
-from typing import Any, Dict, List, Set
+from typing import Any
 
 try:
     from amos_superbrain_equation_bridge import AMOSSuperBrainBridge
@@ -115,8 +116,8 @@ class Task:
     task_id: str
     agent_type: AgentType
     operation: str
-    parameters: Dict[str, Any]
-    depends_on: List[str]
+    parameters: dict[str, Any]
+    depends_on: list[str]
     status: TaskStatus = TaskStatus.PENDING
     result: Any = None
     error: str = None
@@ -131,11 +132,11 @@ class Workflow:
 
     workflow_id: str
     name: str
-    tasks: Dict[str, Task]
+    tasks: dict[str, Task]
     status: TaskStatus = TaskStatus.PENDING
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     completed_at: str = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -144,12 +145,12 @@ class PipelineResult:
 
     workflow_id: str
     success: bool
-    results: Dict[str, Any]
+    results: dict[str, Any]
     execution_time_ms: float
     task_count: int
     completed_tasks: int
     failed_tasks: int
-    errors: List[str]
+    errors: list[str]
 
 
 class BaseAgent:
@@ -157,13 +158,13 @@ class BaseAgent:
 
     def __init__(self, agent_type: AgentType):
         self.agent_type = agent_type
-        self.capabilities: List[str] = []
+        self.capabilities: list[str] = []
 
-    async def execute(self, operation: str, parameters: Dict[str, Any]) -> Any:
+    async def execute(self, operation: str, parameters: dict[str, Any]) -> Any:
         """Execute agent operation."""
         raise NotImplementedError
 
-    def health_check(self) -> Dict[str, Any]:
+    def health_check(self) -> dict[str, Any]:
         """Check agent health."""
         return {"status": "healthy", "agent": self.agent_type.value}
 
@@ -176,7 +177,7 @@ class ExtractorAgent(BaseAgent):
         self.capabilities = ["extract_latex", "generate_code", "verify_syntax"]
         self.formalizer = AutoFormalizer() if FORMALIZER_AVAILABLE else None
 
-    async def execute(self, operation: str, parameters: Dict[str, Any]) -> Any:
+    async def execute(self, operation: str, parameters: dict[str, Any]) -> Any:
         if not self.formalizer:
             return {"error": "AutoFormalizer not available"}
 
@@ -196,7 +197,7 @@ class VerifierAgent(BaseAgent):
         self.capabilities = ["verify_equation", "prove_theorem", "check_invariants"]
         self.verifier = EquationFormalVerifier() if VERIFIER_AVAILABLE else None
 
-    async def execute(self, operation: str, parameters: Dict[str, Any]) -> Any:
+    async def execute(self, operation: str, parameters: dict[str, Any]) -> Any:
         if not self.verifier:
             return {"error": "Verifier not available"}
 
@@ -215,7 +216,7 @@ class ExecutorAgent(BaseAgent):
         self.capabilities = ["execute", "batch_execute", "compare"]
         self.superbrain = AMOSSuperBrainBridge() if SUPERBRAIN_AVAILABLE else None
 
-    async def execute(self, operation: str, parameters: Dict[str, Any]) -> Any:
+    async def execute(self, operation: str, parameters: dict[str, Any]) -> Any:
         if not self.superbrain:
             return {"error": "SuperBrain not available"}
 
@@ -243,7 +244,7 @@ class ProverAgent(BaseAgent):
         self.capabilities = ["prove", "discover", "analyze"]
         self.neural = NeuralSymbolicEngine() if NEURAL_AVAILABLE else None
 
-    async def execute(self, operation: str, parameters: Dict[str, Any]) -> Any:
+    async def execute(self, operation: str, parameters: dict[str, Any]) -> Any:
         if not self.neural:
             return {"error": "Neural engine not available"}
 
@@ -274,7 +275,7 @@ class HealerAgent(BaseAgent):
         self.capabilities = ["mutation_test", "optimize", "repair"]
         self.healer = SelfHealingEngine() if HEALING_AVAILABLE else None
 
-    async def execute(self, operation: str, parameters: Dict[str, Any]) -> Any:
+    async def execute(self, operation: str, parameters: dict[str, Any]) -> Any:
         if not self.healer:
             return {"error": "Self-healing not available"}
 
@@ -302,8 +303,8 @@ class AMOSOrchestrator:
 
     def __init__(self, max_workers: int = 4):
         self.max_workers = max_workers
-        self.agents: Dict[AgentType, BaseAgent] = {}
-        self.workflows: Dict[str, Workflow] = {}
+        self.agents: dict[AgentType, BaseAgent] = {}
+        self.workflows: dict[str, Workflow] = {}
         self.executor = ThreadPoolExecutor(max_workers=max_workers)
         self._initialize_agents()
 
@@ -315,7 +316,7 @@ class AMOSOrchestrator:
         self.agents[AgentType.PROVER] = ProverAgent()
         self.agents[AgentType.HEALER] = HealerAgent()
 
-    def create_workflow(self, name: str, metadata: Dict[str, Any] = None) -> Workflow:
+    def create_workflow(self, name: str, metadata: dict[str, Any] = None) -> Workflow:
         """Create new workflow."""
         workflow_id = str(uuid.uuid4())[:8]
         workflow = Workflow(workflow_id=workflow_id, name=name, tasks={}, metadata=metadata or {})
@@ -328,8 +329,8 @@ class AMOSOrchestrator:
         task_name: str,
         agent_type: AgentType,
         operation: str,
-        parameters: Dict[str, Any],
-        depends_on: List[str] = None,
+        parameters: dict[str, Any],
+        depends_on: list[str] = None,
     ) -> Task:
         """Add task to workflow."""
         task = Task(
@@ -357,10 +358,10 @@ class AMOSOrchestrator:
         start_time = time.perf_counter()
 
         workflow.status = TaskStatus.RUNNING
-        completed_tasks: Set[str] = set()
-        failed_tasks: Set[str] = set()
-        errors: List[str] = []
-        results: Dict[str, Any] = {}
+        completed_tasks: set[str] = set()
+        failed_tasks: set[str] = set()
+        errors: list[str] = []
+        results: dict[str, Any] = {}
 
         # Topological sort for dependency resolution
         execution_order = self._topological_sort(workflow)
@@ -416,7 +417,7 @@ class AMOSOrchestrator:
             errors=errors,
         )
 
-    def _topological_sort(self, workflow: Workflow) -> List[str]:
+    def _topological_sort(self, workflow: Workflow) -> list[str]:
         """Topological sort of workflow tasks."""
         # Build dependency graph
         in_degree = {name: 0 for name in workflow.tasks}
@@ -443,7 +444,7 @@ class AMOSOrchestrator:
 
         return result
 
-    def get_pipeline_templates(self) -> Dict[str, list[dict[str, Any]]]:
+    def get_pipeline_templates(self) -> dict[str, list[dict[str, Any]]]:
         """Get pre-defined pipeline templates."""
         return {
             "extract_verify_execute": [
@@ -493,7 +494,7 @@ class AMOSOrchestrator:
             ],
         }
 
-    def create_from_template(self, template_name: str, parameters: Dict[str, Any]) -> Workflow:
+    def create_from_template(self, template_name: str, parameters: dict[str, Any]) -> Workflow:
         """Create workflow from template."""
         templates = self.get_pipeline_templates()
         if template_name not in templates:
@@ -513,7 +514,7 @@ class AMOSOrchestrator:
 
         return workflow
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get orchestrator statistics."""
         return {
             "total_workflows": len(self.workflows),

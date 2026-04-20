@@ -1,0 +1,5 @@
+#!/usr/bin/env python3
+"""amos-brain doctor entry point"""
+import sys
+from amos_kernel.runtime.doctor import main
+sys.exit(main())

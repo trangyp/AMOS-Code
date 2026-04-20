@@ -18,13 +18,9 @@ Requires:
 """
 
 import asyncio
-import json
-import signal
 import subprocess
 import sys
-import time
 import traceback
-from datetime import datetime
 from pathlib import Path
 
 # Add project root
@@ -72,7 +68,16 @@ async def run_demo() -> bool:
     # Start gateway server
     log(f"[1/6] Starting gateway server on port {port}...")
     proc = subprocess.Popen(
-        [sys.executable, "-m", "uvicorn", "amos_unified_gateway:app", "--port", str(port), "--host", "0.0.0.0"],
+        [
+            sys.executable,
+            "-m",
+            "uvicorn",
+            "amos_unified_gateway:app",
+            "--port",
+            str(port),
+            "--host",
+            "0.0.0.0",
+        ],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         cwd=str(ROOT),
@@ -99,7 +104,7 @@ async def run_demo() -> bool:
         log("[4/6] Testing brain status endpoint...")
         try:
             status = await sdk.transport.get("/v1/brain/status")
-            log(f"  ✅ Brain Status:", "success")
+            log("  ✅ Brain Status:", "success")
             for key, value in status.items():
                 icon = "✅" if value else "❌"
                 log(f"      {icon} {key}: {value}")
@@ -113,10 +118,10 @@ async def run_demo() -> bool:
             chat_data = {
                 "message": "Design a secure authentication API",
                 "context": {"domain": "security", "priority": "high"},
-                "session_id": "demo-session-001"
+                "session_id": "demo-session-001",
             }
             chat_response = await sdk.transport.post("/v1/chat", data=chat_data)
-            log(f"  ✅ Chat Response:", "success")
+            log("  ✅ Chat Response:", "success")
             if isinstance(chat_response, dict):
                 log(f"      Response: {chat_response.get('response', 'N/A')[:80]}...")
                 log(f"      Confidence: {chat_response.get('confidence', 'N/A')}")
@@ -136,10 +141,10 @@ async def run_demo() -> bool:
                 "agent_type": "security_audit",
                 "context": {"repo_url": "https://github.com/demo/repo"},
                 "depth": "deep",
-                "auto_approve": False
+                "auto_approve": False,
             }
             agent_response = await sdk.transport.post("/v1/agents/run", data=agent_data)
-            log(f"  ✅ Agent Response:", "success")
+            log("  ✅ Agent Response:", "success")
             if isinstance(agent_response, dict):
                 log(f"      Task ID: {agent_response.get('task_id', 'N/A')}")
                 log(f"      Status: {agent_response.get('status', 'N/A')}")

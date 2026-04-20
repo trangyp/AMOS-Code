@@ -20,11 +20,15 @@ Owner: Trang
 Version: 1.0.0
 """
 
+from __future__ import annotations
+
 import asyncio
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
+
+UTC = UTC
 from enum import Enum, auto
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class ResearchDomain(Enum):
@@ -45,17 +49,17 @@ class ResearchPaper:
     """SOTA research paper entry."""
 
     title: str
-    authors: List[str]
+    authors: list[str]
     url: str
     domain: ResearchDomain
     published_date: datetime
     abstract: str = ""
     code_url: str = None
     citations: int = 0
-    tags: List[str] = field(default_factory=list)
+    tags: list[str] = field(default_factory=list)
     integrated: bool = False
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "title": self.title,
             "authors": self.authors,
@@ -80,10 +84,10 @@ class BCIProtocol:
     channels: int
     spatial_resolution_mm: float
     temporal_resolution_ms: float
-    use_cases: List[str] = field(default_factory=list)
-    compatible_hardware: List[str] = field(default_factory=list)
+    use_cases: list[str] = field(default_factory=list)
+    compatible_hardware: list[str] = field(default_factory=list)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "name": self.name,
             "signal_type": self.signal_type,
@@ -123,8 +127,8 @@ class AMOSSOTAResearchIntegration:
         if hasattr(self, "_initialized"):
             return
 
-        self._bci_protocols: Dict[str, BCIProtocol] = {}
-        self._papers: Dict[str, ResearchPaper] = {}
+        self._bci_protocols: dict[str, BCIProtocol] = {}
+        self._papers: dict[str, ResearchPaper] = {}
         self._initialized = False
 
         # Initialize with known SOTA protocols
@@ -188,7 +192,7 @@ class AMOSSOTAResearchIntegration:
         for protocol in protocols:
             self._bci_protocols[protocol.name] = protocol
 
-    def get_bci_protocols(self) -> List[BCIProtocol]:
+    def get_bci_protocols(self) -> list[BCIProtocol]:
         """Get all registered BCI protocols."""
         return list(self._bci_protocols.values())
 
@@ -201,11 +205,11 @@ class AMOSSOTAResearchIntegration:
         key = f"{paper.title[:50]}_{paper.published_date.timestamp()}"
         self._papers[key] = paper
 
-    def get_papers_by_domain(self, domain: ResearchDomain) -> List[ResearchPaper]:
+    def get_papers_by_domain(self, domain: ResearchDomain) -> list[ResearchPaper]:
         """Get papers filtered by domain."""
         return [p for p in self._papers.values() if p.domain == domain]
 
-    async def load_latest_papers(self) -> List[ResearchPaper]:
+    async def load_latest_papers(self) -> list[ResearchPaper]:
         """
         Load latest papers from research sources.
 
@@ -253,7 +257,7 @@ class AMOSSOTAResearchIntegration:
 
         return new_papers
 
-    def get_research_summary(self) -> Dict[str, Any]:
+    def get_research_summary(self) -> dict[str, Any]:
         """Get summary of all tracked research."""
         return {
             "bci_protocols": len(self._bci_protocols),
@@ -267,7 +271,7 @@ class AMOSSOTAResearchIntegration:
             ],
         }
 
-    def recommend_for_amos(self) -> List[dict[str, Any]]:
+    def recommend_for_amos(self) -> list[dict[str, Any]]:
         """Recommend research relevant to AMOS integration."""
         recommendations = []
 

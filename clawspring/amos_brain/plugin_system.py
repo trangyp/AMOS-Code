@@ -5,6 +5,8 @@ Enables extending AMOS without modifying core code.
 Supports cognitive engines, dashboard widgets, and custom commands.
 """
 
+from __future__ import annotations
+
 import importlib
 import importlib.util
 import json
@@ -13,7 +15,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 
 @dataclass
@@ -24,8 +26,8 @@ class PluginMetadata:
     version: str
     author: str
     description: str
-    hooks: List[str]
-    dependencies: List[str]
+    hooks: list[str]
+    dependencies: list[str]
 
 
 class AMOSPlugin(ABC):
@@ -38,7 +40,7 @@ class AMOSPlugin(ABC):
         pass
 
     @abstractmethod
-    def initialize(self, context: Dict[str, Any]) -> bool:
+    def initialize(self, context: dict[str, Any]) -> bool:
         """Initialize plugin with context."""
         pass
 
@@ -52,7 +54,7 @@ class CognitiveEnginePlugin(AMOSPlugin):
     """Plugin for adding custom cognitive engines."""
 
     @abstractmethod
-    def execute(self, task: str, context: Dict[str, Any]) -> Dict[str, Any]:
+    def execute(self, task: str, context: dict[str, Any]) -> dict[str, Any]:
         """Execute cognitive task."""
         pass
 
@@ -86,8 +88,8 @@ class PluginManager:
     PLUGIN_DIR = Path("amos_plugins")
 
     def __init__(self):
-        self.plugins: Dict[str, AMOSPlugin] = {}
-        self.hooks: Dict[str, list[Callable]] = {}
+        self.plugins: dict[str, AMOSPlugin] = {}
+        self.hooks: dict[str, list[Callable]] = {}
         self._ensure_plugin_dir()
 
     def _ensure_plugin_dir(self) -> None:
@@ -104,7 +106,7 @@ class PluginManager:
 
         plugin_code = '''"""Example AMOS Plugin."""
 from amos_brain.plugin_system import CommandPlugin, PluginMetadata
-from typing import Callable, List, Any, Any, Callable, List
+from typing import Callable, Any, Any, Callable, Optional
 
 class HelloPlugin(CommandPlugin):
     """Example hello world plugin."""
@@ -146,7 +148,7 @@ def create_plugin():
         }
         (example_dir / "manifest.json").write_text(json.dumps(manifest, indent=2))
 
-    def discover_plugins(self) -> List[Path]:
+    def discover_plugins(self) -> list[Path]:
         """Discover available plugins."""
         plugins = []
         if self.PLUGIN_DIR.exists():
@@ -155,19 +157,21 @@ def create_plugin():
                     plugins.append(plugin_dir)
         return plugins
 
-    def load_plugin(self, plugin_path: Path) -> Optional[AMOSPlugin]:
+    def load_plugin(self, plugin_path: Path) -> AMOSPlugin | None:
         """Load a plugin from directory."""
         try:
             manifest_path = plugin_path / "manifest.json"
             with open(manifest_path) as f:
                 manifest = json.load(f)
 
-            # Add to path
-            sys.path.insert(0, str(plugin_path.parent))
-
-            # Import module
+            # Import module using importlib
             module_name = manifest["entry_point"].split(":")[0]
-            module = importlib.import_module(f"{plugin_path.name}.{module_name}")
+            module_file = plugin_path / f"{module_name}.py"
+            spec = importlib.util.spec_from_file_location(
+                f"{plugin_path.name}.{module_name}", module_file
+            )
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
 
             # Create plugin instance
             factory_name = manifest["entry_point"].split(":")[1]
@@ -207,7 +211,7 @@ def create_plugin():
             if hasattr(plugin, "on_" + hook):
                 self.hooks[hook].append(getattr(plugin, "on_" + hook))
 
-    def execute_hook(self, hook_name: str, *args, **kwargs) -> List[Any]:
+    def execute_hook(self, hook_name: str, *args, **kwargs) -> list[Any]:
         """Execute all handlers for a hook."""
         results = []
         for handler in self.hooks.get(hook_name, []):
@@ -218,11 +222,11 @@ def create_plugin():
                 print(f"[PluginManager] Hook error: {e}")
         return results
 
-    def get_plugin(self, name: str) -> Optional[AMOSPlugin]:
+    def get_plugin(self, name: str) -> AMOSPlugin | None:
         """Get a loaded plugin by name."""
         return self.plugins.get(name)
 
-    def list_plugins(self) -> List[PluginMetadata]:
+    def list_plugins(self) -> list[PluginMetadata]:
         """List all loaded plugins."""
         return [p.metadata for p in self.plugins.values()]
 

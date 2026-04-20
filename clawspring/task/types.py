@@ -3,7 +3,7 @@
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Set
+from typing import Any
 
 
 class TaskStatus(str, Enum):
@@ -24,9 +24,9 @@ class Task:
     status: TaskStatus = TaskStatus.PENDING
     active_form: str = ""  # e.g. "Running tests"
     owner: str = ""
-    blocks: List[str] = field(default_factory=list)  # IDs this task blocks
-    blocked_by: List[str] = field(default_factory=list)  # IDs that block this task
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    blocks: list[str] = field(default_factory=list)  # IDs this task blocks
+    blocked_by: list[str] = field(default_factory=list)  # IDs that block this task
+    metadata: dict[str, Any] = field(default_factory=dict)
     created_at: str = field(default_factory=lambda: datetime.now().isoformat())
     updated_at: str = field(default_factory=lambda: datetime.now().isoformat())
 
@@ -78,7 +78,7 @@ class Task:
             TaskStatus.CANCELLED: "✗",
         }.get(self.status, "?")
 
-    def one_line(self, resolved_ids: Set[str] = None) -> str:
+    def one_line(self, resolved_ids: set[str] = None) -> str:
         owner_str = f" ({self.owner})" if self.owner else ""
         pending_blockers = [
             b for b in self.blocked_by if resolved_ids is None or b not in resolved_ids

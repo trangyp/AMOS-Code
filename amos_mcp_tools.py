@@ -28,6 +28,8 @@ Author: Trang Phan
 Version: 1.0.0
 """
 
+from __future__ import annotations
+
 import re
 import sqlite3
 import subprocess
@@ -36,7 +38,7 @@ import time
 import urllib.request
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import Optional
 
 sys.path.insert(0, str(Path(__file__).parent))
 
@@ -222,7 +224,7 @@ class GitTool:
     def __init__(self, repo_path: str = "."):
         self.repo_path = Path(repo_path).resolve()
 
-    def _run_git(self, args: List[str]) -> Tuple[bool, str, str]:
+    def _run_git(self, args: list[str]) -> tuple[bool, str, str]:
         """Run git command safely."""
         try:
             result = subprocess.run(
@@ -549,7 +551,7 @@ class AMOSMCPToolkit:
         tool = self.tools[tool_name]
         return tool(**kwargs)
 
-    def list_tools(self) -> List[dict]:
+    def list_tools(self) -> list[dict]:
         """List available tools."""
         return [
             {

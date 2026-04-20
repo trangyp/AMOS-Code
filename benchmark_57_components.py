@@ -11,7 +11,6 @@ State-of-the-art benchmarking for autonomous systems:
 import time
 import tracemalloc
 from dataclasses import dataclass
-from typing import Dict, List
 
 
 @dataclass
@@ -28,10 +27,10 @@ class AMOSPerformanceBenchmark:
     """Performance benchmark suite for all 57 components."""
 
     def __init__(self):
-        self.results: List[BenchmarkResult] = []
+        self.results: list[BenchmarkResult] = []
         self.total_components = 57
 
-    def benchmark_meta_architecture(self) -> List[BenchmarkResult]:
+    def benchmark_meta_architecture(self) -> list[BenchmarkResult]:
         """Benchmark 10 Meta-Architecture systems."""
         print("Benchmarking Meta-Architecture Layer (10 systems)...")
         results = []
@@ -82,7 +81,7 @@ class AMOSPerformanceBenchmark:
 
         return results
 
-    def benchmark_meta_ontological(self) -> List[BenchmarkResult]:
+    def benchmark_meta_ontological(self) -> list[BenchmarkResult]:
         """Benchmark 12 Meta-Ontological components."""
         print("\nBenchmarking Meta-Ontological Layer (12 components)...")
         results = []
@@ -117,7 +116,7 @@ class AMOSPerformanceBenchmark:
 
         return results
 
-    def benchmark_formal_core(self) -> List[BenchmarkResult]:
+    def benchmark_formal_core(self) -> list[BenchmarkResult]:
         """Benchmark 21-Tuple Formal Core."""
         print("\nBenchmarking 21-Tuple Formal Core...")
         results = []
@@ -150,7 +149,7 @@ class AMOSPerformanceBenchmark:
 
         return results
 
-    def benchmark_production_coherence(self) -> List[BenchmarkResult]:
+    def benchmark_production_coherence(self) -> list[BenchmarkResult]:
         """Benchmark Production Coherence Engine."""
         print("\nBenchmarking Production Coherence Engine...")
         results = []
@@ -193,7 +192,7 @@ class AMOSPerformanceBenchmark:
 
         return results
 
-    def run_all_benchmarks(self) -> Dict[str, list[BenchmarkResult]]:
+    def run_all_benchmarks(self) -> dict[str, list[BenchmarkResult]]:
         """Run all benchmarks and return results."""
         print("\n" + "=" * 70)
         print("AMOS 57-Component Performance Benchmark Suite")
@@ -250,7 +249,7 @@ class AMOSPerformanceBenchmark:
 
         report = f"""# AMOS 57-Component Performance Benchmark Report
 
-Generated: {time.strftime('%Y-%m-%d %H:%M:%S')}
+Generated: {time.strftime("%Y-%m-%d %H:%M:%S")}
 
 ## System Overview
 
@@ -286,7 +285,7 @@ Generated: {time.strftime('%Y-%m-%d %H:%M:%S')}
 | Total Initialization Time | {total_init:.2f} ms |
 | Total Memory Footprint | {total_mem:.2f} KB |
 | Total Components | 57 |
-| Average per Component | {total_init/57:.2f} ms |
+| Average per Component | {total_init / 57:.2f} ms |
 
 ## Performance Grade
 

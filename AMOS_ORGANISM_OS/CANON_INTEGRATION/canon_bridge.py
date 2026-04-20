@@ -9,20 +9,25 @@ Version: 1.0.0
 
 from __future__ import annotations
 
-
-
 import asyncio
+import importlib.util
 import logging
-
-# Import the canon loader
-import sys
 from dataclasses import dataclass
-from datetime import datetime
-from pathlib import Path
-from typing import Any, Dict, Optional
+from datetime import UTC, datetime
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
-from amos_canon_integration import get_canon_loader
+UTC = UTC
+from pathlib import Path
+from typing import Any
+
+# Load canon loader using importlib
+_canon_path = Path(__file__).resolve().parents[3] / "amos_canon_integration.py"
+if _canon_path.exists():
+    _spec = importlib.util.spec_from_file_location("_canon", _canon_path)
+    _canon_mod = importlib.util.module_from_spec(_spec)
+    _spec.loader.exec_module(_canon_mod)
+    get_canon_loader = _canon_mod.get_canon_loader
+else:
+    get_canon_loader = None
 
 # Import organism types
 from .canon_enforcer import CanonEnforcer, CanonRule, RuleCategory, RulePriority
@@ -55,7 +60,7 @@ class CanonBridge:
     - StandardsRegistry (standards from glossary and kernels)
     """
 
-    _instance: Optional[CanonBridge] = None
+    _instance: CanonBridge = None
     _lock = asyncio.Lock()
 
     def __new__(cls) -> CanonBridge:
@@ -69,15 +74,15 @@ class CanonBridge:
         self._initialized = True
 
         self._loader = None
-        self._canon_enforcer: Optional[CanonEnforcer] = None
-        self._standards_registry: Optional[StandardsRegistry] = None
-        self._status: Optional[CanonBridgeStatus] = None
+        self._canon_enforcer: CanonEnforcer = None
+        self._standards_registry: StandardsRegistry = None
+        self._status: CanonBridgeStatus = None
         self._loaded = False
 
     async def initialize(
         self,
-        canon_enforcer: Optional[CanonEnforcer] = None,
-        standards_registry: Optional[StandardsRegistry] = None,
+        canon_enforcer: CanonEnforcer = None,
+        standards_registry: StandardsRegistry = None,
     ) -> bool:
         """Initialize canon bridge and sync with _00_AMOS_CANON.
 
@@ -264,14 +269,14 @@ class CanonBridge:
 
         return count
 
-    def get_agent(self, agent_id: str) -> Optional[Dict[str, Any] ]:
+    def get_agent(self, agent_id: str) -> dict[str, Any]:
         """Get an agent definition from canon registry."""
         if not self._loader:
             return None
         registry = self._loader.get_agent_registry()
         return registry.get("agents", {}).get(agent_id)
 
-    def get_engine_spec(self, engine_name: str) -> Optional[Dict[str, Any] ]:
+    def get_engine_spec(self, engine_name: str) -> dict[str, Any]:
         """Get an engine specification from brain OS."""
         if not self._loader:
             return None
@@ -285,20 +290,20 @@ class CanonBridge:
                 return engines[engine_name]
         return None
 
-    def get_glossary_term(self, term: str) -> Optional[Dict[str, Any] ]:
+    def get_glossary_term(self, term: str) -> dict[str, Any]:
         """Look up a term in the canonical glossary."""
         if not self._loader:
             return None
         return self._loader.get_glossary_term(term)
 
-    def get_cognitive_module(self, domain: str, module: str) -> Optional[Dict[str, Any] ]:
+    def get_cognitive_module(self, domain: str, module: str) -> dict[str, Any]:
         """Get a cognitive module from the stack."""
         if not self._loader:
             return None
         stack = self._loader.get_cognitive_stack()
         return stack.get(domain, {}).get(module)
 
-    def get_status(self) -> Optional[CanonBridgeStatus]:
+    def get_status(self) -> CanonBridgeStatus:
         """Get current bridge status."""
         return self._status
 
@@ -314,9 +319,9 @@ def get_canon_bridge() -> CanonBridge:
 
 # Convenience function for organism initialization
 async def initialize_canon_integration(
-    canon_enforcer: Optional[CanonEnforcer] = None,
-    standards_registry: Optional[StandardsRegistry] = None,
-) -> Optional[CanonBridge]:
+    canon_enforcer: CanonEnforcer = None,
+    standards_registry: StandardsRegistry = None,
+) -> CanonBridge:
     """Initialize canon integration for the organism.
 
     Args:

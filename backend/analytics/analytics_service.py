@@ -8,12 +8,14 @@ Owner: Trang Phan
 Version: 2.0.0
 """
 
+from __future__ import annotations
+
 import json
 import math
 import time
 from collections import deque
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Optional
 
 try:
     import redis
@@ -43,7 +45,7 @@ class MetricPoint:
 
     timestamp: float
     value: float
-    labels: Dict[str, str] = field(default_factory=dict)
+    labels: dict[str, str] = field(default_factory=dict)
 
 
 @dataclass
@@ -54,16 +56,16 @@ class MetricSeries:
     metric_type: str  # counter, gauge, histogram, summary
     retention_seconds: int = 86400  # 24h default
     data: deque[MetricPoint] = field(default_factory=lambda: deque(maxlen=10000))
-    aggregations: Dict[str, float] = field(default_factory=dict)
+    aggregations: dict[str, float] = field(default_factory=dict)
 
 
 class TimeSeriesDB:
     """Time-series database with Redis backend."""
 
-    def __init__(self, redis_url: Optional[str] = None):
+    def __init__(self, redis_url: str = None):
         self.redis_url = redis_url or "redis://localhost:6379/10"
-        self._redis: Optional[redis.Redis] = None
-        self._series: Dict[str, MetricSeries] = {}
+        self._redis: redis.Optional[Redis] = None
+        self._series: dict[str, MetricSeries] = {}
 
         if REDIS_AVAILABLE:
             try:
@@ -72,7 +74,7 @@ class TimeSeriesDB:
             except Exception:
                 self._redis = None
 
-    def _get_ts_key(self, metric_name: str, labels: Dict[str, str]) -> str:
+    def _get_ts_key(self, metric_name: str, labels: dict[str, str]) -> str:
         label_str = ",".join(f"{k}={v}" for k, v in sorted(labels.items()))
         return f"ts:{metric_name}:{hash(label_str) % 10000}"
 
@@ -81,8 +83,8 @@ class TimeSeriesDB:
         metric_name: str,
         value: float,
         metric_type: str = "gauge",
-        labels: Optional[dict[str, str]] = None,
-        timestamp: Optional[float] = None,
+        labels: dict[str, Optional[str]] = None,
+        timestamp: float = None,
     ) -> bool:
         """Record a metric point."""
         ts = timestamp or time.time()
@@ -125,12 +127,12 @@ class TimeSeriesDB:
     def query(
         self,
         metric_name: str,
-        start_time: Optional[float] = None,
-        end_time: Optional[float] = None,
-        labels: Optional[dict[str, str]] = None,
-        aggregation: Optional[str] = None,
+        start_time: float = None,
+        end_time: float = None,
+        labels: dict[str, Optional[str]] = None,
+        aggregation: str = None,
         bucket_seconds: int = 60,
-    ) -> List[MetricPoint]:
+    ) -> list[MetricPoint]:
         """Query time-series data with optional aggregation."""
         start_time = start_time or (time.time() - 3600)
         end_time = end_time or time.time()
@@ -173,10 +175,10 @@ class TimeSeriesDB:
         return sorted(results, key=lambda x: x.timestamp)
 
     def _aggregate(
-        self, points: List[MetricPoint], aggregation: str, bucket_seconds: int
-    ) -> List[MetricPoint]:
+        self, points: list[MetricPoint], aggregation: str, bucket_seconds: int
+    ) -> list[MetricPoint]:
         """Aggregate points into buckets."""
-        buckets: Dict[int, list[float]] = {}
+        buckets: dict[int, list[float]] = {}
 
         for point in points:
             bucket_ts = int(point.timestamp / bucket_seconds) * bucket_seconds
@@ -204,8 +206,8 @@ class TimeSeriesDB:
         return aggregated
 
     def get_stats(
-        self, metric_name: str, labels: Optional[dict[str, str]] = None
-    ) -> Dict[str, float]:
+        self, metric_name: str, labels: dict[str, Optional[str]] = None
+    ) -> dict[str, float]:
         """Get statistics for a metric."""
         labels = labels or {}
         key = f"{metric_name}:{json.dumps(labels, sort_keys=True)}"
@@ -227,13 +229,13 @@ class TimeSeriesDB:
 class MetricsCollector:
     """Collect and aggregate system metrics."""
 
-    def __init__(self, tsdb: Optional[TimeSeriesDB] = None):
+    def __init__(self, tsdb: TimeSeriesDB = None):
         self._tsdb = tsdb or TimeSeriesDB()
-        self._counters: Dict[str, float] = {}
-        self._gauges: Dict[str, float] = {}
+        self._counters: dict[str, float] = {}
+        self._gauges: dict[str, float] = {}
 
     def increment_counter(
-        self, name: str, value: float = 1.0, labels: Optional[dict[str, str]] = None
+        self, name: str, value: float = 1.0, labels: dict[str, Optional[str]] = None
     ) -> None:
         """Increment a counter metric."""
         key = f"{name}:{json.dumps(labels or {}, sort_keys=True)}"
@@ -241,14 +243,14 @@ class MetricsCollector:
         self._tsdb.record(name, self._counters[key], "counter", labels)
 
     def record_gauge(
-        self, name: str, value: float, labels: Optional[dict[str, str]] = None
+        self, name: str, value: float, labels: dict[str, Optional[str]] = None
     ) -> None:
         """Record a gauge metric."""
         self._gauges[name] = value
         self._tsdb.record(name, value, "gauge", labels)
 
     def record_histogram(
-        self, name: str, value: float, buckets: List[float], labels: Optional[dict[str, str]] = None
+        self, name: str, value: float, buckets: list[float], labels: dict[str, Optional[str]] = None
     ) -> None:
         """Record a histogram metric."""
         for bucket in buckets:
@@ -263,7 +265,7 @@ class MetricsCollector:
         self._tsdb.record(f"{name}_count", 1, "counter", labels)
 
     def record_timing(
-        self, name: str, duration_seconds: float, labels: Optional[dict[str, str]] = None
+        self, name: str, duration_seconds: float, labels: dict[str, Optional[str]] = None
     ) -> None:
         """Record a timing metric."""
         self._tsdb.record(name, duration_seconds, "gauge", labels)
@@ -272,17 +274,17 @@ class MetricsCollector:
 class AnomalyDetector:
     """Statistical anomaly detection."""
 
-    def __init__(self, tsdb: Optional[TimeSeriesDB] = None):
+    def __init__(self, tsdb: TimeSeriesDB = None):
         self._tsdb = tsdb or TimeSeriesDB()
-        self._baselines: Dict[str, dict[str, float]] = {}
+        self._baselines: dict[str, dict[str, float]] = {}
 
     def detect(
         self,
         metric_name: str,
         current_value: float,
-        labels: Optional[dict[str, str]] = None,
+        labels: dict[str, Optional[str]] = None,
         sensitivity: float = 2.0,
-    ) -> Tuple[bool, dict[str, Any]]:
+    ) -> tuple[bool, dict[str, Any]]:
         """Detect if current value is anomalous."""
         labels = labels or {}
         stats = self._tsdb.get_stats(metric_name, labels)
@@ -331,8 +333,8 @@ class AnomalyDetector:
         metric_name: str,
         window_seconds: int = 300,
         spike_factor: float = 3.0,
-        labels: Optional[dict[str, str]] = None,
-    ) -> Tuple[bool, dict[str, Any]]:
+        labels: dict[str, Optional[str]] = None,
+    ) -> tuple[bool, dict[str, Any]]:
         """Detect sudden spikes in metric."""
         labels = labels or {}
         end_time = time.time()
@@ -367,7 +369,7 @@ class AnomalyDetector:
 class AnalyticsService:
     """Main analytics service facade."""
 
-    def __init__(self, redis_url: Optional[str] = None):
+    def __init__(self, redis_url: str = None):
         self._tsdb = TimeSeriesDB(redis_url)
         self._collector = MetricsCollector(self._tsdb)
         self._detector = AnomalyDetector(self._tsdb)
@@ -377,7 +379,7 @@ class AnalyticsService:
         name: str,
         value: float,
         metric_type: str = "gauge",
-        labels: Optional[dict[str, str]] = None,
+        labels: dict[str, Optional[str]] = None,
     ) -> bool:
         """Record a metric."""
         return self._tsdb.record(name, value, metric_type, labels)
@@ -385,11 +387,11 @@ class AnalyticsService:
     def query_metrics(
         self,
         metric_name: str,
-        start_time: Optional[float] = None,
-        end_time: Optional[float] = None,
-        labels: Optional[dict[str, str]] = None,
-        aggregation: Optional[str] = None,
-    ) -> List[MetricPoint]:
+        start_time: float = None,
+        end_time: float = None,
+        labels: dict[str, Optional[str]] = None,
+        aggregation: str = None,
+    ) -> list[MetricPoint]:
         """Query metrics."""
         return self._tsdb.query(metric_name, start_time, end_time, labels, aggregation)
 
@@ -397,27 +399,27 @@ class AnalyticsService:
         self,
         metric_name: str,
         current_value: float,
-        labels: Optional[dict[str, str]] = None,
+        labels: dict[str, Optional[str]] = None,
         sensitivity: float = 2.0,
-    ) -> Tuple[bool, dict[str, Any]]:
+    ) -> tuple[bool, dict[str, Any]]:
         """Detect anomalies."""
         return self._detector.detect(metric_name, current_value, labels, sensitivity)
 
     def increment_counter(
-        self, name: str, value: float = 1.0, labels: Optional[dict[str, str]] = None
+        self, name: str, value: float = 1.0, labels: dict[str, Optional[str]] = None
     ) -> None:
         """Increment counter."""
         self._collector.increment_counter(name, value, labels)
 
     def record_timing(
-        self, name: str, duration_seconds: float, labels: Optional[dict[str, str]] = None
+        self, name: str, duration_seconds: float, labels: dict[str, Optional[str]] = None
     ) -> None:
         """Record timing."""
         self._collector.record_timing(name, duration_seconds, labels)
 
     def get_stats(
-        self, metric_name: str, labels: Optional[dict[str, str]] = None
-    ) -> Dict[str, float]:
+        self, metric_name: str, labels: dict[str, Optional[str]] = None
+    ) -> dict[str, float]:
         """Get metric statistics."""
         return self._tsdb.get_stats(metric_name, labels)
 
@@ -427,7 +429,7 @@ analytics_service = AnalyticsService()
 
 
 def record_metric(
-    name: str, value: float, metric_type: str = "gauge", labels: Optional[dict[str, str]] = None
+    name: str, value: float, metric_type: str = "gauge", labels: dict[str, Optional[str]] = None
 ) -> bool:
     """Record a metric (convenience function)."""
     return analytics_service.record_metric(name, value, metric_type, labels)
@@ -435,11 +437,11 @@ def record_metric(
 
 def query_metrics(
     metric_name: str,
-    start_time: Optional[float] = None,
-    end_time: Optional[float] = None,
-    labels: Optional[dict[str, str]] = None,
-    aggregation: Optional[str] = None,
-) -> List[MetricPoint]:
+    start_time: float = None,
+    end_time: float = None,
+    labels: dict[str, Optional[str]] = None,
+    aggregation: str = None,
+) -> list[MetricPoint]:
     """Query metrics (convenience function)."""
     return analytics_service.query_metrics(metric_name, start_time, end_time, labels, aggregation)
 
@@ -447,8 +449,8 @@ def query_metrics(
 def detect_anomalies(
     metric_name: str,
     current_value: float,
-    labels: Optional[dict[str, str]] = None,
+    labels: dict[str, Optional[str]] = None,
     sensitivity: float = 2.0,
-) -> Tuple[bool, dict[str, Any]]:
+) -> tuple[bool, dict[str, Any]]:
     """Detect anomalies (convenience function)."""
     return analytics_service.detect_anomalies(metric_name, current_value, labels, sensitivity)

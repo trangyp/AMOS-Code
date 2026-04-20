@@ -21,7 +21,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any
 
 
 class AutonomyLevel(Enum):
@@ -219,7 +219,7 @@ class AutonomousGovernanceEngine:
         require_human_for_security=True,
     )
 
-    def __init__(self, repo_path: Union[str, Path], policy: Optional[GovernancePolicy] = None):
+    def __init__(self, repo_path: str | Path, policy: Optional[GovernancePolicy] = None):
         self.repo_path = Path(repo_path)
         self.policy = policy or self.DEFAULT_POLICY
         self.threshold_optimizer = ConfidenceThresholdOptimizer()
@@ -488,7 +488,7 @@ class AutonomousGovernanceEngine:
 
 
 def get_governance_engine(
-    repo_path: Union[str, Path] = None, policy: Optional[GovernancePolicy] = None
+    repo_path: str | Path | None = None, policy: Optional[GovernancePolicy] = None
 ) -> AutonomousGovernanceEngine:
     """Factory function to get governance engine instance."""
     return AutonomousGovernanceEngine(repo_path or ".", policy)

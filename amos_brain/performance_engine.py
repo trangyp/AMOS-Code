@@ -35,9 +35,12 @@ import hashlib
 import time
 from collections import OrderedDict
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
+
+UTC = UTC
+
 UTC = timezone.utc
-from typing import Optional, Any
+from typing import Any, Optional
 
 
 @dataclass
@@ -91,7 +94,7 @@ class PerformanceEngine:
     DEFAULT_TTL = 300  # 5 minutes
 
     def __init__(self, cache_size: int = DEFAULT_CACHE_SIZE):
-        self.cache: OrderedDict[str, CacheEntry] = OrderedDict()
+        self.cache: Ordereddict[str, CacheEntry] = OrderedDict()
         self.cache_size = cache_size
         self.enabled = True
         self.metrics = PerformanceMetrics()

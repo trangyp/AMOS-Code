@@ -163,7 +163,7 @@ jobs:
           sleep 5
           curl -f http://localhost:8080/health || exit 1
           curl -f http://localhost:8080/equations || exit 1
-          pkill kubectl || true
+          pkill kubectl 2>/dev/null || echo "kubectl process not found"
 
   production-approval:
     name: Production Deployment Approval
