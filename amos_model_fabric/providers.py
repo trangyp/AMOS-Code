@@ -11,9 +11,9 @@ Unified adapters for local model backends:
 import json
 import logging
 from abc import ABC, abstractmethod
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 
-UTC = UTC
+UTC = timezone.utc
 from typing import Any
 
 import aiohttp

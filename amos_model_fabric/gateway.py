@@ -13,9 +13,9 @@ import logging
 import subprocess
 import time
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 
-UTC = UTC
+UTC = timezone.utc
 from pathlib import Path
 
 from amos_model_fabric.schemas import (
