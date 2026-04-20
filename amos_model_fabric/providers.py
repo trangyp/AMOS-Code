@@ -30,7 +30,7 @@ class BaseProvider(ABC):
         self,
         provider_type: ProviderType,
         base_url: str,
-        api_key: str | None = None,
+        api_key: Optional[str] = None,
         timeout: float = 120.0,
     ):
         self.provider_type = provider_type
