@@ -4,7 +4,7 @@
 # Run:   docker run -p 8000:8000 amos-equation-api
 
 # Stage 1: Builder
-FROM python:3.11-slim as builder
+FROM python:3.14-slim as builder
 
 WORKDIR /build
 
@@ -27,7 +27,7 @@ COPY requirements-equation.txt .
 RUN pip install --no-cache-dir --user -r requirements-equation.txt
 
 # Stage 2: Production
-FROM python:3.11-slim
+FROM python:3.14-slim
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \

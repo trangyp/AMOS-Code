@@ -9,7 +9,7 @@
 # =============================================================================
 # Stage 1: Builder
 # =============================================================================
-FROM python:3.11-slim as builder
+FROM python:3.14-slim as builder
 
 WORKDIR /build
 
@@ -31,7 +31,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
 # =============================================================================
 # Stage 2: Production
 # =============================================================================
-FROM python:3.11-slim
+FROM python:3.14-slim
 
 LABEL maintainer="AMOS Team <trang@amos-project.dev>" \
       version="14.0.0" \
