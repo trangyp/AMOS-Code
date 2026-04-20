@@ -12,9 +12,9 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
+UTC = timezone.utc
 
-UTC = UTC
 
 UTC = timezone.utc
 from typing import Any

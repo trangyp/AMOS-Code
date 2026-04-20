@@ -11,9 +11,9 @@ Provides brain event streaming and processing for real-time updates.
 import time
 import uuid
 from dataclasses import dataclass
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
+UTC = timezone.utc
 
-UTC = UTC
 
 UTC = timezone.utc
 

@@ -6,9 +6,9 @@ These tools are registered during SuperBrain initialization.
 
 import json
 import subprocess
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
+UTC = timezone.utc
 
-UTC = UTC
 from pathlib import Path
 from typing import Any
 

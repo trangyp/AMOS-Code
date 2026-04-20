@@ -34,9 +34,9 @@ from __future__ import annotations
 import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
+UTC = timezone.utc
 
-UTC = UTC
 from typing import Any, Optional
 
 UTC = timezone.utc

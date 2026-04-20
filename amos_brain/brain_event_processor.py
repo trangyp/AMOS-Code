@@ -10,9 +10,9 @@ Provides real-time event emission and processing for brain cognitive operations.
 
 from collections.abc import Callable
 from dataclasses import dataclass
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
+UTC = timezone.utc
 
-UTC = UTC
 
 
 @dataclass

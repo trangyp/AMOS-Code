@@ -11,11 +11,11 @@ Unable to disconnect itself from the brain.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
+UTC = timezone.utc
 from threading import Lock
 from typing import Any, Optional
 
-UTC = UTC
 
 
 @dataclass

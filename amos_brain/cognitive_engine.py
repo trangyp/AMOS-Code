@@ -7,10 +7,10 @@ from __future__ import annotations
 
 import time
 from dataclasses import dataclass
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
+UTC = timezone.utc
 from typing import Any
 
-UTC = UTC
 
 from .canon_bridge import get_canon_bridge
 from .facade import BrainClient

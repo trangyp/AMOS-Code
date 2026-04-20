@@ -17,9 +17,9 @@ import hashlib
 import json
 import re
 from dataclasses import asdict, dataclass, field
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
+UTC = timezone.utc
 
-UTC = UTC
 from pathlib import Path
 from typing import Any, Optional
 
