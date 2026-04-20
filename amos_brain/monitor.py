@@ -7,16 +7,16 @@ import logging
 import time
 from collections.abc import Callable
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, Optional
 
 from .laws import GlobalLaws
 
-UTC = UTC
-
 logger = logging.getLogger(__name__)
+
+UTC = timezone.utc
 
 
 @dataclass

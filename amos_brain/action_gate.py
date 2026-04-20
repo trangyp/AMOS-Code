@@ -9,11 +9,11 @@ All actions are audited and permission-checked.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
 from threading import Lock
 from typing import Any
 
-UTC = UTC
+UTC = timezone.utc
 
 
 @dataclass

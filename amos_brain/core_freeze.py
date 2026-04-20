@@ -10,9 +10,10 @@ from __future__ import annotations
 
 import hashlib
 from dataclasses import dataclass
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
 
-UTC = UTC
+# Python 3.9 compatibility
+UTC = timezone.utc
 from pathlib import Path
 from threading import Lock
 from typing import Any

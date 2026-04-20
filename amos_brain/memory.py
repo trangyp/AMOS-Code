@@ -5,10 +5,10 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
 
 # Python 3.9 compatibility - UTC is only in 3.11+
-UTC = UTC
+UTC = timezone.utc
 from pathlib import Path
 from typing import Any, Optional
 
