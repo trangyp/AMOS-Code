@@ -351,7 +351,7 @@ class SuperBrainRuntime:
                 import sys
                 sys.modules["amos_superbrain_equation_bridge"] = module
                 spec.loader.exec_module(module)
-                self._equation_bridge = module.EquationBridge(self)
+                self._equation_bridge = module.EquationBridge()
                 stats = self._equation_bridge.get_pattern_analysis()
                 print(
                     f"✅ Equation Bridge: ACTIVE ({stats.get('total_equations', 0)} equations, {stats.get('domains_covered', 0)} domains)"
