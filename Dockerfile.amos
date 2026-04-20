@@ -1,7 +1,7 @@
 # AMOS Ecosystem v2.0 - Production Docker Image
 # Multi-stage build for optimized production deployment
 
-FROM python:3.11-slim as builder
+FROM python:3.14-slim as builder
 
 # Build dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -18,7 +18,7 @@ RUN pip install --no-cache-dir --user \
     -r requirements.txt 2>/dev/null || true
 
 # Production stage
-FROM python:3.11-slim
+FROM python:3.14-slim
 
 # Security: Run as non-root user
 RUN groupadd -r amos && useradd -r -g amos amos
