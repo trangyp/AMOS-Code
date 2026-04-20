@@ -326,6 +326,8 @@ class SuperBrainRuntime:
             )
             if spec and spec.loader:
                 module = importlib.util.module_from_spec(spec)
+                import sys
+                sys.modules["math_audit_logger"] = module
                 spec.loader.exec_module(module)
                 self._math_audit_logger = module.MathFrameworkAuditLogger()
                 print("✅ Math Audit Logger: ACTIVE")
@@ -346,8 +348,10 @@ class SuperBrainRuntime:
             )
             if spec and spec.loader:
                 module = importlib.util.module_from_spec(spec)
+                import sys
+                sys.modules["amos_superbrain_equation_bridge"] = module
                 spec.loader.exec_module(module)
-                self._equation_bridge = module.AMOSSuperBrainBridge()
+                self._equation_bridge = module.EquationBridge(self)
                 stats = self._equation_bridge.get_pattern_analysis()
                 print(
                     f"✅ Equation Bridge: ACTIVE ({stats.get('total_equations', 0)} equations, {stats.get('domains_covered', 0)} domains)"
@@ -380,6 +384,8 @@ class SuperBrainRuntime:
             )
             if spec and spec.loader:
                 module = importlib.util.module_from_spec(spec)
+                import sys
+                sys.modules["amos_predictive_world_model"] = module
                 spec.loader.exec_module(module)
                 self._world_model = module.PredictiveWorldModel()
                 print("✅ World Model: ACTIVE (Phase 17 - Recursive Self-Improvement)")
@@ -414,6 +420,8 @@ class SuperBrainRuntime:
             )
             if spec and spec.loader:
                 module = importlib.util.module_from_spec(spec)
+                import sys
+                sys.modules["amos_constitutional_governance"] = module
                 spec.loader.exec_module(module)
                 self._constitutional_governance = module.ConstitutionalGovernance()
                 print("✅ Constitutional Governance: ACTIVE (Phase 20)")
@@ -448,8 +456,10 @@ class SuperBrainRuntime:
             )
             if spec and spec.loader:
                 module = importlib.util.module_from_spec(spec)
+                import sys
+                sys.modules["amos_workflow_orchestrator"] = module
                 spec.loader.exec_module(module)
-                self._workflow_orchestrator = module.AMOSWorkflowOrchestrator()
+                self._workflow_orchestrator = module.WorkflowOrchestrator()
                 print("✅ Workflow Orchestrator: ACTIVE (Phase 21)")
 
                 # Emit event for orchestrator initialization
@@ -477,8 +487,10 @@ class SuperBrainRuntime:
             )
             if spec and spec.loader:
                 module = importlib.util.module_from_spec(spec)
+                import sys
+                sys.modules["amos_a2a_protocol"] = module
                 spec.loader.exec_module(module)
-                self._a2a_agent = module.AMOSA2AAgent()
+                self._a2a_agent = module.A2AAgent()
                 print("✅ A2A Protocol: ACTIVE (Phase 22)")
 
                 # Emit event for A2A initialization
@@ -504,6 +516,8 @@ class SuperBrainRuntime:
             )
             if spec and spec.loader:
                 module = importlib.util.module_from_spec(spec)
+                import sys
+                sys.modules["amos_superbrain_knowledge_bridge"] = module
                 spec.loader.exec_module(module)
                 self._knowledge_bridge = module.SuperBrainKnowledgeBridge()
                 # Initialize the bridge to build unified cache

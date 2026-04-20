@@ -45,7 +45,7 @@ class EventHandler(Protocol):
     async def __call__(self, event: StateEvent) -> TransitionResult | None: ...
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True)
 class StateEvent:
     """
     Canonical state event.
