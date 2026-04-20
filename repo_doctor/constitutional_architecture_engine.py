@@ -21,7 +21,7 @@ Mathematical Foundation:
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any
+from typing import Any, Dict
 
 
 class AbsenceState(Enum):

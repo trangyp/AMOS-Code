@@ -8,7 +8,7 @@ Causality: P(t) ∝ exp(-S_k[0→t])
 
 import math
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Dict
 
 
 @dataclass

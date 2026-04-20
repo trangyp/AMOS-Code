@@ -60,6 +60,11 @@ def main():
     for path in Path("AMOS_ORGANISM_OS").rglob("*.py"):
         if fix_file(path):
             changed += 1
+    
+    # Also fix repo_doctor
+    for path in Path("repo_doctor").rglob("*.py"):
+        if fix_file(path):
+            changed += 1
 
     print(f"\nFixed {changed} files")
 

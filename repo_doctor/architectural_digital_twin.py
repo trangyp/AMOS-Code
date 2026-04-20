@@ -15,7 +15,7 @@ This is the predictive layer that enables "architectural foresight".
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any
+from typing import Any, Dict
 
 
 class SimulationType(Enum):

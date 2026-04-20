@@ -20,7 +20,7 @@ Outputs:
 
 import argparse
 import sys
-from typing import Any
+from typing import Any, Dict
 
 from repo_doctor.model.hamiltonian import RepositoryHamiltonian
 from repo_doctor.model.invariants import InvariantChecker

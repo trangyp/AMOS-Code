@@ -1,6 +1,6 @@
 """I_tests = 1 iff designated contract-critical tests pass."""
 
-from typing import Any
+from typing import Any, Dict
 
 from .base import Invariant, InvariantResult, InvariantSeverity
 

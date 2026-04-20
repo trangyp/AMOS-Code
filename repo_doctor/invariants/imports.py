@@ -4,7 +4,7 @@ I_import = 1 iff every claimed symbol import resolves
 Covers: internal imports, package exports, entrypoint imports, docs/demo/test imports
 """
 
-from typing import Any
+from typing import Any, Dict
 
 from ..constants import MSG_IMPORTS_RESOLVED
 from .base import Invariant, InvariantResult, InvariantSeverity

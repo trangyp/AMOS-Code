@@ -14,7 +14,7 @@ This is the canonical entry point for AMOS self-evolution.
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List
 
 from .audit import AuditAction, EvolutionAuditor, GovernanceController
 from .contract import EvolutionContract, EvolutionRegistry, EvolutionStatus

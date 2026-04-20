@@ -4,7 +4,7 @@ I_parse = 1 iff every required source file yields acceptable parse tree
 Tree-sitter provides incremental, error-tolerant parsing.
 """
 
-from typing import Any
+from typing import Any, Dict
 
 from ..constants import MSG_PARSING_SUCCESS
 from .base import Invariant, InvariantResult, InvariantSeverity

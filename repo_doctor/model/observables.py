@@ -12,7 +12,7 @@ Structured measurements for repository state:
 """
 
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Dict, List
 
 
 @dataclass

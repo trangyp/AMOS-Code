@@ -5,7 +5,7 @@ Detects contract violations that repeat across repositories.
 """
 
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Dict, List
 
 
 @dataclass

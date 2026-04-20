@@ -117,7 +117,7 @@ class SuperBrainRuntime:
 
         # Health tracking
         self._health_checks: dict[str, Callable[[], bool]] = {}
-        self._last_health_check: datetime | None = None
+        self._last_health_check: Optional[datetime] = None
 
     def _generate_brain_id(self) -> str:
         """Generate unique brain identifier."""
@@ -490,7 +490,13 @@ class SuperBrainRuntime:
                 import sys
                 sys.modules["amos_a2a_protocol"] = module
                 spec.loader.exec_module(module)
-                self._a2a_agent = module.A2AAgent()
+                agent_card = module.AgentCard(
+                    name="AMOS-SuperBrain",
+                    description="AMOS Brain A2A Agent for multi-agent coordination",
+                    url="http://localhost:8080",
+                    version="1.0.0",
+                )
+                self._a2a_agent = module.A2AAgent(agent_card)
                 print("✅ A2A Protocol: ACTIVE (Phase 22)")
 
                 # Emit event for A2A initialization

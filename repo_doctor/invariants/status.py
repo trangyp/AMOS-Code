@@ -1,6 +1,6 @@
 """I_status = 1 iff every reported status label is logically implied by actual state."""
 
-from typing import Any
+from typing import Any, Dict
 
 from .base import Invariant, InvariantResult, InvariantSeverity
 

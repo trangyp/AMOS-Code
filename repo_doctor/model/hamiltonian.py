@@ -10,7 +10,7 @@ Low energy = healthy, high energy = degraded.
 """
 
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Dict
 
 from .state_vector import DEFAULT_WEIGHTS, StateDimension
 

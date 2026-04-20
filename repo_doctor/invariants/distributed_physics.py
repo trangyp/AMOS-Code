@@ -9,7 +9,7 @@ Phase 5 invariants addressing distributed systems physics:
 - Architectural entropy
 """
 
-from typing import Any
+from typing import Any, Dict
 
 from ..layer18_physics_engine import DistributedPhysicsEngine
 from ..state.basis import StateDimension

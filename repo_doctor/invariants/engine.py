@@ -5,7 +5,7 @@ A simplified version for the Ω∞ module.
 """
 
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List
 
 from .api import APIInvariant
 from .artifact import ArtifactInvariant

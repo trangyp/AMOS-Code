@@ -12,6 +12,7 @@ import argparse
 import json
 import sys
 from pathlib import Path
+from typing import List
 
 # Handle both module execution and direct script execution
 try:

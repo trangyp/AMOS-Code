@@ -1,6 +1,6 @@
 """I_persist = 1 iff serialize -> deserialize preserves operational semantics."""
 
-from typing import Any
+from typing import Any, Dict
 
 from .base import Invariant, InvariantResult, InvariantSeverity
 

@@ -14,6 +14,7 @@ import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
+from typing import List, Tuple, Union
 
 # tomllib available in Python 3.11+, fallback to tomli
 if sys.version_info >= (3, 11):

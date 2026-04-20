@@ -95,7 +95,13 @@ class GlossaryConfig:
         for t in data.get("terms", []):
             if isinstance(t, str):
                 # Handle string format: just the human term
-                terms.append(TermMapping(human_term=t, code_scope=""))
+                terms.append(TermMapping(
+                    human_term=t,
+                    code_scope="",
+                    file_patterns=[],
+                    examples=[],
+                    confidence=0.9
+                ))
             elif isinstance(t, dict):
                 # Handle dict format with full term mapping
                 terms.append(

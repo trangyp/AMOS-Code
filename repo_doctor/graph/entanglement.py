@@ -12,7 +12,7 @@ Key formulas:
 
 import math
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import Dict, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ..state.basis import StateDimension

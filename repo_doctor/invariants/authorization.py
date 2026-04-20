@@ -23,7 +23,7 @@ import ast
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List
 
 from .base import Invariant, InvariantResult, InvariantSeverity
 

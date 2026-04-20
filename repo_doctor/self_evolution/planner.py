@@ -14,7 +14,7 @@ Planning Strategy:
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List
 
 from .contract import EvolutionContract
 

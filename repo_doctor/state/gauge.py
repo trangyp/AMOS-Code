@@ -20,7 +20,7 @@ Hard no-gauge zones:
 
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Dict, List
 
 
 @dataclass

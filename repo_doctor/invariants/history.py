@@ -1,6 +1,6 @@
 """I_history = 1 iff structural transitions over commits remain localizable."""
 
-from typing import Any
+from typing import Any, Dict
 
 from .base import Invariant, InvariantResult, InvariantSeverity
 

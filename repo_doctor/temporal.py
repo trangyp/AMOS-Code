@@ -10,7 +10,7 @@ First bad commit: t*_k = min t such that I_k(t-1)=1 and I_k(t)=0
 """
 
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Dict, List
 
 from .state.basis import StateDimension
 

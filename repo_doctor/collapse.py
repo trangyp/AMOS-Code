@@ -7,7 +7,7 @@ Finds the minimal failing cut - the smallest broken subspace.
 """
 
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Dict, List
 
 from .state.basis import StateDimension
 

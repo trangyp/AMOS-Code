@@ -11,7 +11,7 @@ Generate doctor-quality output:
 
 import json
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Dict, List
 
 
 @dataclass

@@ -14,7 +14,7 @@ Broken repo: E_repo >> 0 (some Ψ_k << 1)
 """
 
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Dict
 
 from ..state_vector import DEFAULT_WEIGHTS, RepoStateVector, StateDimension
 

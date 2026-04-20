@@ -1,6 +1,6 @@
 """I_runtime = 1 iff shells, wrappers, servers, and bridges commute."""
 
-from typing import Any
+from typing import Any, Dict
 
 from .base import Invariant, InvariantResult, InvariantSeverity
 

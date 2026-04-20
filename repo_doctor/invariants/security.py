@@ -1,6 +1,6 @@
 """I_security = 1 iff no forbidden source-to-sink flow exists."""
 
-from typing import Any
+from typing import Any, Dict
 
 from .base import Invariant, InvariantResult, InvariantSeverity
 

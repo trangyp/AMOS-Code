@@ -9,7 +9,7 @@ This turns "smells" into provable invariant failures.
 
 import logging
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Dict
 
 logger = logging.getLogger(__name__)
 

@@ -18,7 +18,7 @@ Advanced features from Z3 research:
 
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Dict, List
 
 # Try to import Z3, provide fallback if unavailable
 try:

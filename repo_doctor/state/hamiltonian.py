@@ -13,7 +13,7 @@ Severity weights:
 """
 
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Dict, List
 
 from .basis import StateBasis, StateDimension
 

@@ -1,6 +1,6 @@
 """I_entry = 1 iff every launcher points to a real runnable target."""
 
-from typing import Any
+from typing import Any, Dict
 
 from .base import Invariant, InvariantResult, InvariantSeverity
 

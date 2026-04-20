@@ -10,7 +10,7 @@ Status claims must be entailed by actual state:
 """
 
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Dict, List
 
 
 @dataclass

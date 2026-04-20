@@ -14,7 +14,7 @@ import json
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 # Add paths for both systems
 sys.path.insert(0, str(Path(__file__).parent))

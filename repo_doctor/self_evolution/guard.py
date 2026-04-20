@@ -12,7 +12,7 @@ import hashlib
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict
 
 from .contract import EvolutionContract
 

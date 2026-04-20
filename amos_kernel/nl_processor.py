@@ -519,6 +519,21 @@ class NLProcessor:
         """
         all_passed = all(v.passed for v in verifications)
 
+        if proposal is None:
+            targets = ", ".join(intent.target_files) if intent.target_files else "N/A"
+            return f"""# Intent Analysis
+
+## Input
+{intent.normalized_input}
+
+## Action
+- Type: {intent.action_type}
+- Targets: {targets}
+
+## Status
+No specific code changes proposed. Intent parsed successfully.
+"""
+
         explanation = f"""# Proposed Changes
 
 ## Intent

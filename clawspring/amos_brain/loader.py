@@ -128,7 +128,7 @@ class BrainLoader:
 
 
 # Global brain loader instance
-_brain_loader: BrainLoader | None = None
+_brain_loader: Optional[BrainLoader] = None
 
 
 def get_brain() -> BrainLoader:

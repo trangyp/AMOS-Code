@@ -6,7 +6,7 @@ Fleet energy: E_fleet = Σr ωr E_repo_r
 """
 
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Dict, List
 
 
 @dataclass

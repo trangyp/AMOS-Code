@@ -26,7 +26,7 @@ import math
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict
 
 
 class BasisState(Enum):

@@ -1,6 +1,6 @@
 """I_type = 1 iff every public callsite satisfies the actual callable signature."""
 
-from typing import Any
+from typing import Any, Dict
 
 from .base import Invariant, InvariantResult, InvariantSeverity
 

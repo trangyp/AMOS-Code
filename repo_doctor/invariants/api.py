@@ -4,7 +4,7 @@ I_api = 1 iff [A_public, A_runtime] = 0
 Public contract commutator - detects drift between claimed and actual API.
 """
 
-from typing import Any
+from typing import Any, Dict
 
 from .base import Invariant, InvariantResult, InvariantSeverity
 

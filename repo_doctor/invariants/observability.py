@@ -23,7 +23,7 @@ Based on 2024 observability engineering best practices.
 import ast
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List
 
 from .base import Invariant, InvariantResult, InvariantSeverity
 

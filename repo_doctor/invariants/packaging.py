@@ -1,6 +1,6 @@
 """I_pack = 1 iff build metadata describes the same runtime surface."""
 
-from typing import Any
+from typing import Any, Dict
 
 from .base import Invariant, InvariantResult, InvariantSeverity
 

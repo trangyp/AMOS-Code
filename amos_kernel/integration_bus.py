@@ -764,8 +764,411 @@ class ToolBus(IntegrationBus[Any]):
                 payload={"tool_id": tool.tool_id, "success": True},
                 source="tool_bus",
                 correlation_id=message.correlation_id,
-            )
         )
+
+    def _rule_matches(
+        self,
+        rule: PolicyRule,
+        subject: str,
+        resource: str,
+        action: str,
+        context: dict[str, Any],
+    ) -> bool:
+        """Check if rule matches request context."""
+        # Simple string matching - production would use proper policy language
+        condition = rule.condition.lower()
+        check_str = f"{subject}:{resource}:{action}"
+
+        if "subject=" in condition:
+            expected = condition.split("subject=")[1].split(";")[0]
+            if expected not in subject:
+                return False
+        if "resource=" in condition:
+            expected = condition.split("resource=")[1].split(";")[0]
+            if expected not in resource:
+                return False
+        if "action=" in condition:
+            expected = condition.split("action=")[1].split(";")[0]
+            if expected != action and expected != "*":
+                return False
+
+        return True
+
+
+class PolicyBus(IntegrationBus[Any]):
+    """Bus for policy enforcement and governance."""
+
+    def __init__(self) -> None:
+        super().__init__(BusType.POLICY)
+        self.engine = PolicyEngine()
+        self._violation_count = 0
+        self._evaluation_count = 0
+
+    async def initialize(self) -> None:
+        """Initialize policy bus."""
+        self.subscribe("evaluate.*", self._handle_evaluate)
+        self.subscribe("add_rule.*", self._handle_add_rule)
+        self.subscribe("remove_rule.*", self._handle_remove_rule)
+        self.subscribe("audit.*", self._handle_audit)
+
+    async def health_check(self) -> dict[str, Any]:
+        """Check policy bus health."""
+        return {
+            "status": "healthy",
+            "rules": len(self.engine._rules),
+            "evaluations": self._evaluation_count,
+            "violations": self._violation_count,
+        }
+
+    async def _handle_evaluate(self, message: BusMessage) -> None:
+        """Handle policy evaluation request."""
+        payload = message.payload
+        evaluation_id = payload.get("evaluation_id", "")
+        subject = payload.get("subject", "")
+        resource = payload.get("resource", "")
+        action = payload.get("action", "")
+        context = payload.get("context", {})
+
+        result = self.engine.evaluate(
+            evaluation_id, subject, resource, action, context
+        )
+        self._evaluation_count += 1
+        if result.decision == "deny":
+            self._violation_count += 1
+
+        await self.publish(BusMessage.create(
+            bus_type=BusType.POLICY,
+            topic=f"decision.{result.evaluation_id}",
+            payload={
+                "evaluation_id": result.evaluation_id,
+                "rule_id": result.rule_id,
+                "subject": result.subject,
+                "resource": result.resource,
+                "action": result.action,
+                "decision": result.decision,
+                "reason": result.reason,
+            },
+            source="policy_bus",
+            correlation_id=message.correlation_id,
+        ))
+
+    async def _handle_add_rule(self, message: BusMessage) -> None:
+        """Handle add rule request."""
+        rule_def = message.payload.get("rule", {})
+        rule = PolicyRule(
+            rule_id=rule_def.get("rule_id", ""),
+            name=rule_def.get("name", ""),
+            description=rule_def.get("description", ""),
+            condition=rule_def.get("condition", ""),
+            action=rule_def.get("action", "deny"),
+            priority=rule_def.get("priority", 100),
+            enabled=rule_def.get("enabled", True),
+        )
+
+        self.engine.add_rule(rule)
+
+        await self.publish(BusMessage.create(
+            bus_type=BusType.POLICY,
+            topic=f"rule_added.{rule.rule_id}",
+            payload={"rule_id": rule.rule_id, "success": True},
+            source="policy_bus",
+            correlation_id=message.correlation_id,
+        ))
+
+    async def _handle_remove_rule(self, message: BusMessage) -> None:
+        """Handle remove rule request."""
+        rule_id = message.payload.get("rule_id", "")
+        success = self.engine.remove_rule(rule_id)
+
+        await self.publish(BusMessage.create(
+            bus_type=BusType.POLICY,
+            topic=f"rule_removed.{rule_id}",
+            payload={"rule_id": rule_id, "success": success},
+            source="policy_bus",
+            correlation_id=message.correlation_id,
+        ))
+
+    async def _handle_audit(self, message: BusMessage) -> None:
+        """Handle audit request."""
+        rule_id = message.payload.get("rule_id")
+        limit = message.payload.get("limit", 100)
+
+        evaluations = self.engine._evaluations
+        if rule_id:
+            evaluations = [e for e in evaluations if e.rule_id == rule_id]
+        evaluations = evaluations[-limit:]
+
+        await self.publish(BusMessage.create(
+            bus_type=BusType.POLICY,
+            topic="audit.results",
+            payload={
+                "count": len(evaluations),
+                "evaluations": [
+                    {
+                        "evaluation_id": e.evaluation_id,
+                        "rule_id": e.rule_id,
+                        "subject": e.subject,
+                        "resource": e.resource,
+                        "action": e.action,
+                        "decision": e.decision,
+                        "timestamp": e.timestamp.isoformat(),
+                    }
+                    for e in evaluations
+                ],
+            },
+            source="policy_bus",
+            correlation_id=message.correlation_id,
+        ))
+
+
+# ============================================================================
+# Sync Bus - Synchronization and State Consistency
+# ============================================================================
+
+@dataclass
+class SyncOperation:
+    """Synchronization operation."""
+    operation_id: str
+    operation_type: str  # push, pull, merge, conflict_resolve
+    source: str
+    target: str
+    data: dict[str, Any]
+    priority: int = 100
+
+
+@dataclass
+class SyncResult:
+    """Result of sync operation."""
+    operation_id: str
+    success: bool
+    conflicts: list[dict[str, Any]]
+    merged_data: dict[str, Any] | None
+    timestamp: datetime = field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
+
+
+class SyncEngine:
+    """Engine for synchronization operations."""
+
+    def __init__(self) -> None:
+        self._operations: dict[str, SyncOperation] = {}
+        self._results: dict[str, SyncResult] = {}
+        self._pending: list[str] = []
+        self._sync_states: dict[str, dict[str, Any]] = {}
+
+    def queue_operation(self, operation: SyncOperation) -> None:
+        """Queue sync operation."""
+        self._operations[operation.operation_id] = operation
+        # Insert by priority
+        inserted = False
+        for i, op_id in enumerate(self._pending):
+            existing = self._operations.get(op_id)
+            if existing and operation.priority < existing.priority:
+                self._pending.insert(i, operation.operation_id)
+                inserted = True
+                break
+        if not inserted:
+            self._pending.append(operation.operation_id)
+
+    async def execute_sync(self, operation: SyncOperation) -> SyncResult:
+        """Execute sync operation."""
+        if operation.operation_type == "push":
+            result = await self._do_push(operation)
+        elif operation.operation_type == "pull":
+            result = await self._do_pull(operation)
+        elif operation.operation_type == "merge":
+            result = await self._do_merge(operation)
+        else:
+            result = SyncResult(
+                operation_id=operation.operation_id,
+                success=False,
+                conflicts=[],
+                merged_data=None,
+            )
+
+        self._results[operation.operation_id] = result
+        return result
+
+    async def _do_push(self, operation: SyncOperation) -> SyncResult:
+        """Push data to target."""
+        # Store in sync state
+        self._sync_states[operation.target] = operation.data.copy()
+        return SyncResult(
+            operation_id=operation.operation_id,
+            success=True,
+            conflicts=[],
+            merged_data=operation.data,
+        )
+
+    async def _do_pull(self, operation: SyncOperation) -> SyncResult:
+        """Pull data from source."""
+        data = self._sync_states.get(operation.source, {})
+        return SyncResult(
+            operation_id=operation.operation_id,
+            success=True,
+            conflicts=[],
+            merged_data=data,
+        )
+
+    async def _do_merge(self, operation: SyncOperation) -> SyncResult:
+        """Merge data from source and target."""
+        source_data = self._sync_states.get(operation.source, {})
+        target_data = self._sync_states.get(operation.target, {})
+
+        conflicts = []
+        merged = target_data.copy()
+
+        for key, value in source_data.items():
+            if key in target_data and target_data[key] != value:
+                conflicts.append({
+                    "key": key,
+                    "source_value": value,
+                    "target_value": target_data[key],
+                })
+                # Use source value in case of conflict
+                merged[key] = value
+            else:
+                merged[key] = value
+
+        return SyncResult(
+            operation_id=operation.operation_id,
+            success=True,
+            conflicts=conflicts,
+            merged_data=merged,
+        )
+
+    def get_result(self, operation_id: str) -> SyncResult | None:
+        """Get sync result by ID."""
+        return self._results.get(operation_id)
+
+
+class SyncBus(IntegrationBus[Any]):
+    """Bus for synchronization and state consistency."""
+
+    def __init__(self) -> None:
+        super().__init__(BusType.SYNC)
+        self.engine = SyncEngine()
+        self._sync_count = 0
+        self._conflict_count = 0
+
+    async def initialize(self) -> None:
+        """Initialize sync bus."""
+        self.subscribe("push.*", self._handle_push)
+        self.subscribe("pull.*", self._handle_pull)
+        self.subscribe("merge.*", self._handle_merge)
+        self.subscribe("status.*", self._handle_status)
+
+    async def health_check(self) -> dict[str, Any]:
+        """Check sync bus health."""
+        return {
+            "status": "healthy",
+            "pending_operations": len(self.engine._pending),
+            "sync_count": self._sync_count,
+            "conflict_count": self._conflict_count,
+        }
+
+    async def _handle_push(self, message: BusMessage) -> None:
+        """Handle push request."""
+        payload = message.payload
+        operation = SyncOperation(
+            operation_id=payload.get("operation_id", ""),
+            operation_type="push",
+            source=payload.get("source", ""),
+            target=payload.get("target", ""),
+            data=payload.get("data", {}),
+            priority=payload.get("priority", 100),
+        )
+
+        self.engine.queue_operation(operation)
+        result = await self.engine.execute_sync(operation)
+        self._sync_count += 1
+
+        await self.publish(BusMessage.create(
+            bus_type=BusType.SYNC,
+            topic=f"pushed.{result.operation_id}",
+            payload={
+                "operation_id": result.operation_id,
+                "success": result.success,
+                "conflicts": len(result.conflicts),
+            },
+            source="sync_bus",
+            correlation_id=message.correlation_id,
+        ))
+
+    async def _handle_pull(self, message: BusMessage) -> None:
+        """Handle pull request."""
+        payload = message.payload
+        operation = SyncOperation(
+            operation_id=payload.get("operation_id", ""),
+            operation_type="pull",
+            source=payload.get("source", ""),
+            target=payload.get("target", ""),
+            data={},
+            priority=payload.get("priority", 100),
+        )
+
+        result = await self.engine.execute_sync(operation)
+        self._sync_count += 1
+
+        await self.publish(BusMessage.create(
+            bus_type=BusType.SYNC,
+            topic=f"pulled.{result.operation_id}",
+            payload={
+                "operation_id": result.operation_id,
+                "success": result.success,
+                "data": result.merged_data,
+            },
+            source="sync_bus",
+            correlation_id=message.correlation_id,
+        ))
+
+    async def _handle_merge(self, message: BusMessage) -> None:
+        """Handle merge request."""
+        payload = message.payload
+        operation = SyncOperation(
+            operation_id=payload.get("operation_id", ""),
+            operation_type="merge",
+            source=payload.get("source", ""),
+            target=payload.get("target", ""),
+            data={},
+            priority=payload.get("priority", 100),
+        )
+
+        result = await self.engine.execute_sync(operation)
+        self._sync_count += 1
+        self._conflict_count += len(result.conflicts)
+
+        await self.publish(BusMessage.create(
+            bus_type=BusType.SYNC,
+            topic=f"merged.{result.operation_id}",
+            payload={
+                "operation_id": result.operation_id,
+                "success": result.success,
+                "conflicts": result.conflicts,
+                "merged_data": result.merged_data,
+            },
+            source="sync_bus",
+            correlation_id=message.correlation_id,
+        ))
+
+    async def _handle_status(self, message: BusMessage) -> None:
+        """Handle status request."""
+        operation_id = message.payload.get("operation_id", "")
+        result = self.engine.get_result(operation_id)
+
+        await self.publish(BusMessage.create(
+            bus_type=BusType.SYNC,
+            topic=f"status.{operation_id}",
+            payload={
+                "operation_id": operation_id,
+                "found": result is not None,
+                "success": result.success if result else None,
+                "conflicts": result.conflicts if result else [],
+            },
+            source="sync_bus",
+            correlation_id=message.correlation_id,
+        ))
 
 
 # ============================================================================
@@ -792,6 +1195,11 @@ class BusCoordinator:
             BusType.MODEL: ModelBus(),
             BusType.MEMORY: MemoryBus(),
             BusType.TOOL: ToolBus(),
+            BusType.PROTOCOL: ProtocolBus(),
+            BusType.RUNTIME: RuntimeBus(),
+            BusType.FRONTEND: FrontendBus(),
+            BusType.POLICY: PolicyBus(),
+            BusType.SYNC: SyncBus(),
         }
         self._running = False
         self._initialized = True

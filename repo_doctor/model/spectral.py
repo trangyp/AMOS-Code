@@ -9,7 +9,7 @@ Use spectrum to find:
 """
 
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Dict, List
 
 
 @dataclass
