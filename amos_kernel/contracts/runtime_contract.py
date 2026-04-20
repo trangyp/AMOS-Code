@@ -1,5 +1,8 @@
 """Canonical runtime contract for AMOS kernel"""
 
+from datetime import datetime, timezone
+UTC = timezone.utc
+
 RUNTIME_CONTRACT = {
     "contract_version": "1.0.0",
     "canonical_runtime": "amos-brain",

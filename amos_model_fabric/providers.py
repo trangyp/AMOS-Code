@@ -14,7 +14,7 @@ from abc import ABC, abstractmethod
 from datetime import datetime, timezone
 
 UTC = timezone.utc
-from typing import Any
+from typing import Any, Optional
 
 import aiohttp
 
@@ -37,7 +37,7 @@ class BaseProvider(ABC):
         self.base_url = base_url.rstrip("/")
         self.api_key = api_key
         self.timeout = timeout
-        self._session: aiohttp.ClientSession | None = None
+        self._session: Optional[aiohttp.ClientSession] = None
         self._available_models: list[str] = []
 
     async def _get_session(self) -> aiohttp.ClientSession:
