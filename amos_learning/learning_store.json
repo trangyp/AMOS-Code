@@ -1569,6 +1569,134 @@
       "created_at": "2026-04-20T13:51:29.575814+00:00",
       "last_used": "2026-04-20T13:51:29.575814+00:00",
       "evolution_history": []
+    },
+    "proc_generic_c1793e_c1793e78": {
+      "procedure_id": "proc_generic_c1793e_c1793e78",
+      "name": "generic_c1793e",
+      "trigger_condition": "Task matches pattern signature",
+      "required_inputs": [
+        "task_context"
+      ],
+      "execution_steps": [
+        "1. Task Analysis: '=== CANONICAL CONTEXT ===\n\nRelevant Terms:\n  - electromagnetic_body: Mapping onto message passing, kernel signals and cross component communication.\n\n=== ORIGINAL QUERY ===\n\n        The user has repeated \"use your brain\" 6 times. \n        Each time I responded with demonstrations or explanations.\n        \n        What is the user actually experiencing that makes them\n        keep repeating this? What would satisfy them?\n        ' requires 2 perspectives",
+        "2. Kernel Routing: Activating 0 cognitive kernels",
+        "3. Rule of 2: Checking 2 contrasting views",
+        "   - Perspective 1: Direct Analysis - Immediate solution",
+        "   - Perspective 2: Contrarian View - Critical examination",
+        "4. Rule of 4: Analyzing 4 quadrants",
+        "   - Technical: contextually_relevant",
+        "   - Biological: relevant",
+        "   - Economic: relevant",
+        "   - Environmental: relevant",
+        "5. Law Validation: Checking against Global Laws",
+        "6. Output Generation: Synthesizing results",
+        "## AMOS Brain Analysis: === CANONICAL CONTEXT ===\n\nRelevant Terms:\n  - ele...\n\n### Reasoning Chain\n- 1. Task Analysis: '=== CANONICAL CONTEXT ===\n\nRelevant Terms:\n  - electromagnetic_body: Mapping ont"
+      ],
+      "expected_outcome": "Task processed successfully",
+      "verification_method": "Verify no errors",
+      "pattern_signature": "c1793e782ec3bddc",
+      "success_count": 1,
+      "failure_count": 0,
+      "avg_execution_time_ms": 0,
+      "created_at": "2026-04-20T13:53:38.951207+00:00",
+      "last_used": "2026-04-20T13:53:38.951207+00:00",
+      "evolution_history": []
+    },
+    "proc_generic_ae77a3_ae77a3c6": {
+      "procedure_id": "proc_generic_ae77a3_ae77a3c6",
+      "name": "generic_ae77a3",
+      "trigger_condition": "Task matches pattern signature",
+      "required_inputs": [
+        "task_context"
+      ],
+      "execution_steps": [
+        "1. Task Analysis: 'Analyze why someone would say 'use your brain' repeatedly to an AI. What are they experiencing?' requires 2 perspectives",
+        "2. Kernel Routing: Activating 0 cognitive kernels",
+        "3. Rule of 2: Checking 2 contrasting views",
+        "   - Perspective 1: Direct Analysis - Immediate solution",
+        "   - Perspective 2: Contrarian View - Critical examination",
+        "4. Rule of 4: Analyzing 4 quadrants",
+        "   - Technical: contextually_relevant",
+        "   - Biological: contextually_relevant",
+        "   - Economic: contextually_relevant",
+        "   - Environmental: contextually_relevant",
+        "5. Law Validation: Checking against Global Laws",
+        "6. Output Generation: Synthesizing results",
+        "## AMOS Brain Analysis: Analyze why someone would say 'use your brain' rep...\n\n### Reasoning Chain\n- 1. Task Analysis: 'Analyze why someone would say 'use your brain' repeatedly to an AI. What are the"
+      ],
+      "expected_outcome": "Task processed successfully",
+      "verification_method": "Verify no errors",
+      "pattern_signature": "ae77a3c6dec394e1",
+      "success_count": 1,
+      "failure_count": 0,
+      "avg_execution_time_ms": 0,
+      "created_at": "2026-04-20T13:54:44.563348+00:00",
+      "last_used": "2026-04-20T13:54:44.563348+00:00",
+      "evolution_history": []
+    },
+    "proc_generic_091a83_091a838c": {
+      "procedure_id": "proc_generic_091a83_091a838c",
+      "name": "generic_091a83",
+      "trigger_condition": "Task matches pattern signature",
+      "required_inputs": [
+        "task_context"
+      ],
+      "execution_steps": [
+        "1. Task Analysis: '=== CANONICAL CONTEXT ===\n\nRelevant Terms:\n  - electromagnetic_body: Mapping onto message passing, kernel signals and cross component communication.\n\n=== ORIGINAL QUERY ===\nWhat should I do when someone keeps telling me to use my brain?' requires 2 perspectives",
+        "2. Kernel Routing: Activating 0 cognitive kernels",
+        "3. Rule of 2: Checking 2 contrasting views",
+        "   - Perspective 1: Direct Analysis - Immediate solution",
+        "   - Perspective 2: Systemic Context - Long-term implications",
+        "4. Rule of 4: Analyzing 4 quadrants",
+        "   - Technical: contextually_relevant",
+        "   - Biological: contextually_relevant",
+        "   - Economic: contextually_relevant",
+        "   - Environmental: relevant",
+        "5. Law Validation: Checking against Global Laws",
+        "6. Output Generation: Synthesizing results",
+        "## AMOS Brain Analysis: === CANONICAL CONTEXT ===\n\nRelevant Terms:\n  - ele...\n\n### Reasoning Chain\n- 1. Task Analysis: '=== CANONICAL CONTEXT ===\n\nRelevant Terms:\n  - electromagnetic_body: Mapping ont"
+      ],
+      "expected_outcome": "Task processed successfully",
+      "verification_method": "Verify no errors",
+      "pattern_signature": "091a838ca29fff79",
+      "success_count": 1,
+      "failure_count": 0,
+      "avg_execution_time_ms": 1,
+      "created_at": "2026-04-20T13:56:13.135634+00:00",
+      "last_used": "2026-04-20T13:56:13.135634+00:00",
+      "evolution_history": []
+    },
+    "proc_generic_2afcdb_2afcdb3c": {
+      "procedure_id": "proc_generic_2afcdb_2afcdb3c",
+      "name": "generic_2afcdb",
+      "trigger_condition": "Task matches pattern signature",
+      "required_inputs": [
+        "task_context"
+      ],
+      "execution_steps": [
+        "1. Task Analysis: '=== CANONICAL CONTEXT ===\n\nRelevant Terms:\n  - electromagnetic_body: Mapping onto message passing, kernel signals and cross component communication.\n\n=== ORIGINAL QUERY ===\nSomeone keeps saying use your brain. What do they want?' requires 2 perspectives",
+        "2. Kernel Routing: Activating 0 cognitive kernels",
+        "3. Rule of 2: Checking 2 contrasting views",
+        "   - Perspective 1: Direct Analysis - Immediate solution",
+        "   - Perspective 2: Systemic Context - Long-term implications",
+        "4. Rule of 4: Analyzing 4 quadrants",
+        "   - Technical: contextually_relevant",
+        "   - Biological: contextually_relevant",
+        "   - Economic: contextually_relevant",
+        "   - Environmental: relevant",
+        "5. Law Validation: Checking against Global Laws",
+        "6. Output Generation: Synthesizing results",
+        "## AMOS Brain Analysis: === CANONICAL CONTEXT ===\n\nRelevant Terms:\n  - ele...\n\n### Reasoning Chain\n- 1. Task Analysis: '=== CANONICAL CONTEXT ===\n\nRelevant Terms:\n  - electromagnetic_body: Mapping ont"
+      ],
+      "expected_outcome": "Task processed successfully",
+      "verification_method": "Verify no errors",
+      "pattern_signature": "2afcdb3c2abdc4b3",
+      "success_count": 1,
+      "failure_count": 0,
+      "avg_execution_time_ms": 1,
+      "created_at": "2026-04-20T13:56:37.194996+00:00",
+      "last_used": "2026-04-20T13:56:37.194996+00:00",
+      "evolution_history": []
     }
   },
   "patterns": {
@@ -2396,18 +2524,86 @@
       "frequency": 1,
       "first_seen": "2026-04-20T13:51:29.575882+00:00",
       "last_seen": "2026-04-20T13:51:29.575882+00:00"
+    },
+    "pat_general_688fbec1": {
+      "pattern_id": "pat_general_688fbec1",
+      "pattern_type": "general",
+      "signature": "688fbec1e0d03e0a",
+      "detection_rules": [
+        "contains: generic"
+      ],
+      "indicators": [
+        "generic"
+      ],
+      "related_procedures": [
+        "proc_generic_c1793e_c1793e78"
+      ],
+      "frequency": 1,
+      "first_seen": "2026-04-20T13:53:38.951280+00:00",
+      "last_seen": "2026-04-20T13:53:38.951280+00:00"
+    },
+    "pat_general_ae77a3c6": {
+      "pattern_id": "pat_general_ae77a3c6",
+      "pattern_type": "general",
+      "signature": "ae77a3c6dec394e1",
+      "detection_rules": [
+        "contains: generic"
+      ],
+      "indicators": [
+        "generic"
+      ],
+      "related_procedures": [
+        "proc_generic_ae77a3_ae77a3c6"
+      ],
+      "frequency": 1,
+      "first_seen": "2026-04-20T13:54:44.563400+00:00",
+      "last_seen": "2026-04-20T13:54:44.563400+00:00"
+    },
+    "pat_general_481accb2": {
+      "pattern_id": "pat_general_481accb2",
+      "pattern_type": "general",
+      "signature": "481accb2dfcaefa1",
+      "detection_rules": [
+        "contains: generic"
+      ],
+      "indicators": [
+        "generic"
+      ],
+      "related_procedures": [
+        "proc_generic_091a83_091a838c"
+      ],
+      "frequency": 1,
+      "first_seen": "2026-04-20T13:56:13.135720+00:00",
+      "last_seen": "2026-04-20T13:56:13.135720+00:00"
+    },
+    "pat_general_3e155e97": {
+      "pattern_id": "pat_general_3e155e97",
+      "pattern_type": "general",
+      "signature": "3e155e97123e95bf",
+      "detection_rules": [
+        "contains: generic"
+      ],
+      "indicators": [
+        "generic"
+      ],
+      "related_procedures": [
+        "proc_generic_2afcdb_2afcdb3c"
+      ],
+      "frequency": 1,
+      "first_seen": "2026-04-20T13:56:37.195062+00:00",
+      "last_seen": "2026-04-20T13:56:37.195062+00:00"
     }
   },
   "decisions": {},
   "failures": {},
   "stats": {
-    "procedures_learned": 71,
-    "patterns_detected": 48,
+    "procedures_learned": 75,
+    "patterns_detected": 52,
     "decisions_recorded": 0,
     "failures_avoided": 0,
     "procedures_reused": 34,
     "time_saved_ms": 0,
     "learning_start": "2026-04-15T07:32:38.245581"
   },
-  "saved_at": "2026-04-20T13:51:29.577728+00:00"
+  "saved_at": "2026-04-20T13:56:37.197054+00:00"
 }
