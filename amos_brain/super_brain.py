@@ -264,6 +264,10 @@ class SuperBrainRuntime:
             )
             if spec and spec.loader:
                 module = importlib.util.module_from_spec(spec)
+                # Fix: Register module in sys.modules before exec_module
+                # This prevents dataclass 'NoneType' __dict__ error
+                import sys
+                sys.modules["mathematical_framework_engine"] = module
                 spec.loader.exec_module(module)
                 self._math_engine = module.get_framework_engine()
                 stats = self._math_engine.get_stats()

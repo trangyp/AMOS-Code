@@ -58,6 +58,9 @@ from .core.observe import DriftReport, detect_drift
 from .core.repair import RepairPlan, propose_repairs
 from .core.state import IntegrityTensor, TensorState, UniversalStateModel
 
+# Unified Kernel
+from .unified_kernel import UnifiedAmosKernel, UnifiedState, get_unified_kernel
+
 # Axiom Integration Buses (Section 103.1)
 from .integration_bus import (
     BusCoordinator,
@@ -114,6 +117,10 @@ __all__ = [
     # L5 - Repair Layer
     "propose_repairs",
     "RepairPlan",
+    # Unified Kernel
+    "UnifiedAmosKernel",
+    "UnifiedState",
+    "get_unified_kernel",
     # Client
     "AMOSKernelClient",
     "get_kernel",
