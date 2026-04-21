@@ -764,7 +764,724 @@ class ToolBus(IntegrationBus[Any]):
                 payload={"tool_id": tool.tool_id, "success": True},
                 source="tool_bus",
                 correlation_id=message.correlation_id,
+            )
         )
+
+
+# ============================================================================
+# Protocol Bus - API/Protocol Translation
+# ============================================================================
+
+@dataclass
+class ProtocolEndpoint:
+    """Definition of a protocol endpoint."""
+    endpoint_id: str
+    protocol: str  # rest, grpc, websocket, graphql, etc.
+    path: str
+    methods: list[str]
+    handler: Callable[..., Any] | None = None
+    auth_required: bool = True
+    rate_limit: int = 100
+
+
+@dataclass
+class ProtocolRequest:
+    """Request via protocol endpoint."""
+    request_id: str
+    endpoint_id: str
+    method: str
+    headers: dict[str, str]
+    body: dict[str, Any]
+    query_params: dict[str, str]
+
+
+@dataclass
+class ProtocolResponse:
+    """Response from protocol endpoint."""
+    request_id: str
+    status_code: int
+    headers: dict[str, str]
+    body: dict[str, Any] | str
+    latency_ms: float = 0.0
+
+
+class ProtocolRegistry:
+    """Registry of protocol endpoints."""
+
+    def __init__(self) -> None:
+        self._endpoints: dict[str, ProtocolEndpoint] = {}
+        self._request_count = 0
+        self._error_count = 0
+
+    def register(self, endpoint: ProtocolEndpoint) -> None:
+        """Register protocol endpoint."""
+        self._endpoints[endpoint.endpoint_id] = endpoint
+
+    def unregister(self, endpoint_id: str) -> bool:
+        """Unregister endpoint."""
+        if endpoint_id in self._endpoints:
+            del self._endpoints[endpoint_id]
+            return True
+        return False
+
+    def get(self, endpoint_id: str) -> ProtocolEndpoint | None:
+        """Get endpoint by ID."""
+        return self._endpoints.get(endpoint_id)
+
+    def list_endpoints(self, protocol: str | None = None) -> list[ProtocolEndpoint]:
+        """List endpoints, optionally filtered by protocol."""
+        endpoints = list(self._endpoints.values())
+        if protocol:
+            endpoints = [e for e in endpoints if e.protocol == protocol]
+        return endpoints
+
+    def find_by_path(self, path: str, method: str) -> ProtocolEndpoint | None:
+        """Find endpoint matching path and method."""
+        for endpoint in self._endpoints.values():
+            if endpoint.path == path and method in endpoint.methods:
+                return endpoint
+        return None
+
+
+class ProtocolBus(IntegrationBus[Any]):
+    """Bus for protocol/API management and translation."""
+
+    def __init__(self) -> None:
+        super().__init__(BusType.PROTOCOL)
+        self.registry = ProtocolRegistry()
+        self._request_log: list[dict[str, Any]] = []
+        self._max_log_size = 10000
+
+    async def initialize(self) -> None:
+        """Initialize protocol bus."""
+        self.subscribe("request.*", self._handle_request)
+        self.subscribe("register.*", self._handle_register)
+        self.subscribe("discover.*", self._handle_discover)
+
+    async def health_check(self) -> dict[str, Any]:
+        """Check protocol bus health."""
+        return {
+            "status": "healthy",
+            "endpoints": len(self.registry._endpoints),
+            "request_count": self.registry._request_count,
+            "error_count": self.registry._error_count,
+        }
+
+    async def _handle_request(self, message: BusMessage) -> None:
+        """Handle incoming protocol request."""
+        payload = message.payload
+        endpoint_id = payload.get("endpoint_id", "")
+        request = ProtocolRequest(
+            request_id=payload.get("request_id", ""),
+            endpoint_id=endpoint_id,
+            method=payload.get("method", "GET"),
+            headers=payload.get("headers", {}),
+            body=payload.get("body", {}),
+            query_params=payload.get("query_params", {}),
+        )
+
+        start_time = datetime.now(timezone.utc)
+        endpoint = self.registry.get(endpoint_id)
+
+        if not endpoint:
+            response = ProtocolResponse(
+                request_id=request.request_id,
+                status_code=404,
+                headers={},
+                body={"error": f"Endpoint '{endpoint_id}' not found"},
+            )
+        elif endpoint.handler:
+            try:
+                result = await asyncio.to_thread(
+                    endpoint.handler, request.body, request.headers
+                )
+                response = ProtocolResponse(
+                    request_id=request.request_id,
+                    status_code=200,
+                    headers={"Content-Type": "application/json"},
+                    body=result,
+                )
+            except Exception as e:
+                self.registry._error_count += 1
+                response = ProtocolResponse(
+                    request_id=request.request_id,
+                    status_code=500,
+                    headers={},
+                    body={"error": str(e)},
+                )
+        else:
+            response = ProtocolResponse(
+                request_id=request.request_id,
+                status_code=501,
+                headers={},
+                body={"error": "No handler registered"},
+            )
+
+        end_time = datetime.now(timezone.utc)
+        response.latency_ms = (end_time - start_time).total_seconds() * 1000
+        self.registry._request_count += 1
+
+        # Log request
+        self._request_log.append({
+            "timestamp": start_time.isoformat(),
+            "endpoint_id": endpoint_id,
+            "status_code": response.status_code,
+            "latency_ms": response.latency_ms,
+        })
+        if len(self._request_log) > self._max_log_size:
+            self._request_log = self._request_log[-self._max_log_size:]
+
+        await self.publish(BusMessage.create(
+            bus_type=BusType.PROTOCOL,
+            topic=f"response.{request.request_id}",
+            payload={
+                "request_id": response.request_id,
+                "status_code": response.status_code,
+                "headers": response.headers,
+                "body": response.body,
+                "latency_ms": response.latency_ms,
+            },
+            source="protocol_bus",
+            correlation_id=message.correlation_id,
+        ))
+
+    async def _handle_register(self, message: BusMessage) -> None:
+        """Handle endpoint registration."""
+        endpoint_def = message.payload.get("endpoint", {})
+        endpoint = ProtocolEndpoint(
+            endpoint_id=endpoint_def.get("endpoint_id", ""),
+            protocol=endpoint_def.get("protocol", "rest"),
+            path=endpoint_def.get("path", "/"),
+            methods=endpoint_def.get("methods", ["GET"]),
+            auth_required=endpoint_def.get("auth_required", True),
+            rate_limit=endpoint_def.get("rate_limit", 100),
+        )
+        self.registry.register(endpoint)
+
+        await self.publish(BusMessage.create(
+            bus_type=BusType.PROTOCOL,
+            topic=f"registered.{endpoint.endpoint_id}",
+            payload={"endpoint_id": endpoint.endpoint_id, "success": True},
+            source="protocol_bus",
+            correlation_id=message.correlation_id,
+        ))
+
+    async def _handle_discover(self, message: BusMessage) -> None:
+        """Handle endpoint discovery."""
+        protocol = message.payload.get("protocol")
+        endpoints = self.registry.list_endpoints(protocol)
+
+        await self.publish(BusMessage.create(
+            bus_type=BusType.PROTOCOL,
+            topic="discover.results",
+            payload={
+                "count": len(endpoints),
+                "endpoints": [
+                    {
+                        "endpoint_id": e.endpoint_id,
+                        "protocol": e.protocol,
+                        "path": e.path,
+                        "methods": e.methods,
+                        "auth_required": e.auth_required,
+                    }
+                    for e in endpoints
+                ],
+            },
+            source="protocol_bus",
+            correlation_id=message.correlation_id,
+        ))
+
+
+# ============================================================================
+# Runtime Bus - Code Execution and Runtime Management
+# ============================================================================
+
+@dataclass
+class RuntimeExecution:
+    """Code execution request."""
+    execution_id: str
+    code: str
+    language: str  # python, javascript, bash, etc.
+    timeout_seconds: float = 30.0
+    environment_vars: dict[str, str] = field(default_factory=dict)
+    sandboxed: bool = True
+
+
+@dataclass
+class RuntimeResult:
+    """Result of code execution."""
+    execution_id: str
+    success: bool
+    stdout: str
+    stderr: str
+    exit_code: int
+    execution_time_ms: float
+    memory_peak_mb: float = 0.0
+
+
+class RuntimeSandbox:
+    """Sandbox for executing code safely."""
+
+    def __init__(self) -> None:
+        self._executions: dict[str, RuntimeResult] = {}
+        self._active_count = 0
+
+    async def execute(self, req: RuntimeExecution) -> RuntimeResult:
+        """Execute code in sandbox."""
+        self._active_count += 1
+        start_time = datetime.now(timezone.utc)
+
+        if req.language == "python":
+            result = await self._execute_python(req)
+        elif req.language == "bash":
+            result = await self._execute_bash(req)
+        else:
+            result = RuntimeResult(
+                execution_id=req.execution_id,
+                success=False,
+                stdout="",
+                stderr=f"Unsupported language: {req.language}",
+                exit_code=1,
+                execution_time_ms=0.0,
+            )
+
+        end_time = datetime.now(timezone.utc)
+        result.execution_time_ms = (end_time - start_time).total_seconds() * 1000
+        self._executions[req.execution_id] = result
+        self._active_count -= 1
+        return result
+
+    async def _execute_python(self, req: RuntimeExecution) -> RuntimeResult:
+        """Execute Python code safely."""
+        import io
+        import sys
+        from contextlib import redirect_stdout, redirect_stderr
+
+        stdout_capture = io.StringIO()
+        stderr_capture = io.StringIO()
+
+        try:
+            # Create restricted globals
+            safe_globals = {
+                "__builtins__": {
+                    "len": len, "range": range, "enumerate": enumerate,
+                    "zip": zip, "map": map, "filter": filter,
+                    "sum": sum, "min": min, "max": max,
+                    "abs": abs, "round": round,
+                    "str": str, "int": int, "float": float,
+                    "list": list, "dict": dict, "set": set, "tuple": tuple,
+                    "print": print, "Exception": Exception,
+                }
+            }
+
+            with redirect_stdout(stdout_capture), redirect_stderr(stderr_capture):
+                exec(req.code, safe_globals, {})
+
+            return RuntimeResult(
+                execution_id=req.execution_id,
+                success=True,
+                stdout=stdout_capture.getvalue(),
+                stderr=stderr_capture.getvalue(),
+                exit_code=0,
+                execution_time_ms=0.0,
+            )
+        except Exception as e:
+            return RuntimeResult(
+                execution_id=req.execution_id,
+                success=False,
+                stdout=stdout_capture.getvalue(),
+                stderr=str(e),
+                exit_code=1,
+                execution_time_ms=0.0,
+            )
+
+    async def _execute_bash(self, req: RuntimeExecution) -> RuntimeResult:
+        """Execute bash command with restrictions."""
+        restricted_commands = ["rm -rf /", "sudo", "chmod 777", "mkfs"]
+        for cmd in restricted_commands:
+            if cmd in req.code:
+                return RuntimeResult(
+                    execution_id=req.execution_id,
+                    success=False,
+                    stdout="",
+                    stderr=f"Command blocked for security: {cmd}",
+                    exit_code=1,
+                    execution_time_ms=0.0,
+                )
+
+        proc = await asyncio.create_subprocess_shell(
+            req.code,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+        )
+
+        try:
+            stdout, stderr = await asyncio.wait_for(
+                proc.communicate(),
+                timeout=req.timeout_seconds,
+            )
+            return RuntimeResult(
+                execution_id=req.execution_id,
+                success=proc.returncode == 0,
+                stdout=stdout.decode(),
+                stderr=stderr.decode(),
+                exit_code=proc.returncode or 0,
+                execution_time_ms=0.0,
+            )
+        except asyncio.TimeoutError:
+            proc.kill()
+            return RuntimeResult(
+                execution_id=req.execution_id,
+                success=False,
+                stdout="",
+                stderr=f"Timeout after {req.timeout_seconds}s",
+                exit_code=1,
+                execution_time_ms=req.timeout_seconds * 1000,
+            )
+
+    def get_execution(self, execution_id: str) -> RuntimeResult | None:
+        """Get execution result by ID."""
+        return self._executions.get(execution_id)
+
+
+class RuntimeBus(IntegrationBus[Any]):
+    """Bus for code execution and runtime management."""
+
+    def __init__(self) -> None:
+        super().__init__(BusType.RUNTIME)
+        self.sandbox = RuntimeSandbox()
+        self._execution_count = 0
+        self._error_count = 0
+
+    async def initialize(self) -> None:
+        """Initialize runtime bus."""
+        self.subscribe("execute.*", self._handle_execute)
+        self.subscribe("status.*", self._handle_status)
+        self.subscribe("kill.*", self._handle_kill)
+
+    async def health_check(self) -> dict[str, Any]:
+        """Check runtime bus health."""
+        return {
+            "status": "healthy",
+            "active_executions": self.sandbox._active_count,
+            "total_executions": self._execution_count,
+            "error_count": self._error_count,
+        }
+
+    async def _handle_execute(self, message: BusMessage) -> None:
+        """Handle execution request."""
+        payload = message.payload
+        execution = RuntimeExecution(
+            execution_id=payload.get("execution_id", ""),
+            code=payload.get("code", ""),
+            language=payload.get("language", "python"),
+            timeout_seconds=payload.get("timeout_seconds", 30.0),
+            environment_vars=payload.get("environment_vars", {}),
+            sandboxed=payload.get("sandboxed", True),
+        )
+
+        result = await self.sandbox.execute(execution)
+        self._execution_count += 1
+        if not result.success:
+            self._error_count += 1
+
+        await self.publish(BusMessage.create(
+            bus_type=BusType.RUNTIME,
+            topic=f"result.{result.execution_id}",
+            payload={
+                "execution_id": result.execution_id,
+                "success": result.success,
+                "stdout": result.stdout,
+                "stderr": result.stderr,
+                "exit_code": result.exit_code,
+                "execution_time_ms": result.execution_time_ms,
+            },
+            source="runtime_bus",
+            correlation_id=message.correlation_id,
+        ))
+
+    async def _handle_status(self, message: BusMessage) -> None:
+        """Handle status request."""
+        execution_id = message.payload.get("execution_id", "")
+        result = self.sandbox.get_execution(execution_id)
+
+        await self.publish(BusMessage.create(
+            bus_type=BusType.RUNTIME,
+            topic=f"status.{execution_id}",
+            payload={
+                "execution_id": execution_id,
+                "found": result is not None,
+                "result": {
+                    "success": result.success,
+                    "stdout": result.stdout[:1000],
+                    "stderr": result.stderr[:500],
+                    "exit_code": result.exit_code,
+                } if result else None,
+            },
+            source="runtime_bus",
+            correlation_id=message.correlation_id,
+        ))
+
+    async def _handle_kill(self, message: BusMessage) -> None:
+        """Handle kill request."""
+        execution_id = message.payload.get("execution_id", "")
+
+        await self.publish(BusMessage.create(
+            bus_type=BusType.RUNTIME,
+            topic=f"killed.{execution_id}",
+            payload={"execution_id": execution_id, "killed": False},
+            source="runtime_bus",
+            correlation_id=message.correlation_id,
+        ))
+
+
+# ============================================================================
+# Frontend Bus - UI/UX Component Management
+# ============================================================================
+
+@dataclass
+class UIComponent:
+    """UI component definition."""
+    component_id: str
+    component_type: str  # button, input, table, chart, etc.
+    props: dict[str, Any]
+    children: list[str] = field(default_factory=list)
+    parent_id: str | None = None
+
+
+@dataclass
+class UIEvent:
+    """UI event from user interaction."""
+    event_id: str
+    component_id: str
+    event_type: str  # click, change, submit, etc.
+    data: dict[str, Any]
+    timestamp: datetime = field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
+
+
+class UIRegistry:
+    """Registry of UI components and events."""
+
+    def __init__(self) -> None:
+        self._components: dict[str, UIComponent] = {}
+        self._event_history: list[UIEvent] = []
+        self._max_events = 1000
+
+    def register(self, component: UIComponent) -> None:
+        """Register component."""
+        self._components[component.component_id] = component
+
+    def unregister(self, component_id: str) -> bool:
+        """Unregister component."""
+        if component_id in self._components:
+            del self._components[component_id]
+            return True
+        return False
+
+    def get(self, component_id: str) -> UIComponent | None:
+        """Get component by ID."""
+        return self._components.get(component_id)
+
+    def list_components(self, component_type: str | None = None) -> list[UIComponent]:
+        """List components."""
+        components = list(self._components.values())
+        if component_type:
+            components = [c for c in components if c.component_type == component_type]
+        return components
+
+    def add_event(self, event: UIEvent) -> None:
+        """Add UI event to history."""
+        self._event_history.append(event)
+        if len(self._event_history) > self._max_events:
+            self._event_history = self._event_history[-self._max_events:]
+
+
+class FrontendBus(IntegrationBus[Any]):
+    """Bus for UI/UX component management."""
+
+    def __init__(self) -> None:
+        super().__init__(BusType.FRONTEND)
+        self.registry = UIRegistry()
+        self._render_count = 0
+        self._event_count = 0
+
+    async def initialize(self) -> None:
+        """Initialize frontend bus."""
+        self.subscribe("render.*", self._handle_render)
+        self.subscribe("event.*", self._handle_event)
+        self.subscribe("update.*", self._handle_update)
+        self.subscribe("query.*", self._handle_query)
+
+    async def health_check(self) -> dict[str, Any]:
+        """Check frontend bus health."""
+        return {
+            "status": "healthy",
+            "components": len(self.registry._components),
+            "render_count": self._render_count,
+            "event_count": self._event_count,
+        }
+
+    async def _handle_render(self, message: BusMessage) -> None:
+        """Handle render request."""
+        component_def = message.payload.get("component", {})
+        component = UIComponent(
+            component_id=component_def.get("component_id", ""),
+            component_type=component_def.get("component_type", "div"),
+            props=component_def.get("props", {}),
+            children=component_def.get("children", []),
+            parent_id=component_def.get("parent_id"),
+        )
+
+        self.registry.register(component)
+        self._render_count += 1
+
+        await self.publish(BusMessage.create(
+            bus_type=BusType.FRONTEND,
+            topic=f"rendered.{component.component_id}",
+            payload={
+                "component_id": component.component_id,
+                "component_type": component.component_type,
+                "success": True,
+            },
+            source="frontend_bus",
+            correlation_id=message.correlation_id,
+        ))
+
+    async def _handle_event(self, message: BusMessage) -> None:
+        """Handle UI event."""
+        event_data = message.payload.get("event", {})
+        event = UIEvent(
+            event_id=event_data.get("event_id", ""),
+            component_id=event_data.get("component_id", ""),
+            event_type=event_data.get("event_type", "unknown"),
+            data=event_data.get("data", {}),
+        )
+
+        self.registry.add_event(event)
+        self._event_count += 1
+
+        await self.publish(BusMessage.create(
+            bus_type=BusType.FRONTEND,
+            topic=f"event.processed.{event.event_id}",
+            payload={
+                "event_id": event.event_id,
+                "component_id": event.component_id,
+                "processed": True,
+            },
+            source="frontend_bus",
+            correlation_id=message.correlation_id,
+        ))
+
+    async def _handle_update(self, message: BusMessage) -> None:
+        """Handle component update."""
+        component_id = message.payload.get("component_id", "")
+        new_props = message.payload.get("props", {})
+
+        component = self.registry.get(component_id)
+        if component:
+            component.props.update(new_props)
+
+        await self.publish(BusMessage.create(
+            bus_type=BusType.FRONTEND,
+            topic=f"updated.{component_id}",
+            payload={
+                "component_id": component_id,
+                "updated": component is not None,
+            },
+            source="frontend_bus",
+            correlation_id=message.correlation_id,
+        ))
+
+    async def _handle_query(self, message: BusMessage) -> None:
+        """Handle component query."""
+        query = message.payload.get("query", "")
+        component_type = message.payload.get("component_type")
+
+        components = self.registry.list_components(component_type)
+        if query:
+            components = [c for c in components if query in c.component_id]
+
+        await self.publish(BusMessage.create(
+            bus_type=BusType.FRONTEND,
+            topic="query.results",
+            payload={
+                "count": len(components),
+                "components": [
+                    {
+                        "component_id": c.component_id,
+                        "component_type": c.component_type,
+                        "props": c.props,
+                    }
+                    for c in components
+                ],
+            },
+            source="frontend_bus",
+            correlation_id=message.correlation_id,
+        ))
+
+
+# ============================================================================
+# Policy Bus - Policy Enforcement and Governance
+# ============================================================================
+
+@dataclass
+class PolicyRule:
+    """Policy rule definition."""
+    rule_id: str
+    name: str
+    description: str
+    condition: str  # Expression to evaluate
+    action: str  # allow, deny, quarantine, notify
+    priority: int = 100
+    enabled: bool = True
+
+
+@dataclass
+class PolicyEvaluation:
+    """Result of policy evaluation."""
+    evaluation_id: str
+    rule_id: str
+    subject: str
+    resource: str
+    action: str
+    decision: str  # allow, deny
+    reason: str
+    timestamp: datetime = field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
+
+
+class PolicyEngine:
+    """Policy evaluation engine."""
+
+    def __init__(self) -> None:
+        self._rules: dict[str, PolicyRule] = {}
+        self._evaluations: list[PolicyEvaluation] = []
+        self._max_history = 10000
+
+    def add_rule(self, rule: PolicyRule) -> None:
+        """Add policy rule."""
+        self._rules[rule.rule_id] = rule
+
+    def remove_rule(self, rule_id: str) -> bool:
+        """Remove policy rule."""
+        if rule_id in self._rules:
+            del self._rules[rule_id]
+            return True
+        return False
+
+    def get_rule(self, rule_id: str) -> PolicyRule | None:
+        """Get rule by ID."""
+        return self._rules.get(rule_id)
+
+    def list_rules(self, enabled_only: bool = False) -> list[PolicyRule]:
+        """List all rules."""
+        rules = list(self._rules.values())
+        if enabled_only:
+            rules = [r for r in rules if r.enabled]
+        return sorted(rules, key=lambda r: r.priority)
 
     def _rule_matches(
         self,
@@ -775,9 +1492,7 @@ class ToolBus(IntegrationBus[Any]):
         context: dict[str, Any],
     ) -> bool:
         """Check if rule matches request context."""
-        # Simple string matching - production would use proper policy language
         condition = rule.condition.lower()
-        check_str = f"{subject}:{resource}:{action}"
 
         if "subject=" in condition:
             expected = condition.split("subject=")[1].split(";")[0]
@@ -793,6 +1508,41 @@ class ToolBus(IntegrationBus[Any]):
                 return False
 
         return True
+
+    def evaluate(
+        self,
+        evaluation_id: str,
+        subject: str,
+        resource: str,
+        action: str,
+        context: dict[str, Any],
+    ) -> PolicyEvaluation:
+        """Evaluate policies against request."""
+        for rule in self.list_rules(enabled_only=True):
+            if self._rule_matches(rule, subject, resource, action, context):
+                result = PolicyEvaluation(
+                    evaluation_id=evaluation_id,
+                    rule_id=rule.rule_id,
+                    subject=subject,
+                    resource=resource,
+                    action=action,
+                    decision=rule.action,
+                    reason=f"Matched rule: {rule.name}",
+                )
+                self._evaluations.append(result)
+                if len(self._evaluations) > self._max_history:
+                    self._evaluations = self._evaluations[-self._max_history:]
+                return result
+
+        return PolicyEvaluation(
+            evaluation_id=evaluation_id,
+            rule_id="default",
+            subject=subject,
+            resource=resource,
+            action=action,
+            decision="allow",
+            reason="No matching rules - default allow",
+        )
 
 
 class PolicyBus(IntegrationBus[Any]):

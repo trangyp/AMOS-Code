@@ -95,7 +95,7 @@
       "failure_count": 0,
       "avg_execution_time_ms": 0,
       "created_at": "2026-04-18T08:33:04.862570+00:00",
-      "last_used": "2026-04-18T08:33:04.862570+00:00",
+      "last_used": "2026-04-21T02:59:45.844733+00:00",
       "evolution_history": []
     },
     "proc_generic_73315c_73315c72": {
@@ -127,7 +127,7 @@
       "failure_count": 0,
       "avg_execution_time_ms": 0,
       "created_at": "2026-04-18T11:18:46.233152+00:00",
-      "last_used": "2026-04-18T11:18:46.233152+00:00",
+      "last_used": "2026-04-20T15:03:21.009727+00:00",
       "evolution_history": []
     },
     "proc_generic_6a84e2_6a84e29f": {
@@ -1793,6 +1793,134 @@
       "created_at": "2026-04-20T14:17:32.056470+00:00",
       "last_used": "2026-04-20T14:17:32.056470+00:00",
       "evolution_history": []
+    },
+    "proc_generic_043a60_043a6096": {
+      "procedure_id": "proc_generic_043a60_043a6096",
+      "name": "generic_043a60",
+      "trigger_condition": "Task matches pattern signature",
+      "required_inputs": [
+        "task_context"
+      ],
+      "execution_steps": [
+        "1. Task Analysis: 'Decision: Should the brain consider itself operational?\n\nOptions:\n1. Yes, all critical systems are active\n2. No, need 100% subsystem coverage\n\nContext: Current health: 13/14 subsystems active' requires 2 perspectives",
+        "2. Kernel Routing: Activating 0 cognitive kernels",
+        "3. Rule of 2: Checking 2 contrasting views",
+        "   - Perspective 1: Direct Analysis - Immediate solution",
+        "   - Perspective 2: Systemic Context - Long-term implications",
+        "4. Rule of 4: Analyzing 4 quadrants",
+        "   - Technical: relevant",
+        "   - Biological: relevant",
+        "   - Economic: contextually_relevant",
+        "   - Environmental: highly_relevant",
+        "5. Law Validation: Checking against Global Laws",
+        "6. Output Generation: Synthesizing results",
+        "## AMOS Brain Analysis: Decision: Should the brain consider itself operati...\n\n### Reasoning Chain\n- 1. Task Analysis: 'Decision: Should the brain consider itself operational?\n\nOptions:\n1. Yes, all cr"
+      ],
+      "expected_outcome": "Task processed successfully",
+      "verification_method": "Verify no errors",
+      "pattern_signature": "043a609696d71972",
+      "success_count": 1,
+      "failure_count": 0,
+      "avg_execution_time_ms": 0,
+      "created_at": "2026-04-20T15:03:21.010333+00:00",
+      "last_used": "2026-04-20T15:03:21.010333+00:00",
+      "evolution_history": []
+    },
+    "proc_generic_fad9ea_fad9eab0": {
+      "procedure_id": "proc_generic_fad9ea_fad9eab0",
+      "name": "generic_fad9ea",
+      "trigger_condition": "Task matches pattern signature",
+      "required_inputs": [
+        "task_context"
+      ],
+      "execution_steps": [
+        "1. Task Analysis: 'User keeps saying AI is hallucinating and to 'use brain'. What specific behavior would satisfy them?' requires 2 perspectives",
+        "2. Kernel Routing: Activating 0 cognitive kernels",
+        "3. Rule of 2: Checking 2 contrasting views",
+        "   - Perspective 1: Direct Analysis - Immediate solution",
+        "   - Perspective 2: Systemic Context - Long-term implications",
+        "4. Rule of 4: Analyzing 4 quadrants",
+        "   - Technical: contextually_relevant",
+        "   - Biological: relevant",
+        "   - Economic: contextually_relevant",
+        "   - Environmental: contextually_relevant",
+        "5. Law Validation: Checking against Global Laws",
+        "6. Output Generation: Synthesizing results",
+        "## AMOS Brain Analysis: User keeps saying AI is hallucinating and to 'use ...\n\n### Reasoning Chain\n- 1. Task Analysis: 'User keeps saying AI is hallucinating and to 'use brain'. What specific behavior"
+      ],
+      "expected_outcome": "Task processed successfully",
+      "verification_method": "Verify no errors",
+      "pattern_signature": "fad9eab0be7d57aa",
+      "success_count": 1,
+      "failure_count": 0,
+      "avg_execution_time_ms": 1,
+      "created_at": "2026-04-20T15:12:07.798749+00:00",
+      "last_used": "2026-04-20T15:12:07.798749+00:00",
+      "evolution_history": []
+    },
+    "proc_generic_44663b_44663bc0": {
+      "procedure_id": "proc_generic_44663b_44663bc0",
+      "name": "generic_44663b",
+      "trigger_condition": "Task matches pattern signature",
+      "required_inputs": [
+        "configuration"
+      ],
+      "execution_steps": [
+        "1. Task Analysis: 'Decision: Should I migrate the legacy Canon configurations to the new system?\n\nOptions:\n1. migrate_all\n2. migrate_selective\n3. archive_only\n4. validate_first\n' requires 2 perspectives",
+        "2. Kernel Routing: Activating 0 cognitive kernels",
+        "3. Rule of 2: Checking 2 contrasting views",
+        "   - Perspective 1: Direct Analysis - Immediate solution",
+        "   - Perspective 2: Systemic Context - Long-term implications",
+        "4. Rule of 4: Analyzing 4 quadrants",
+        "   - Technical: relevant",
+        "   - Biological: contextually_relevant",
+        "   - Economic: contextually_relevant",
+        "   - Environmental: relevant",
+        "5. Law Validation: Checking against Global Laws",
+        "6. Output Generation: Synthesizing results",
+        "## AMOS Brain Analysis: Decision: Should I migrate the legacy Canon config...\n\n### Reasoning Chain\n- 1. Task Analysis: 'Decision: Should I migrate the legacy Canon configurations to the new system?\n\nO"
+      ],
+      "expected_outcome": "Task processed successfully",
+      "verification_method": "Verify no errors",
+      "pattern_signature": "44663bc04496f3ba",
+      "success_count": 1,
+      "failure_count": 0,
+      "avg_execution_time_ms": 0,
+      "created_at": "2026-04-21T02:59:45.845420+00:00",
+      "last_used": "2026-04-21T02:59:45.845420+00:00",
+      "evolution_history": []
+    },
+    "proc_generic_69fee6_69fee6ea": {
+      "procedure_id": "proc_generic_69fee6_69fee6ea",
+      "name": "generic_69fee6",
+      "trigger_condition": "Task matches pattern signature",
+      "required_inputs": [
+        "task_context"
+      ],
+      "execution_steps": [
+        "1. Task Analysis: 'What makes an AI system actually 'usable' vs just technically functional? Consider: Does it respond to user intent? Does it self-correct? Does it demonstrate understanding?' requires 2 perspectives",
+        "2. Kernel Routing: Activating 0 cognitive kernels",
+        "3. Rule of 2: Checking 2 contrasting views",
+        "   - Perspective 1: Direct Analysis - Immediate solution",
+        "   - Perspective 2: Alternative Implementation - Alternative patterns",
+        "4. Rule of 4: Analyzing 4 quadrants",
+        "   - Technical: relevant",
+        "   - Biological: relevant",
+        "   - Economic: contextually_relevant",
+        "   - Environmental: relevant",
+        "5. Law Validation: Checking against Global Laws",
+        "6. Output Generation: Synthesizing results",
+        "## AMOS Brain Analysis: What makes an AI system actually 'usable' vs just ...\n\n### Reasoning Chain\n- 1. Task Analysis: 'What makes an AI system actually 'usable' vs just technically functional? Consid"
+      ],
+      "expected_outcome": "Task processed successfully",
+      "verification_method": "Verify no errors",
+      "pattern_signature": "69fee6ea0474f513",
+      "success_count": 1,
+      "failure_count": 0,
+      "avg_execution_time_ms": 2,
+      "created_at": "2026-04-21T03:01:38.460992+00:00",
+      "last_used": "2026-04-21T03:01:38.460992+00:00",
+      "evolution_history": []
     }
   },
   "patterns": {
@@ -1837,9 +1965,9 @@
       "related_procedures": [
         "proc_fix_routing_bug_2347832d"
       ],
-      "frequency": 2,
+      "frequency": 3,
       "first_seen": "2026-04-18T08:33:04.861979+00:00",
-      "last_seen": "2026-04-18T08:33:04.862584+00:00"
+      "last_seen": "2026-04-21T02:59:45.844711+00:00"
     },
     "pat_bug_fix_73315c72": {
       "pattern_id": "pat_bug_fix_73315c72",
@@ -1854,9 +1982,9 @@
       "related_procedures": [
         "proc_generic_73315c_73315c72"
       ],
-      "frequency": 2,
+      "frequency": 3,
       "first_seen": "2026-04-18T11:18:46.232931+00:00",
-      "last_seen": "2026-04-18T11:18:46.233164+00:00"
+      "last_seen": "2026-04-20T15:03:21.009696+00:00"
     },
     "pat_general_6a84e29f": {
       "pattern_id": "pat_general_6a84e29f",
@@ -2739,18 +2867,86 @@
       "frequency": 1,
       "first_seen": "2026-04-20T14:17:32.056544+00:00",
       "last_seen": "2026-04-20T14:17:32.056544+00:00"
+    },
+    "pat_general_135fe63e": {
+      "pattern_id": "pat_general_135fe63e",
+      "pattern_type": "general",
+      "signature": "135fe63e0ac8c87d",
+      "detection_rules": [
+        "contains: generic"
+      ],
+      "indicators": [
+        "generic"
+      ],
+      "related_procedures": [
+        "proc_generic_043a60_043a6096"
+      ],
+      "frequency": 1,
+      "first_seen": "2026-04-20T15:03:21.010394+00:00",
+      "last_seen": "2026-04-20T15:03:21.010394+00:00"
+    },
+    "pat_general_fad9eab0": {
+      "pattern_id": "pat_general_fad9eab0",
+      "pattern_type": "general",
+      "signature": "fad9eab0be7d57aa",
+      "detection_rules": [
+        "contains: generic"
+      ],
+      "indicators": [
+        "generic"
+      ],
+      "related_procedures": [
+        "proc_generic_fad9ea_fad9eab0"
+      ],
+      "frequency": 1,
+      "first_seen": "2026-04-20T15:12:07.798822+00:00",
+      "last_seen": "2026-04-20T15:12:07.798822+00:00"
+    },
+    "pat_general_c5fe9d19": {
+      "pattern_id": "pat_general_c5fe9d19",
+      "pattern_type": "general",
+      "signature": "c5fe9d19c2d0538e",
+      "detection_rules": [
+        "contains: generic"
+      ],
+      "indicators": [
+        "generic"
+      ],
+      "related_procedures": [
+        "proc_generic_44663b_44663bc0"
+      ],
+      "frequency": 1,
+      "first_seen": "2026-04-21T02:59:45.845484+00:00",
+      "last_seen": "2026-04-21T02:59:45.845484+00:00"
+    },
+    "pat_general_69fee6ea": {
+      "pattern_id": "pat_general_69fee6ea",
+      "pattern_type": "general",
+      "signature": "69fee6ea0474f513",
+      "detection_rules": [
+        "contains: generic"
+      ],
+      "indicators": [
+        "generic"
+      ],
+      "related_procedures": [
+        "proc_generic_69fee6_69fee6ea"
+      ],
+      "frequency": 1,
+      "first_seen": "2026-04-21T03:01:38.461063+00:00",
+      "last_seen": "2026-04-21T03:01:38.461063+00:00"
     }
   },
   "decisions": {},
   "failures": {},
   "stats": {
-    "procedures_learned": 78,
-    "patterns_detected": 55,
+    "procedures_learned": 82,
+    "patterns_detected": 59,
     "decisions_recorded": 0,
     "failures_avoided": 0,
-    "procedures_reused": 34,
+    "procedures_reused": 36,
     "time_saved_ms": 0,
     "learning_start": "2026-04-15T07:32:38.245581"
   },
-  "saved_at": "2026-04-20T14:17:32.059208+00:00"
+  "saved_at": "2026-04-21T03:01:38.464006+00:00"
 }
