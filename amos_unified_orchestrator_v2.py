@@ -15,7 +15,7 @@ import asyncio
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any
+from typing import Any, Optional
 
 
 class OrchestratorState(Enum):
@@ -139,15 +139,13 @@ class AMOSUnifiedOrchestrator:
         except ImportError as e:
             print(f"  ⚠ Event bus not available: {e}")
 
-    async def submit_task[
-        T
-    ](
+    async def submit_task(
         self,
         task_id: str,
         name: str,
         coro: Any,
         use_circuit_breaker: bool = False,
-        circuit_name: str | None = None,
+        circuit_name: Optional[str] = None,
     ) -> Any:
         """Submit a task for execution."""
         if not self._initialized:

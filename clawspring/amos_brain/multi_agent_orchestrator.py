@@ -3,7 +3,7 @@
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Optional, Union
 
 try:
     from .engine_executor import ExecutionResult, execute_cognitive_task
@@ -249,7 +249,7 @@ class MultiAgentOrchestrator:
 
 
 # Singleton instance
-_orchestrator: MultiAgentOrchestrator | None = None
+_orchestrator: Optional[MultiAgentOrchestrator] = None
 
 
 def get_orchestrator() -> MultiAgentOrchestrator:

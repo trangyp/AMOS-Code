@@ -61,13 +61,11 @@ class AsyncTaskProcessor:
         self._semaphore = asyncio.Semaphore(max_concurrent)
         self._shutdown = False
 
-    async def submit[
-        T
-    ](
+    async def submit(
         self,
         task_id: str,
         name: str,
-        coro: Awaitable[T],
+        coro: Awaitable[Any],
     ) -> TaskResult:
         """Submit a task for execution."""
         task = Task(id=task_id, name=name)

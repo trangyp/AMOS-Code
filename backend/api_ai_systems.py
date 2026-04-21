@@ -197,7 +197,7 @@ async def api_list_agents():
 
 @ai_router.post("/knowledge/recall", response_model=dict[str, Any])
 async def api_knowledge_recall(
-    query: str, agent_id: str | None = None, top_k: int = 5, memory_type: str | None = None
+    query: str, agent_id: Optional[str] = None, top_k: int = 5, memory_type: Optional[str] = None
 ):
     """Recall knowledge from vector store."""
     result = await recall(query, top_k, agent_id, memory_type)
@@ -223,7 +223,7 @@ async def api_knowledge_ingest(
     source: str,
     memory_type: str = "semantic",
     agent_id: str | None = None,
-    metadata: dict[str, Any] | None = None,
+    metadata: Optional[dict[str, Any]] = None,
 ):
     """Ingest knowledge into vector store."""
     result = await knowledge_manager.ingest_document(
@@ -319,7 +319,7 @@ async def api_broadcast_message(sender_id: str, content: dict[str, Any], exclude
 
 @ai_router.get("/messaging/history", response_model=list[dict[str, Any]])
 async def api_message_history(
-    agent_id: str | None = None, since: str | None = None, limit: int = 50
+    agent_id: Optional[str] = None, since: Optional[str] = None, limit: int = 50
 ):
     """Get message history."""
     return message_bus.get_message_history(agent_id, since, limit)
