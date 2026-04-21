@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 """
 AMOS Equation Knowledge Bridge
 ==============================
@@ -22,7 +23,6 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 UTC = timezone.utc
 
-UTC = UTC
 from enum import Enum
 from pathlib import Path
 from typing import Any, Optional
