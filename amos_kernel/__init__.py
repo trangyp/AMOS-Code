@@ -114,6 +114,12 @@ from .nl_processor import (
 # Persistence Layer
 from .persistence import AxiomPersistence, AxiomPersistenceConfig, get_axiom_persistence
 
+# FastAPI Integration
+from .fastapi_integration import (
+    create_kernel_app,
+    create_kernel_router,
+)
+
 __all__ = [
     # L0 - Law Layer
     "UniversalLawKernel",
@@ -142,6 +148,9 @@ __all__ = [
     "AMOSKernelClient",
     "get_kernel",
     "create_kernel",
+    # FastAPI Integration
+    "create_kernel_app",
+    "create_kernel_router",
     # Axiom State Model
     "AxiomState",
     "ClassicalState",

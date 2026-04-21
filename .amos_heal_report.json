@@ -1,0 +1,10 @@
+{
+  "scan_id": "heal-1776744429",
+  "files_scanned": 27297,
+  "files_fixed": 0,
+  "fixes_applied": [],
+  "errors": [],
+  "timestamp": "2026-04-21T04:07:09.711760+00:00",
+  "repo_layer": "AMOS-Code",
+  "canonical_version": "1.0.0"
+}
