@@ -14,9 +14,10 @@ from __future__ import annotations
 
 import time
 from datetime import datetime, timezone
-UTC = timezone.utc
 from enum import Enum
-from typing import Any
+from typing import Any, Optional
+
+UTC = timezone.utc
 
 # SuperBrain integration
 try:
@@ -41,8 +42,8 @@ class HealthCheck:
     def __init__(self, name: str, critical: bool = True):
         self.name = name
         self.critical = critical
-        self.last_check: datetime = None
-        self.last_result: bool = None
+        self.last_check: Optional[datetime] = None
+        self.last_result: Optional[bool] = None
 
     async def check(self) -> tuple[bool, str]:
         """Perform health check. Returns (passed, message)."""

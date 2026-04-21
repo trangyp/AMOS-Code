@@ -386,6 +386,39 @@ def cmd_compile(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_unified(args) -> int:
+    """Execute through full AMOS unified pipeline."""
+    instruction = args.instruction
+    if not instruction:
+        print("Error: --instruction required")
+        return 1
+
+    import asyncio
+    from amos_unified_runtime import amos_execute
+
+    print(f"🚀 AMOS Unified Runtime")
+    print(f"📝 Instruction: {instruction}\n")
+
+    result = asyncio.run(amos_execute(instruction, args.repo_path))
+
+    if result.get("status") == "completed":
+        print(f"✓ Execution completed in {result.get('duration_seconds', 0):.2f}s")
+        print(f"\n📊 Phases:")
+        for phase in result.get("phases", []):
+            icon = "✓" if phase.get("status") in ("completed", "passed") else "○"
+            print(f"  {icon} {phase['phase']}: {phase['status']}")
+
+        results = result.get("results", {})
+        if results.get("generated_files"):
+            print(f"\n📁 Generated files:")
+            for f in results["generated_files"]:
+                print(f"  • {f}")
+        return 0
+    else:
+        print(f"✗ Execution failed: {result.get('error', 'Unknown error')}")
+        return 1
+
+
 def main() -> int:
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(
@@ -451,6 +484,17 @@ def main() -> int:
     compile_p.add_argument("--rollback", action="store_true", help="Enable rollback on failure")
     compile_p.add_argument("--scope", help="Limit scope to specific path")
 
+    # Unified runtime command - full AMOS pipeline
+    unified_p = subparsers.add_parser(
+        "unified", help="Execute through full AMOS unified pipeline"
+    )
+    unified_p.add_argument(
+        "--instruction", "-i", required=True, help="Task instruction"
+    )
+    unified_p.add_argument(
+        "--repo-path", "-r", default=".", help="Repository path"
+    )
+
     args = parser.parse_args()
 
     if not args.command:
@@ -471,6 +515,7 @@ def main() -> int:
         "muscle": cmd_muscle,
         "compile": cmd_compile,
         "c": cmd_compile,
+        "unified": cmd_unified,
     }
 
     handler = commands.get(args.command)

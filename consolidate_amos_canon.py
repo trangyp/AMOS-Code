@@ -16,7 +16,6 @@ import filecmp
 import os
 import shutil
 from pathlib import Path
-from typing import dict, list, tuple
 
 REPO_ROOT = Path("/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code")
 
