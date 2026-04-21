@@ -68,6 +68,7 @@ from .integration_bus import (
     BusPriority,
     BusSubscription,
     BusType,
+    FrontendBus,
     IntegrationBus,
     MemoryBus,
     MemoryEntry,
@@ -76,10 +77,24 @@ from .integration_bus import (
     ModelRequest,
     ModelResponse,
     ModelRouter,
+    PolicyBus,
+    ProtocolBus,
+    RuntimeBus,
+    SyncBus,
     ToolBus,
     ToolDefinition,
     ToolRegistry,
+    UIComponent,
+    UIEvent,
     get_bus_coordinator,
+)
+
+# Axiom Engine Loader (Section 104)
+from .engine_loader import (
+    AMOSEngine,
+    EngineCapability,
+    EngineRegistry,
+    get_engine_registry,
 )
 
 # Axiom NL Processor (Section 105)
@@ -168,8 +183,20 @@ __all__ = [
     "ToolBus",
     "ToolDefinition",
     "ToolRegistry",
+    "ProtocolBus",
+    "RuntimeBus",
+    "FrontendBus",
+    "PolicyBus",
+    "SyncBus",
+    "UIComponent",
+    "UIEvent",
     "BusCoordinator",
     "get_bus_coordinator",
+    # Axiom Engine Loader
+    "AMOSEngine",
+    "EngineCapability",
+    "EngineRegistry",
+    "get_engine_registry",
     # Axiom NL Processor
     "RiskLevel",
     "CommandStatus",

@@ -11,11 +11,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+from typing import Any, Optional
 
 UTC = timezone.utc
-
-UTC = timezone.utc
-from typing import Any
 
 # Try to import brain components
 try:
@@ -81,7 +79,7 @@ class BrainClient:
     """
 
     def __init__(self):
-        self._brain: IntegratedBrainAPI | None = None
+        self._brain: Optional[IntegratedBrainAPI] = None
         self._initialized = False
         self._task_count = 0
 
@@ -446,7 +444,7 @@ Provide:
 
 
 # Singleton instance
-_brain_client_instance: BrainClient | None = None
+_brain_client_instance: Optional[BrainClient] = None
 
 
 def get_brain_client() -> BrainClient:
