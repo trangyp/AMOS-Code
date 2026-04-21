@@ -99,6 +99,12 @@ from .engine_loader import (
     get_engine_registry,
 )
 
+# Legacy Brain Loader (Section 105)
+from .legacy_brain_loader import (
+    LegacyBrainLoader,
+    activate_legacy_brain,
+)
+
 # Axiom NL Processor (Section 105)
 from .nl_processor import (
     CommandLedger,
