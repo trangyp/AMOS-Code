@@ -1,0 +1,16 @@
+{
+  "name": "AMOS Universe",
+  "version": "1.0",
+  "layers": [
+    "L0_VOID",
+    "L1_BEING",
+    "L2_BECOMING",
+    "L3_LOGIC",
+    "L4_PHYSICAL",
+    "L5_LIFE",
+    "L6_MIND",
+    "L7_SOCIAL"
+  ],
+  "total_layers": 8,
+  "description": "Multi-layer universal reference model"
+}

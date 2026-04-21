@@ -107,11 +107,9 @@ class AsyncTaskProcessor:
                     duration_ms=(asyncio.get_event_loop().time() - start_time) * 1000,
                 )
 
-    async def submit_many[
-        T
-    ](
+    async def submit_many(
         self,
-        tasks: list[tuple[str, str, Awaitable[T]]],
+        tasks: list[tuple[str, str, Awaitable[Any]]],
     ) -> AsyncGenerator[TaskResult, None]:
         """Submit multiple tasks and yield results as they complete."""
         async with asyncio.TaskGroup() as tg:
@@ -126,14 +124,13 @@ class AsyncTaskProcessor:
                 try:
                     result = await asyncio_task
                     yield result
-                except* Exception as eg:
-                    for e in eg.exceptions:
-                        task_id, name = task_map.get(asyncio_task, ("unknown", "unknown"))
-                        yield TaskResult(
-                            task_id=task_id,
-                            success=False,
-                            error=str(e),
-                        )
+                except Exception as e:
+                    task_id, name = task_map.get(asyncio_task, ("unknown", "unknown"))
+                    yield TaskResult(
+                        task_id=task_id,
+                        success=False,
+                        error=str(e),
+                    )
 
     async def shutdown(self):
         """Graceful shutdown."""
@@ -141,7 +138,7 @@ class AsyncTaskProcessor:
         # Wait for running tasks to complete
         await asyncio.sleep(0.1)
 
-    def get_task(self, task_id: str) -> Task | None:
+    def get_task(self, task_id: str) -> Optional[Task]:
         """Get task by ID."""
         return self.tasks.get(task_id)
 

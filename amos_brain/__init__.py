@@ -146,6 +146,18 @@ def _lazy_import(module_name: str):
                 from .real_learning_engine import Procedure as proc
 
                 _lazy_modules[module_name] = proc
+            elif module_name == "get_openclaw_bridge":
+                from .openclaw_execution_bridge import get_openclaw_bridge as goc
+
+                _lazy_modules[module_name] = goc
+            elif module_name == "amos_openclaw_health":
+                from .openclaw_execution_bridge import amos_openclaw_health as aoh
+
+                _lazy_modules[module_name] = aoh
+            elif module_name == "detect_openclaw_fakes":
+                from .openclaw_fake_detector import detect_openclaw_fakes as dof
+
+                _lazy_modules[module_name] = dof
             elif module_name == "Pattern":
                 from .real_learning_engine import Pattern as pat
 

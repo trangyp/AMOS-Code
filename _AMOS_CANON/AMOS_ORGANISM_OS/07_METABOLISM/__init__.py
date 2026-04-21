@@ -1,0 +1,1 @@
+"""07_METABOLISM - AMOS ORGANISM OS subsystem."""
