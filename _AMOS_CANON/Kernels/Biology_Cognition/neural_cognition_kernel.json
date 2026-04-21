@@ -1,0 +1,54 @@
+[
+  {
+    "meta": {
+      "name": "Neural_Cognition_MAX",
+      "kernel_source": "Biological_Cognitive_Architecture",
+      "version": "1.0.0",
+      "created_utc": "2025-04-21T10:00:00.000000Z",
+      "density_profile": "kernel_x100k_virtual",
+      "description": "MAX-density neural cognition kernel integrating neuroscience and somatic intelligence."
+    },
+    "kernel": {
+      "kernel_name": "Neural_Cognition_ULTRA_Kernel",
+      "version": "1.0",
+      "scope": "Cross-domain biological cognition integrating neuroscience and predictive processing.",
+      "domains": {
+        "neuroscience": {
+          "principles": [
+            "predictive_processing",
+            "free_energy_principle",
+            "embodied_cognition"
+          ],
+          "rules": [
+            "NEURO_RULE_1: Brain operates as prediction engine minimizing free energy.",
+            "NEURO_RULE_2: Cognition is embodied in action-perception loops.",
+            "NEURO_RULE_3: Neural plasticity enables continuous learning."
+          ]
+        },
+        "somatic_intelligence": {
+          "principles": [
+            "interoception",
+            "proprioception",
+            "somatic_markers"
+          ],
+          "rules": [
+            "SOMATIC_RULE_1: Bodily states inform cognitive processing.",
+            "SOMATIC_RULE_2: Interoceptive awareness guides decision-making."
+          ]
+        }
+      },
+      "equations": [
+        "F = E - H (Free Energy)",
+        "P(s|o) proportional to P(o|s) * P(s) (Bayesian)",
+        "dF/dt <= 0 (Minimization)"
+      ],
+      "invariants": [
+        "INV_NEURO_1: Systems minimize variational free energy.",
+        "INV_NEURO_2: Predictions updated via prediction errors."
+      ],
+      "references": [
+        "Friston, K. (2010). The free-energy principle."
+      ]
+    }
+  }
+]

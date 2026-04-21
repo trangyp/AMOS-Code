@@ -18,7 +18,7 @@ from collections.abc import AsyncIterator
 from datetime import datetime, timezone, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from fastapi import APIRouter, Query
 from fastapi.responses import StreamingResponse
@@ -105,9 +105,9 @@ class MemoryMetrics(BaseModel):
 
     total_entries: int
     memory_usage_mb: float
-    entries_by_type:dict[str, int]
-    oldest_entry: Optional[datetime] =None
-    newest_entry: Optional[datetime] = None
+    entries_by_type: dict[str, int]
+    oldest_entry: datetime | None = None
+    newest_entry: datetime | None = None
     retention_rate: float
     access_frequency: float
 
@@ -424,7 +424,7 @@ class AnalyticsEngine:
 
 
 #Global engine
-_analytics_engine: Optional[AnalyticsEngine] = None
+_analytics_engine: AnalyticsEngine | None = None
 
 
 def get_analytics_engine() -> AnalyticsEngine:

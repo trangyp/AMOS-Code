@@ -18,10 +18,7 @@ import re
 import time
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc, timedelta, timezone
-
-UTC = UTC
+from datetime import datetime, timedelta, timezone
 from enum import Enum, auto
 from urllib.parse import urlparse
 

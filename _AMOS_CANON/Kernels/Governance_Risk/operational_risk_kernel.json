@@ -1,0 +1,43 @@
+[
+  {
+    "meta": {
+      "name": "Operational_Risk_MAX",
+      "kernel_source": "Governance_Risk_Architecture",
+      "version": "1.0.0",
+      "created_utc": "2025-04-21T10:00:00.000000Z",
+      "density_profile": "kernel_x100k_virtual",
+      "description": "MAX-density operational risk kernel integrating COSO, Basel, ISO 31000."
+    },
+    "kernel": {
+      "kernel_name": "Operational_Risk_ULTRA_Kernel",
+      "version": "1.0",
+      "scope": "Cross-domain operational risk governance.",
+      "domains": {
+        "risk_frameworks": {
+          "principles": [
+            "risk_identification",
+            "risk_assessment",
+            "risk_mitigation"
+          ],
+          "rules": [
+            "RISK_RULE_1: All risks must be identified and catalogued.",
+            "RISK_RULE_2: Risk assessment requires quantitative and qualitative analysis.",
+            "RISK_RULE_3: Risk appetite must be defined organization-wide."
+          ]
+        }
+      },
+      "equations": [
+        "Risk = Probability x Impact",
+        "Residual Risk = Inherent Risk - Control Effectiveness"
+      ],
+      "invariants": [
+        "INV_RISK_1: Total risk exposure must not exceed risk appetite.",
+        "INV_RISK_2: All material risks must have assigned owners."
+      ],
+      "references": [
+        "COSO ERM Framework 2017",
+        "ISO 31000:2018"
+      ]
+    }
+  }
+]

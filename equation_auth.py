@@ -56,10 +56,7 @@ import hashlib
 import logging
 import secrets
 import uuid
-from datetime import datetime, timezone
-UTC = timezone.utc, timedelta
-
-UTC = UTC
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 from functools import wraps
 from typing import Any

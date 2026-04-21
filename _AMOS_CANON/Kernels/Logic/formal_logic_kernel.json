@@ -1,0 +1,51 @@
+[
+  {
+    "meta": {
+      "name": "Formal_Logic_MAX",
+      "kernel_source": "Mathematical_Logic_Architecture",
+      "version": "1.0.0",
+      "created_utc": "2025-04-21T10:00:00.000000Z",
+      "density_profile": "kernel_x100k_virtual",
+      "description": "MAX-density formal logic kernel integrating classical and constructive logics."
+    },
+    "kernel": {
+      "kernel_name": "Formal_Logic_ULTRA_Kernel",
+      "version": "1.0",
+      "scope": "Cross-domain logical reasoning.",
+      "domains": {
+        "classical_logic": {
+          "principles": [
+            "law_of_excluded_middle",
+            "law_of_non_contradiction"
+          ],
+          "rules": [
+            "CLASS_RULE_1: Every proposition is either true or false.",
+            "CLASS_RULE_2: No proposition can be both true and false."
+          ]
+        },
+        "constructive_logic": {
+          "principles": [
+            "proof_as_program",
+            "type_theory"
+          ],
+          "rules": [
+            "CONS_RULE_1: To prove A and B, prove A and prove B.",
+            "CONS_RULE_2: To prove A implies B, assume A and prove B."
+          ]
+        }
+      },
+      "equations": [
+        "forall x. P(x) (Universal)",
+        "exists x. P(x) (Existential)",
+        "A -> B (Implication)"
+      ],
+      "invariants": [
+        "INV_LOGIC_1: Soundness - provable statements are valid.",
+        "INV_LOGIC_2: Consistency - no contradictions provable."
+      ],
+      "references": [
+        "Gentzen, G. (1935). Logical Deduction."
+      ]
+    }
+  }
+]

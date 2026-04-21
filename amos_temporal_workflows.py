@@ -1,10 +1,7 @@
 """AMOS Temporal Workflows - Durable execution for cross-repo operations."""
 
 from dataclasses import dataclass
-from datetime import datetime, timezone
-UTC = timezone.utc, timedelta, timezone
-
-UTC = UTC
+from datetime import datetime, timedelta, timezone
 from typing import Any, Optional
 
 from temporalio import activity, workflow

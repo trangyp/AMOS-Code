@@ -11,10 +11,7 @@ Version: 3.0.0
 from __future__ import annotations
 
 import os
-from datetime import datetime, timezone
-UTC = timezone.utc, timedelta, timezone
-
-UTC = UTC
+from datetime import datetime, timedelta, timezone
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
