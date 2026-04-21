@@ -263,8 +263,7 @@ class IntelligentModernizer:
                 # Add timezone import if needed
                 if "from datetime import datetime" in content and "timezone" not in content:
                     content = content.replace(
-                        "from datetime import datetime", "from datetime import datetime, timezone
-UTC = timezone.utc"
+                        "from datetime import datetime", "from datetime import datetime, timezone\nUTC = timezone.utc"
                     )
                     results["changes"] += 1
                     results["details"].append("Added timezone import")

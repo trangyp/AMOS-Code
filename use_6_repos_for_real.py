@@ -136,11 +136,9 @@ def fix_file_real(filepath: Path) -> tuple[bool, list[str]]:
     # ═════════════════════════════════════════════════════════════════════════
     # Fix 1: UTC import pattern
     # ═════════════════════════════════════════════════════════════════════════
-    if "from datetime import datetime, timezone
-UTC = timezone.utc" in content:
+    if "from datetime import datetime, timezone\nUTC = timezone.utc" in content:
         content = content.replace(
-            "from datetime import datetime, timezone
-UTC = timezone.utc",
+            "from datetime import datetime, timezone\nUTC = timezone.utc",
             "from datetime import datetime, timezone\nUTC = timezone.utc"
         )
         fixes_applied.append("UTC -> timezone.utc")

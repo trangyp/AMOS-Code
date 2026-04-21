@@ -19,13 +19,10 @@ for root, dirs, files in os.walk('.'):
                 
                 original = content
                 
-                # Fix 1: from datetime import datetime, timezone
-UTC = timezone.utc
-                if 'from datetime import datetime, timezone
-UTC = timezone.utc' in content:
+                # Fix 1: from datetime import datetime, timezone UTC = timezone.utc
+                if 'from datetime import datetime, timezone\nUTC = timezone.utc' in content:
                     content = content.replace(
-                        'from datetime import datetime, timezone
-UTC = timezone.utc',
+                        'from datetime import datetime, timezone\nUTC = timezone.utc',
                         'from datetime import datetime, timezone\nUTC = timezone.utc'
                     )
                     fixes += 1
