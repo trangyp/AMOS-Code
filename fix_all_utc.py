@@ -23,11 +23,9 @@ def fix_utc_imports(filepath: Path):
          'from datetime import datetime, timedelta, timezone\nUTC = timezone.utc'),
         (r'from datetime import datetime, timezone',
          'from datetime import datetime, timezone\nUTC = timezone.utc'),
-        (r'from datetime import datetime, timezone
-UTC = timezone.utc, timezone',
+        (r'from datetime import datetime, timezone\nUTC = timezone\.utc, timezone',
          'from datetime import timezone\nUTC = timezone.utc'),
-        (r'from datetime import datetime, timezone
-UTC = timezone.utc\n',
+        (r'from datetime import datetime, timezone\nUTC = timezone\.utc\n',
          'from datetime import timezone\nUTC = timezone.utc\n'),
     ]
 
