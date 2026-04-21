@@ -117,13 +117,10 @@ def fix_file_proper(filepath: Path) -> tuple[bool, list[str]]:
     original = content
     fixes_applied = []
 
-    # Fix 1: from datetime import datetime, timezone
-UTC = timezone.utc
-    if "from datetime import datetime, timezone
-UTC = timezone.utc" in content:
+    # Fix 1: from datetime import datetime, timezone UTC = timezone.utc
+    if "from datetime import datetime, timezone\nUTC = timezone.utc" in content:
         content = content.replace(
-            "from datetime import datetime, timezone
-UTC = timezone.utc",
+            "from datetime import datetime, timezone\nUTC = timezone.utc",
             "from datetime import datetime, timezone\nUTC = timezone.utc"
         )
         fixes_applied.append("UTC fix")
