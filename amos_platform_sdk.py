@@ -28,13 +28,10 @@ import json
 import logging
 from collections.abc import AsyncIterator
 from dataclasses import dataclass, field
-from datetime import UTC, timezone
-
-UTC = UTC
+from datetime import timezone
+UTC = timezone.utc
 from typing import Any
 from urllib.parse import urljoin
-
-UTC = timezone.utc
 # Real HTTP client
 try:
     import aiohttp
