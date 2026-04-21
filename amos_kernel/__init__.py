@@ -120,11 +120,14 @@ from .nl_processor import (
 # Persistence Layer
 from .persistence import AxiomPersistence, AxiomPersistenceConfig, get_axiom_persistence
 
-# FastAPI Integration
-from .fastapi_integration import (
-    create_kernel_app,
-    create_kernel_router,
-)
+# FastAPI Integration - lazy import to avoid circular dependency
+def create_kernel_app(*args, **kwargs):
+    from .fastapi_integration import create_kernel_app as _create_app
+    return _create_app(*args, **kwargs)
+
+def create_kernel_router(*args, **kwargs):
+    from .fastapi_integration import create_kernel_router as _create_router
+    return _create_router(*args, **kwargs)
 
 __all__ = [
     # L0 - Law Layer

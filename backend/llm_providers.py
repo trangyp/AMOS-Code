@@ -373,6 +373,7 @@ class BrainProvider(BaseProvider):
 
             amos_root = Path(__file__).parent.parent.resolve()
             if str(amos_root) not in sys.path:
+                sys.path.insert(0, str(amos_root))
 
             from amos_brain.facade import BrainClient
 

@@ -107,6 +107,7 @@ async def get_siks_stack():
     try:
         amos_root = Path(__file__).parent.parent.parent.resolve()
         if str(amos_root) not in sys.path:
+            sys.path.insert(0, str(amos_root))
 
         # Import SIKS module
 
