@@ -12,9 +12,8 @@ Uses actual AMOS brain infrastructure:
 import ast
 import subprocess
 import sys
-from datetime import UTC, datetime
-
-UTC = UTC
+from datetime import datetime, timezone
+UTC = timezone.utc
 from pathlib import Path
 from typing import Any
 
