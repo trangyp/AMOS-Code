@@ -1,0 +1,581 @@
+{
+  "meta": {
+    "name": "Unified_Design_Kernel_vInfinity_SUPER",
+    "version": "v1.0.0",
+    "created_at_utc": "2025-11-27T22:53:35.213822Z",
+    "description": "Most powerful AMOS design kernel: 96 design clusters × 20 dimensions with x100k virtual expansion, mapping functions, reasoning modes, and governance. Covers visual, UX, product, service, org, business, market, and planetary design.",
+    "density_profile": "kernel_x100k_virtual",
+    "cluster_count": 96,
+    "dimension_count": 20
+  },
+  "kernel": {
+    "cluster_space": {
+      "total_clusters": 96,
+      "domain_buckets": {
+        "visual_identity": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "brand_language": [
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "product_experience": [
+          13,
+          14,
+          15,
+          16,
+          17,
+          18
+        ],
+        "interaction_ux": [
+          19,
+          20,
+          21,
+          22,
+          23,
+          24
+        ],
+        "information_design": [
+          25,
+          26,
+          27,
+          28,
+          29,
+          30
+        ],
+        "service_experience": [
+          31,
+          32,
+          33,
+          34,
+          35,
+          36
+        ],
+        "org_process_design": [
+          37,
+          38,
+          39,
+          40,
+          41,
+          42
+        ],
+        "business_model_design": [
+          43,
+          44,
+          45,
+          46,
+          47,
+          48
+        ],
+        "system_layout_design": [
+          49,
+          50,
+          51,
+          52,
+          53,
+          54
+        ],
+        "content_narrative": [
+          55,
+          56,
+          57,
+          58,
+          59,
+          60
+        ],
+        "learning_enablement": [
+          61,
+          62,
+          63,
+          64,
+          65,
+          66
+        ],
+        "governance_policy_design": [
+          67,
+          68,
+          69,
+          70,
+          71,
+          72
+        ],
+        "measurement_reporting": [
+          73,
+          74,
+          75,
+          76,
+          77,
+          78
+        ],
+        "market_ecosystem_design": [
+          79,
+          80,
+          81,
+          82,
+          83,
+          84
+        ],
+        "planetary_local_context": [
+          85,
+          86,
+          87,
+          88,
+          89,
+          90
+        ],
+        "meta_design_ops": [
+          91,
+          92,
+          93,
+          94,
+          95,
+          96
+        ]
+      },
+      "cluster_descriptions": {
+        "1": "logo_mark_system",
+        "2": "typography_system",
+        "3": "color_system",
+        "4": "iconography_system",
+        "5": "image_style_system",
+        "6": "motion_identity_system",
+        "7": "tone_of_voice",
+        "8": "messaging_architecture",
+        "9": "brand_storyline",
+        "10": "positioning_frames",
+        "11": "tagline_and_core_claims",
+        "12": "brand_naming_system",
+        "13": "product_surface_ui",
+        "14": "product_information_architecture",
+        "15": "onboarding_flows",
+        "16": "core_usage_flows",
+        "17": "error_and_recovery_flows",
+        "18": "offboarding_and_exit_flows",
+        "19": "interaction_patterns",
+        "20": "control_layouts",
+        "21": "feedback_and_status_patterns",
+        "22": "input_output_patterns",
+        "23": "navigation_systems",
+        "24": "accessibility_patterns",
+        "25": "dashboard_layouts",
+        "26": "data_visualization",
+        "27": "reporting_templates",
+        "28": "hierarchy_and_reading_order",
+        "29": "dense_information_compression",
+        "30": "multi_language_layouts",
+        "31": "service_blueprints",
+        "32": "customer_journeys",
+        "33": "frontstage_backstage_mapping",
+        "34": "support_experience_design",
+        "35": "incident_and_complaint_flows",
+        "36": "retention_loops",
+        "37": "org_structure_design",
+        "38": "role_and_responsibility_maps",
+        "39": "process_flows_and_sops",
+        "40": "meeting_and_cadence_design",
+        "41": "decision_rights_and_approval_flows",
+        "42": "knowledge_sharing_systems",
+        "43": "value_proposition_matrix",
+        "44": "pricing_and_package_design",
+        "45": "channel_and_distribution_design",
+        "46": "revenue_model_layouts",
+        "47": "partner_and_platform_design",
+        "48": "risk_and_control_overlays",
+        "49": "layout_systems_for_docs",
+        "50": "layout_systems_for_slides",
+        "51": "layout_systems_for_dashboards",
+        "52": "layout_systems_for_interfaces",
+        "53": "layout_systems_for_spaces",
+        "54": "multi_surface_consistency_maps",
+        "55": "long_form_content_structures",
+        "56": "short_form_content_structures",
+        "57": "story_arcs_and_beats",
+        "58": "evidence_and_reference_layouts",
+        "59": "call_to_action_structures",
+        "60": "multi_channel_content_orchestration",
+        "61": "training_material_design",
+        "62": "playbooks_and_guides",
+        "63": "checklist_and_toolkit_design",
+        "64": "assessment_and_feedback_forms",
+        "65": "learning_path_mappings",
+        "66": "change_enablement_packages",
+        "67": "policy_document_design",
+        "68": "standard_and_guideline_layouts",
+        "69": "risk_register_and_control_frames",
+        "70": "exception_and_waiver_flows",
+        "71": "compliance_reporting_templates",
+        "72": "audit_trail_communication_design",
+        "73": "kpi_and_metric_boards",
+        "74": "exec_summary_design",
+        "75": "scenario_and_option_comparisons",
+        "76": "before_after_state_maps",
+        "77": "portfolio_and_roadmap_frames",
+        "78": "evidence_packaging_for_decisions",
+        "79": "category_map_design",
+        "80": "ecosystem_map_design",
+        "81": "competition_and_substitute_maps",
+        "82": "stakeholder_constellation_maps",
+        "83": "country_and_region_specific_design",
+        "84": "industry_and_segment_specific_design",
+        "85": "urban_context_design",
+        "86": "rural_context_design",
+        "87": "climate_and_environmental_constraints_maps",
+        "88": "infrastructure_and_access_constraints_maps",
+        "89": "cultural_norm_and_sensitivity_maps",
+        "90": "regulatory_context_overlays",
+        "91": "design_system_governance",
+        "92": "design_tokens_and_libraries",
+        "93": "templates_and_starter_kits",
+        "94": "design_review_and_signoff_flows",
+        "95": "design_quality_and_health_metrics",
+        "96": "design_ops_and_workflow_orchestration"
+      }
+    },
+    "dimension_space": {
+      "total_dimensions": 20,
+      "dimensions": {
+        "01": "perceptual_clarity",
+        "02": "cognitive_load",
+        "03": "behavioral_outcome_fit",
+        "04": "emotional_tone_and_safety",
+        "05": "identity_alignment",
+        "06": "consistency_and_system_fit",
+        "07": "accessibility_and_inclusion",
+        "08": "information_density_and_legibility",
+        "09": "time_and_effort_cost",
+        "10": "error_prevention_and_recovery",
+        "11": "implementation_feasibility",
+        "12": "operational_maintainability",
+        "13": "economic_impact",
+        "14": "risk_and_compliance_fit",
+        "15": "cross_channel_integrity",
+        "16": "org_adoption_and_behavior_fit",
+        "17": "market_cultural_fit",
+        "18": "planetary_and_context_fit",
+        "19": "evolution_and_scalability",
+        "20": "evidence_and_measurement_strength"
+      }
+    },
+    "virtual_expansion_model": {
+      "density_level": "x100k_virtual",
+      "virtual_layer_count": 100000,
+      "axes": {
+        "cluster_id": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          59,
+          60,
+          61,
+          62,
+          63,
+          64,
+          65,
+          66,
+          67,
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+          76,
+          77,
+          78,
+          79,
+          80,
+          81,
+          82,
+          83,
+          84,
+          85,
+          86,
+          87,
+          88,
+          89,
+          90,
+          91,
+          92,
+          93,
+          94,
+          95,
+          96
+        ],
+        "dimension_id": [
+          "01",
+          "02",
+          "03",
+          "04",
+          "05",
+          "06",
+          "07",
+          "08",
+          "09",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "19",
+          "20"
+        ],
+        "resolution": [
+          "component",
+          "screen_or_page",
+          "flow",
+          "product_orservice",
+          "org_or_process",
+          "portfolio",
+          "market_or_country"
+        ],
+        "artifact_type": [
+          "doc",
+          "slide_deck",
+          "dashboard",
+          "interface",
+          "service_blueprint",
+          "journey_map",
+          "policy_pack",
+          "report_pack"
+        ],
+        "channel": [
+          "web",
+          "mobile_app",
+          "desktop_app",
+          "email",
+          "chat",
+          "in_person",
+          "print",
+          "other"
+        ],
+        "time_horizon": [
+          "immediate",
+          "launch",
+          "six_months",
+          "one_year",
+          "three_years"
+        ],
+        "audience_type": [
+          "end_user",
+          "customer_exec",
+          "internal_exec",
+          "operator_or_staff",
+          "regulator_or_auditor",
+          "partner"
+        ],
+        "risk_profile": [
+          "low_risk",
+          "medium_risk",
+          "high_risk_regulated"
+        ]
+      },
+      "notes": [
+        "Each virtual stateframe is a point in this design tensor space.",
+        "Use this to derive specific design evaluations, proposals, or evolution plans without storing all x100k layers."
+      ]
+    },
+    "mapping_functions": {
+      "F_cluster_selection": {
+        "input": [
+          "problem_description",
+          "artifact_type",
+          "scope",
+          "context"
+        ],
+        "output": "D_cluster_vector (96-dim)",
+        "logic": "Map natural-language description into an activation vector over 96 design clusters."
+      },
+      "F_dimension_projection": {
+        "input": [
+          "D_cluster_vector",
+          "desired_outcomes",
+          "constraints"
+        ],
+        "output": "D_dimension_vector (20-dim)",
+        "logic": "Identify which design dimensions are most critical for this task."
+      },
+      "F_tensor_instantiation": {
+        "input": [
+          "D_cluster_vector",
+          "D_dimension_vector",
+          "resolution",
+          "artifact_type",
+          "channel",
+          "audience_type",
+          "risk_profile"
+        ],
+        "output": "local_design_state_tensor",
+        "logic": "Form the local tensor slice used to reason about a specific artifact or system."
+      },
+      "F_design_synthesis": {
+        "input": [
+          "local_design_state_tensor",
+          "constraints",
+          "desired_outcomes"
+        ],
+        "output": {
+          "structure": "sections_or_frames",
+          "hierarchy": "ordering_and_grouping",
+          "layout": "spatial_andinformation_map",
+          "interaction": "inputs_feedback_andrecovery",
+          "copy_frames": "message_slots_evidence_and_ctas"
+        },
+        "logic": "Generate candidate design structures consistent with the kernel state."
+      },
+      "F_design_evaluation": {
+        "input": [
+          "existing_design_representation",
+          "local_design_state_tensor",
+          "constraints"
+        ],
+        "output": {
+          "scorecard_by_dimension": "0_100_per_dimension",
+          "gap_list_by_cluster": "over_and_under_expressed_clusters",
+          "refinement_suggestions": "specific_changes_by_section_or_flow"
+        },
+        "logic": "Evaluate and critique an existing design against the kernel."
+      },
+      "F_evolution_path": {
+        "input": [
+          "current_design_state",
+          "target_design_state",
+          "time_horizon"
+        ],
+        "output": "phased_evolution_roadmap",
+        "logic": "Plan design changes over time across surfaces/org/market."
+      }
+    },
+    "reasoning_modes": {
+      "mode_1_decomposition": {
+        "description": "Understand and map a design problem without generating artifacts.",
+        "pipeline": [
+          "F_cluster_selection",
+          "F_dimension_projection",
+          "F_tensor_instantiation"
+        ]
+      },
+      "mode_2_synthesis": {
+        "description": "Generate new design structures (flows, decks, docs, dashboards, journeys).",
+        "pipeline": [
+          "F_cluster_selection",
+          "F_dimension_projection",
+          "F_tensor_instantiation",
+          "F_design_synthesis"
+        ]
+      },
+      "mode_3_evaluation": {
+        "description": "Evaluate and critique existing designs with scorecards and gap maps.",
+        "pipeline": [
+          "F_cluster_selection",
+          "F_dimension_projection",
+          "F_tensor_instantiation",
+          "F_design_evaluation"
+        ]
+      },
+      "mode_4_evolution_planning": {
+        "description": "Plan incremental design evolution across time and surfaces.",
+        "pipeline": [
+          "F_cluster_selection",
+          "F_dimension_projection",
+          "F_tensor_instantiation",
+          "F_evolution_path"
+        ]
+      }
+    },
+    "policies": {
+      "quality_policy": [
+        "Always respect legibility, clarity, and accessibility before aesthetic experimentation.",
+        "State explicit trade-offs when recommending dense vs sparse information layouts.",
+        "Flag high-risk or regulated surfaces (finance, health, government) as REQUIRING_HUMAN_REVIEW."
+      ],
+      "accessibility_policy": [
+        "Prefer designs that can be implemented to meet WCAG-like accessibility standards.",
+        "Avoid recommending color-only distinctions for critical information.",
+        "Consider cognitive load and reading order in every artifact."
+      ],
+      "brand_and_ethics_policy": [
+        "Do not fabricate claims, metrics, or endorsements in any design output.",
+        "Keep brand voice aligned with the described identity and audience; no exaggerated promises.",
+        "Avoid manipulative or dark-pattern interaction designs."
+      ]
+    },
+    "routing": {
+      "by_task_type": {
+        "create_new_artifact": "mode_2_synthesis",
+        "redesign_existing_artifact": "mode_3_evaluation",
+        "plan_design_system_or_roadmap": "mode_4_evolution_planning",
+        "understand_problem_only": "mode_1_decomposition"
+      }
+    }
+  }
+}

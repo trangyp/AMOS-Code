@@ -13,6 +13,22 @@ Axiom Extensions:
 All runtime, build, and repair paths validate through this stack.
 """
 
+# AUTO-INTEGRATE ALL 6 REPOSITORIES
+import sys
+from pathlib import Path
+REPO_ROOT = Path(__file__).parent.parent
+AMOS_REPOS = REPO_ROOT / "AMOS_REPOS"
+for _repo_path in [
+    str(AMOS_REPOS / "AMOS-Code"),
+    str(AMOS_REPOS / "AMOS-Consulting"),
+    str(AMOS_REPOS / "AMOS-Claws"),
+    str(AMOS_REPOS / "Mailinhconect"),
+    str(AMOS_REPOS / "AMOS-Invest"),
+    str(AMOS_REPOS / "AMOS-UNIVERSE"),
+]:
+    if _repo_path not in sys.path:
+        sys.path.insert(0, _repo_path)
+
 # Axiom CLI and MCP Server
 from .axiom_cli import main as axiom_cli_main
 from .axiom_mcp_server import AxiomMCPServer
@@ -77,8 +93,11 @@ from .integration_bus import (
     ModelRequest,
     ModelResponse,
     ModelRouter,
-    MockProvider,
+    LLMProvider,
     OpenAIProvider,
+    LocalProvider,
+    MockProvider,
+    create_llm_provider,
     PolicyBus,
     ProtocolBus,
     RuntimeBus,
@@ -222,6 +241,9 @@ __all__ = [
     "EngineCapability",
     "EngineRegistry",
     "get_engine_registry",
+    # Legacy Brain Loader
+    "LegacyBrainLoader",
+    "activate_legacy_brain",
     # Axiom NL Processor
     "RiskLevel",
     "CommandStatus",

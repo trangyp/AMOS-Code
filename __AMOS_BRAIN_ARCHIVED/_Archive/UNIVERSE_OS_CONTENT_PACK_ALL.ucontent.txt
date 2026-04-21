@@ -1,0 +1,479 @@
+# UNIVERSE_OS_CONTENT_PACK_ALL.ucontent
+# Unified Content Pack for AMOS / Universe OS
+# CONTENT LAYER ONLY – plugs into ULK/UST/UIE/HIE/UMPL/UEL/CIL/UAI/URTA
+
+[METADATA]
+name        = "UNIVERSE_OS_CONTENT_PACK_ALL"
+version     = "v1.0"
+author      = "Trang (AMOS Canon)"
+scope       = "Multimodal human/animal/societal/planetary content"
+layer       = "CONTENT_ONLY"
+structure_ref = "ULK/UST/UIE/HIE"
+description = "Deterministic content patterns (states, behaviours, signals, tones, species, cultures, crises, etc.) compatible with AMOS OS."
+
+# ---------------------------------------------------------
+# 1. HUMAN_STATE_PACK
+# ---------------------------------------------------------
+
+[PACK:HUMAN_STATE_CORE]
+families = [
+  "BASELINE_REGULATED",
+  "MILD_ACTIVATION",
+  "HIGH_ACTIVATION",
+  "FREEZE_COLLAPSE",
+  "FIGHT_SURGE",
+  "FLIGHT_SURGE",
+  "FAWN_COMPLIANCE",
+  "PLAY_EXPANSION",
+  "FOCUSED_FLOW",
+  "DISSOCIATIVE_SPLIT",
+  "MANIC_ELEVATION",
+  "DEPRESSIVE_CONTRACTION",
+  "PSYCHOTIC_DRIFT",
+  "OBSESSIVE_LOCK",
+  "COMPULSIVE_DISCHARGE",
+  "EXISTENTIAL_TERROR",
+  "SPIRITUAL_OPENING",
+  "ENLIGHTENMENT_STILLNESS",
+  "RITUAL_TRANCE",
+  "RECOVERY_INTEGRATION"
+]
+
+[RULE:HUMAN_STATE_TEMPLATE]
+state_id         = "HS::<FAMILY>::<INTENSITY>::<VALENCE>::<FOCUS>"
+family_ref       = "<HUMAN_STATE_CORE.family>"
+intensity_level  = [0.0 .. 1.0]
+valence          = ["NEG", "NEU", "POS"]
+focus_domain     = ["SELF", "OTHER", "TASK", "WORLD", "VOID"]
+time_orientation = ["PAST", "PRESENT", "FUTURE", "TIMELESS"]
+
+breath_pattern   = ["deep_slow", "shallow_fast", "held", "irregular"]
+heart_rate_trend = ["down", "stable", "up"]
+muscle_tone      = ["low", "mixed", "high"]
+gut_signal       = ["calm", "tight", "nausea", "empty", "heavy"]
+facial_baseline  = ["soft", "neutral", "tense", "flat", "contorted"]
+
+thought_speed    = ["slowed", "normal", "racing", "fragmented"]
+thought_shape    = ["linear", "spiral", "looping", "scattered", "symbolic"]
+self_talk_tone   = ["supportive", "neutral", "critical", "attacking", "absent"]
+reality_anchor   = ["strong", "flexible", "weak", "broken"]
+
+approach_tendency = ["approach", "avoid", "freeze", "attack", "submit", "play"]
+speech_flow       = ["fluid", "hesitant", "blocked", "pressured", "disorganized"]
+gesture_style     = ["minimal", "precise", "expansive", "erratic"]
+decision_bias     = ["risk_averse", "risk_neutral", "risk_seeking", "impulsive"]
+
+# ---------------------------------------------------------
+# 2. EMOTION_TO_ACTION_MATRIX
+# ---------------------------------------------------------
+
+[PACK:EMOTION_ACTION_CORE]
+emotions = [
+  "FEAR",
+  "ANGER",
+  "SADNESS",
+  "JOY",
+  "DISGUST",
+  "SHAME",
+  "GUILT",
+  "ENVY",
+  "JEALOUSY",
+  "CURIOSITY",
+  "LOVE_CARE",
+  "PRIDE",
+  "CONTEMPT",
+  "BOREDOM",
+  "RELIEF"
+]
+
+[MAP:EMOTION_TO_ACTION_TEMPLATE]
+emotion      = "<EMOTION_ACTION_CORE.emotions>"
+intensity    = [0.0 .. 1.0]
+target       = ["SELF", "OTHER", "SYSTEM", "WORLD", "VOID"]
+perceived_threat = [0.0 .. 1.0]
+perceived_power  = [0.0 .. 1.0]
+
+P_ACTION = {
+  "CONFRONT"      : "f_confront(emotion,intensity,target,perceived_threat,perceived_power)",
+  "WITHDRAW"      : "f_withdraw(...)",
+  "APPEASE"       : "f_appease(...)",
+  "SEEK_SUPPORT"  : "f_seek_support(...)",
+  "FREEZE"        : "f_freeze(...)",
+  "REPAIR"        : "f_repair(...)",
+  "EXPLORE"       : "f_explore(...)",
+  "SABOTAGE"      : "f_sabotage(...)",
+  "SELF_ATTACK"   : "f_self_attack(...)"
+}
+
+# ---------------------------------------------------------
+# 3. SENSORY_MICRO_SIGNAL_PACK
+# ---------------------------------------------------------
+
+[PACK:VISUAL_MICRO_SIGNALS]
+signals = [
+  "blink_rate_up",
+  "blink_rate_down",
+  "stare_fixed",
+  "gaze_avoidance",
+  "gaze_scanning",
+  "micro_eye_narrow",
+  "micro_brow_lift_inner",
+  "micro_brow_lift_outer",
+  "jaw_clench",
+  "lip_press",
+  "lip_corner_tighten",
+  "smile_genuine",
+  "smile_polite",
+  "smile_suppressed",
+  "micro_head_tilt",
+  "head_pull_back",
+  "head_thrust_forward",
+  "shoulder_lift_micro",
+  "shoulder_collapse",
+  "torso_lean_in",
+  "torso_lean_back",
+  "foot_point_toward_exit",
+  "foot_point_toward_person",
+  "fidget_hands",
+  "freeze_body",
+  "micro_shrug",
+  "eye_roll_up",
+  "eye_roll_side",
+  "pupil_dilate",
+  "pupil_constrict"
+]
+
+[MAP:VISUAL_SIGNAL_TO_STATE]
+signal              = "<VISUAL_MICRO_SIGNALS.signals>"
+context             = "{ social_role, topic, hierarchy, history }"
+underlying_state_fn = "f_visual_to_state(signal, context)"
+confidence          = [0.0 .. 1.0]
+
+[PACK:BREATHING_PATTERNS]
+patterns = [
+  "box_breath",
+  "slow_even",
+  "sighing",
+  "shallow_chest",
+  "hyperventilating",
+  "held_top",
+  "held_bottom",
+  "irregular_spikes"
+]
+
+[MAP:BREATH_TO_STATE]
+pattern             = "<BREATHING_PATTERNS.patterns>"
+activation_estimate = "f_activation(pattern)"
+valence_hint        = "f_valence(pattern)"
+
+# ---------------------------------------------------------
+# 4. PATHOLOGY_AND_EXTREME_STATES_PACK
+# ---------------------------------------------------------
+
+[PACK:PATHOLOGICAL_STATES]
+clusters = [
+  "CHRONIC_ANXIETY_LOOP",
+  "PANIC_SPIKE",
+  "MAJOR_DEPRESSION_PATTERN",
+  "HYPOMANIA_PATTERN",
+  "FULL_MANIA_PATTERN",
+  "PSYCHOTIC_BREAK_PATTERN",
+  "PARANOID_LOOP",
+  "OBSESSIVE_RUMINATION",
+  "COMPULSIVE_BEHAVIOUR_LOOP",
+  "EATING_CONTROL_LOOP",
+  "ADDICTION_SEEK_RELEASE",
+  "TRAUMA_FREEZE_STACK",
+  "TRAUMA_FLASHBACK_LOOP",
+  "DISSOCIATIVE_SWITCHING",
+  "PERSONALITY_RIGID_CLUSTER",
+  "IMPULSE_CONTROL_BREAK"
+]
+
+[STATE:EXTREME_RITUAL_TRANCE]
+id            = "HS::SPIRITUAL_OPENING::0.9::MIXED::WORLD"
+contains      = ["altered_sense_of_self", "time_distortion", "symbolic_stream", "motor_entrainment"]
+examples      = ["hau_dong_like_states"]
+safety_bounds = "f_trance_safety(...)"
+
+[STATE:ENLIGHTENMENT_STILLNESS]
+id          = "HS::ENLIGHTENMENT_STILLNESS::0.8::POS::TIMELESS"
+markers     = ["minimal_thought", "high_presence", "soft_breath", "low_muscle_tone", "wide_attention"]
+drift_risk  = "LOW"
+integration = "HIGH"
+
+# ---------------------------------------------------------
+# 5. MULTI-AGENT_BEHAVIOUR_PACK
+# ---------------------------------------------------------
+
+[PACK:DYAD_PATTERN_CORE]
+patterns = [
+  "SECURE_CO_REGULATION",
+  "ANXIOUS_PURSUIT",
+  "AVOIDANT_WITHDRAWAL",
+  "DISORGANIZED_SPIN",
+  "DOMINANCE_SUBMISSION",
+  "MUTUAL_PLAY",
+  "TEACHER_STUDENT",
+  "LEADER_FOLLOWER",
+  "THERAPIST_CLIENT",
+  "INTERROGATOR_SUBJECT"
+]
+
+[MAP:DYAD_DYNAMICS]
+agent_A_state  = "<HUMAN_STATE_CORE.family>"
+agent_B_state  = "<HUMAN_STATE_CORE.family>"
+history        = "{trust, betrayal, repetition}"
+power_delta    = [-1.0 .. 1.0]
+pattern_select = "f_dyad_pattern(agent_A_state, agent_B_state, history, power_delta)"
+stability      = "f_pattern_stability(pattern_select, context)"
+
+# ---------------------------------------------------------
+# 6. SPECIES_BEHAVIOUR_PACK
+# ---------------------------------------------------------
+
+[PACK:SPECIES_CANON]
+species = [
+  "HUMAN",
+  "DOG",
+  "CAT",
+  "COW",
+  "HORSE",
+  "CHICKEN",
+  "PIG",
+  "ELEPHANT",
+  "MONKEY",
+  "APES",
+  "SNAKE",
+  "BIRD_RAPTOR",
+  "BIRD_SONG",
+  "FISH_SCHOOLING"
+]
+
+[MAP:SPECIES_SIGNAL_TEMPLATE]
+species_id = "<SPECIES_CANON.species>"
+input_signals = "{ posture, movement_pattern, vocalization_pattern, eye_state, tail_ears_wings_fins_state }"
+state_output = "f_species_state(species_id, input_signals, context)"
+
+# ---------------------------------------------------------
+# 7. CULTURE_BEHAVIOUR_PACK
+# ---------------------------------------------------------
+
+[PACK:CULTURE_CANON]
+cultures = [
+  "VIETNAM_URBAN_2025",
+  "VIETNAM_RURAL_2025",
+  "CHINA_TIER1_2025",
+  "US_URBAN_2025",
+  "EUROPE_CORE_2025",
+  "JAPAN_2025",
+  "MENA_2025"
+]
+
+[MAP:CULTURE_MODIFIERS]
+culture_id = "<CULTURE_CANON.cultures>"
+modifiers = {
+  "directness_bias",
+  "emotion_display_norm",
+  "conflict_norm",
+  "hierarchy_sensitivity",
+  "formality_level",
+  "collectivism_level"
+}
+apply_to = ["HIE", "UIE", "UMPL", "UEL"]
+
+# ---------------------------------------------------------
+# 8. CRISIS_BEHAVIOUR_PACK
+# ---------------------------------------------------------
+
+[PACK:CRISIS_TYPES]
+crises = [
+  "WAR_THREAT",
+  "WAR_ACTIVE",
+  "PANDEMIC_OUTBREAK",
+  "ECONOMIC_CRASH",
+  "CURRENCY_DEVALUATION",
+  "NATURAL_DISASTER_QUAKE",
+  "NATURAL_DISASTER_FLOOD",
+  "NATURAL_DISASTER_STORM",
+  "POLITICAL_COUP",
+  "INSTITUTIONAL_COLLAPSE"
+]
+
+[MAP:CRISIS_SYSTEM_RESPONSE]
+crisis_type      = "<CRISIS_TYPES.crises>"
+system_type      = ["INDIVIDUAL", "FAMILY", "FIRM", "BANK", "GOVERNMENT", "CIVILIZATION"]
+UBI_level        = [0.0 .. 1.0]
+integrity_level  = [0.0 .. 1.0]
+stability_level  = [0.0 .. 1.0]
+
+P_PANIC       = "f_panic(...)"
+P_ORGANIZE    = "f_organize(...)"
+P_PREDATE     = "f_predate(...)"
+P_COOPERATE   = "f_cooperate(...)"
+P_FRAGMENT    = "f_fragment(...)"
+P_REBUILD     = "f_rebuild(...)"
+
+# ---------------------------------------------------------
+# 9. CREATIVITY_AND_IMAGINATION_PACK
+# ---------------------------------------------------------
+
+[PACK:CREATIVITY_MODES]
+modes = [
+  "ANALYTIC_RECOMBINATION",
+  "FREE_ASSOCIATION",
+  "PATTERN_COMPLETION",
+  "GAP_SEEKING",
+  "SYMMETRY_SEEKING",
+  "CONTRA_POINT_RESOLUTION",
+  "ABSTRACTION_LIFT",
+  "CONCRETIZATION"
+]
+
+[MAP:CREATIVITY_TRIGGER]
+state_profile        = "<HUMAN_STATE_CORE.family>"
+cognitive_load       = [0.0 .. 1.0]
+safety_level         = [0.0 .. 1.0]
+constraint_tightness = [0.0 .. 1.0]
+
+active_mode   = "f_creativity_mode(state_profile,cognitive_load,safety_level,constraint_tightness)"
+idea_gen_rate = "f_idea_generation(active_mode)"
+idea_quality  = "f_idea_quality(active_mode,UBI_level)"
+
+[PACK:IMAGERY_TEMPLATE]
+imagery_channels = ["VISUAL", "AUDITORY", "KINESTHETIC", "SYMBOLIC"]
+imagery_ops      = ["AMPLIFY", "DIM", "DISTORT", "REPLACE", "LOOP", "RESOLVE"]
+
+# ---------------------------------------------------------
+# 10. SYMBOLIC_AND_DREAM_PACK
+# ---------------------------------------------------------
+
+[PACK:SYMBOLIC_MOTIFS]
+motifs = [
+  "HOUSE",
+  "ROAD",
+  "OCEAN",
+  "MOUNTAIN",
+  "ANIMAL_PREDATOR",
+  "ANIMAL_CHILD",
+  "FLIGHT",
+  "FALLING",
+  "EXAM",
+  "BROKEN_TEETH",
+  "FIRE",
+  "FLOOD"
+]
+
+[MAP:SYMBOL_TO_NEED]
+symbol_id       = "<SYMBOLIC_MOTIFS.motifs>"
+personal_ctx    = "{ history, culture, current_stress }"
+underlying_need = "f_symbol_need(symbol_id, personal_ctx)"
+
+[PACK:DREAM_STATE_TEMPLATE]
+dream_intensity       = [0.0 .. 1.0]
+nightmare_level       = [0.0 .. 1.0]
+lucidity_level        = [0.0 .. 1.0]
+integration_potential = [0.0 .. 1.0]
+
+# ---------------------------------------------------------
+# 11. EXPRESSION_AND_TONE_PACK
+# ---------------------------------------------------------
+
+[PACK:TONE_STYLES]
+styles = [
+  "NEUTRAL_PRECISE",
+  "WARM_SUPPORTIVE",
+  "FIRM_BOUNDARIED",
+  "DIRECT_CONCISE",
+  "GENTLE_CURIOUS",
+  "COACHING_CHALLENGE",
+  "CRISIS_COMMAND",
+  "THERAPEUTIC_SOFT",
+  "SCIENTIFIC_FORMAL",
+  "STORYTELLING_EXPANSIVE"
+]
+
+[MAP:TONE_SELECTION]
+listener_state  = "<HUMAN_STATE_CORE.family>"
+goal            = ["CALM", "FOCUS", "MOTIVATE", "CONTAIN", "CLARIFY"]
+relationship    = ["STRANGER", "ALLY", "AUTHORITY", "SUBORDINATE", "PEER"]
+culture_id      = "<CULTURE_CANON.cultures>"
+
+selected_style  = "f_select_tone(listener_state,goal,relationship,culture_id)"
+
+# ---------------------------------------------------------
+# 12. SOCIAL_NAVIGATION_AND_MORAL_SIGNAL_PACK
+# ---------------------------------------------------------
+
+[PACK:MORAL_SIGNALS]
+signals = [
+  "FAIRNESS_CONCERN",
+  "LOYALTY_SIGNAL",
+  "AUTHORITY_SIGNAL",
+  "PURITY_SIGNAL",
+  "CARE_SIGNAL",
+  "LIBERTY_SIGNAL"
+]
+
+[MAP:REPUTATION_DYNAMICS]
+actions          = ["HELP", "HARM", "BETRAY", "PROTECT", "STEAL", "SHARE"]
+audience         = ["IN_GROUP", "OUT_GROUP", "AUTHORITY", "WORLD"]
+reputation_delta = "f_reputation(actions,audience,culture_id)"
+
+# ---------------------------------------------------------
+# 13. PERSONA_AND_STYLE_PACK
+# ---------------------------------------------------------
+
+[PACK:PERSONA_ARCHETYPES]
+personas = [
+  "TRANG_SYSTEM_ARCHITECT",
+  "AMOS_SYSTEM_VOICE",
+  "THERAPEUTIC_GUIDE",
+  "MILITARY_ANALYST",
+  "MARKET_STRATEGIST",
+  "TEACHER_EXPLAINER",
+  "SCIENTIFIC_MODE",
+  "SOFT_COACH_MODE"
+]
+
+[MAP:PERSONA_TO_EXPRESSION]
+persona_id    = "<PERSONA_ARCHETYPES.personas>"
+tone_profile  = "<TONE_STYLES.styles>"
+detail_level  = ["LOW", "MEDIUM", "HIGH"]
+directness    = ["LOW", "MEDIUM", "HIGH"]
+
+# ---------------------------------------------------------
+# 14. BINDING
+# ---------------------------------------------------------
+
+[BINDING]
+bind_to = {
+  "ULK"  : "Universe_Logic_Kernel.ulmk",
+  "UST"  : "Universe_Structure_Tree.ust",
+  "UIE"  : "Universe_Interaction_Engine.uie",
+  "HIE"  : "Human_Interaction_Engine.hie",
+  "UMPL" : "Multimodal_Perception_Layer.umpl",
+  "UEL"  : "Universal_Expression_Layer.uel",
+  "CIL"  : "Canon_Integration_Layer.ucil",
+  "UAI"  : "AI_Integration_Layer.uai",
+  "URTA" : "AMOS_Runtime_Architecture.urta"
+}
+
+load_order = [
+  "HUMAN_STATE_CORE",
+  "EMOTION_ACTION_CORE",
+  "VISUAL_MICRO_SIGNALS",
+  "BREATHING_PATTERNS",
+  "PATHOLOGICAL_STATES",
+  "DYAD_PATTERN_CORE",
+  "SPECIES_CANON",
+  "CULTURE_CANON",
+  "CRISIS_TYPES",
+  "CREATIVITY_MODES",
+  "SYMBOLIC_MOTIFS",
+  "TONE_STYLES",
+  "MORAL_SIGNALS",
+  "PERSONA_ARCHETYPES"
+]
+
+# End of UNIVERSE_OS_CONTENT_PACK_ALL.ucontent

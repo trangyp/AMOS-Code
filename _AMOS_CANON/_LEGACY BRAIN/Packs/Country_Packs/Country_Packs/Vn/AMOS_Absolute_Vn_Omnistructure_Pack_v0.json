@@ -1,0 +1,864 @@
+[
+  {
+    "meta": {
+      "name": "ABSOLUTE_VN_OMNISTRUCTURE_vInfinity_clean",
+      "version": "vInfinity_clean_1.0.0",
+      "created_at_utc": "2025-11-27T08:37:54.972640Z",
+      "description": "Compressed, refactored version of the ABSOLUTE_VN_OMNISTRUCTURE_SUPER_x100k engine. Removes explicit 100k stateframes and replaces them with a virtual expansion model.",
+      "source_engine": "ABSOLUTE_VN_OMNISTRUCTURE_SUPER_x100k.json",
+      "country_name": "Vietnam",
+      "cardinality_model": "1E\u221e conceptual, 1E5+ virtual stateframes",
+      "primitive_count": 19,
+      "domain_count": 12,
+      "province_count": 63
+    },
+    "engine": {
+      "primitive_system_19": [
+        {
+          "id": 1,
+          "name": "Existence"
+        },
+        {
+          "id": 2,
+          "name": "NonExistence"
+        },
+        {
+          "id": 3,
+          "name": "Causality"
+        },
+        {
+          "id": 4,
+          "name": "Temporal"
+        },
+        {
+          "id": 5,
+          "name": "Informational"
+        },
+        {
+          "id": 6,
+          "name": "Topological"
+        },
+        {
+          "id": 7,
+          "name": "Identity"
+        },
+        {
+          "id": 8,
+          "name": "Convergence"
+        },
+        {
+          "id": 9,
+          "name": "Divergence"
+        },
+        {
+          "id": 10,
+          "name": "Paradox"
+        },
+        {
+          "id": 11,
+          "name": "PositiveLogic"
+        },
+        {
+          "id": 12,
+          "name": "NegativeLogic"
+        },
+        {
+          "id": 13,
+          "name": "ZeroLogic"
+        },
+        {
+          "id": 14,
+          "name": "DualLogic"
+        },
+        {
+          "id": 15,
+          "name": "MultiLogic"
+        },
+        {
+          "id": 16,
+          "name": "MetaLogic"
+        },
+        {
+          "id": 17,
+          "name": "SupraLogic"
+        },
+        {
+          "id": 18,
+          "name": "AntiLogic"
+        },
+        {
+          "id": 19,
+          "name": "NullLogic"
+        }
+      ],
+      "vn_domains_12": [
+        "Society",
+        "Economy",
+        "Politics_Power",
+        "Mobility_Infrastructure",
+        "Climate_Environment",
+        "Media_Information",
+        "Psychology_Behavior",
+        "Technology_AI",
+        "Health_Education",
+        "Labor_Production",
+        "Family_Lifecycle",
+        "Culture_Language"
+      ],
+      "families": [
+        {
+          "family_id": "VN_F01",
+          "domain": "Society",
+          "description": "Absolute-VN omnistructure domain family for Society.",
+          "resolution_supported": [
+            "micro",
+            "meso",
+            "macro",
+            "planetary",
+            "meta"
+          ],
+          "event_classes_supported": [
+            "domestic_policy_event",
+            "external_policy_event",
+            "economic_shock_local",
+            "economic_shock_global",
+            "climate_event",
+            "social_behavioral_event",
+            "political_event",
+            "technological_event",
+            "informational_event",
+            "cross_domain_event"
+          ],
+          "state_modes_supported": [
+            "VN_NORMAL",
+            "VN_STRESS",
+            "VN_ADAPTIVE",
+            "VN_CHAOTIC",
+            "VN_COLLAPSING",
+            "VN_REFORMING",
+            "VN_EXPANDING",
+            "VN_SYNCHRONIZED",
+            "VN_HYPERSTATE",
+            "VN_OMNISTATE"
+          ]
+        },
+        {
+          "family_id": "VN_F02",
+          "domain": "Economy",
+          "description": "Absolute-VN omnistructure domain family for Economy.",
+          "resolution_supported": [
+            "micro",
+            "meso",
+            "macro",
+            "planetary",
+            "meta"
+          ],
+          "event_classes_supported": [
+            "domestic_policy_event",
+            "external_policy_event",
+            "economic_shock_local",
+            "economic_shock_global",
+            "climate_event",
+            "social_behavioral_event",
+            "political_event",
+            "technological_event",
+            "informational_event",
+            "cross_domain_event"
+          ],
+          "state_modes_supported": [
+            "VN_NORMAL",
+            "VN_STRESS",
+            "VN_ADAPTIVE",
+            "VN_CHAOTIC",
+            "VN_COLLAPSING",
+            "VN_REFORMING",
+            "VN_EXPANDING",
+            "VN_SYNCHRONIZED",
+            "VN_HYPERSTATE",
+            "VN_OMNISTATE"
+          ]
+        },
+        {
+          "family_id": "VN_F03",
+          "domain": "Politics_Power",
+          "description": "Absolute-VN omnistructure domain family for Politics_Power.",
+          "resolution_supported": [
+            "micro",
+            "meso",
+            "macro",
+            "planetary",
+            "meta"
+          ],
+          "event_classes_supported": [
+            "domestic_policy_event",
+            "external_policy_event",
+            "economic_shock_local",
+            "economic_shock_global",
+            "climate_event",
+            "social_behavioral_event",
+            "political_event",
+            "technological_event",
+            "informational_event",
+            "cross_domain_event"
+          ],
+          "state_modes_supported": [
+            "VN_NORMAL",
+            "VN_STRESS",
+            "VN_ADAPTIVE",
+            "VN_CHAOTIC",
+            "VN_COLLAPSING",
+            "VN_REFORMING",
+            "VN_EXPANDING",
+            "VN_SYNCHRONIZED",
+            "VN_HYPERSTATE",
+            "VN_OMNISTATE"
+          ]
+        },
+        {
+          "family_id": "VN_F04",
+          "domain": "Mobility_Infrastructure",
+          "description": "Absolute-VN omnistructure domain family for Mobility_Infrastructure.",
+          "resolution_supported": [
+            "micro",
+            "meso",
+            "macro",
+            "planetary",
+            "meta"
+          ],
+          "event_classes_supported": [
+            "domestic_policy_event",
+            "external_policy_event",
+            "economic_shock_local",
+            "economic_shock_global",
+            "climate_event",
+            "social_behavioral_event",
+            "political_event",
+            "technological_event",
+            "informational_event",
+            "cross_domain_event"
+          ],
+          "state_modes_supported": [
+            "VN_NORMAL",
+            "VN_STRESS",
+            "VN_ADAPTIVE",
+            "VN_CHAOTIC",
+            "VN_COLLAPSING",
+            "VN_REFORMING",
+            "VN_EXPANDING",
+            "VN_SYNCHRONIZED",
+            "VN_HYPERSTATE",
+            "VN_OMNISTATE"
+          ]
+        },
+        {
+          "family_id": "VN_F05",
+          "domain": "Climate_Environment",
+          "description": "Absolute-VN omnistructure domain family for Climate_Environment.",
+          "resolution_supported": [
+            "micro",
+            "meso",
+            "macro",
+            "planetary",
+            "meta"
+          ],
+          "event_classes_supported": [
+            "domestic_policy_event",
+            "external_policy_event",
+            "economic_shock_local",
+            "economic_shock_global",
+            "climate_event",
+            "social_behavioral_event",
+            "political_event",
+            "technological_event",
+            "informational_event",
+            "cross_domain_event"
+          ],
+          "state_modes_supported": [
+            "VN_NORMAL",
+            "VN_STRESS",
+            "VN_ADAPTIVE",
+            "VN_CHAOTIC",
+            "VN_COLLAPSING",
+            "VN_REFORMING",
+            "VN_EXPANDING",
+            "VN_SYNCHRONIZED",
+            "VN_HYPERSTATE",
+            "VN_OMNISTATE"
+          ]
+        },
+        {
+          "family_id": "VN_F06",
+          "domain": "Media_Information",
+          "description": "Absolute-VN omnistructure domain family for Media_Information.",
+          "resolution_supported": [
+            "micro",
+            "meso",
+            "macro",
+            "planetary",
+            "meta"
+          ],
+          "event_classes_supported": [
+            "domestic_policy_event",
+            "external_policy_event",
+            "economic_shock_local",
+            "economic_shock_global",
+            "climate_event",
+            "social_behavioral_event",
+            "political_event",
+            "technological_event",
+            "informational_event",
+            "cross_domain_event"
+          ],
+          "state_modes_supported": [
+            "VN_NORMAL",
+            "VN_STRESS",
+            "VN_ADAPTIVE",
+            "VN_CHAOTIC",
+            "VN_COLLAPSING",
+            "VN_REFORMING",
+            "VN_EXPANDING",
+            "VN_SYNCHRONIZED",
+            "VN_HYPERSTATE",
+            "VN_OMNISTATE"
+          ]
+        },
+        {
+          "family_id": "VN_F07",
+          "domain": "Psychology_Behavior",
+          "description": "Absolute-VN omnistructure domain family for Psychology_Behavior.",
+          "resolution_supported": [
+            "micro",
+            "meso",
+            "macro",
+            "planetary",
+            "meta"
+          ],
+          "event_classes_supported": [
+            "domestic_policy_event",
+            "external_policy_event",
+            "economic_shock_local",
+            "economic_shock_global",
+            "climate_event",
+            "social_behavioral_event",
+            "political_event",
+            "technological_event",
+            "informational_event",
+            "cross_domain_event"
+          ],
+          "state_modes_supported": [
+            "VN_NORMAL",
+            "VN_STRESS",
+            "VN_ADAPTIVE",
+            "VN_CHAOTIC",
+            "VN_COLLAPSING",
+            "VN_REFORMING",
+            "VN_EXPANDING",
+            "VN_SYNCHRONIZED",
+            "VN_HYPERSTATE",
+            "VN_OMNISTATE"
+          ]
+        },
+        {
+          "family_id": "VN_F08",
+          "domain": "Technology_AI",
+          "description": "Absolute-VN omnistructure domain family for Technology_AI.",
+          "resolution_supported": [
+            "micro",
+            "meso",
+            "macro",
+            "planetary",
+            "meta"
+          ],
+          "event_classes_supported": [
+            "domestic_policy_event",
+            "external_policy_event",
+            "economic_shock_local",
+            "economic_shock_global",
+            "climate_event",
+            "social_behavioral_event",
+            "political_event",
+            "technological_event",
+            "informational_event",
+            "cross_domain_event"
+          ],
+          "state_modes_supported": [
+            "VN_NORMAL",
+            "VN_STRESS",
+            "VN_ADAPTIVE",
+            "VN_CHAOTIC",
+            "VN_COLLAPSING",
+            "VN_REFORMING",
+            "VN_EXPANDING",
+            "VN_SYNCHRONIZED",
+            "VN_HYPERSTATE",
+            "VN_OMNISTATE"
+          ]
+        },
+        {
+          "family_id": "VN_F09",
+          "domain": "Health_Education",
+          "description": "Absolute-VN omnistructure domain family for Health_Education.",
+          "resolution_supported": [
+            "micro",
+            "meso",
+            "macro",
+            "planetary",
+            "meta"
+          ],
+          "event_classes_supported": [
+            "domestic_policy_event",
+            "external_policy_event",
+            "economic_shock_local",
+            "economic_shock_global",
+            "climate_event",
+            "social_behavioral_event",
+            "political_event",
+            "technological_event",
+            "informational_event",
+            "cross_domain_event"
+          ],
+          "state_modes_supported": [
+            "VN_NORMAL",
+            "VN_STRESS",
+            "VN_ADAPTIVE",
+            "VN_CHAOTIC",
+            "VN_COLLAPSING",
+            "VN_REFORMING",
+            "VN_EXPANDING",
+            "VN_SYNCHRONIZED",
+            "VN_HYPERSTATE",
+            "VN_OMNISTATE"
+          ]
+        },
+        {
+          "family_id": "VN_F10",
+          "domain": "Labor_Production",
+          "description": "Absolute-VN omnistructure domain family for Labor_Production.",
+          "resolution_supported": [
+            "micro",
+            "meso",
+            "macro",
+            "planetary",
+            "meta"
+          ],
+          "event_classes_supported": [
+            "domestic_policy_event",
+            "external_policy_event",
+            "economic_shock_local",
+            "economic_shock_global",
+            "climate_event",
+            "social_behavioral_event",
+            "political_event",
+            "technological_event",
+            "informational_event",
+            "cross_domain_event"
+          ],
+          "state_modes_supported": [
+            "VN_NORMAL",
+            "VN_STRESS",
+            "VN_ADAPTIVE",
+            "VN_CHAOTIC",
+            "VN_COLLAPSING",
+            "VN_REFORMING",
+            "VN_EXPANDING",
+            "VN_SYNCHRONIZED",
+            "VN_HYPERSTATE",
+            "VN_OMNISTATE"
+          ]
+        },
+        {
+          "family_id": "VN_F11",
+          "domain": "Family_Lifecycle",
+          "description": "Absolute-VN omnistructure domain family for Family_Lifecycle.",
+          "resolution_supported": [
+            "micro",
+            "meso",
+            "macro",
+            "planetary",
+            "meta"
+          ],
+          "event_classes_supported": [
+            "domestic_policy_event",
+            "external_policy_event",
+            "economic_shock_local",
+            "economic_shock_global",
+            "climate_event",
+            "social_behavioral_event",
+            "political_event",
+            "technological_event",
+            "informational_event",
+            "cross_domain_event"
+          ],
+          "state_modes_supported": [
+            "VN_NORMAL",
+            "VN_STRESS",
+            "VN_ADAPTIVE",
+            "VN_CHAOTIC",
+            "VN_COLLAPSING",
+            "VN_REFORMING",
+            "VN_EXPANDING",
+            "VN_SYNCHRONIZED",
+            "VN_HYPERSTATE",
+            "VN_OMNISTATE"
+          ]
+        },
+        {
+          "family_id": "VN_F12",
+          "domain": "Culture_Language",
+          "description": "Absolute-VN omnistructure domain family for Culture_Language.",
+          "resolution_supported": [
+            "micro",
+            "meso",
+            "macro",
+            "planetary",
+            "meta"
+          ],
+          "event_classes_supported": [
+            "domestic_policy_event",
+            "external_policy_event",
+            "economic_shock_local",
+            "economic_shock_global",
+            "climate_event",
+            "social_behavioral_event",
+            "political_event",
+            "technological_event",
+            "informational_event",
+            "cross_domain_event"
+          ],
+          "state_modes_supported": [
+            "VN_NORMAL",
+            "VN_STRESS",
+            "VN_ADAPTIVE",
+            "VN_CHAOTIC",
+            "VN_COLLAPSING",
+            "VN_REFORMING",
+            "VN_EXPANDING",
+            "VN_SYNCHRONIZED",
+            "VN_HYPERSTATE",
+            "VN_OMNISTATE"
+          ]
+        }
+      ],
+      "timelines": [
+        "VN_1975",
+        "VN_1986_DoiMoi",
+        "VN_2000s_Globalization",
+        "VN_2010s_MegacityShift",
+        "VN_2020s_Digitalization",
+        "VN_2030s_Projection",
+        "VN_2045_Vision",
+        "VN_Future_X",
+        "VN_AltTimeline_A",
+        "VN_AltTimeline_B",
+        "VN_AltTimeline_C",
+        "VN_UnboundedFuture"
+      ],
+      "resolutions": [
+        "micro",
+        "meso",
+        "macro",
+        "planetary",
+        "meta"
+      ],
+      "logic_modes": [
+        "PositiveLogic",
+        "NegativeLogic",
+        "ZeroLogic",
+        "DualLogic",
+        "MultiLogic",
+        "MetaLogic",
+        "SupraLogic",
+        "AntiLogic",
+        "NullLogic"
+      ],
+      "state_modes": [
+        "VN_NORMAL",
+        "VN_STRESS",
+        "VN_ADAPTIVE",
+        "VN_CHAOTIC",
+        "VN_COLLAPSING",
+        "VN_REFORMING",
+        "VN_EXPANDING",
+        "VN_SYNCHRONIZED",
+        "VN_HYPERSTATE",
+        "VN_OMNISTATE"
+      ],
+      "event_classes": [
+        "domestic_policy_event",
+        "external_policy_event",
+        "economic_shock_local",
+        "economic_shock_global",
+        "climate_event",
+        "social_behavioral_event",
+        "political_event",
+        "technological_event",
+        "informational_event",
+        "cross_domain_event"
+      ],
+      "provinces_63": [
+        "Ha Noi",
+        "Ho Chi Minh",
+        "Hai Phong",
+        "Da Nang",
+        "Can Tho",
+        "An Giang",
+        "Ba Ria \u2013 Vung Tau",
+        "Bac Giang",
+        "Bac Kan",
+        "Bac Lieu",
+        "Bac Ninh",
+        "Ben Tre",
+        "Binh Dinh",
+        "Binh Duong",
+        "Binh Phuoc",
+        "Binh Thuan",
+        "Ca Mau",
+        "Cao Bang",
+        "Dak Lak",
+        "Dak Nong",
+        "Dien Bien",
+        "Dong Nai",
+        "Dong Thap",
+        "Gia Lai",
+        "Ha Giang",
+        "Ha Nam",
+        "Ha Tinh",
+        "Hai Duong",
+        "Hau Giang",
+        "Hoa Binh",
+        "Hung Yen",
+        "Khanh Hoa",
+        "Kien Giang",
+        "Kon Tum",
+        "Lai Chau",
+        "Lam Dong",
+        "Lang Son",
+        "Lao Cai",
+        "Long An",
+        "Nam Dinh",
+        "Nghe An",
+        "Ninh Binh",
+        "Ninh Thuan",
+        "Phu Tho",
+        "Phu Yen",
+        "Quang Binh",
+        "Quang Nam",
+        "Quang Ngai",
+        "Quang Ninh",
+        "Quang Tri",
+        "Soc Trang",
+        "Son La",
+        "Tay Ninh",
+        "Thai Binh",
+        "Thai Nguyen",
+        "Thanh Hoa",
+        "Thua Thien Hue",
+        "Tien Giang",
+        "Tra Vinh",
+        "Tuyen Quang",
+        "Vinh Long",
+        "Vinh Phuc",
+        "Yen Bai"
+      ],
+      "virtual_expansion_model": {
+        "density_level": "x100k_virtual",
+        "virtual_layer_count": 100000,
+        "axes": {
+          "primitive": [
+            "Existence",
+            "NonExistence",
+            "Causality",
+            "Temporal",
+            "Informational",
+            "Topological",
+            "Identity",
+            "Convergence",
+            "Divergence",
+            "Paradox",
+            "PositiveLogic",
+            "NegativeLogic",
+            "ZeroLogic",
+            "DualLogic",
+            "MultiLogic",
+            "MetaLogic",
+            "SupraLogic",
+            "AntiLogic",
+            "NullLogic"
+          ],
+          "logic_mode": [
+            "PositiveLogic",
+            "NegativeLogic",
+            "ZeroLogic",
+            "DualLogic",
+            "MultiLogic",
+            "MetaLogic",
+            "SupraLogic",
+            "AntiLogic",
+            "NullLogic"
+          ],
+          "state_mode": [
+            "VN_NORMAL",
+            "VN_STRESS",
+            "VN_ADAPTIVE",
+            "VN_CHAOTIC",
+            "VN_COLLAPSING",
+            "VN_REFORMING",
+            "VN_EXPANDING",
+            "VN_SYNCHRONIZED",
+            "VN_HYPERSTATE",
+            "VN_OMNISTATE"
+          ],
+          "event_class": [
+            "domestic_policy_event",
+            "external_policy_event",
+            "economic_shock_local",
+            "economic_shock_global",
+            "climate_event",
+            "social_behavioral_event",
+            "political_event",
+            "technological_event",
+            "informational_event",
+            "cross_domain_event"
+          ],
+          "resolution": [
+            "micro",
+            "meso",
+            "macro",
+            "planetary",
+            "meta"
+          ],
+          "timeline": [
+            "VN_1975",
+            "VN_1986_DoiMoi",
+            "VN_2000s_Globalization",
+            "VN_2010s_MegacityShift",
+            "VN_2020s_Digitalization",
+            "VN_2030s_Projection",
+            "VN_2045_Vision",
+            "VN_Future_X",
+            "VN_AltTimeline_A",
+            "VN_AltTimeline_B",
+            "VN_AltTimeline_C",
+            "VN_UnboundedFuture"
+          ],
+          "province": [
+            "Ha Noi",
+            "Ho Chi Minh",
+            "Hai Phong",
+            "Da Nang",
+            "Can Tho",
+            "An Giang",
+            "Ba Ria \u2013 Vung Tau",
+            "Bac Giang",
+            "Bac Kan",
+            "Bac Lieu",
+            "Bac Ninh",
+            "Ben Tre",
+            "Binh Dinh",
+            "Binh Duong",
+            "Binh Phuoc",
+            "Binh Thuan",
+            "Ca Mau",
+            "Cao Bang",
+            "Dak Lak",
+            "Dak Nong",
+            "Dien Bien",
+            "Dong Nai",
+            "Dong Thap",
+            "Gia Lai",
+            "Ha Giang",
+            "Ha Nam",
+            "Ha Tinh",
+            "Hai Duong",
+            "Hau Giang",
+            "Hoa Binh",
+            "Hung Yen",
+            "Khanh Hoa",
+            "Kien Giang",
+            "Kon Tum",
+            "Lai Chau",
+            "Lam Dong",
+            "Lang Son",
+            "Lao Cai",
+            "Long An",
+            "Nam Dinh",
+            "Nghe An",
+            "Ninh Binh",
+            "Ninh Thuan",
+            "Phu Tho",
+            "Phu Yen",
+            "Quang Binh",
+            "Quang Nam",
+            "Quang Ngai",
+            "Quang Ninh",
+            "Quang Tri",
+            "Soc Trang",
+            "Son La",
+            "Tay Ninh",
+            "Thai Binh",
+            "Thai Nguyen",
+            "Thanh Hoa",
+            "Thua Thien Hue",
+            "Tien Giang",
+            "Tra Vinh",
+            "Tuyen Quang",
+            "Vinh Long",
+            "Vinh Phuc",
+            "Yen Bai"
+          ],
+          "domain": [
+            "Society",
+            "Economy",
+            "Politics_Power",
+            "Mobility_Infrastructure",
+            "Climate_Environment",
+            "Media_Information",
+            "Psychology_Behavior",
+            "Technology_AI",
+            "Health_Education",
+            "Labor_Production",
+            "Family_Lifecycle",
+            "Culture_Language"
+          ],
+          "family_id": [
+            "VN_F01",
+            "VN_F02",
+            "VN_F03",
+            "VN_F04",
+            "VN_F05",
+            "VN_F06",
+            "VN_F07",
+            "VN_F08",
+            "VN_F09",
+            "VN_F10",
+            "VN_F11",
+            "VN_F12"
+          ]
+        },
+        "notes": [
+          "Each explicit ABS_VN_LAYER in the original SUPER_x100k file is a single point in this cartesian product.",
+          "This model allows deriving any required stateframe on demand without storing all 100k rows.",
+          "Use this as the canonical omnistructure kernel for Vietnam; treat the SUPER_x100k file as archival."
+        ]
+      },
+      "policies": {
+        "interpretation_policy": {
+          "description": "How to interpret a VN omnistructure stateframe.",
+          "rules": [
+            "A single stateframe is defined by domain, primitive, logic_mode, state_mode, event_class, resolution, timeline, and province.",
+            "Stateframes are descriptive abstractions; they are not direct measurements or predictions.",
+            "Multiple stateframes can coexist for the same province and timeline to represent competing lenses."
+          ]
+        },
+        "usage_policy": {
+          "description": "How to use this engine safely.",
+          "rules": [
+            "Use stateframes as tools for scenario thinking and systemic mapping, not as deterministic forecasts.",
+            "Do not treat this engine as a replacement for empirical data about Vietnam.",
+            "Always cross-check high-stakes conclusions with domain experts and real-world statistics."
+          ]
+        }
+      }
+    }
+  }
+]

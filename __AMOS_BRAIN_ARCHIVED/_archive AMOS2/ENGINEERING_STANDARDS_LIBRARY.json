@@ -1,0 +1,12 @@
+{
+  "name": "Engineering Standards Library",
+  "version": "1.0.0",
+  "sections": [
+    "HardwareStandards",
+    "InstallationStandards",
+    "SoftwareNetworkStandards",
+    "MaintenanceStandards",
+    "VendorQualification",
+    "Cybersecurity"
+  ]
+}

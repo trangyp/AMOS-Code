@@ -19,6 +19,7 @@ from pydantic import BaseModel
 # Add clawspring to path
 CLAWSPRING_PATH = Path(__file__).parent.parent.parent / "clawspring"
 if str(CLAWSPRING_PATH) not in sys.path:
+    sys.path.insert(0, str(CLAWSPRING_PATH))
 
 try:
     from amos_brain.brain_event_integration import (

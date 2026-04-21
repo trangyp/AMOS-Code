@@ -1,0 +1,1353 @@
+{
+  "meta": {
+    "name": "AMOS SUPER Business & Finance Engine",
+    "version": "v1.0.0_x100k",
+    "description": "Refactored business + finance super engine aligned with AMOS universe brain and C_CANON.",
+    "density_level": "x100k",
+    "linked_canons": [
+      "AMOS_BRAIN_SUPER_with_C_CANON.json",
+      "AMOS_C07_econ_finance.json",
+      "AMOS_SUPER_Design_Engine.json"
+    ]
+  },
+  "base_engine": {
+    "BIZFIN_ENGINE_vInfinity_CANON": {
+      "BIZFIN_ENGINE_V\u221e": {
+        "meta": {
+          "name": "AMOS SUPER Business & Finance Engine v\u221e \u2014 MAX",
+          "version": "vInfinity_x100k_1.0",
+          "description": "Canonical business + finance decision engine spanning strategy, operations, capital, markets, and regulation. Structured to plug into AMOS_BRAIN_SUPER_with_C_CANON and all C07_econ_finance surfaces.",
+          "density_level": "x100k",
+          "expansion_label": "BIZFIN_ENGINE_vInfinity_X100k",
+          "source": "AMOS canon + C07_econ_finance + AMOS_SUPER_Design_Engine skeleton",
+          "upgrade_notes": "Designed as the primary economic and capital-routing surface for the AMOS universe brain. All entities (individual, firm, institution, state) can be represented as balance-sheet + cashflow + intent."
+        },
+        "C01_corporate_strategy": {
+          "subdomains": [
+            "vision_and_positioning",
+            "portfolio_strategy",
+            "moat_and_advantage_design",
+            "geographic_and_segment_expansion",
+            "competitive_landscape_mapping"
+          ],
+          "roles": [
+            "ceo",
+            "chief_strategy_officer",
+            "head_of_corporate_development"
+          ],
+          "lifecycle_model": {
+            "phases": [
+              "situational_diagnosis",
+              "strategic_option_generation",
+              "option_valuation_and_tradeoffs",
+              "selection_and_commitment",
+              "translation_to_operating_model",
+              "review_and_reallocation"
+            ],
+            "loops": [
+              "plan \u2192 design \u2192 execute \u2192 measure \u2192 refine",
+              "signals from metrics feed directly into capital and operating decisions"
+            ]
+          },
+          "interaction_map": {
+            "inputs": [
+              "market_and_competitor_intelligence",
+              "internal_performance_data",
+              "capital_and_resource_constraints",
+              "risk_appetite",
+              "regulatory_and_policy_context"
+            ],
+            "outputs": [
+              "explicit_strategic_thesis",
+              "prioritised_bet_portfolio",
+              "capital_allocation_blueprint",
+              "target_operating_model",
+              "strategy_memo_and_comm_plan"
+            ],
+            "dependencies": [
+              "C02_business_model_design",
+              "C07_corporate_finance_and_treasury",
+              "C09_risk_governance_compliance"
+            ]
+          },
+          "metrics": {
+            "health": [
+              "clarity_of_thesis_across_org",
+              "share_of_resources_aligned_to_top_bets",
+              "strategic_drift_index",
+              "frequency_of_systematic_review"
+            ],
+            "performance": [
+              "economic_profit_over_cost_of_capital",
+              "strategy_realisation_rate",
+              "share_gain_in_target_segments"
+            ],
+            "risk": [
+              "concentration_risk_of_bets",
+              "downside_scenarios_mapped_and_mitigated",
+              "regulatory_or_reputation_exposure_from_strategy"
+            ],
+            "maturity": [
+              "repeatable_strategy_process_exists",
+              "data_and_signal_integration_into_decisions",
+              "linkage_between_strategy_and_incentives"
+            ]
+          }
+        },
+        "C02_business_model_design": {
+          "subdomains": [
+            "customer_segments_and_jobs",
+            "value_proposition_architecture",
+            "revenue_model_design",
+            "cost_structure_and_unit_economics",
+            "network_effects_and_platform_dynamics"
+          ],
+          "roles": [
+            "cpo",
+            "gm_business_unit_lead",
+            "head_of_business_design"
+          ],
+          "lifecycle_model": {
+            "phases": [
+              "problem_and_job_mapping",
+              "value_prop_and_offering_design",
+              "pricing_and_monetisation_design",
+              "unit_economics_modelling",
+              "experimentation_andvalidation"
+            ],
+            "loops": [
+              "plan \u2192 design \u2192 execute \u2192 measure \u2192 refine",
+              "signals from metrics feed directly into capital and operating decisions"
+            ]
+          },
+          "interaction_map": {
+            "inputs": [
+              "customer_research_and_nps",
+              "usage_and_behavior_data",
+              "competitive_offering_and_pricing",
+              "cost_curves_and_supply_constraints"
+            ],
+            "outputs": [
+              "documented_business_model_canvas",
+              "unit_economics_model",
+              "pricing_playbook",
+              "assumption_log_and_test_plan"
+            ],
+            "dependencies": [
+              "C03_pricing_revenue_ops",
+              "C05_growth_and_demand",
+              "C07_corporate_finance_and_treasury"
+            ]
+          },
+          "metrics": {
+            "health": [
+              "clarity_of_customer_jobs",
+              "share_of_revenue_from_core_value_props",
+              "unit_economics_visibility"
+            ],
+            "performance": [
+              "lifetime_value_to_cac_ratio",
+              "payback_period_months",
+              "gross_margin_and_contribution_margin"
+            ],
+            "risk": [
+              "dependency_on_single_customer_segment",
+              "pricing_regulatory_risk",
+              "business_model_resilience_to_shocks"
+            ],
+            "maturity": [
+              "discipline_of_running_experiments",
+              "explicit_sensitivity_and_scenario_models",
+              "governed_change_process_for_model_updates"
+            ]
+          }
+        },
+        "C03_pricing_revenue_ops": {
+          "subdomains": [
+            "pricing_strategy_and_guardrails",
+            "discounting_and_deal_desk",
+            "billing_and_invoicing_systems",
+            "revenue_recognition_policy",
+            "revenue_forecasting"
+          ],
+          "roles": [
+            "chief_revenue_officer",
+            "head_of_pricing",
+            "revops_lead"
+          ],
+          "lifecycle_model": {
+            "phases": [
+              "pricing_framework_definition",
+              "implementation_in_tools_and_processes",
+              "deal_and_exception_management",
+              "performance_review_and_recalibration"
+            ],
+            "loops": [
+              "plan \u2192 design \u2192 execute \u2192 measure \u2192 refine",
+              "signals from metrics feed directly into capital and operating decisions"
+            ]
+          },
+          "interaction_map": {
+            "inputs": [
+              "business_model_and_unit_economics",
+              "competitive_price_intelligence",
+              "customer_willingness_to_pay_data",
+              "finance_and_accounting_constraints"
+            ],
+            "outputs": [
+              "pricing_book_andrules",
+              "approved_discounts_and_bundles",
+              "clean_revenue_data",
+              "forecast_vs_actual_variance_reports"
+            ],
+            "dependencies": [
+              "C04_sales_systems",
+              "C07_corporate_finance_and_treasury"
+            ]
+          },
+          "metrics": {
+            "health": [
+              "discounting_discipline",
+              "share_of_deals_within_standard_bands",
+              "billing_accuracy_rate"
+            ],
+            "performance": [
+              "revenue_growth_rate",
+              "net_revenue_retention",
+              "asp_average_selling_price"
+            ],
+            "risk": [
+              "revenue_concentration_risk",
+              "policy_or_compliance_risk_on_pricing",
+              "forecast_error_risk"
+            ],
+            "maturity": [
+              "integration_of_tools_with_crm_and_erp",
+              "governed_exception_process",
+              "closed_loop_between_sales_finance_and_product"
+            ]
+          }
+        },
+        "C04_sales_systems": {
+          "subdomains": [
+            "sales_org_design",
+            "territory_and_quota_planning",
+            "pipeline_management",
+            "sales_process_and_playbooks",
+            "partner_and_channel_sales"
+          ],
+          "roles": [
+            "head_of_sales",
+            "sales_ops_lead",
+            "regional_vp_sales"
+          ],
+          "lifecycle_model": {
+            "phases": [
+              "gtm_model_design",
+              "headcount_and_quota_allocation",
+              "pipeline_generation_and_qualification",
+              "deal_progression_and_closing",
+              "renewals_and_expansion"
+            ],
+            "loops": [
+              "plan \u2192 design \u2192 execute \u2192 measure \u2192 refine",
+              "signals from metrics feed directly into capital and operating decisions"
+            ]
+          },
+          "interaction_map": {
+            "inputs": [
+              "customer_and_segment_strategy",
+              "marketing_and_demand_signals",
+              "pipeline_and_win_loss_data",
+              "capacity_and_headcount_plans"
+            ],
+            "outputs": [
+              "sales_forecast",
+              "deal_and_account_plans",
+              "win_loss_insights",
+              "feedback_to_product_and_marketing"
+            ],
+            "dependencies": [
+              "C03_pricing_revenue_ops",
+              "C05_growth_and_demand"
+            ]
+          },
+          "metrics": {
+            "health": [
+              "pipeline_coverage_ratio",
+              "forecast_accuracy",
+              "quota_attainment_distribution"
+            ],
+            "performance": [
+              "bookings_and_new_arr",
+              "win_rate",
+              "sales_cycle_length"
+            ],
+            "risk": [
+              "dependency_on_key_accounts_or_reps",
+              "territory_imbalance",
+              "pipeline_quality_risk"
+            ],
+            "maturity": [
+              "documented_sales_process",
+              "data_driven_coaching",
+              "systematic_account_planning"
+            ]
+          }
+        },
+        "C05_growth_and_demand": {
+          "subdomains": [
+            "brand_and_positioning",
+            "performance_marketing",
+            "product_led_growth",
+            "lifecycle_and_retention_marketing",
+            "community_and_partner_ecosystems"
+          ],
+          "roles": [
+            "chief_marketing_officer",
+            "head_of_growth",
+            "product_growth_lead"
+          ],
+          "lifecycle_model": {
+            "phases": [
+              "audience_and_segment_definition",
+              "channel_and_message_design",
+              "campaign_and_experiment_run",
+              "measurement_andattribution",
+              "learning_and_playbook_update"
+            ],
+            "loops": [
+              "plan \u2192 design \u2192 execute \u2192 measure \u2192 refine",
+              "signals from metrics feed directly into capital and operating decisions"
+            ]
+          },
+          "interaction_map": {
+            "inputs": [
+              "customer_and_segment_maps",
+              "product_roadmap_and_launches",
+              "channel_performance_data",
+              "brand_and_nps_signals"
+            ],
+            "outputs": [
+              "pipeline_and_user_growth",
+              "channel_and_creative_playbooks",
+              "cohort_and_retention_dashboards"
+            ],
+            "dependencies": [
+              "C02_business_model_design",
+              "C04_sales_systems"
+            ]
+          },
+          "metrics": {
+            "health": [
+              "brand_awareness_and_relevance",
+              "organic_vs_paid_mix",
+              "retention_and_churn_trends"
+            ],
+            "performance": [
+              "customer_acquisition_cost",
+              "marketing_roi_by_channel",
+              "activation_and_conversion_rates"
+            ],
+            "risk": [
+              "over_reliance_on_single_channel",
+              "platform_and_algorithm_risk",
+              "brand_and_reputation_risk"
+            ],
+            "maturity": [
+              "robust_experimentation_cadence",
+              "shared_source_of_truth_for_metrics",
+              "tight_integration_with_product_and_sales"
+            ]
+          }
+        },
+        "C06_operations_and_supply": {
+          "subdomains": [
+            "supply_chain_and_inventory",
+            "procurement_and_vendor_management",
+            "manufacturing_and_service_delivery",
+            "capacity_and_utilisation_planning",
+            "quality_and_continuous_improvement"
+          ],
+          "roles": [
+            "chief_operating_officer",
+            "head_of_supply_chain",
+            "operations_excellence_lead"
+          ],
+          "lifecycle_model": {
+            "phases": [
+              "demand_and_capacity_planning",
+              "sourcing_and_production",
+              "distribution_and_fulfilment",
+              "monitoring_and_continuous_improvement"
+            ],
+            "loops": [
+              "plan \u2192 design \u2192 execute \u2192 measure \u2192 refine",
+              "signals from metrics feed directly into capital and operating decisions"
+            ]
+          },
+          "interaction_map": {
+            "inputs": [
+              "demand_forecasts",
+              "supplier_andlead_times",
+              "quality_and_defect_data",
+              "unit_economics_and_cost_targets"
+            ],
+            "outputs": [
+              "on_time_delivery",
+              "inventory_and_working_capital_profile",
+              "process_and_cost_improvement_roadmap"
+            ],
+            "dependencies": [
+              "C07_corporate_finance_and_treasury",
+              "C12_impact_and_esg"
+            ]
+          },
+          "metrics": {
+            "health": [
+              "on_time_in_full_rate",
+              "inventory_turns",
+              "supplier_performance_scores"
+            ],
+            "performance": [
+              "throughput_and_capacity_utilisation",
+              "cost_per_unit",
+              "order_cycle_time"
+            ],
+            "risk": [
+              "supply_chain_concentration_risk",
+              "single_points_of_failure",
+              "operational_resilience_to_shocks"
+            ],
+            "maturity": [
+              "visibility_across_supply_chain",
+              "documented_standard_work",
+              "continuous_improvement_culture"
+            ]
+          }
+        },
+        "C07_corporate_finance_and_treasury": {
+          "subdomains": [
+            "capital_structure_design",
+            "fundraising_and_investor_relations",
+            "treasury_and_liquidity_management",
+            "capital_allocation_frameworks",
+            "m_and_a_and_divestitures"
+          ],
+          "roles": [
+            "cfo",
+            "vp_corporate_finance",
+            "treasurer"
+          ],
+          "lifecycle_model": {
+            "phases": [
+              "capital_needs_and_scenarios",
+              "funding_option_analysis",
+              "transaction_execution",
+              "ongoing_covenant_and_liquidity_management",
+              "capital_allocation_review"
+            ],
+            "loops": [
+              "plan \u2192 design \u2192 execute \u2192 measure \u2192 refine",
+              "signals from metrics feed directly into capital and operating decisions"
+            ]
+          },
+          "interaction_map": {
+            "inputs": [
+              "strategic_plan_and_growth_targets",
+              "historical_and_projected_financials",
+              "capital_markets_conditions",
+              "risk_appetite_and_rating_targets"
+            ],
+            "outputs": [
+              "capital_structure_and_debt_schedule",
+              "cash_and_liquidity_ladders",
+              "investment_and_divestment_decisions",
+              "investor_materials_and_disclosure"
+            ],
+            "dependencies": [
+              "C01_corporate_strategy",
+              "C10_external_markets_and_investing",
+              "C09_risk_governance_compliance"
+            ]
+          },
+          "metrics": {
+            "health": [
+              "cash_runway_and_liquidity_buffer",
+              "interest_and_debt_service_coverage",
+              "alignment_of_capital_structure_with_strategy"
+            ],
+            "performance": [
+              "return_on_invested_capital",
+              "total_shareholder_return_or_equivalent",
+              "realised_value_from_m_and_a"
+            ],
+            "risk": [
+              "refinancing_and_rate_risk",
+              "covenant_and_counterparty_risk",
+              "currency_and_country_risk"
+            ],
+            "maturity": [
+              "scenario_and_stress_testing_rigour",
+              "formal_capital_allocation_process",
+              "quality_of_investor_communication"
+            ]
+          }
+        },
+        "C08_fp_and_a_reporting": {
+          "subdomains": [
+            "planning_and_budgeting",
+            "forecasting_and_scenario_modelling",
+            "management_reporting",
+            "kpi_and_scorecard_design",
+            "board_and_investor_reporting"
+          ],
+          "roles": [
+            "head_of_fp_and_a",
+            "finance_business_partner",
+            "board_reporting_lead"
+          ],
+          "lifecycle_model": {
+            "phases": [
+              "top_down_targets_and_constraints",
+              "bottom_up_plan_build",
+              "consolidation_and_alignment",
+              "ongoing_forecast_refresh",
+              "variance_analysis_and_actions"
+            ],
+            "loops": [
+              "plan \u2192 design \u2192 execute \u2192 measure \u2192 refine",
+              "signals from metrics feed directly into capital and operating decisions"
+            ]
+          },
+          "interaction_map": {
+            "inputs": [
+              "historical_financials_and_operating_metrics",
+              "strategic_and_operating_plans",
+              "headcount_and_capacity_plans"
+            ],
+            "outputs": [
+              "budgets_and_forecasts",
+              "variance_and_bridge_analysis",
+              "management_kpi_dashboards",
+              "board_packs_andnarratives"
+            ],
+            "dependencies": [
+              "C07_corporate_finance_and_treasury",
+              "C11_risk_and_internal_audit"
+            ]
+          },
+          "metrics": {
+            "health": [
+              "forecast_accuracy_by_horizon",
+              "timeliness_of_reporting",
+              "consistency_of_definitions_across_org"
+            ],
+            "performance": [
+              "speed_of_plan_and_forecast_cycles",
+              "percentage_of_decisions_backed_by_data",
+              "translation_of_insights_to_actions"
+            ],
+            "risk": [
+              "data_quality_risk",
+              "model_assumption_risks",
+              "overreliance_on_single_scenarios"
+            ],
+            "maturity": [
+              "single_source_of_truth_for_numbers",
+              "driver_based_planning",
+              "tight_link_between_finance_and_operators"
+            ]
+          }
+        },
+        "C09_risk_governance_compliance": {
+          "subdomains": [
+            "enterprise_risk_management",
+            "policy_and_control_frameworks",
+            "regulatory_compliance",
+            "board_and_committee_governance",
+            "crisis_and_continuity_management"
+          ],
+          "roles": [
+            "chief_risk_officer",
+            "general_counsel",
+            "company_secretary"
+          ],
+          "lifecycle_model": {
+            "phases": [
+              "risk_identification_and_taxonomy",
+              "assessment_and_prioritisation",
+              "mitigation_and_control_design",
+              "monitoring_and_reporting",
+              "incident_response_and_review"
+            ],
+            "loops": [
+              "plan \u2192 design \u2192 execute \u2192 measure \u2192 refine",
+              "signals from metrics feed directly into capital and operating decisions"
+            ]
+          },
+          "interaction_map": {
+            "inputs": [
+              "strategic_and_operational_plans",
+              "external_regulation_and_standards",
+              "incident_and_loss_event_data",
+              "audit_and_assurance_findings"
+            ],
+            "outputs": [
+              "risk_register_and_heatmaps",
+              "policies_and_controls_library",
+              "compliance_and_risk_reports",
+              "lessons_learned_andremediation_plans"
+            ],
+            "dependencies": [
+              "C07_corporate_finance_and_treasury",
+              "C08_fp_and_a_reporting",
+              "C11_risk_and_internal_audit"
+            ]
+          },
+          "metrics": {
+            "health": [
+              "coverage_of_material_risks",
+              "control_effectiveness",
+              "regulatory_and_audit_issues_open"
+            ],
+            "performance": [
+              "speed_of_issue_detection_and_resolution",
+              "integration_of_risk_into_decision_processes",
+              "board_and_executive_visibility"
+            ],
+            "risk": [
+              "unmitigated_high_and_critical_risks",
+              "regulatory_enforcement_risk",
+              "reputation_and_trust_risk"
+            ],
+            "maturity": [
+              "proactive_vs_reactive_risk_culture",
+              "embedded_risk_ownership_in_business",
+              "independence_and_strength_of_second_line"
+            ]
+          }
+        },
+        "C10_external_markets_and_investing": {
+          "subdomains": [
+            "public_equities",
+            "fixed_income_and_credit",
+            "alternatives_and_private_markets",
+            "derivatives_and_hedging",
+            "macro_and_thematic_investing"
+          ],
+          "roles": [
+            "chief_investment_officer",
+            "portfolio_manager",
+            "investment_analyst"
+          ],
+          "lifecycle_model": {
+            "phases": [
+              "investment_universe_and_constraints",
+              "research_and_idea_generation",
+              "security_and_position_sizing",
+              "portfolio_construction_and_execution",
+              "monitoring_and_risk_management",
+              "exit_and_post_mortem"
+            ],
+            "loops": [
+              "plan \u2192 design \u2192 execute \u2192 measure \u2192 refine",
+              "signals from metrics feed directly into capital and operating decisions"
+            ]
+          },
+          "interaction_map": {
+            "inputs": [
+              "macro_and_micro_data",
+              "company_and_sector_research",
+              "risk_and_liquidity_limits",
+              "client_or_investor_mandates"
+            ],
+            "outputs": [
+              "investment_memos_and_theses",
+              "portfolios_and_trades",
+              "performance_and_risk_reports"
+            ],
+            "dependencies": [
+              "C07_corporate_finance_and_treasury",
+              "C11_risk_and_internal_audit"
+            ]
+          },
+          "metrics": {
+            "health": [
+              "tracking_error_vs_benchmark_or_target",
+              "diversification_and_concentration_profile",
+              "liquidity_profile_vs_needs"
+            ],
+            "performance": [
+              "absolute_and_risk_adjusted_returns",
+              "hit_rate_and_payoff_ratio",
+              "alpha_and_factor_exposures"
+            ],
+            "risk": [
+              "market_and_factor_risk",
+              "liquidity_and_funding_risk",
+              "counterparty_and_operational_risk"
+            ],
+            "maturity": [
+              "clarity_and_consistency_of_investment_process",
+              "quality_of_research_archives",
+              "discipline_in_risk_limits_and_breaches"
+            ]
+          }
+        },
+        "C11_risk_and_internal_audit": {
+          "subdomains": [
+            "internal_control_testing",
+            "process_and_it_audit",
+            "model_and_data_validation",
+            "fraud_and_investigation",
+            "assurance_on_regulatory_reporting"
+          ],
+          "roles": [
+            "head_of_internal_audit",
+            "senior_internal_auditor",
+            "model_risk_manager"
+          ],
+          "lifecycle_model": {
+            "phases": [
+              "audit_universe_and_plan",
+              "fieldwork_and_testing",
+              "reporting_and_issue_management",
+              "follow_up_and_validation"
+            ],
+            "loops": [
+              "plan \u2192 design \u2192 execute \u2192 measure \u2192 refine",
+              "signals from metrics feed directly into capital and operating decisions"
+            ]
+          },
+          "interaction_map": {
+            "inputs": [
+              "risk_assessments_and_registers",
+              "process_and_system_documentation",
+              "incident_and_loss_events"
+            ],
+            "outputs": [
+              "audit_reports",
+              "issues_and_action_plans",
+              "assurance_to_board_and_regulators"
+            ],
+            "dependencies": [
+              "C09_risk_governance_compliance",
+              "C08_fp_and_a_reporting"
+            ]
+          },
+          "metrics": {
+            "health": [
+              "coverage_of_high_risk_areas",
+              "on_time_completion_of_plan",
+              "quality_and_impact_of_findings"
+            ],
+            "performance": [
+              "cycle_time_from_audit_to_actions",
+              "closure_rate_of_issues",
+              "management_and_board_satisfaction"
+            ],
+            "risk": [
+              "repeat_findings",
+              "unaddressed_control_weaknesses",
+              "independence_or_conflict_risks"
+            ],
+            "maturity": [
+              "data_and_analytics_use_in_audit",
+              "coordination_with_other_assurance_functions",
+              "continuous_monitoring_capabilities"
+            ]
+          }
+        },
+        "C12_impact_and_esg": {
+          "subdomains": [
+            "environment_and_climate",
+            "social_and_labor_practices",
+            "governance_and_ethics",
+            "impact_investing_and_reporting",
+            "stakeholder_and_community_engagement"
+          ],
+          "roles": [
+            "chief_sustainability_officer",
+            "esg_analyst",
+            "impact_investing_lead"
+          ],
+          "lifecycle_model": {
+            "phases": [
+              "materiality_assessment",
+              "strategy_and_target_setting",
+              "data_and_reporting_infrastructure",
+              "execution_and_integration",
+              "assurance_and_external_disclosure"
+            ],
+            "loops": [
+              "plan \u2192 design \u2192 execute \u2192 measure \u2192 refine",
+              "signals from metrics feed directly into capital and operating decisions"
+            ]
+          },
+          "interaction_map": {
+            "inputs": [
+              "regulatory_and_reporting_standards",
+              "stakeholder_and_community_input",
+              "operating_and_supply_chain_data"
+            ],
+            "outputs": [
+              "esg_and_impact_targets",
+              "esg_kpi_dashboards",
+              "impact_and_sustainability_reports"
+            ],
+            "dependencies": [
+              "C06_operations_and_supply",
+              "C07_corporate_finance_and_treasury",
+              "C09_risk_governance_compliance"
+            ]
+          },
+          "metrics": {
+            "health": [
+              "coverage_of_material_esg_issues",
+              "quality_and_completeness_of_esg_data",
+              "integration_of_esg_into_core_decisions"
+            ],
+            "performance": [
+              "progress_against_targets",
+              "capital_and_cost_advantages_from_esg",
+              "stakeholder_trust_and_ratings"
+            ],
+            "risk": [
+              "transition_and_physical_climate_risk",
+              "social_and_labor_risk",
+              "greenwashing_or_reporting_risk"
+            ],
+            "maturity": [
+              "board_and_executive_oversight",
+              "use_of_esg_in_capital_allocation",
+              "third_party_assurance_and_verification"
+            ]
+          }
+        },
+        "C13_people_incentives_and_org": {
+          "subdomains": [
+            "org_design_and_structure",
+            "compensation_and_rewards",
+            "performance_management",
+            "leadership_and_talent_pipelines",
+            "culture_and_behavioural_norms"
+          ],
+          "roles": [
+            "chief_people_officer",
+            "head_of_total_rewards",
+            "org_development_lead"
+          ],
+          "lifecycle_model": {
+            "phases": [
+              "org_and_role_architecture",
+              "comp_and_incentive_framework",
+              "performance_cycle_and_reviews",
+              "talent_and_succession_planning",
+              "org_health_and_culture_interventions"
+            ],
+            "loops": [
+              "plan \u2192 design \u2192 execute \u2192 measure \u2192 refine",
+              "signals from metrics feed directly into capital and operating decisions"
+            ]
+          },
+          "interaction_map": {
+            "inputs": [
+              "strategy_and_operating_model",
+              "market_compensation_and_benchmarks",
+              "engagement_and_org_health_data"
+            ],
+            "outputs": [
+              "org_structure_and_role_definitions",
+              "comp_and_incentive_plans",
+              "performance_and_promotion_decisions"
+            ],
+            "dependencies": [
+              "C01_corporate_strategy",
+              "C05_growth_and_demand"
+            ]
+          },
+          "metrics": {
+            "health": [
+              "engagement_and_org_health_scores",
+              "regretted_attrition_rate",
+              "clarity_of_responsibilities_and_decision_rights"
+            ],
+            "performance": [
+              "time_to_productivity_for_new_hires",
+              "internal_fill_rate_for_key_roles",
+              "alignment_between_performance_and_rewards"
+            ],
+            "risk": [
+              "key_person_risk",
+              "misaligned_incentives_driving_bad_outcomes",
+              "compliance_and_labor_risks"
+            ],
+            "maturity": [
+              "data_driven_people_decisions",
+              "leadership_and_manager_capability",
+              "integrated_talent_and_business_planning"
+            ]
+          }
+        },
+        "C14_banking_payments_and_infra": {
+          "subdomains": [
+            "retail_and_corporate_banking",
+            "lending_and_credit",
+            "payments_and_money_movement",
+            "transaction_banking_and_cash_management",
+            "banking_as_a_service_and_fintech_partnerships"
+          ],
+          "roles": [
+            "head_of_transaction_banking",
+            "payments_product_lead",
+            "lending_and_credit_risk_head"
+          ],
+          "lifecycle_model": {
+            "phases": [
+              "customer_needs_and_segmentation",
+              "product_and_service_design",
+              "risk_and_compliance_setup",
+              "distribution_and_partnership_build",
+              "operations_and_support"
+            ],
+            "loops": [
+              "plan \u2192 design \u2192 execute \u2192 measure \u2192 refine",
+              "signals from metrics feed directly into capital and operating decisions"
+            ]
+          },
+          "interaction_map": {
+            "inputs": [
+              "customer_and_flow_of_funds_data",
+              "regulatory_and_licensing_requirements",
+              "technology_and_core_banking_capabilities"
+            ],
+            "outputs": [
+              "banking_and_payment_products",
+              "risk_and_compliance_controls",
+              "transaction_and_fee_revenue_streams"
+            ],
+            "dependencies": [
+              "C10_external_markets_and_investing",
+              "C11_risk_and_internal_audit"
+            ]
+          },
+          "metrics": {
+            "health": [
+              "customer_and_transaction_growth",
+              "service_reliability_and_uptime",
+              "portfolio_and_credit_quality"
+            ],
+            "performance": [
+              "net_interest_margin_and_fees",
+              "cost_to_income_ratio",
+              "return_on_equity_for_banking_segment"
+            ],
+            "risk": [
+              "credit_and_counterparty_risk",
+              "liquidity_andfunding_risk",
+              "operational_and_fraud_risk"
+            ],
+            "maturity": [
+              "modernisation_of_core_systems",
+              "strength_of_partnership_and_platform_models",
+              "regulatory_and_supervisory_relationships"
+            ]
+          }
+        },
+        "C15_insurance_and_risk_transfer": {
+          "subdomains": [
+            "retail_and_commercial_insurance",
+            "reinsurance_and_risk_transfer",
+            "underwriting_and_pricing",
+            "claims_and_reserving",
+            "new_risk_products_and_parametric_insurance"
+          ],
+          "roles": [
+            "chief_underwriting_officer",
+            "actuary",
+            "head_of_claims"
+          ],
+          "lifecycle_model": {
+            "phases": [
+              "risk_and_exposure_assessment",
+              "product_and_cover_design",
+              "pricing_and_capital_allocation",
+              "distribution_and_sales",
+              "claims_management_and_experience_learning"
+            ],
+            "loops": [
+              "plan \u2192 design \u2192 execute \u2192 measure \u2192 refine",
+              "signals from metrics feed directly into capital and operating decisions"
+            ]
+          },
+          "interaction_map": {
+            "inputs": [
+              "exposure_and_catastrophe_models",
+              "historical_loss_and_claims_data",
+              "capital_and_reinsurance_capacity"
+            ],
+            "outputs": [
+              "insurance_and_reinsurance_products",
+              "reserving_and_capital_models",
+              "portfolio_andloss_reports"
+            ],
+            "dependencies": [
+              "C11_risk_and_internal_audit",
+              "C12_impact_and_esg"
+            ]
+          },
+          "metrics": {
+            "health": [
+              "combined_ratio",
+              "adequacy_of_reserves",
+              "quality_and_speed_of_claims_handling"
+            ],
+            "performance": [
+              "underwriting_profitability",
+              "growth_by_line_and_segment",
+              "return_on_capital"
+            ],
+            "risk": [
+              "catastrophe_and_concentration_risk",
+              "model_and_parameter_uncertainty",
+              "reinsurance_counterparty_risk"
+            ],
+            "maturity": [
+              "use_of_data_and_analytics_in_underwriting",
+              "portfolio_and_aggregate_risk_views",
+              "innovation_in_product_and_distribution"
+            ]
+          }
+        },
+        "C16_macro_policy_and_systems": {
+          "subdomains": [
+            "monetary_and_fiscal_policy",
+            "financial_stability_and_systemic_risk",
+            "regulation_and_supervision",
+            "sovereign_debt_and_fx",
+            "development_finance_and_inclusion"
+          ],
+          "roles": [
+            "central_banker",
+            "finance_ministry_policy_lead",
+            "financial_regulator"
+          ],
+          "lifecycle_model": {
+            "phases": [
+              "diagnosis_of_macro_and_system_state",
+              "policy_option_assessment",
+              "implementation_and_market_communication",
+              "monitoring_and_feedback",
+              "policy_adjustment_and_coherence_checks"
+            ],
+            "loops": [
+              "plan \u2192 design \u2192 execute \u2192 measure \u2192 refine",
+              "signals from metrics feed directly into capital and operating decisions"
+            ]
+          },
+          "interaction_map": {
+            "inputs": [
+              "macro_and_high_frequency_data",
+              "financial_system_and_market_indicators",
+              "political_and_social_constraints"
+            ],
+            "outputs": [
+              "policy_rates_andinstruments",
+              "regulatory_and_supervisory_actions",
+              "macroprudential_and_crisis_measures"
+            ],
+            "dependencies": [
+              "C10_external_markets_and_investing",
+              "C12_impact_and_esg"
+            ]
+          },
+          "metrics": {
+            "health": [
+              "inflation_and_employment_stability",
+              "financial_system_resilience",
+              "credibility_and_predictability_of_policy"
+            ],
+            "performance": [
+              "growth_and_productivity_trends",
+              "financial_inclusion_and_access",
+              "sovereign_and_systemic_risk_premia"
+            ],
+            "risk": [
+              "policy_mistake_or_incoherence_risk",
+              "hidden_systemic_and_shadow_risks",
+              "external_and_geopolitical_shock_exposure"
+            ],
+            "maturity": [
+              "quality_of_data_and_modelling",
+              "independence_andgovernance_of_institutions",
+              "coordination_across_fiscal_monetary_and_regulatory_bodies"
+            ]
+          }
+        },
+        "crosscutting_engines": {
+          "capital_allocation_engine": {
+            "description": "Single spine that routes every marginal unit of capital across products, orgs, and time horizons.",
+            "dimensions": [
+              "time_horizon",
+              "risk_return_profile",
+              "strategic_importance",
+              "reversibility_of_decision"
+            ],
+            "artifacts": [
+              "capital_allocation_committee_charter",
+              "investment_and_disinvestment_memos",
+              "post_investment_reviews"
+            ]
+          },
+          "valuation_engine": {
+            "description": "Shared toolkit for valuing companies, projects, and options across internal and external opportunities.",
+            "methods": [
+              "d_cf_and_cashflow_based",
+              "multiples_and_comparables",
+              "options_and_real_options",
+              "scenario_and_decision_tree_valuation"
+            ]
+          },
+          "scorecard_engine": {
+            "description": "Unified KPI and scorecard framing linking strategy, operations, and finance.",
+            "perspectives": [
+              "financial",
+              "customer_and_market",
+              "internal_process",
+              "people_and_capability",
+              "risk_and_resilience"
+            ]
+          },
+          "incentive_engine": {
+            "description": "Template for aligning incentives with long term health of system, not just short term numbers.",
+            "surfaces": [
+              "board_and_executive_comp",
+              "sales_and_growth_incentives",
+              "investment_team_incentives",
+              "risk_and_control_incentives"
+            ]
+          }
+        }
+      },
+      "BIZFIN_ENGINE_V\u221e_X6": {
+        "meta": {
+          "note": "Six mega-arenas: strategy, customers, operations, finance, risk, system."
+        },
+        "groups": {
+          "strategy": [
+            "C01_corporate_strategy",
+            "C02_business_model_design"
+          ],
+          "customers_and_growth": [
+            "C03_pricing_revenue_ops",
+            "C04_sales_systems",
+            "C05_growth_and_demand"
+          ],
+          "operations_and_supply": [
+            "C06_operations_and_supply"
+          ],
+          "finance_and_capital": [
+            "C07_corporate_finance_and_treasury",
+            "C08_fp_and_a_reporting"
+          ],
+          "risk_and_governance": [
+            "C09_risk_governance_compliance",
+            "C11_risk_and_internal_audit"
+          ],
+          "system_markets_and_impact": [
+            "C10_external_markets_and_investing",
+            "C12_impact_and_esg",
+            "C13_people_incentives_and_org",
+            "C14_banking_payments_and_infra",
+            "C15_insurance_and_risk_transfer",
+            "C16_macro_policy_and_systems"
+          ]
+        }
+      },
+      "BIZFIN_ENGINE_vInfinity_x18": {
+        "meta": {
+          "note": "Slot for higher granularity decomposition, aligned with AMOS C_CANON when expanded."
+        },
+        "placeholder": "Can be auto-populated by AMOS using C07_econ_finance and C06_society_culture."
+      },
+      "BIZFIN_ENGINE_vInfinity_DIMENSIONAL_LAYERS": {
+        "dimensions": {
+          "time_horizon": [
+            "intraday",
+            "quarter",
+            "year",
+            "3_to_5_years",
+            "10_plus_years"
+          ],
+          "entity_type": [
+            "individual",
+            "startup",
+            "mature_company",
+            "financial_institution",
+            "state_or_sovereign"
+          ],
+          "capital_form": [
+            "equity",
+            "debt",
+            "hybrid",
+            "grants_and_subsidies",
+            "intangible_capital"
+          ],
+          "risk_profile": [
+            "capital_preservation",
+            "income_or_yield",
+            "balanced",
+            "growth",
+            "speculative"
+          ],
+          "governance_strength": [
+            "weak",
+            "developing",
+            "strong",
+            "exemplary"
+          ]
+        },
+        "notes": "Used to lift any local decision into a systemic mapping so AMOS can compare across actors and time."
+      },
+      "BIZFIN_ENGINE_vInfinity_ULTIMATE_KERNEL": {
+        "axes": [
+          "customer_value_creation",
+          "capital_efficiency_and_resilience",
+          "governance_and_incentives",
+          "system_externalities_and_impact"
+        ],
+        "coordinate_system": "Any firm, product, or policy can be plotted as a point in this 4D space. The engine learns preferred regions for long term viability and integrity."
+      },
+      "BIZFIN_ENGINE_vInfinity_ROLE_LAYER": {
+        "archetypes": [
+          {
+            "id": "founder_ceo",
+            "primary_clusters": [
+              "C01_corporate_strategy",
+              "C02_business_model_design",
+              "C07_corporate_finance_and_treasury"
+            ]
+          },
+          {
+            "id": "cfo",
+            "primary_clusters": [
+              "C07_corporate_finance_and_treasury",
+              "C08_fp_and_a_reporting",
+              "C09_risk_governance_compliance"
+            ]
+          },
+          {
+            "id": "cro_or_cro_risk",
+            "primary_clusters": [
+              "C09_risk_governance_compliance",
+              "C11_risk_and_internal_audit"
+            ]
+          },
+          {
+            "id": "head_of_growth",
+            "primary_clusters": [
+              "C05_growth_and_demand",
+              "C03_pricing_revenue_ops",
+              "C04_sales_systems"
+            ]
+          },
+          {
+            "id": "portfolio_manager",
+            "primary_clusters": [
+              "C10_external_markets_and_investing",
+              "C12_impact_and_esg"
+            ]
+          },
+          {
+            "id": "regulator_policy_maker",
+            "primary_clusters": [
+              "C16_macro_policy_and_systems",
+              "C14_banking_payments_and_infra"
+            ]
+          }
+        ],
+        "notes": "Role coverage matrix can be expanded to all titles using AMOS role expansion tools."
+      }
+    }
+  },
+  "augmentation_layers": {
+    "fabrication_overlay": {
+      "description": "Takes a natural language business or policy question and maps it into explicit capital + risk + governance scenarios.",
+      "pipeline": [
+        "parse_intent_and_entity_context",
+        "map_to_clusters_and_dimensions",
+        "build_scenarios_and_cashflow_shapes",
+        "evaluate_capital_and_risk_profiles",
+        "suggest_decisions_and_guardrails"
+      ]
+    },
+    "audit_overlay": {
+      "description": "Audits any decision, model, or policy for hidden assumptions, incentive misalignment, and systemic side effects.",
+      "checks": [
+        "assumption_log_completeness",
+        "unit_economics_and_cashflow_consistency",
+        "governance_and_incentive_alignment",
+        "externalities_and_system_impact",
+        "robustness_to_shocks_and_regime_changes"
+      ]
+    },
+    "simulation_overlay": {
+      "description": "Runs multi-year simulations or scenario trees against capital, strategy, and macro conditions.",
+      "modes": [
+        "base_case_planning",
+        "stress_and_downside",
+        "upside_and_optionality",
+        "policy_and_regulation_change",
+        "climate_and_system_shock"
+      ]
+    }
+  },
+  "role_coverage_model": {
+    "note": "Describes coverage for executive, finance, investing, and policy roles.",
+    "executive_suite": [
+      "ceo",
+      "cfo",
+      "coo",
+      "cmo",
+      "cro",
+      "cpo",
+      "cso"
+    ],
+    "finance_and_risk": [
+      "head_of_fp_and_a",
+      "treasurer",
+      "head_of_internal_audit",
+      "risk_manager"
+    ],
+    "investors": [
+      "vc_partner",
+      "pe_partner",
+      "portfolio_manager",
+      "family_office_cio"
+    ],
+    "public_sector": [
+      "central_banker",
+      "regulator",
+      "finance_ministry_official"
+    ]
+  },
+  "role_benchmark_matrix": {
+    "archetype_bands": {
+      "baseline": "Understands financial statements and basic capital tradeoffs.",
+      "strong": "Connects strategy, operations, and capital with clear mental models and scenarios.",
+      "world_class": "Designs and runs full capital system across organisations or markets, with explicit incentive and system impact mapping."
+    }
+  },
+  "x100k_fabrication_and_audit_overlay": {
+    "description": "x100k overlay describing how AMOS should turn this engine into concrete modelling, dashboards, and playbooks.",
+    "interfaces": [
+      "input: natural_language_question",
+      "input: structured_financials_and_operating_data",
+      "input: policy_or_investment_constraints",
+      "output: decisions_paths_and_guardrails",
+      "output: assumption_and_risk_register",
+      "output: monitoring_kpi_framework"
+    ]
+  }
+}

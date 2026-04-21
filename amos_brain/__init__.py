@@ -368,11 +368,6 @@ def get_config():
 
 
 # SuperBrain exports (ONE BRAIN - Canonical Runtime)
-def get_super_brain():
-    """Get SuperBrain singleton (lazy import)."""
-    return _lazy_import("get_super_brain")()
-
-
 def initialize_super_brain():
     """Initialize SuperBrain (lazy import)."""
     return _lazy_import("initialize_super_brain")()
@@ -711,6 +706,7 @@ __all__ = [
     "get_super_brain",
     "initialize_super_brain",
     "SuperBrainState",
+    "get_brain_runtime",
     # Governance Components
     "ActionGate",
     "ModelRouter",

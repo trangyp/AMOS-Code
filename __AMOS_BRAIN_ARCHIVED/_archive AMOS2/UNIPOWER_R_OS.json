@@ -1,0 +1,15 @@
+{
+  "name": "UniPower Real-World Operating System",
+  "version": "1.0.0",
+  "modules": [
+    "StationEngine",
+    "GridEngine",
+    "BatteryLoadEngine",
+    "MaintenanceEngine",
+    "DriverBehaviorEngine",
+    "FinanceEngine",
+    "SafetyPolicyEngine",
+    "CityPlanningEngine",
+    "PartnerGovernmentEngine"
+  ]
+}

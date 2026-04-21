@@ -1,0 +1,212 @@
+/-
+  CORE-19 v0.3 — Formal Spec (Lean-style)
+-/
+
+universe u
+
+-- Sorts
+constant E : Type u    -- entities
+constant T : Type u    -- time points
+constant R : Type u    -- regions
+constant I : Type u    -- information
+
+-- Basic predicates and functions
+constant Ex   : E → T → Prop          -- existence
+constant Caus : E → E → T → Prop      -- causality
+constant InR  : E → R → T → Prop      -- spatial location
+constant Info : E → T → I             -- information state
+
+constant ltT  : T → T → Prop          -- time order
+infix `<ₜ` : 50 := ltT
+
+constant OpenR : R → Prop             -- open region
+constant Path  : E → E → R → Prop     -- causal path region
+
+-- Null information constant
+constant i0 : I
+
+-- Logical / meta-logical operators on propositions
+constant PLogic  : Prop → Prop        -- PositiveLogic
+constant NLogic  : Prop → Prop        -- NegativeLogic
+constant ZLogic  : Prop → Prop        -- ZeroLogic
+constant DLogic  : Prop → Prop        -- DualLogic
+constant MLogic  : Prop → Prop        -- MultiLogic
+constant MetaL   : Prop → Prop        -- MetaLogic
+
+constant SupraL  : Prop → Prop        -- SupraLogic
+constant AntiL   : Prop → Prop        -- AntiLogic
+constant NullL   : Prop → Prop        -- NullLogic
+
+-- Meta-pattern operators on propositions
+constant Conv    : Prop → Prop        -- Λ (Convergence)
+constant Divg    : Prop → Prop        -- Δ (Divergence)
+constant Paradox : Prop → Prop        -- Π (Paradox)
+
+-- Derived: Nonexistence
+def NEx (x : E) (t : T) : Prop := ¬ Ex x t
+
+----------------------------------------------------------------
+-- Axioms: Patterns
+----------------------------------------------------------------
+
+-- A1: Nonexistence definition
+axiom A1_nonexist_def :
+  ∀ (x : E) (t : T), NEx x t ↔ ¬ Ex x t
+
+-- A2: Existence ⇒ information defined
+axiom A2_info_defined :
+  ∀ (x : E) (t : T), Ex x t → ∃ (i : I), Info x t = i
+
+-- A3: Spatial placement ⇒ existence
+axiom A3_loc_impl_ex :
+  ∀ (x : E) (r : R) (t : T), InR x r t → Ex x t
+
+-- A4: Time is a linear order
+axiom A4_time_trans :
+  ∀ t1 t2 t3 : T, t1 <ₜ t2 → t2 <ₜ t3 → t1 <ₜ t3
+
+axiom A4_time_antisymm :
+  ∀ t1 t2 : T, t1 <ₜ t2 → ¬ t2 <ₜ t1
+
+axiom A4_time_total :
+  ∀ t1 t2 : T, t1 <ₜ t2 ∨ t2 <ₜ t1 ∨ t1 = t2
+
+-- A5: Causality ⇒ existence of cause and effect
+axiom A5_caus_ex :
+  ∀ (x y : E) (t : T), Caus x y t → Ex x t ∧ Ex y t
+
+-- A8: Causality ⇒ existence of connecting region (path)
+axiom A8_caus_path :
+  ∀ (x y : E) (t : T),
+    Caus x y t →
+    ∃ (r : R), Path x y r ∧ OpenR r ∧ InR x r t ∧ InR y r t
+
+-- A9: Nonexistence ⇒ null information
+axiom A9_nonexist_null_info :
+  ∀ (x : E) (t : T), NEx x t → Info x t = i0
+
+----------------------------------------------------------------
+-- Axioms: Evolution (Temporal → Identity)
+----------------------------------------------------------------
+
+-- Evolve predicate on entity across time
+constant Evolve : E → T → T → Prop
+
+axiom A_evolve_def :
+  ∀ (x : E) (t1 t2 : T),
+    t1 <ₜ t2 →
+    ( Evolve x t1 t2 ↔
+      (Info x t1 ≠ Info x t2 ∨
+       (∃ (r : R), InR x r t1 ≠ InR x r t2)) )
+
+----------------------------------------------------------------
+-- Axioms: Meta-patterns (Conv, Divg, Paradox)
+----------------------------------------------------------------
+
+-- M1: Convergence idempotence
+axiom M1_conv_idem :
+  ∀ X : Prop, Conv (Conv X) ↔ Conv X
+
+-- M3: Convergence preserves truth (X ⇒ ΛX)
+axiom M3_conv_preserve :
+  ∀ X : Prop, X → Conv X
+
+-- M6: Divergence idempotence
+axiom M6_divg_idem :
+  ∀ X : Prop, Divg (Divg X) ↔ Divg X
+
+-- M5: Divergence expansive (X ⇒ ΔX)
+axiom M5_divg_expansive :
+  ∀ X : Prop, X → Divg X
+
+-- M9: Paradox definition (ΠX = X ∧ ¬X)
+axiom M9_paradox_def :
+  ∀ X : Prop, Paradox X ↔ (X ∧ ¬ X)
+
+-- M12: Paradox idempotence
+axiom M12_paradox_idem :
+  ∀ X : Prop, Paradox (Paradox X) ↔ Paradox X
+
+-- Interaction: Paradox on existence collapses to nonexistence
+axiom Mp_ex_paradox_collapse :
+  ∀ (x : E) (t : T),
+    Paradox (Ex x t) → NEx x t
+
+----------------------------------------------------------------
+-- Axioms: Logic modes
+----------------------------------------------------------------
+
+-- PositiveLogic (PLogic)
+axiom L1_plogic_mono :
+  ∀ X Y : Prop, (X → Y) → (PLogic X → PLogic Y)
+
+axiom L2_plogic_idem :
+  ∀ X : Prop, PLogic (PLogic X) ↔ PLogic X
+
+axiom L3_plogic_from_X :
+  ∀ X : Prop, X → PLogic X
+
+-- NegativeLogic (NLogic)
+axiom L4_nlogic_invol :
+  ∀ X : Prop, NLogic (NLogic X) ↔ X
+
+axiom L5_nlogic_neg :
+  ∀ X : Prop, NLogic X → ¬ X
+
+-- ZeroLogic (ZLogic)
+axiom L7_zlogic_bottom :
+  ∀ X : Prop, ZLogic X → False
+
+axiom L8_zlogic_idem :
+  ∀ X : Prop, ZLogic (ZLogic X) ↔ ZLogic X
+
+-- DualLogic (DLogic)
+axiom L9_dlogic_def :
+  ∀ X : Prop, DLogic X ↔ (X ∧ ¬ X)
+
+axiom L11_dlogic_idem :
+  ∀ X : Prop, DLogic (DLogic X) ↔ DLogic X
+
+-- MultiLogic (MLogic)
+axiom L12_mlogic_exp :
+  ∀ X : Prop, X → MLogic X
+
+axiom L13_mlogic_idem :
+  ∀ X : Prop, MLogic (MLogic X) ↔ MLogic X
+
+-- MetaLogic (MetaL)
+axiom L15_metal_lift :
+  ∀ X : Prop, X → MetaL X
+
+axiom L16_metal_idem :
+  ∀ X : Prop, MetaL (MetaL X) ↔ MetaL X
+
+----------------------------------------------------------------
+-- Axioms: Meta-logic operators
+----------------------------------------------------------------
+
+-- SupraLogic (SupraL) – abstract evolution over environment
+axiom ML2_supral_idem :
+  ∀ X : Prop, SupraL (SupraL X) ↔ SupraL X
+
+-- AntiLogic (AntiL)
+axiom ML4_antil_invol :
+  ∀ X : Prop, AntiL (AntiL X) ↔ X
+
+-- NullLogic (NullL)
+axiom ML6_nulll_idem :
+  ∀ X : Prop, NullL (NullL X) ↔ NullL X
+
+----------------------------------------------------------------
+-- Interaction: Logic ↔ Patterns
+----------------------------------------------------------------
+
+-- NegativeLogic on existence ⇒ nonexistence
+axiom L_ex_nlogic_to_nex :
+  ∀ (x : E) (t : T),
+    NLogic (Ex x t) → NEx x t
+
+-- DualLogic on causality = paradox
+axiom L_caus_dlogic_paradox :
+  ∀ (x y : E) (t : T),
+    DLogic (Caus x y t) ↔ Paradox (Caus x y t)

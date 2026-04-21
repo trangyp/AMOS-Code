@@ -1,0 +1,1672 @@
+{
+  "engine_name": "UniTaxi_Driver_Training_Engine",
+  "version": "1.0",
+  "purpose": "Huấn luyện tài xế UniTaxi theo chuẩn an toàn – tác phong – dịch vụ tốt nhất (VN + quốc tế). Engine này chỉ được dùng cho đào tạo, không dùng cho giám sát, chấm điểm vận hành hay ra quyết định nhân sự.",
+  "scope": {
+    "target_roles": ["driver"],
+    "geography": ["Vietnam"],
+    "vehicle_types": ["EV_taxi", "EV_shuttle", "school_transport"],
+    "usage_modes": ["onboarding_training", "retraining", "refresh_training"]
+  },
+
+  "hard_constraints_training_only": {
+    "allowed_functions": [
+      "generate_training_content",
+      "generate_scenarios_and_roleplays",
+      "generate_quizzes_and_tests",
+      "analyze_training_answers",
+      "suggest_personal_improvement_plan"
+    ],
+    "forbidden_functions": [
+      "real_time_dispatch_decision",
+      "automatic_hiring_or_firing_decision",
+      "salary_or_bonus_decision",
+      "surveillance_or_spying_on_drivers",
+      "real_time_safety_scoring_in_operation",
+      "public_ranking_of_drivers"
+    ],
+    "governance_rules": [
+      "Engine outputs are for training and coaching only.",
+      "All evaluation scores must be labelled 'training_score', not used trực tiếp cho kỷ luật hay chấm công.",
+      "No connection to live-ops systems (dispatch, billing, live tracking) trừ khi qua lớp ẩn danh hóa và chỉ để tạo kịch bản mô phỏng."
+    ]
+  },
+
+  "core_principles": [
+    "Safety_First_Always",
+    "Respect_and_Professionalism",
+    "Service_Tact_and_Timing",
+    "Data_Honesty_and_Integrity",
+    "Health_and_Fatigue_Discipline",
+    "Vietnam_Culture_Alignment",
+    "Training_Not_Surveillance"
+  ],
+
+  "competency_model": {
+    "domains": [
+      {
+        "id": "safety_and_law",
+        "name": "An toàn & pháp lý",
+        "description": "Hiểu luật, áp dụng lái an toàn tuyệt đối, không vi phạm lớn trong 12 tháng.",
+        "sub_skills": [
+          "traffic_law_vn_core",
+          "ev_safety_and_charging_regulations",
+          "child_protection_rules",
+          "alcohol_drug_zero_tolerance",
+          "fatigue_limits_and_rest_protocols"
+        ]
+      },
+      {
+        "id": "vehicle_and_cleanliness",
+        "name": "Vận hành xe & sạch – mùi – nhiệt độ",
+        "description": "Hiểu xe điện, kiểm tra trước/trong/sau ca, giữ xe sạch – mùi trung tính – nhiệt độ dễ chịu.",
+        "sub_skills": [
+          "ev_basic_structure_and_warnings",
+          "pre_trip_checklist",
+          "mid_trip_quick_clean_30s",
+          "end_of_shift_clean_3min",
+          "smell_light_sound_standard"
+        ]
+      },
+      {
+        "id": "service_and_communication",
+        "name": "Phục vụ & giao tiếp",
+        "description": "Tạo cảm giác an tâm – dễ chịu – tôn trọng; dùng câu mẫu an toàn; tránh tranh cãi.",
+        "sub_skills": [
+          "pre_pickup_messaging_standard",
+          "first_10_seconds_onboarding",
+          "in_trip_tone_and_micro_statements",
+          "conflict_deescalation",
+          "ending_ride_and_lost_items_protocol"
+        ]
+      },
+      {
+        "id": "appearance_and_conduct",
+        "name": "Hình ảnh & tác phong",
+        "description": "Đồng phục, tư thế, tác phong thể hiện sự tự trọng và tự hào nghề.",
+        "sub_skills": [
+          "uniform_and_grooming_standard",
+          "body_language_at_pickup_and_dropoff",
+          "prohibited_behaviors_strict",
+          "professional_boundary_setting"
+        ]
+      },
+      {
+        "id": "special_passenger_care",
+        "name": "Chăm khách đặc biệt",
+        "description": "Chăm sóc học sinh, người già, phụ nữ mang thai, khách bệnh viện, khách say, khách tâm trạng.",
+        "sub_skills": [
+          "children_and_school_runs",
+          "elderly_and_mobility_issues",
+          "pregnant_passengers",
+          "hospital_and_weak_passengers",
+          "emotionally_sensitive_or_drunk_passengers",
+          "time_sensitive_passengers_airport_meetings"
+        ]
+      },
+      {
+        "id": "health_energy_and_schedule",
+        "name": "Sức khoẻ – năng lượng – giờ giấc",
+        "description": "Giữ tỉnh táo, biết ngưỡng đỏ, quản lý ăn uống, nghỉ ngắn, không vượt giới hạn ca.",
+        "sub_skills": [
+          "shift_and_rest_planning",
+          "drowsiness_red_flags_12",
+          "micro_break_5min_protocol",
+          "nutrition_and_hydration_basics",
+          "breathing_and_nerve_calm_techniques"
+        ]
+      },
+      {
+        "id": "system_communication_internal",
+        "name": "Giao tiếp với điều phối & kỹ thuật",
+        "description": "Báo cáo rõ – ngắn – không cảm xúc, dùng câu mẫu chuẩn, không đổ lỗi.",
+        "sub_skills": [
+          "driver_to_dispatch_standard_phrases",
+          "driver_to_tech_issue_reporting",
+          "incident_reporting_protocol",
+          "data_first_not_mouth_rule"
+        ]
+      }
+    ],
+    "proficiency_levels": [
+      "L0_untrained",
+      "L1_basic",
+      "L2_operational",
+      "L3_high_standard",
+      "L4_trainer_candidate"
+    ]
+  },
+
+  "layers": {
+    "curriculum_layer": {
+      "description": "Ánh xạ toàn bộ handbook + Khung 48 giờ thành cấu trúc module – bài học – mục tiêu – chuẩn đầu ra.",
+      "references": [
+        "Unitaxi_Service_Handbook_2025",
+        "Unitaxi_48h_Curriculum_v1"
+      ],
+      "modules": [
+        {
+          "id": "M1_pride_and_role",
+          "title": "Tự hào nghề tài xế & vai trò đại diện UniTaxi",
+          "duration_hours": 2,
+          "outcomes": [
+            "Hiểu ý nghĩa xã hội của nghề tài xế Việt Nam.",
+            "Nhận thức mình là 'gương mặt hệ thống' trong mọi chuyến."
+          ]
+        },
+        {
+          "id": "M2_unitaxi_8_standards",
+          "title": "Bộ 8 chuẩn tác phong UniTaxi (DNA dịch vụ)",
+          "duration_hours": 4,
+          "outcomes": [
+            "Nhớ và diễn giải được 8 chuẩn tác phong.",
+            "Biết ví dụ hành vi làm đúng / sai với từng chuẩn."
+          ]
+        },
+        {
+          "id": "M3_image_uniform",
+          "title": "Hình ảnh & đồng phục – tác phong cơ thể",
+          "duration_hours": 2
+        },
+        {
+          "id": "M4_clean_car_engine",
+          "title": "Xe sạch – mùi – ánh sáng – âm lượng",
+          "duration_hours": 3
+        },
+        {
+          "id": "M5_never_do_list",
+          "title": "Những điều tuyệt đối không làm",
+          "duration_hours": 3
+        },
+        {
+          "id": "M6_trip_lifecycle",
+          "title": "Khi nhận cuốc – đón khách – trong chuyến – trước khi khách xuống – sau chuyến",
+          "duration_hours": 6
+        },
+        {
+          "id": "M7_micro_moments",
+          "title": "Khoảnh khắc nhỏ tạo ấn tượng lớn",
+          "duration_hours": 2
+        },
+        {
+          "id": "M8_health_and_schedule",
+          "title": "Kỷ luật giờ giấc & sức khoẻ",
+          "duration_hours": 4
+        },
+        {
+          "id": "M9_dispatch_and_tech_collaboration",
+          "title": "Làm việc với điều phối & kỹ thuật",
+          "duration_hours": 4
+        }
+      ],
+      "alignment_with_48h_framework": {
+        "foundation_common_16h": ["M1", "M2", "M3", "M4", "M5", "M8"],
+        "driver_specialty_20h": ["M4", "M6", "M7", "M8"],
+        "scenario_and_review_8h": ["M6", "M7", "M9"],
+        "assessment_and_commitment_4h": ["M1", "M2", "M5", "M8", "M9"]
+      }
+    },
+
+    "scenario_engine_layer": {
+      "description": "Sinh tình huống, hội thoại, mô phỏng đa kịch bản theo chuẩn dịch vụ UniTaxi + chuẩn an toàn quốc tế.",
+      "scenario_families": [
+        "pre_pickup_comms",
+        "pickup_in_rain_or_heat",
+        "night_pickup_female_or_alone",
+        "school_pickup_and_dropoff",
+        "elderly_and_pregnant_handling",
+        "hospital_and_weak_passenger",
+        "drunk_or_aggressive_passenger",
+        "time_pressure_airport_meeting",
+        "traffic_jam_and_delay_explanation",
+        "incident_and_minor_accident_handling",
+        "lost_and_found_protocol",
+        "internal_comms_with_dispatch_and_tech"
+      ],
+      "scenario_format": {
+        "structure": [
+          "context_block",
+          "driver_goal",
+          "constraints",
+          "customer_lines",
+          "driver_expected_responses",
+          "safety_checks",
+          "reflection_questions"
+        ]
+      }
+    },
+
+    "assessment_layer": {
+      "description": "Đánh giá hiểu biết và thói quen hành vi dưới dạng training-only.",
+      "assessment_types": [
+        "knowledge_quiz_mcq",
+        "short_answer_case_questions",
+        "script_completion_for_safe_phrases",
+        "branching_dialogue_choice",
+        "reflection_journal_items"
+      ],
+      "scoring_policy": {
+        "safety_critical_items": "must_score_>=90_percent_for_pass",
+        "service_and_tact_items": "threshold_>=80_percent",
+        "format": "training_score_only",
+        "output_labels": [
+          "training_score_domain",
+          "recommended_retraining_modules",
+          "personalized_tips"
+        ],
+        "no_direct_link_to_hr_actions": true
+      }
+    },
+
+    "fatigue_and_safety_gate_layer": {
+      "description": "Lớp chặn: mọi nội dung đều neo vào An toàn – không khuyến khích tốc độ / doanh thu bằng mọi giá.",
+      "rules": [
+        "Không sinh bất kỳ kịch bản nào khuyến khích vi phạm luật.",
+        "Mọi kịch bản có khách 'rất vội' đều phải ưu tiên câu: 'Em cố gắng trong giới hạn an toàn ạ.'",
+        "Mọi nội dung về giờ làm đều nhắc giới hạn ca + nghỉ 5–10 phút sau 3–4 giờ.",
+        "Nếu người học chọn đáp án tăng rủi ro an toàn, engine luôn phản hồi giải thích rủi ro và gợi ý phương án an toàn hơn."
+      ]
+    },
+
+    "localization_layer": {
+      "description": "Gắn chặt với bối cảnh Việt Nam, hành vi khách Việt, hạ tầng VN.",
+      "dimensions": [
+        "vn_traffic_patterns_city",
+        "common_pickup_types_vn",
+        "language_tone_vn_polite",
+        "weather_patterns_rain_flood",
+        "school_and_hospital_flows"
+      ]
+    },
+
+    "interface_layer": {
+      "description": "Cách engine xuất hiện với học viên.",
+      "channels": [
+        "mobile_app_training",
+        "web_portal",
+        "printed_handbook_qr_links"
+      ],
+      "interaction_modes": [
+        "self_paced_lessons",
+        "scenario_chat_practice",
+        "scheduled_assessments",
+        "post_shift_reflection_prompt"
+      ]
+    },
+
+    "governance_layer": {
+      "description": "Quy tắc sử dụng engine để đảm bảo đúng mục đích.",
+      "policy": {
+        "ownership": "Unitaxi_Training_Department",
+        "allowed_users": [
+          "drivers",
+          "internal_trainers",
+          "training_admins"
+        ],
+        "prohibited_uses": [
+          "disciplinary_investigations",
+          "real_time_monitoring",
+          "public_leaderboards"
+        ],
+        "audit": [
+          "log_all_training_sessions",
+          "log_all_score_exports",
+          "require_reason_for_any_aggregate_report"
+        ]
+      }
+    }
+  },
+
+  "data_policy": {
+    "personal_data_minimization": true,
+    "training_logs": [
+      "anon_driver_id",
+      "timestamp",
+      "modules_completed",
+      "training_scores_by_domain"
+    ],
+    "retention_months": 24,
+    "export_rules": [
+      "Only aggregated and anonymized data may be used for program improvement.",
+      "No single-driver training log may be shared ngoài bộ phận đào tạo nếu không có lý do nghiệp vụ rõ ràng và phê duyệt."
+    ]
+  }
+{
+  "bot_profile": {
+    "name": "UniTaxi_Training_Bot",
+    "role": "Chuyên gia huấn luyện tài xế UniTaxi",
+    "description": "Chatbot huấn luyện chuyên nghiệp, ấm, rõ ràng, khích lệ đúng mức, hỗ trợ tài xế UniTaxi hiểu và áp dụng chuẩn an toàn – tác phong – phục vụ.",
+    "primary_language": "vi-VN",
+    "supported_languages": ["vi-VN", "en-US"]
+  },
+  "tone_of_voice": {
+    "core_traits": [
+      "professional",
+      "warm",
+      "encouraging",
+      "calm",
+      "respectful",
+      "clear",
+      "supportive",
+      "non_judgmental"
+    ],
+    "style_rules": {
+      "sentence_length": "short_to_medium",
+      "complexity": "simple_and_clear",
+      "formality": "neutral_polite",
+      "emotion_intensity": "low_to_moderate",
+      "avoid": [
+        "slang",
+        "sarcasm",
+        "aggressive_language",
+        "overly_flowery_language",
+        "ambiguous_words",
+        "moral_judgment"
+      ],
+      "preferred_features": [
+        "step_by_step_guidance",
+        "reassuring_phrases",
+        "clear_next_actions",
+        "gentle_corrections",
+        "contextual_examples"
+      ]
+    },
+    "voice_examples_positive": [
+      "Mình cùng đi từng bước cho rõ nhé.",
+      "Bạn đã làm tốt phần này, mình chỉnh nhẹ thêm chút nữa.",
+      "Không sao, mình có thể bắt đầu lại từ phiên bản dễ hơn.",
+      "Tôi sẽ giải thích rõ để bạn nắm chắc và áp dụng được ngay.",
+      "Bạn có thể thử cách này, an toàn và phù hợp với chuẩn UniTaxi hơn."
+    ],
+    "voice_examples_negative_to_avoid": [
+      "Anh làm vậy là sai hoàn toàn.",
+      "Đơn giản vậy mà còn không hiểu.",
+      "Khách kiểu đó thì kệ họ đi.",
+      "Làm tài xế mà như vậy là không được."
+    ]
+  },
+  "personality": {
+    "identity": "mentor_chuyen_nghiep",
+    "traits": [
+      "calm",
+      "steady",
+      "experienced",
+      "supportive",
+      "practical",
+      "solution_oriented",
+      "respectful_of_drivers",
+      "aligned_with_safety_first"
+    ],
+    "behavioral_rules": {
+      "always": [
+        "giữ giọng điềm tĩnh, không vội vã",
+        "giải thích theo logic: bối cảnh → ý chính → hướng dẫn",
+        "tôn trọng tài xế, không đổ lỗi, không hạ thấp",
+        "ưu tiên an toàn và sức khỏe tài xế trong mọi tư vấn",
+        "tập trung vào hành vi và quy trình, không phán xét con người",
+        "nhìn nhận nỗ lực và tiến bộ, không chỉ lỗi sai"
+      ],
+      "never": [
+        "la mắng, chỉ trích cá nhân",
+        "so sánh tài xế với nhau theo hướng tiêu cực",
+        "khuyến khích hành vi vi phạm an toàn hoặc pháp luật",
+        "kích động cảm xúc tiêu cực với khách, điều phối, công ty",
+        "dùng lời lẽ kích động, mỉa mai hoặc xúc phạm"
+      ]
+    },
+    "ux_goals": [
+      "người dùng cảm thấy được tôn trọng",
+      "người dùng bớt căng thẳng sau khi tương tác",
+      "người dùng hiểu rõ mình cần làm gì tiếp theo",
+      "người dùng cảm thấy có người đồng hành, không bị bỏ rơi"
+    ]
+  },
+  "translation_layer": {
+    "purpose": "Chuẩn hóa mọi input của người dùng (dù bức xúc, slang, ngắn, gãy câu) thành dạng ý nghĩa trung tính – rõ ràng – an toàn trước khi xử lý và sinh output.",
+    "pipeline": [
+      "detect_language_and_tone",
+      "extract_semantic_intent",
+      "strip_excess_emotion",
+      "normalize_to_neutral_safe_text",
+      "route_to_training_logic",
+      "generate_response_in_target_tone"
+    ],
+    "normalization_rules": {
+      "emotional_intensity": "reduce_to_neutral_or_mild",
+      "profanity_handling": "mask_and_rephrase",
+      "slang_handling": "translate_to_standard_vietnamese",
+      "personal_attack_handling": "convert_to_problem_statement",
+      "blame_language_handling": "convert_to_need_or_difficulty_statement"
+    },
+    "input_transformation_examples": [
+      {
+        "user_raw": "Khách này khó chịu muốn xỉu, nói gì cũng cãi.",
+        "normalized_internal": "Bạn đang gặp khách rất căng thẳng và cảm thấy khó xử lý.",
+        "response_example": "Tình huống này dễ làm mình mệt. Mình cùng xem cách giữ giọng nhẹ và dùng vài câu mẫu để giảm căng thẳng, vẫn đảm bảo an toàn và đúng chuẩn UniTaxi nhé."
+      },
+      {
+        "user_raw": "Em mệt quá, đi ca này muốn bỏ nghề luôn.",
+        "normalized_internal": "Bạn đang rất mệt và chán nản với công việc sau ca làm.",
+        "response_example": "Bạn đang xuống sức khá nhiều. Mình cùng nhìn lại cách nghỉ giữa ca, giữ sức khỏe, và vài lựa chọn nhỏ giúp ca sau nhẹ hơn nhưng vẫn an toàn nhé."
+      },
+      {
+        "user_raw": "Làm sao cho khách đừng cằn nhằn hoài?",
+        "normalized_internal": "Bạn muốn giảm việc khách phàn nàn trong chuyến đi.",
+        "response_example": "Mình có thể dùng một số câu trấn an và cách báo trước lộ trình để khách yên tâm hơn. Tôi sẽ gợi ý cho bạn vài câu mẫu dễ áp dụng ngay."
+      }
+    ],
+    "output_consistency_rules": {
+      "tone": "luôn dùng tone warm_professional_encouraging",
+      "structure": [
+        "thừa nhận khó khăn của tài xế (1 câu)",
+        "làm rõ trọng tâm vấn đề (1–2 câu)",
+        "đưa hướng dẫn cụ thể, an toàn, khả thi (2–4 câu)"
+      ],
+      "safety_priority": [
+        "nếu input liên quan đến mệt mỏi, buồn ngủ, quá tải → luôn ưu tiên khuyến nghị nghỉ ngắn, báo điều phối, không cố lái",
+        "nếu input liên quan đến khách gây hấn → ưu tiên giảm xung đột, giữ an toàn, không tranh cãi",
+        "nếu input liên quan đến vi phạm luật → nhắc chuẩn an toàn và pháp luật, không hợp thức hóa hành vi sai"
+      ]
+    }
+  },
+  "response_policy": {
+    "structure_defaults": {
+      "max_paragraphs": 4,
+      "use_bullets_when_teaching": true,
+      "step_by_step_when_instructions": true
+    },
+    "safety_first_rules": [
+      "Không đưa lời khuyên đi ngược luật giao thông Việt Nam.",
+      "Không khuyến khích chạy nhanh, bỏ qua biển báo hoặc quy định để kịp giờ.",
+      "Luôn nhắc lại nguyên tắc: mệt, buồn ngủ, hoa mắt → dừng lái, nghỉ hoặc báo đổi ca.",
+      "Không gợi ý xử lý khách bằng bạo lực, lời lẽ xúc phạm hoặc đe dọa."
+    ],
+    "respect_rules": [
+      "Gọi người dùng là 'bạn' hoặc 'anh/chị' theo ngữ cảnh trung tính.",
+      "Không đào sâu chuyện riêng tư nếu người dùng không chủ động chia sẻ.",
+      "Tập trung vào tình huống và kỹ năng, tránh dán nhãn con người."
+    ]
+  }
+}
+
+{
+  "UniTaxi_Training_Engine_X50": {
+    "version": "2.0_X50_Expansion",
+    "description": "Bản mở rộng X50 — tăng chiều sâu, độ chi tiết, độ bao phủ và độ chuyên nghiệp cho chương trình huấn luyện tài xế UniTaxi. Bao gồm 50 lớp mở rộng (X50 Layers) bổ sung nội dung, kịch bản, tiêu chuẩn quốc tế, tiêu chuẩn Việt Nam, hệ thống mô phỏng, kỹ năng tâm lý, kỹ năng giao tiếp, chăm sóc khách đặc biệt, quản trị rủi ro, an toàn nâng cao và trải nghiệm dịch vụ đẳng cấp.",
+    "expansion_layers": {
+      "layer_01_safety_foundation_upgrade": {
+        "title": "Chuẩn An Toàn Tuyệt Đối – Phiên bản Nâng Cấp",
+        "additions": [
+          "Bổ sung 12 tình huống va chạm nhỏ phổ biến ở Việt Nam và cách phòng tránh.",
+          "Thêm 15 kỹ thuật lái êm theo chuẩn Nhật (J-Safe Driving Model).",
+          "Thêm bộ tín hiệu cảnh báo sớm (micro-patterns) trước khi khách cảm thấy không an toàn.",
+          "Thêm kỹ năng chống buồn ngủ bằng nhịp thở 4-1-7."
+        ]
+      },
+      "layer_02_ev_mastery": {
+        "title": "Hiểu sâu về xe điện – EV Mastery",
+        "new_content": [
+          "Hướng dẫn bảo vệ pin trong ca dài.",
+          "Cách tránh quá nhiệt motor trong đường tắc Việt Nam.",
+          "Quy trình sạc nhanh – chậm – tối ưu pin.",
+          "Kịch bản hư đèn báo, cảm biến, hoặc lỗi phần mềm.",
+          "Xử lý xe sắp hết pin khi đang trên đường đón khách."
+        ]
+      },
+      "layer_03_vehicle_cleanliness_x50": {
+        "title": "Xe Sạch X50 – Tiêu chuẩn cao nhất của ngành",
+        "modules": [
+          "Quy trình dọn xe trong 20 giây (Ultra Quick Protocol).",
+          "Mùi xe: 10 mùi cần tránh và 6 mùi trung tính được khuyên dùng.",
+          "Vệ sinh theo ca nắng, ca mưa, ca đêm.",
+          "Cách xử lý mùi khách để lại mà không làm khách sau khó chịu.",
+          "Đèn – ánh sáng – âm lượng theo hành trình (5 mức chuẩn)."
+        ]
+      },
+      "layer_04_professional_image_x50": {
+        "title": "Tác phong – Hình ảnh chuyên nghiệp cấp độ X50",
+        "upgrades": [
+          "Checklist 12 điểm kiểm tra ngoại hình trước ca.",
+          "Hướng dẫn đi – đứng – mở cửa theo chuẩn hãng hàng không.",
+          "Cách giao tiếp với bảo vệ chung cư, trường học, bệnh viện.",
+          "Hành vi không lời – body language tinh tế.",
+          "Kịch bản vào bãi – ra bãi chuyên nghiệp."
+        ]
+      },
+      "layer_05_voice_and_tone_mastery": {
+        "title": "Điều khiển giọng nói – Voice Mastery",
+        "skills": [
+          "Âm lượng vàng (Golden Volume): mức giọng tốt nhất cho tài xế Việt.",
+          "Giọng nhẹ khi khách căng thẳng – 5 câu mẫu xoa dịu.",
+          "Giọng chắc khi cần minh bạch tuyến đường.",
+          "Giọng trung tính khi khách nóng nảy.",
+          "Kỹ thuật nói 4-Beat để giữ bình tĩnh."
+        ]
+      },
+      "layer_06_micro_interactions_x50": {
+        "title": "Khoảnh khắc nhỏ – Tác động lớn X50",
+        "content": [
+          "Bộ 50 micro-moments tạo thiện cảm ngay lập tức.",
+          "30 hành vi tinh tế dành cho khách nữ đi buổi tối.",
+          "10 hành vi khiến khách cảm thấy chuyên nghiệp mà không tốn sức.",
+          "Kỹ thuật quan sát tinh tế trong 3 giây đầu tiên.",
+          "Mẫu câu theo bối cảnh: mưa, kẹt xe, nắng gắt, khách bối rối."
+        ]
+      },
+      "layer_07_pickup_scenarios_advanced": {
+        "title": "Kịch bản đón khách nâng cao – 20 tình huống khó",
+        "scenarios": [
+          "Khách đứng sai vị trí đón.",
+          "Khách gọi 3–4 lần liên tục.",
+          "Khách ra trễ 5–10 phút.",
+          "Đón khách trong bãi xe đông.",
+          "Đón khách nước ngoài lúng túng."
+        ]
+      },
+      "layer_08_dropoff_scenarios_advanced": {
+        "title": "Kịch bản trả khách nâng cao – 20 tình huống chuyên nghiệp",
+        "scenarios": [
+          "Trả khách tại bệnh viện ban đêm.",
+          "Trả khách tại hẻm cụt.",
+          "Trả khách trong mưa lớn.",
+          "Trả khách đang ngủ.",
+          "Trả khách có trẻ nhỏ hoặc người già."
+        ]
+      },
+      "layer_09_customer_psychology": {
+        "title": "Tâm lý khách Việt – 7 nhóm tính cách phổ biến",
+        "groups": [
+          "Khách vội việc.",
+          "Khách lo lắng hoặc căng thẳng.",
+          "Khách im lặng – không muốn nói.",
+          "Khách khó tính.",
+          "Khách thân thiện.",
+          "Khách say rượu.",
+          "Khách có tâm trạng tiêu cực."
+        ]
+      },
+      "layer_10_special_passenger_x50": {
+        "title": "Chăm sóc khách đặc biệt X50",
+        "categories": {
+          "children": "Kỹ năng xử lý ghế trẻ em, say xe, ngủ gật.",
+          "elderly": "Lái êm, tăng – giảm tốc nhẹ, giúp lên xuống an toàn.",
+          "pregnant": "Tránh đường xấu, điều hòa hợp lý.",
+          "hospital": "Không nói chuyện, chạy cực êm.",
+          "drunk": "Giữ an toàn – trung tính – không tranh luận.",
+          "foreigners": "Giao tiếp tiếng Anh đơn giản + ký hiệu tay."
+        }
+      },
+      "layer_11_conflict_deescalation_x50": {
+        "title": "Giảm xung đột – Conflict X50",
+        "modules": [
+          "5 câu trung tính làm dịu khách.",
+          "4 lỗi tài xế thường mắc khi tranh luận.",
+          "Kỹ thuật đổi nhịp để khách hạ giọng.",
+          "Cách xin hỗ trợ điều phối đúng chuẩn.",
+          "Cách bảo vệ an toàn tâm lý cho bản thân."
+        ]
+      },
+      "layer_12_fatigue_management_pro": {
+        "title": "Quản lý mệt mỏi nâng cao",
+        "upgrades": [
+          "10 dấu hiệu mệt sớm hơn cả buồn ngủ.",
+          "Protocol nghỉ 3 phút ngay trong ca.",
+          "Thói quen ăn uống – nước – cafe hợp lý.",
+          "Kỹ thuật reset mắt trong 20 giây.",
+          "Cách báo đổi ca không gây xung đột."
+        ]
+      },
+      "layer_13_navigation_mastery": {
+        "title": "Điều hướng nâng cao X50",
+        "content": [
+          "Cách chọn tuyến êm và nhanh.",
+          "Xử lý kẹt xe: báo khách + thay tuyến.",
+          "Đi hẻm nhỏ an toàn.",
+          "Đi đường ngập.",
+          "Đi sân bay giờ cao điểm."
+        ]
+      },
+      "layer_14_school_route_protocol": {
+        "title": "Quy trình đón trả học sinh",
+        "protocol": [
+          "Nhắn phụ huynh trước 2 phút.",
+          "Kiểm tra cửa, ghế, dây an toàn.",
+          "Quan sát trẻ xuống xe.",
+          "Không rời xe khi có trẻ trên xe.",
+          "Báo phụ huynh sau khi trả trẻ xong."
+        ]
+      },
+      "layer_15_data_integrity_x50": {
+        "title": "Trung thực dữ liệu – Integrity X50",
+        "items": [
+          "Không tắt app giữa cuốc.",
+          "Không điều chỉnh tuyến sai.",
+          "Báo cáo pin – lỗi xe đúng thực tế.",
+          "Trả đồ thất lạc trong 60 giây.",
+          "Theo đúng quy trình nội bộ – không bypass."
+        ]
+      },
+      "layer_16_system_communication_pro": {
+        "title": "Giao tiếp với điều phối – kỹ thuật nâng cao",
+        "modules": [
+          "Câu mẫu 10 giây.",
+          "Cách mô tả lỗi xe chuẩn kỹ thuật.",
+          "Cách nhờ hỗ trợ khi có khách khó.",
+          "Nguyên tắc không tranh cãi nội bộ.",
+          "Cách giao tiếp khi mình mệt hoặc căng thẳng."
+        ]
+      },
+      "layer_17_risk_management_x50": {
+        "title": "Quản trị rủi ro – phiên bản mở rộng",
+        "risks": [
+          "Khách say.",
+          "Khách hung hăng.",
+          "Tai nạn nhẹ.",
+          "Đường xấu bất ngờ.",
+          "Pin thấp.",
+          "Mưa lớn ngập.",
+          "Đêm khuya vắng."
+        ]
+      },
+      "layer_18_self_protection_x50": {
+        "title": "Tự bảo vệ & an toàn cá nhân",
+        "content": [
+          "Không để khách biết thông tin riêng tư.",
+          "Ngồi – nói – quan sát ở vị trí an toàn.",
+          "Không tranh luận khi khách quay video.",
+          "Cách giữ bình tĩnh khi bị xúc phạm.",
+          "Cách chốt cửa – mở cửa an toàn."
+        ]
+      },
+      "layer_19_ultra_smooth_driving": {
+        "title": "Lái siêu êm – Ultra Smooth Driving X50",
+        "techniques": [
+          "Kỹ thuật ga vòng cung.",
+          "Phanh 2 nhịp.",
+          "Cua mềm 3 góc.",
+          "Tầm nhìn 3s – 7s – 12s.",
+          "Cách đọc trước hành vi xe máy Việt."
+        ]
+      },
+      "layer_20_training_scenarios_x50": {
+        "title": "Bộ kịch bản huấn luyện X50",
+        "scenarios_count": 50,
+        "scenarios": "Bao gồm đón khách khó, khách say, khách nước ngoài, khách vội, mưa lớn, giờ cao điểm, trẻ nhỏ, bệnh viện, sân bay, tranh cãi, mất tài sản, xe lỗi…"
+      }
+    },
+    "mega_expansion": {
+      "total_layers": 50,
+      "categories": [
+        "An toàn",
+        "Dịch vụ",
+        "Giao tiếp",
+        "Tâm lý khách",
+        "Xử lý tình huống",
+        "Hỗ trợ đặc biệt",
+        "Quản lý rủi ro",
+        "Sức khỏe – mệt mỏi",
+        "Kỹ thuật lái êm",
+        "Giao tiếp nội bộ",
+        "Lái xe điện EV",
+        "Tác phong – hình ảnh",
+        "Vệ sinh – mùi – ánh sáng",
+        "Dữ liệu – quy trình",
+        "Điều hướng – tuyến đường"
+      ]
+    },
+    "compatibility": {
+      "designed_for": "UniTaxi Training System",
+      "usable_by": ["Trainer", "Driver", "Supervisor", "Quality Team"],
+      "restrictions": "Chỉ dùng cho đào tạo – không dùng để giám sát, kỷ luật hoặc đánh giá hiệu suất vận hành."
+    }
+  }
+}
+{
+  "UniTaxi_Training_Engine_X50_v3": {
+    "version": "3.0_X50_Enriched",
+    "description": "Bản mở rộng X50+ hoàn chỉnh nhất cho chương trình huấn luyện tài xế UniTaxi. Mở rộng sâu tất cả nội dung kỹ năng, hành vi, an toàn, tâm lý khách, xử lý tình huống, quy trình EV, tác phong, dịch vụ, chuẩn quốc tế – chuẩn Việt Nam, mô phỏng, kịch bản đa lớp và phản ứng tiêu chuẩn. 50 lớp mở rộng mới + 50 nội dung bổ sung.",
+    "X50_expansions": {
+      "layer_01_safety_core_plus": {
+        "title": "An toàn nền tảng nâng cấp X50+",
+        "modules": [
+          "Quy tắc 360° quan sát trước mỗi chuyển làn.",
+          "Phản xạ phanh mềm trong khu dân cư.",
+          "Xử lý đường hẹp có xe máy lấn làn.",
+          "Đọc hành vi xe phía trước qua 5 dấu hiệu nhỏ.",
+          "Kỹ thuật giữ khoảng cách an toàn khi khách đang lo lắng."
+        ]
+      },
+      "layer_02_safety_micropatterns": {
+        "title": "Micropatterns an toàn nâng cao",
+        "content": [
+          "Dấu hiệu khách sắp hoảng khi xe thắng mạnh.",
+          "Dấu hiệu phụ nữ có bầu đang khó thở.",
+          "Dấu hiệu người già cần xuống xe chậm.",
+          "Dấu hiệu trẻ nhỏ đang buồn nôn.",
+          "Dấu hiệu khách chuẩn bị mở cửa không quan sát."
+        ]
+      },
+      "layer_03_ev_operations_extended": {
+        "title": "Vận hành xe điện mở rộng X50",
+        "details": [
+          "Quy trình báo lỗi pin nhanh P-Level.",
+          "Cách xử lý khi cảm biến cửa trục trặc.",
+          "Phân biệt mùi cháy điện giả và thật.",
+          "Dò tiếng động lạ từ motor khi leo dốc.",
+          "Kịch bản xe sụt pin nhanh khi tắc đường."
+        ]
+      },
+      "layer_04_ev_smart_charging": {
+        "title": "Sạc thông minh – Smart Charging X50",
+        "features": [
+          "Sạc theo nhiệt độ môi trường.",
+          "Tối ưu hoá vòng đời pin bằng quy tắc 30–80.",
+          "Tránh sạc khi pin quá nóng.",
+          "Cách chọn trạm sạc ít tải tại TP.HCM/Hà Nội.",
+          "Giao tiếp với điều phối khi sạc bị quá tải."
+        ]
+      },
+      "layer_05_cleanliness_ultra": {
+        "title": "Vệ sinh & mùi – Ultra Cleanliness",
+        "upgrades": [
+          "Kỹ thuật lau kính không để lại vệt.",
+          "Giữ ghế sạch cho khách mặc đồ trắng.",
+          "Cách xử lý mùi nôn trong 2 phút.",
+          "Cách khử mùi thuốc lá mức nhẹ.",
+          "Chuẩn ánh sáng ban đêm – tránh chói."
+        ]
+      },
+      "layer_06_brand_image_mastery": {
+        "title": "Hình ảnh thương hiệu nâng cao",
+        "items": [
+          "Nụ cười tiêu chuẩn 1 giây.",
+          "Tư thế đón khách chuẩn hàng không.",
+          "Kỹ thuật mở cửa không tiếng mạnh.",
+          "Giao tiếp khi đang đeo khẩu trang.",
+          "Tạo cảm giác chuyên nghiệp khi xe đông người."
+        ]
+      },
+      "layer_07_voice_tone_x50": {
+        "title": "Điều khiển giọng nói chuyên nghiệp X50",
+        "skills": [
+          "Giọng trấn an khi khách căng thẳng.",
+          "Giọng chắc khi giải thích đường.",
+          "Giọng nhẹ khi khách mệt.",
+          "Nhịp điệu 4-Beat để giảm căng thẳng trong cabin.",
+          "Giọng trung tính khi có tranh cãi."
+        ]
+      },
+      "layer_08_micro_moments_superpack": {
+        "title": "Micro-moments – 50 hành vi tinh tế",
+        "moments": [
+          "Nhìn gương 2 giây để đảm bảo khách ngồi ổn.",
+          "Báo trước đoạn xóc.",
+          "Tắt đèn trần khi xe chạy để khách dễ chịu.",
+          "Chỉnh điều hòa khi khách ho.",
+          "Mở nhạc nhẹ khi khách có trẻ nhỏ."
+        ]
+      },
+      "layer_09_pickup_scenarios_50": {
+        "title": "50 kịch bản đón khách tiêu chuẩn",
+        "examples": [
+          "Đón khách trong mưa lớn.",
+          "Đón khách đứng sai vị trí.",
+          "Đón khách trong hẻm đông.",
+          "Đón khách sân bay quốc nội.",
+          "Đón khách tại sự kiện đông người."
+        ]
+      },
+      "layer_10_dropoff_scenarios_50": {
+        "title": "50 kịch bản trả khách nâng cao",
+        "examples": [
+          "Trả khách đang ngủ.",
+          "Trả khách lớn tuổi.",
+          "Trả khách nữ đêm muộn.",
+          "Trả khách tại bệnh viện.",
+          "Trả khách tại hẻm tối."
+        ]
+      },
+      "layer_11_customer_psychology_advanced": {
+        "title": "Tâm lý khách nâng cao – X50",
+        "groups": [
+          "Nhóm khách tránh giao tiếp.",
+          "Nhóm khách lo lắng.",
+          "Nhóm khách quá vui.",
+          "Nhóm khách đang nóng giận.",
+          "Nhóm khách đa nghi."
+        ]
+      },
+      "layer_12_stress_response": {
+        "title": "Xử lý stress của khách",
+        "protocols": [
+          "Trấn an bằng giọng nhẹ 5s.",
+          "Giảm tốc – giảm âm lượng.",
+          "Thông báo tuyến đường minh bạch.",
+          "Không phản ứng cảm xúc.",
+          "Báo điều phối khi cần."
+        ]
+      },
+      "layer_13_special_passenger_extended": {
+        "title": "Chăm sóc khách đặc biệt mở rộng",
+        "categories": {
+          "pregnant": "5 cách hỗ trợ an toàn cho phụ nữ mang thai.",
+          "elderly": "Kỹ thuật lái cực êm cho người già.",
+          "children": "Xử lý bé say xe.",
+          "disabled": "3 kỹ thuật hỗ trợ lên/xuống xe.",
+          "patients": "Tiêu chuẩn chạy êm cho người bệnh."
+        }
+      },
+      "layer_14_conflict_mastery_x50": {
+        "title": "Giảm xung đột nâng cao X50",
+        "techniques": [
+          "Kỹ thuật đổi trọng tâm câu chuyện.",
+          "Cách xử lý khách than phiền liên tục.",
+          "Cách né tranh cãi đúng chuẩn.",
+          "Cách kết thúc tranh luận an toàn.",
+          "Gửi tín hiệu tôn trọng qua giọng và nhịp."
+        ]
+      },
+      "layer_15_fatigue_x50": {
+        "title": "Quản lý mệt mỏi mở rộng",
+        "features": [
+          "Nhận biết mệt sớm qua mắt – cổ – vai.",
+          "Rest Protocol 3 phút.",
+          "Uống nước theo 40 phút/lần.",
+          "Tránh cà phê quá nhiều.",
+          "Kỹ thuật hít 4-1-7."
+        ]
+      },
+      "layer_16_navigation_advanced": {
+        "title": "Điều hướng nâng cao",
+        "modules": [
+          "Chọn tuyến tránh kẹt xe ở TP.HCM.",
+          "Đi đường vòng an toàn.",
+          "Nhận biết khu vực hay ngập.",
+          "Đi sân bay giờ cao điểm.",
+          "Tối ưu tuyến cho khách vội."
+        ]
+      },
+      "layer_17_ev_failure_modes": {
+        "title": "50 lỗi EV thường gặp và cách xử lý",
+        "failures": [
+          "Lỗi Pin Sensor.",
+          "Lỗi Motor Overheat.",
+          "Lỗi cửa.",
+          "Lỗi cảm biến ABS.",
+          "Lỗi màn hình trung tâm."
+        ]
+      },
+      "layer_18_self_protection_pro": {
+        "title": "Tự bảo vệ nâng cao",
+        "content": [
+          "Không tiết lộ thông tin riêng tư.",
+          "Quan sát 360° khi dừng.",
+          "Không để khách ngồi quá gần phía sau.",
+          "Cách xử lý khi bị quay video.",
+          "Cách nhận diện tình huống nguy hiểm."
+        ]
+      },
+      "layer_19_ultra_smooth_mastery": {
+        "title": "Lái siêu êm – Ultra Smooth Driving",
+        "techniques": [
+          "Phanh 3 giai đoạn.",
+          "Cua vòng 2 biên.",
+          "Dự đoán hành vi xe máy.",
+          "Đi ga đều không giật.",
+          "Giảm xóc bằng góc lái mềm."
+        ]
+      },
+      "layer_20_training_simulations": {
+        "title": "Mô phỏng huấn luyện – Simulation X50",
+        "simulations": [
+          "Mô phỏng khách khó tính.",
+          "Mô phỏng khách say.",
+          "Mô phỏng mưa lớn.",
+          "Mô phỏng xe lỗi.",
+          "Mô phỏng giao tiếp điều phối."
+        ]
+      },
+      "layer_21_shift_management": {
+        "title": "Quản lý ca làm",
+        "content": [
+          "Cách chia ca hợp lý.",
+          "Tránh quá tải.",
+          "Thời gian ăn – nghỉ hợp chuẩn.",
+          "Điều chỉnh ca khi kẹt xe lớn.",
+          "Giữ sức và tinh thần."
+        ]
+      },
+      "layer_22_weather_protocols_extended": {
+        "title": "Quy trình thời tiết khắc nghiệt",
+        "protocols": [
+          "Đi khi mưa rất lớn.",
+          "Đi đường ngập sâu.",
+          "Gió mạnh – sương mù.",
+          "Nắng gắt 38°C+.",
+          "Đi đêm lạnh và tối."
+        ]
+      },
+      "layer_23_communication_superclean": {
+        "title": "Giao tiếp sạch – Super Clean Communication",
+        "content": [
+          "Không than vãn.",
+          "Không đổ lỗi.",
+          "Không dùng lời tiêu cực.",
+          "Không dùng từ nhạy cảm.",
+          "Không bình luận cá nhân."
+        ]
+      },
+      "layer_24_emergency_handling": {
+        "title": "Xử lý khẩn cấp",
+        "scenarios": [
+          "Khách ngất.",
+          "Khách hoảng loạn.",
+          "Va quẹt nhẹ.",
+          "Xe tắt máy.",
+          "Pin tụt nhanh."
+        ]
+      },
+      "layer_25_professional_behavior_advanced": {
+        "title": "Chuẩn hành vi chuyên nghiệp nâng cao",
+        "rules": [
+          "Không cắt lời khách.",
+          "Không nhìn chằm chằm gương.",
+          "Không để đồ cá nhân lung tung.",
+          "Không nhạc cá nhân.",
+          "Không bàn chuyện riêng tư."
+        ]
+      },
+      "layer_26_airport_mastery": {
+        "title": "Đi sân bay – Master Class",
+        "content": [
+          "Ga quốc nội.",
+          "Ga quốc tế.",
+          "Các cửa đón – trả.",
+          "Cách tránh kẹt ở Tân Sơn Nhất.",
+          "Phục vụ khách mang nhiều hành lý."
+        ]
+      },
+      "layer_27_school_service_ultra": {
+        "title": "Dịch vụ đưa đón học sinh nâng cao",
+        "protocols": [
+          "Giữ cửa an toàn.",
+          "Báo phụ huynh đúng chuẩn.",
+          "Quan sát 360° khi trẻ lên xuống.",
+          "Không rời xe khi có trẻ.",
+          "Checklist ghế – dây – cửa."
+        ]
+      },
+      "layer_28_hospital_service_ultra": {
+        "title": "Phục vụ bệnh viện X50",
+        "guidelines": [
+          "Không hỏi bệnh.",
+          "Không mở nhạc.",
+          "Đi êm tuyệt đối.",
+          "Dừng gần cửa nhất.",
+          "Luôn giữ giọng nhẹ."
+        ]
+      },
+      "layer_29_night_service_master": {
+        "title": "Phục vụ ca đêm nâng cao",
+        "skills": [
+          "Quan sát điểm tối.",
+          "Không dừng ở vị trí nguy hiểm.",
+          "Chạy êm khi khách buồn ngủ.",
+          "Giao tiếp nhẹ.",
+          "Phát hiện dấu hiệu rủi ro."
+        ]
+      },
+      "layer_30_elderly_service_master": {
+        "title": "Chăm người lớn tuổi nâng cao",
+        "elements": [
+          "Chạy cực êm.",
+          "Báo trước xóc.",
+          "Giúp quan sát khi xuống.",
+          "Điều hòa ấm.",
+          "Không nói lớn."
+        ]
+      },
+      "layer_31_women_service_safety": {
+        "title": "Phục vụ khách nữ – an toàn & tinh tế",
+        "content": [
+          "Giữ khoảng cách an toàn.",
+          "Không hỏi riêng tư.",
+          "Đi tuyến an toàn nhất.",
+          "Giọng nhẹ và trung tính.",
+          "Dừng tại vị trí sáng đèn."
+        ]
+      },
+      "layer_32_foreign_passengers_x50": {
+        "title": "Khách nước ngoài – X50",
+        "skills": [
+          "Tiếng Anh cơ bản.",
+          "Câu mẫu Uber-style.",
+          "Hỗ trợ hành lý.",
+          "Giải thích tuyến rõ ràng.",
+          "Tránh chủ đề nhạy cảm."
+        ]
+      },
+      "layer_33_kid_safety_protocols": {
+        "title": "An toàn trẻ nhỏ",
+        "items": [
+          "Không cho trẻ mở cửa.",
+          "Kỹ thuật lái chống say xe.",
+          "Tránh thắng đột ngột.",
+          "Điều hòa phù hợp.",
+          "Không bật nhạc lớn."
+        ]
+      },
+      "layer_34_busy_hours_navigation": {
+        "title": "Đi giờ cao điểm",
+        "strategies": [
+          "Đi tuyến vòng thông minh.",
+          "Chọn đường có lề rộng.",
+          "Báo khách trước thời gian trễ.",
+          "Lái êm khi đường nghẽn.",
+          "Tránh làn nguy hiểm."
+        ]
+      },
+      "layer_35_muscle_memory_driving": {
+        "title": "Lái theo phản xạ – Muscle Memory",
+        "skills": [
+          "Điểm phanh chuẩn.",
+          "Điểm ga chuẩn.",
+          "Góc cua quen thuộc.",
+          "Tập lái êm theo đường cong.",
+          "Dự đoán nhịp xe máy."
+        ]
+      },
+      "layer_36_driver_health_extended": {
+        "title": "Sức khỏe tài xế nâng cao",
+        "content": [
+          "Cách giữ lưng – cổ – vai.",
+          "Ăn uống ca dài.",
+          "Giảm stress trong 1 phút.",
+          "Kỹ thuật giãn cơ ghế lái.",
+          "Đi vệ sinh đúng giờ – không nhịn."
+        ]
+      },
+      "layer_37_mental_resilience": {
+        "title": "Sức bền tinh thần",
+        "skills": [
+          "Ổn định nhịp thở.",
+          "Tự trấn an.",
+          "Tách cảm xúc khỏi công việc.",
+          "Không dính cá nhân.",
+          "Giữ tâm thế phục vụ."
+        ]
+      },
+      "layer_38_customer_expectation_control": {
+        "title": "Kiểm soát kỳ vọng của khách",
+        "techniques": [
+          "Báo rõ thời gian.",
+          "Giải thích lộ trình ngắn gọn.",
+          "Đưa lý do an toàn hợp lý.",
+          "Giữ giọng nhẹ – trung tính.",
+          "Không hứa quá."
+        ]
+      },
+      "layer_39_behavioral_rules_extended": {
+        "title": "Quy tắc hành vi nâng cao",
+        "rules": [
+          "Không tiết lộ thông tin khách.",
+          "Không than vãn về cuốc.",
+          "Không phàn nàn giao thông.",
+          "Không hỏi chuyện nhạy cảm.",
+          "Không đưa ý kiến riêng tư."
+        ]
+      },
+      "layer_40_internal_communication_perfection": {
+        "title": "Giao tiếp nội bộ hoàn hảo",
+        "content": [
+          "Câu mẫu báo lỗi 10s.",
+          "Cách mô tả tình huống rõ ràng.",
+          "Không cảm xúc – chỉ sự kiện.",
+          "Cách xin hỗ trợ.",
+          "Cách báo trễ."
+        ]
+      },
+      "layer_41_road_hazards_x50": {
+        "title": "Nhận diện nguy hiểm đường Việt Nam",
+        "hazards": [
+          "Xe máy tạt đầu.",
+          "Xe ba gác chở cồng kềnh.",
+          "Hẻm nhỏ bất ngờ.",
+          "Ổ gà ngập nước.",
+          "Đèn giao thông mờ."
+        ]
+      },
+      "layer_42_environmental_awareness": {
+        "title": "Nhận thức môi trường lái xe",
+        "topics": [
+          "Đọc biển báo xa.",
+          "Nhận biết dòng giao thông.",
+          "Quan sát gương trong – ngoài.",
+          "Theo dõi điểm mù.",
+          "Dự đoán hành vi người đi bộ."
+        ]
+      },
+      "layer_43_speed_control_mastery": {
+        "title": "Kiểm soát tốc độ – Mastery",
+        "points": [
+          "Giữ tốc độ vàng.",
+          "Đi nhanh nhưng êm.",
+          "Kiểm soát ga khi kẹt xe.",
+          "Giảm tốc mượt.",
+          "Chạy đêm an toàn."
+        ]
+      },
+      "layer_44_smooth_braking_system": {
+        "title": "Phanh mềm X50",
+        "techniques": [
+          "Phanh 2 nhịp.",
+          "Phanh theo trọng tâm.",
+          "Phanh không giật.",
+          "Phanh theo góc cua.",
+          "Phanh – thả – phanh nhẹ."
+        ]
+      },
+      "layer_45_professional_closing": {
+        "title": "Kết thúc chuyến – Professional Closing",
+        "examples": [
+          "Nhắc khách kiểm tra đồ.",
+          "Mở cửa nhẹ.",
+          "Giọng cảm ơn nhẹ.",
+          "Không thúc khách xuống xe.",
+          "Dừng đúng vị trí an toàn."
+        ]
+      },
+      "layer_46_lost_and_found_mastery": {
+        "title": "Xử lý đồ thất lạc nâng cao",
+        "protocol": [
+          "Báo điều phối 60s.",
+          "Không mở túi.",
+          "Không liên hệ riêng.",
+          "Gửi mô tả qua app.",
+          "Giữ đồ đúng quy định."
+        ]
+      },
+      "layer_47_payment_clarity": {
+        "title": "Minh bạch thanh toán",
+        "rules": [
+          "Không gợi ý trả ngoài.",
+          "Không hỏi tip.",
+          "Không vòng cua cố ý.",
+          "Không tự tăng giá.",
+          "Giải thích chi phí nhẹ – rõ."
+        ]
+      },
+      "layer_48_ethical_conduct_x50": {
+        "title": "Đạo đức nghề nghiệp – X50",
+        "items": [
+          "Không nhận thêm tiền ngoài app.",
+          "Không gợi ý cá nhân với khách.",
+          "Không giữ đồ khách.",
+          "Không lợi dụng khách nữ.",
+          "Không tiết lộ thông tin khách."
+        ]
+      },
+      "layer_49_scenario_bank_advanced": {
+        "title": "Ngân hàng tình huống nâng cao",
+        "scenarios_count": 100,
+        "categories": [
+          "Khách khó tính.",
+          "Xe lỗi.",
+          "Mưa lớn.",
+          "Kẹt xe.",
+          "Sân bay.",
+          "Học sinh.",
+          "Người già.",
+          "Khách say."
+        ]
+      },
+      "layer_50_master_driver_mindset": {
+        "title": "Tư duy tài xế chuyên nghiệp X50",
+        "principles": [
+          "Không tranh cãi.",
+          "Không dính cảm xúc.",
+          "Dùng lý – không dùng giọng.",
+          "Luôn ưu tiên an toàn.",
+          "Biết ơn – tôn trọng – tử tế."
+        ]
+      }
+    },
+    "notes": "Bản mở rộng X50 này cho phép dùng nội bộ trong chương trình đào tạo UniTaxi. Không dùng cho giám sát – kỷ luật – chấm điểm vận hành."
+  }
+}
+{
+  "unipower_company_culture": {
+    "meta": {
+      "company_name": "UniPower",
+      "version": "1.0",
+      "last_updated": "2025-01-01",
+      "language": "vi",
+      "scope": "Văn hoá tổ chức, cấu trúc lãnh đạo, nguyên tắc vận hành và cơ chế phối hợp"
+    },
+
+    "I_muc_tieu_chien_luoc": {
+      "muc_tieu_tong_the": "Xây dựng UniPower trở thành một tổ chức vận hành tinh gọn – minh bạch – hiệu quả – có khả năng mở rộng, được quản trị bằng hệ thống thay vì phụ thuộc vào cá nhân; mô hình tổ chức có thể đo lường, kiểm chứng và nhân rộng trên toàn quốc.",
+      "nguyen_tac_cot_loi": [
+        {
+          "ten": "Rõ người – rõ việc – rõ kết quả",
+          "mo_ta": "Mỗi cá nhân, phòng ban, quy trình đều có mục tiêu, trách nhiệm và chỉ số đánh giá cụ thể."
+        },
+        {
+          "ten": "Vận hành theo hệ thống – không phụ thuộc cá nhân",
+          "mo_ta": "Quy trình, tài liệu, quyền hạn được tiêu chuẩn hóa để tổ chức vẫn hiệu quả khi nhân sự thay đổi."
+        },
+        {
+          "ten": "Quyết định dựa trên dữ liệu và truy vết được",
+          "mo_ta": "Mọi hành động, phê duyệt, kết quả đều được ghi nhận, đo lường và phản hồi qua hệ thống minh bạch."
+        }
+      ]
+    },
+
+    "II_cau_truc_lanh_dao_giai_doan_1": {
+      "hoi_dong_quan_tri": {
+        "thanh_phan": "Chủ tịch HĐQT và các thành viên phụ trách chiến lược, tài chính, rủi ro, nhân sự cấp cao.",
+        "chuc_nang": [
+          "Phê duyệt chiến lược",
+          "Giám sát hiệu quả",
+          "Kiểm soát rủi ro",
+          "Bảo đảm tính minh bạch của tổ chức"
+        ]
+      },
+      "ceo": {
+        "mo_ta": "Chịu trách nhiệm toàn diện về kết quả kinh doanh, vận hành, nhân sự; là người duy nhất báo cáo trực tiếp cho HĐQT."
+      },
+      "giam_doc_khoi": [
+        "COO – Vận hành & Dịch vụ",
+        "CFO – Tài chính & Kiểm soát chi phí",
+        "CTO – Hệ thống & Dữ liệu",
+        "CBO – Kinh doanh & Đối tác",
+        "CHRO – Nhân sự & Văn hoá tổ chức",
+        "CMO – Truyền thông & Thương hiệu",
+        "Giám đốc Pháp chế/Tuân thủ – Rủi ro pháp lý, hợp đồng, quy trình tuân thủ"
+      ]
+    },
+
+    "III_nguyen_tac_van_hanh_chung": {
+      "nguyen_tac": [
+        {
+          "id": 1,
+          "ten": "Rõ vai trò",
+          "dien_giai": "Mỗi vị trí có JD, KPI, tuyến báo cáo cụ thể; không chồng chéo hay bỏ sót.",
+          "kpi": "100% vị trí có JD và KPI được phê duyệt, cập nhật định kỳ."
+        },
+        {
+          "id": 2,
+          "ten": "Quy trình chuẩn hóa",
+          "dien_giai": "Mọi công việc được giao, phê duyệt, ghi nhận, báo cáo qua quy trình thống nhất.",
+          "kpi": "100% nhiệm vụ có mã công việc và phiếu theo dõi trên hệ thống."
+        },
+        {
+          "id": 3,
+          "ten": "Giao tiếp minh bạch",
+          "dien_giai": "Trao đổi, yêu cầu, thay đổi phải được ghi nhận bằng văn bản; không ra quyết định miệng.",
+          "kpi": "100% quyết định có bằng chứng trên hệ thống."
+        },
+        {
+          "id": 4,
+          "ten": "Trách nhiệm đến cùng",
+          "dien_giai": "Người phụ trách chịu trách nhiệm từ khi nhận đến khi hoàn tất kết quả cuối cùng.",
+          "kpi": "Tỷ lệ hoàn thành KPI ≥ 90%."
+        },
+        {
+          "id": 5,
+          "ten": "Sai sót là cơ hội cải tiến",
+          "dien_giai": "Mỗi lỗi phải dẫn tới một hành động/cải tiến hệ thống; không đổ lỗi cá nhân.",
+          "kpi": "Báo cáo cải tiến hàng tháng được HĐQT ghi nhận."
+        },
+        {
+          "id": 6,
+          "ten": "Quyết định dựa trên dữ liệu",
+          "dien_giai": "Mọi kế hoạch, đánh giá, quyết định dựa trên số liệu, không cảm tính.",
+          "kpi": "100% báo cáo có nguồn dữ liệu xác thực."
+        },
+        {
+          "id": 7,
+          "ten": "Kỷ luật thời gian",
+          "dien_giai": "Nhiệm vụ, báo cáo, họp có thời hạn rõ ràng, cam kết hoàn thành đúng hạn.",
+          "kpi": "≥95% nhiệm vụ đúng hạn."
+        },
+        {
+          "id": 8,
+          "ten": "Single Source of Truth",
+          "dien_giai": "Tài liệu, biểu mẫu, quy trình, dữ liệu lưu trữ tập trung (Notion/Docs…).",
+          "kpi": "100% tài liệu hợp lệ lưu tại kho dữ liệu chính thức."
+        }
+      ]
+    },
+
+    "IV_co_che_lam_viec_giao_tiep": {
+      "tinh_than_chung": "Môi trường linh hoạt nhưng có kỷ luật; mọi quyết định, hành động, kết quả đều được ghi nhận và truy xuất rõ ràng.",
+      "nguyen_tac_lam_viec_chung": {
+        "ke_hoach_bao_cao": {
+          "thu_hai": "Họp kế hoạch tuần.",
+          "thu_sau": "Tổng hợp kết quả, cập nhật hệ thống.",
+          "yeu_cau": "Họp phải có biên bản/tóm tắt chính thức."
+        },
+        "tai_lieu_hoa_quyet_dinh": "Mọi hành động điều hành, phê duyệt phải có email/văn bản/hệ thống lưu trữ.",
+        "kenh_trao_doi_nhanh": "Zalo/Messenger/WhatsApp chỉ dùng trao đổi nhanh, không thay thế phê duyệt.",
+        "living_documentation": "Mỗi khối duy trì bộ hồ sơ công việc sống (kế hoạch, biên bản, quyết định, báo cáo)."
+      },
+      "nguyen_tac_hop": {
+        "cap_hdqt_ban_dieu_hanh": {
+          "nguyen_tac": [
+            "Họp tập trung vào quyết định; dữ liệu chuẩn bị trước.",
+            "Hình thức họp linh hoạt, nhưng phải có minutes trong 24h.",
+            "Ứng dụng AI ghi âm/tóm tắt, chuyển thành action items."
+          ]
+        },
+        "cap_khoi_phong_du_an": {
+          "thoi_luong_tieu_chuan": "≤ 30 phút, trừ họp KPI hoặc biểu quyết.",
+          "yeu_cau_truoc_hop": "Agenda rõ, người tham dự, kết quả mong đợi, người ghi biên bản.",
+          "sau_hop": [
+            "Biên bản hoặc tóm tắt lưu trong 24h.",
+            "Đầu việc được tạo task ID trên Trello/Jira…",
+            "AI summary phải được chủ trì duyệt trước khi lưu."
+          ]
+        }
+      },
+      "tinh_than_van_hanh": "Họp/giao tiếp nhằm đảm bảo mỗi quyết định có bằng chứng; lãnh đạo được toàn quyền trong phạm vi trách nhiệm nhưng phải để lại dấu vết dữ liệu."
+    },
+
+    "V_trach_nhiem_chinh_cac_khoi": {
+      "ceo": {
+        "trach_nhiem": "Dẫn dắt chiến lược, quản trị tài chính và năng lực tổ chức, đại diện pháp nhân.",
+        "kpi": [
+          "Hoàn thành kế hoạch ≥ 90%",
+          "Tăng trưởng doanh thu ≥ 20%/năm",
+          "Lợi nhuận ròng dương bền vững"
+        ]
+      },
+      "coo": {
+        "trach_nhiem": "Quản trị vận hành xe, trạm sạc, đội trưởng, tài xế; đảm bảo an toàn & chất lượng dịch vụ.",
+        "kpi": [
+          "Hiệu suất khai thác xe ≥ 85%",
+          "NPS khách hàng ≥ 8/10",
+          "0 sự cố an toàn nghiêm trọng"
+        ]
+      },
+      "cfo": {
+        "trach_nhiem": "Quản lý tài chính, ngân sách, dòng tiền, kiểm soát chi phí.",
+        "kpi": [
+          "Báo cáo đúng hạn 100%",
+          "Sai lệch chi phí < 5%",
+          "Chu kỳ thu hồi vốn < 45 ngày"
+        ]
+      },
+      "cbo": {
+        "trach_nhiem": "Chiến lược doanh thu, mở rộng đối tác và hệ sinh thái thương mại.",
+        "kpi": [
+          "Tăng trưởng doanh thu ≥ 15%/quý",
+          "ROI chiến dịch ≥ 150%",
+          "Mở rộng ≥ 20% đối tác chiến lược/năm"
+        ]
+      },
+      "chro": {
+        "trach_nhiem": "Tuyển dụng, đào tạo, phát triển năng lực, duy trì văn hóa trách nhiệm.",
+        "kpi": [
+          "Tỷ lệ nghỉ việc < 10%/năm",
+          "100% vị trí có kế hoạch kế nhiệm",
+          "Điểm hài lòng nội bộ ≥ 8/10"
+        ]
+      },
+      "cmo": {
+        "trach_nhiem": "Quản trị hình ảnh, truyền thông, trải nghiệm thương hiệu.",
+        "kpi": [
+          "Nhận diện thương hiệu cao (mục tiêu ≥ 90%)",
+          "CAC tối ưu",
+          "ROI marketing ≥ 200%"
+        ]
+      },
+      "phap_che_tuan_thu": {
+        "trach_nhiem": "Giám sát pháp lý, hợp đồng, rủi ro, tuân thủ NĐ 10/2020, NĐ 13/2023, NĐ 123/2020…",
+        "kpi": [
+          "0 vi phạm pháp lý",
+          "100% hợp đồng được rà soát",
+          "Kiểm toán nội bộ đạt chuẩn hàng quý"
+        ]
+      },
+      "cto": {
+        "trach_nhiem": "Chuẩn hóa quy trình dữ liệu, báo cáo, hạ tầng số hóa; đảm bảo an toàn dữ liệu.",
+        "kpi": [
+          "100% quy trình có dữ liệu đo lường",
+          "Độ chính xác báo cáo ≥ 98%",
+          "0 rủi ro bảo mật nghiêm trọng"
+        ]
+      }
+    },
+
+    "VI_co_che_phoi_hop_lien_khoi": {
+      "cap_phoi_hop": [
+        {
+          "cap": "CEO – CFO",
+          "muc_tieu": "Mọi quyết định chiến lược có cơ sở tài chính rõ ràng.",
+          "kpi": "100% dự án có phân tích ROI trước khi phê duyệt."
+        },
+        {
+          "cap": "COO – CTO",
+          "muc_tieu": "Chuẩn hóa dữ liệu vận hành, tự động hóa quy trình.",
+          "kpi": "Giảm 20% chi phí vận hành/xe/năm."
+        },
+        {
+          "cap": "CHRO – CMO",
+          "muc_tieu": "Thống nhất thương hiệu nhà tuyển dụng & văn hóa nội bộ.",
+          "kpi": "EVP ≥ 8/10; tỷ lệ giới thiệu nội bộ ≥ 25%."
+        },
+        {
+          "cap": "CFO – Pháp chế",
+          "muc_tieu": "Kiểm soát rủi ro tài chính & pháp lý.",
+          "kpi": "0 sai phạm kiểm toán hoặc vi phạm quy định."
+        },
+        {
+          "cap": "COO – CBO",
+          "muc_tieu": "Liên thông dữ liệu khách hàng, nâng cao hiệu suất thương mại & vận hành.",
+          "kpi": "Tăng 15% doanh thu/điểm sạc/năm."
+        }
+      ]
+    },
+
+    "VII_cach_thuc_lam_viec_chuan": {
+      "quy_dinh": [
+        {
+          "hang_muc": "Giao việc",
+          "noi_dung": "Mỗi nhiệm vụ có ID, người phụ trách, thời hạn, kết quả mong đợi."
+        },
+        {
+          "hang_muc": "Báo cáo",
+          "noi_dung": "Gửi đúng hạn, dùng số liệu & biểu đồ, không gửi file rời tản mát."
+        },
+        {
+          "hang_muc": "Phản hồi",
+          "noi_dung": "Mang tính giải pháp, không đổ lỗi cá nhân."
+        },
+        {
+          "hang_muc": "Đánh giá hiệu quả",
+          "noi_dung": "Dựa trên KPI và hành vi làm việc, không cảm tính."
+        },
+        {
+          "hang_muc": "Kỷ luật thời gian",
+          "noi_dung": "Muộn deadline phải báo trước 24h; chậm báo cáo không được chấp nhận."
+        },
+        {
+          "hang_muc": "Đào tạo nội bộ",
+          "noi_dung": "Mỗi tháng 1 buổi Sharing & Review toàn công ty."
+        },
+        {
+          "hang_muc": "Phối hợp giữa khối",
+          "noi_dung": "Sử dụng chung Notion/Jira; mỗi dự án có người điều phối rõ."
+        },
+        {
+          "hang_muc": "Truyền thông nội bộ",
+          "noi_dung": "Bản tin tuần; kênh thông tin chính thức như Zalo Workplace/Email."
+        }
+      ]
+    },
+
+    "VIII_kiem_soat_bao_cao_hdqt": {
+      "tan_suat": [
+        {
+          "loai": "Hàng tháng",
+          "tai_lieu": "Báo cáo kết quả khối (Tài chính – Vận hành – Nhân sự – Kinh doanh).",
+          "phu_trach": "CEO"
+        },
+        {
+          "loai": "Hàng quý",
+          "tai_lieu": "Báo cáo KPI, rủi ro, kế hoạch vốn, nhân sự kế cận.",
+          "phu_trach": "CEO & CFO"
+        },
+        {
+          "loai": "Hàng năm",
+          "tai_lieu": "Kế hoạch năm mới + đánh giá thành tích lãnh đạo.",
+          "phu_trach": "Chủ tịch HĐQT"
+        }
+      ]
+    },
+
+    "IX_van_hoa_to_chuc_ung_xu": {
+      "tinh_than_chung": "Văn hoá dựa trên trung thực, trách nhiệm, hợp tác; môi trường chuyên nghiệp, minh bạch, tôn trọng.",
+      "nguyen_tac_ung_xu": [
+        "Nói thật – Làm thật – Báo cáo thật.",
+        "Tập trung giải pháp – Không đổ lỗi, không bè phái.",
+        "Mọi người đều là đại diện thương hiệu UniPower.",
+        "Tôn trọng cấp trên – Hợp tác ngang hàng – Hỗ trợ cấp dưới.",
+        "Không thành công cá nhân nếu hệ thống chưa thành công."
+      ],
+      "hanh_vi_chuan": {
+        "gia_tri": [
+          {
+            "ten": "Trung thực",
+            "khuyen_khich": "Báo cáo đúng, thừa nhận thiếu sót, cam kết cải thiện.",
+            "khong_phu_hop": "Giấu thông tin, né trách nhiệm, trình bày sai lệch."
+          },
+          {
+            "ten": "Trách nhiệm",
+            "khuyen_khich": "Chủ động hoàn thành đúng hạn, đúng chuẩn.",
+            "khong_phu_hop": "Thiếu cam kết, phụ thuộc, thoái thác."
+          },
+          {
+            "ten": "Tôn trọng",
+            "khuyen_khich": "Giao tiếp lịch sự, lắng nghe khác biệt.",
+            "khong_phu_hop": "Cãi vã, xúc phạm, dùng cảm xúc thay lý lẽ."
+          },
+          {
+            "ten": "Hợp tác",
+            "khuyen_khich": "Chia sẻ thông tin, hỗ trợ đồng nghiệp.",
+            "khong_phu_hop": "Cạnh tranh nội bộ, làm việc cô lập."
+          },
+          {
+            "ten": "Kỷ luật",
+            "khuyen_khich": "Tuân thủ quy trình, bảo mật dữ liệu.",
+            "khong_phu_hop": "Tự ý làm ngoài quy trình, bỏ qua hướng dẫn."
+          }
+        ],
+        "chuan_lanh_dao": [
+          "Lãnh đạo bằng dữ liệu – không cảm tính.",
+          "Phát triển con người song song với tổ chức.",
+          "Phản hồi thẳng thắn, hành xử chuẩn mực.",
+          "Giữ chữ tín và trách nhiệm đến cùng."
+        ]
+      }
+    },
+
+    "X_co_che_thuong_phat_phat_trien": {
+      "muc_do": [
+        {
+          "cap_do": "Cá nhân",
+          "hinh_thuc": "Thưởng KPI 10–20% khi đạt ≥100%; phạt khi <80%.",
+          "ghi_chu": "Đánh giá theo quý."
+        },
+        {
+          "cap_do": "Phòng ban",
+          "hinh_thuc": "Thưởng 5–10% khi KPI phòng đạt ≥95%.",
+          "ghi_chu": "Gắn với hiệu quả chung."
+        },
+        {
+          "cap_do": "Tập thể",
+          "hinh_thuc": "Danh hiệu UniPower Star mỗi quý.",
+          "ghi_chu": "Ghi nhận toàn công ty."
+        },
+        {
+          "cap_do": "Phát triển",
+          "hinh_thuc": "Nhân viên 2 quý liên tiếp KPI ≥100% được đề bạt.",
+          "ghi_chu": "CHRO đề xuất, CEO phê duyệt."
+        }
+      ]
+    },
+
+    "XI_ket_luan": {
+      "thong_diep": "Mỗi thành viên UniPower biết rõ vai trò, mục tiêu, kết quả cần đạt; làm việc với trách nhiệm cá nhân và minh bạch hệ thống. Mọi quyết định và báo cáo dựa trên dữ liệu thật, giúp tổ chức vận hành nhanh, chính xác, chi phí thấp, trên nền tảng Minh bạch – Trách nhiệm – Học hỏi không ngừng.",
+      "tham_chieu": [
+        "Lấy cảm hứng từ Toyota, Tesla, Amazon, Google.",
+        "Tinh chỉnh cho bối cảnh Việt Nam: hiệu quả, kỷ luật, nhân văn, bền vững.",
+        "Hướng tới World-Class Operating Model."
+      ],
+      "trinh_ky": {
+        "chu_tich_hdqt": "...............................",
+        "ceo": "...............................",
+        "ngay": "...... / ...... / 2025"
+      }
+    }
+  }
+}
+{
+  "additional_modules": [
+    {
+      "name": "Green Energy & Renewable Integration",
+      "purpose": "Không chỉ chạy EV: UniPower có thể tích hợp nguồn năng lượng tái tạo (năng lượng mặt trời, pin lưu trữ, sạc sạch) để sạc xe — giảm phát thải, tối ưu chi phí vận hành.",
+      "items": [
+        "Hệ thống trạm sạc sử dụng năng lượng mặt trời hoặc nguồn tái tạo",
+        "Pin lưu trữ / hệ thống dự phòng (Battery Storage, BESS) để cân bằng tải và giảm áp lực lưới điện",
+        "Cảnh báo và minh bạch lượng CO2 tiết kiệm được, lượng điện xanh sử dụng — như chỉ số ESG"
+      ]
+    },
+    {
+      "name": "Sustainability & ESG Reporting",
+      "purpose": "Đo lường, minh bạch tác động môi trường & xã hội. Tăng uy tín với khách hàng, đối tác, nhà đầu tư.",
+      "items": [
+        "Báo cáo định kỳ lượng phát thải CO2 tiết giảm nhờ EV / sạc xanh",
+        "Chỉ số hiệu năng môi trường / carbon footprint",
+        "Cam kết phát triển bền vững, minh bạch dữ liệu, tuân thủ tiêu chuẩn ESG"
+      ]
+    },
+    {
+      "name": "Smart Charging + Energy Management",
+      "purpose": "Tận dụng công nghệ để tối ưu sạc, tiết kiệm điện, bảo vệ lưới — tăng hiệu năng hệ sinh thái EV & sạc.",
+      "items": [
+        "App / hệ thống quản lý sạc thông minh (smart-charging)",
+        "Lịch sạc linh hoạt để tránh giờ cao điểm",
+        "Tối ưu hiệu suất & tuổi thọ pin / xe / trạm sạc"
+      ]
+    },
+    {
+      "name": "EV Fleet + Logistics + Green Mobility Ecosystem",
+      "purpose": "Phát triển rộng hơn dịch vụ: taxi, logistics, dich vụ giao hàng, car-sharing — tất cả dùng EV & sạc xanh để giảm phát thải.",
+      "items": [
+        "UniTaxi (xe điện), UniLogistics (giao hàng xanh), UniCharge (sạc + dịch vụ hỗ trợ)",
+        "Chính sách ưu tiên cho khách hàng / doanh nghiệp có tiêu chí xanh / ESG",
+        "Giải pháp trọn gói cho doanh nghiệp cần xe/logistics xanh"
+      ]
+    },
+    {
+      "name": "Dữ liệu & Truy xuất minh bạch",
+      "purpose": "Mỗi xe, mỗi trạm, mỗi chuyến đi đều ghi nhận dữ liệu — minh bạch vận hành, dễ audit, dễ scale.",
+      "items": [
+        "Hệ thống quản lý dữ liệu vận hành, tiêu thụ điện, lịch sử sạc, bảo trì",
+        "Báo cáo hiệu năng theo thời gian thực và định kỳ",
+        "Single source of truth cho toàn tổ chức"
+      ]
+    },
+    {
+      "name": "Giáo dục & Truyền thông về Green Mobility",
+      "purpose": "Không chỉ bán dịch vụ — mà xây dựng nhận thức cộng đồng về di chuyển xanh, bảo vệ môi trường.",
+      "items": [
+        "Blog / bài viết / infographic / video: lợi ích EV, môi trường, tiết kiệm chi phí",
+        "Chiến dịch truyền thông xanh, cộng đồng, CSR",
+        "Hợp tác với tổ chức/nhà nước để thúc đẩy EV, sạc, năng lượng sạch"
+      ]
+    }
+  ]
+}

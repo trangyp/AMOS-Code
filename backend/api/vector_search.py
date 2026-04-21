@@ -27,6 +27,7 @@ UTC = timezone.utc
 
 AMOS_BRAIN_PATH = Path(__file__).parent.parent.parent / "clawspring" / "amos_brain"
 if str(AMOS_BRAIN_PATH) not in sys.path:
+    sys.path.insert(0, str(AMOS_BRAIN_PATH))
 
 from amos_kernel_runtime import AMOSKernelRuntime  # noqa: E402
 

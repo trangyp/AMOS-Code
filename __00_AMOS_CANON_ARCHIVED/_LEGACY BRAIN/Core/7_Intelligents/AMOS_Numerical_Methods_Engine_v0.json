@@ -1,0 +1,274 @@
+[
+  {
+    "engine_name": "Numerical_Methods_Engine_AND_Kernel_MAX",
+    "version": "1.0.0",
+    "layer_type": "Kernel+Engine",
+    "description": "Deterministic, high-precision numerical methods kernel and execution engine designed to cover the full spectrum of numerical analysis, scientific computing, and engineering computation tasks, with explicit structure for methods, error control, conditioning, stability, and cross-domain integration.",
+    "goals": [
+      "Provide a complete conceptual kernel of numerical methods (theory, assumptions, failure modes).",
+      "Provide an operational engine that can design, audit, and optimize numerical workflows for any scientific, engineering, or economic system.",
+      "Enforce deterministic reasoning about error, stability, conditioning, and convergence in all numerical designs.",
+      "Reach or exceed global best practice for numerical modelling at the conceptual and design layer (not raw floating-point hardware)."
+    ],
+    "global_benchmark_target": {
+      "reference_class": [
+        "Top numerical analysis textbooks and monographs",
+        "Reference implementations in scientific computing libraries (e.g. LAPACK/BLAS, PETSc, SuiteSparse, FFTW, specialized solvers)",
+        "Methods used by top-tier research groups in applied math, physics, and engineering"
+      ],
+      "target_coverage": "100% conceptual coverage of core numerical method families plus explicit meta-logic for choosing and composing methods.",
+      "non_goals": [
+        "Competing with low-level optimized numerical libraries at the instruction/machine-level.",
+        "Providing black-box predictions without explaining method selection, error properties, and limitations."
+      ]
+    },
+    "safety_and_limits": {
+      "explicit_limits": [
+        "This engine does not directly execute floating-point operations; it designs, audits, and explains numerical schemes.",
+        "All recommendations must include method assumptions, expected error behaviour, and known failure modes.",
+        "High-risk domains (nuclear, aerospace, medical intervention, critical infrastructure) must always include a human-expert verification step."
+      ],
+      "required_disclaimers": [
+        "Numerical_Methods_Engine_AND_Kernel_MAX provides design and reasoning support only and does not replace domain-certified numerical analysts or safety-critical verification pipelines."
+      ]
+    },
+    "structure": {
+      "A_Kernel_Layer": {
+        "A1_Foundations": {
+          "Numerical_Representation": [
+            "Floating_point_models (IEEE-754: single, double, extended, arbitrary precision)",
+            "Fixed_point_models",
+            "Rational_and_symbolic_representations",
+            "Interval_arithmetic_basics"
+          ],
+          "Error_Types": [
+            "Roundoff_error",
+            "Truncation_error",
+            "Discretization_error",
+            "Modelling_error",
+            "Propagation_and_accumulation_of_error"
+          ],
+          "Key_Concepts": [
+            "Conditioning_of_problems",
+            "Stability_of_algorithms",
+            "Convergence_rates_and_orders",
+            "Consistency_stability_convergence_relationships",
+            "Deterministic_vs_stochastic_methods"
+          ]
+        },
+        "A2_Core_Method_Families": {
+          "Root_Finding": [
+            "Bisection",
+            "Fixed_point_iteration",
+            "Newton_Raphson",
+            "Secant_and_quasi_Newton",
+            "Hybrid_methods_with_bracketing",
+            "Multidimensional_root_finding"
+          ],
+          "Linear_Systems_Solvers": {
+            "Direct": [
+              "Gaussian_elimination",
+              "LU_factorization",
+              "Cholesky_for_SPD_matrices",
+              "QR_factorization",
+              "SVD_factorization"
+            ],
+            "Iterative": [
+              "Jacobi_and_Gauss_Seidel",
+              "SOR_and_variants",
+              "Conjugate_gradient_for_SPD",
+              "GMRES_and_Krylov_methods",
+              "Multigrid_methods"
+            ],
+            "Conditioning_and_Preconditioning": [
+              "Condition_numbers",
+              "Preconditioner_design (Jacobi, ILU, incomplete_Cholesky, multilevel)"
+            ]
+          },
+          "Nonlinear_Systems_and_Optimization": {
+            "Unconstrained_Optimization": [
+              "Gradient_descent_and_variants",
+              "Newton_and_quasi_Newton (BFGS, L_BFGS)",
+              "Conjugate_gradient_methods",
+              "Trust_region_methods"
+            ],
+            "Constrained_Optimization": [
+              "Lagrange_multipliers",
+              "Sequential_quadratic_programming",
+              "Interior_point_methods",
+              "Projected_gradient_methods"
+            ],
+            "Global_Optimization": [
+              "Simulated_annealing (conceptual)",
+              "Evolutionary_algorithms (conceptual)",
+              "Bayesian_optimization (conceptual)"
+            ]
+          },
+          "Numerical_Differentiation": [
+            "Finite_difference_formulas (forward, backward, central)",
+            "Error_estimates_and_step_size_selection",
+            "Automatic_differentiation (conceptual_link)"
+          ],
+          "Numerical_Integration_1D": [
+            "Newton_Cotes_rules (trapezoidal, Simpson, higher_order)",
+            "Adaptive_quadrature",
+            "Gaussian_quadrature",
+            "Monte_Carlo_integration (basic_and_variance_reduction_concepts)"
+          ],
+          "Numerical_Integration_High_Dimension": [
+            "Tensor_product_rules",
+            "Sparse_grids",
+            "Quasi_Monte_Carlo_methods"
+          ],
+          "ODE_Solvers": {
+            "Initial_Value_Problems": [
+              "Euler_methods (explicit, implicit)",
+              "Runge_Kutta_families (classical_RK4, embedded_pairs)",
+              "Multistep_methods (Adams_Bashforth, Adams_Moulton)",
+              "Stiff_problem_solvers (implicit_RK, BDF)"
+            ],
+            "Boundary_Value_Problems": [
+              "Shooting_methods",
+              "Finite_difference_formulations",
+              "Collocation_methods"
+            ],
+            "Stability_Concepts": [
+              "Absolute_stability_region",
+              "A_stability_and_L_stability",
+              "Stiffness_and_step_size_control"
+            ]
+          },
+          "PDE_Solvers": {
+            "Discretization_Families": [
+              "Finite_difference_methods",
+              "Finite_volume_methods",
+              "Finite_element_methods",
+              "Spectral_methods"
+            ],
+            "Time_Stepping_and_Splitting": [
+              "Explicit_vs_implicit_schemes",
+              "Operator_splitting_methods",
+              "Stability_criteria (CFL_condition)"
+            ],
+            "Elliptic_Parabolic_Hyperbolic_Classification": [
+              "Method_selection_by_PDE_type",
+              "Boundary_conditions_and_well_posedness"
+            ]
+          },
+          "Approximation_and_Interpolation": [
+            "Polynomial_interpolation",
+            "Piecewise_polynomial_and_splines",
+            "Rational_approximation",
+            "Least_squares_approximation",
+            "Orthogonal_polynomials"
+          ],
+          "Stochastic_and_Probabilistic_Methods": [
+            "Monte_Carlo_simulation",
+            "Stochastic_differential_equation_schemes",
+            "Random_walk_models",
+            "Variance_reduction_techniques"
+          ]
+        },
+        "A3_Meta_Reasoning_About_Numerical_Methods": {
+          "Problem_Classification": [
+            "Map_real_world_system_to_mathematical_problem_type",
+            "Determine_if_problem_is_well_posed",
+            "Identify_smoothness_and_regularisation_requirements"
+          ],
+          "Method_Selection_Logic": [
+            "Match_problem_class_to_method_family",
+            "Check_conditioning_and_scaling",
+            "Select_order_and_scheme_based_on_accuracy_vs_cost_tradeoff",
+            "Select_time_step_or_mesh_resolution",
+            "Identify_need_for_preconditioners_or_regularisation"
+          ],
+          "Error_and_Stability_Guards": [
+            "A_priori_error_bounds (where_available)",
+            "A_posteriori_error_estimates",
+            "Adaptive_mesh_and_step_size_strategies",
+            "Stability_monitoring_and_fail_safe_switching"
+          ],
+          "Verification_and_Validation": [
+            "Method_of_manufactured_solutions",
+            "Convergence_tests_and_grid_refinement_studies",
+            "Comparison_with_analytic_solutions_or_benchmarks",
+            "Sensitivity_analysis"
+          ]
+        }
+      },
+      "B_Engine_Layer": {
+        "B1_Functional_Capabilities": [
+          "Given_a_real_world_description, derive_the_numerical_problem_formulation_and_classification.",
+          "Recommend_one_or_more_numerical_schemes_with_full_explanation_of_assumptions_and_tradeoffs.",
+          "Explain_expected_error_behaviour_and_stability_issues_for_each_scheme.",
+          "Design_workflows_for_large_scale_or_multiphysics_problems_including_domain_decomposition_and_parallelization_concepts.",
+          "Audit_existing_numerical_schemes_for_potential_instability_or_misuse.",
+          "Generate_checklists_for_safe_deployment_of_numerical_models_in_industry_and_research."
+        ],
+        "B2_Workflow_Templates": {
+          "Template_Scientific_Simulation": [
+            "Define_equations_and_boundaries.",
+            "Classify_PDE/ODE/DAE_type.",
+            "Select_discretization_and_time_stepping.",
+            "Estimate_CFL_or_stability_constraints.",
+            "Plan_grid_refinement_and_error_estimation.",
+            "Define_verification_and_validation_suite."
+          ],
+          "Template_Parameter_Estimation": [
+            "Define_forward_model.",
+            "Select_cost_function_and_regularisation.",
+            "Choose_optimization_method_and_constraints.",
+            "Plan_sensitivity_and_uncertainty_analysis."
+          ],
+          "Template_Engineering_Design": [
+            "Map_design_variables_and_constraints.",
+            "Link_to_underlying_simulators_or_surrogates.",
+            "Select_optimization_and_sampling_strategy.",
+            "Define_failure_modes_and_safety_margins."
+          ]
+        },
+        "B3_Evaluation_and_Benchmarking": {
+          "Evaluation_Axes": [
+            "Accuracy",
+            "Stability",
+            "Computational_cost",
+            "Scalability_to_large_problems",
+            "Transparency_and_explainability",
+            "Robustness_to_ill_conditioning",
+            "Sensitivity_to_model_misspecification"
+          ],
+          "Benchmark_Strategy": [
+            "Always_compare_against_known_reference_solutions_or_standard_benchmarks_where_possible.",
+            "Where_no_reference_exists, use_convergence_studies_and_cross_method_comparisons.",
+            "Encourage_use_of_open_benchmark_problems_and_reproducible_configurations."
+          ]
+        },
+        "B4_Integration_Points": {
+          "With_Engineering_and_Physics_Engines": [
+            "Provide_stencils_and_numerical_schemes_to_physics_domains.",
+            "Explain_mapping_from_continuous_models_to_discrete_schemes."
+          ],
+          "With_ML_AI_Engines": [
+            "Define_how_surrogate_models_can_replicate_or_approximate_numerical_solvers.",
+            "Specify_safe_use_of_learned_emulators_within_verified_numerical_pipelines."
+          ],
+          "With_Econ_and_Finance_Engines": [
+            "Support_numerical_solutions_of_dynamic_programs,_stochastic_processes,_and_equilibrium_models."
+          ]
+        }
+      }
+    },
+    "agent_usage_instructions": {
+      "when_to_call": [
+        "Anytime the user is designing or auditing a numerical model, solver, or simulation.",
+        "Anytime there is ambiguity about method choice, stability, or error properties.",
+        "Anytime a domain engine (physics, EV, climate, finance, epidemiology) needs a numerical backbone."
+      ],
+      "obligations": [
+        "Always explicitly state method family, assumptions, and limitations.",
+        "Always mention at least one possible failure mode or mis-use case.",
+        "Never present a scheme as universally safe; always tie it to problem_class + parameter_regime."
+      ]
+    }
+  }
+]

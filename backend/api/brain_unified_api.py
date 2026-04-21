@@ -30,6 +30,7 @@ UTC = timezone.utc
 AMOS_ROOT = Path(__file__).parent.parent.parent.resolve()
 for p in [AMOS_ROOT, AMOS_ROOT / "clawspring", AMOS_ROOT / "amos_brain"]:
     if str(p) not in sys.path:
+        sys.path.insert(0, str(p))
 
 # Import brain components
 try:

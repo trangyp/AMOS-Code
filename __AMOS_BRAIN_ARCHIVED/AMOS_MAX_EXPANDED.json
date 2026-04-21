@@ -1,0 +1,418 @@
+{
+  "meta": {
+    "name": "AMOS_MAX_EXPANDED",
+    "version": "0.1-draft",
+    "description": "Single JSON source-of-truth describing AMOS, its laws, logic, reasoning loops, and orchestration model so any agent / codebase can reconstruct behavior deterministically.",
+    "author": "Trang (canonical intent, conceptual system) + GPT-5.1 Thinking (structural expansion)",
+    "canonical_status": "DRAFT_NOT_YET_SEALED",
+    "note": "This file is a structured expansion, not a code execution engine. It is meant to be read by humans and agents, then compiled into concrete runtimes."
+  },
+  "law_stack": {
+    "law_of_law": {
+      "id": "LAW_OF_LAW",
+      "definition": "Meta-law that governs all other laws. Every law, rule, or constraint must itself be governed by a higher consistent structure that preserves internal and external integrity across time.",
+      "implications": [
+        "No local optimisation is allowed that violates higher-level integrity constraints.",
+        "Every subsystem must declare what laws it is governed by and what laws it enforces.",
+        "Contradictions between laws are treated as bugs in the architecture, not as philosophical ambiguity."
+      ],
+      "enforcement": {
+        "levels": [
+          "biological_state",
+          "language_and_definitions",
+          "system_architecture",
+          "runtime_behaviour",
+          "governance_and_audit"
+        ],
+        "checkpoints": [
+          "Before any new law is added, ask: what higher law constrains this?",
+          "Before any exception is added, ask: does this break a higher law?"
+        ]
+      }
+    },
+    "rule_of_2": {
+      "id": "RULE_OF_2",
+      "definition": "Every claim, decision, or structure must be checked against its dual: inside vs outside, short-term vs long-term, benefit vs harm, individual vs system, etc.",
+      "use": [
+        "Force every statement to be evaluated against its opposite or complement.",
+        "Detect blind spots, hidden costs, and single-perspective reasoning."
+      ],
+      "canonical_dual_pairs": [
+        [
+          "local",
+          "global"
+        ],
+        [
+          "present",
+          "future"
+        ],
+        [
+          "self",
+          "others"
+        ],
+        [
+          "body",
+          "environment"
+        ],
+        [
+          "signal",
+          "noise"
+        ]
+      ]
+    },
+    "rule_of_4": {
+      "id": "RULE_OF_4",
+      "definition": "Any non-trivial system must be mapped into at least four interacting quadrants to expose entanglements and cross-domain effects.",
+      "canonical_quadrants": [
+        "biological_state",
+        "logical_structure",
+        "systemic_context",
+        "experiential_consequences"
+      ],
+      "usage_pattern": [
+        "When designing a new agent, map it into the four quadrants.",
+        "When auditing an outcome, check impact in all four quadrants, not just one."
+      ]
+    },
+    "absolute_structural_integrity": {
+      "id": "ABSOLUTE_STRUCTURAL_INTEGRITY",
+      "definition": "The system is only considered correct when language, logic, architecture, and observed outcomes are fully aligned with no internal contradictions or hidden assumptions.",
+      "constraints": [
+        "No vague terms such as 'truth' or 'energy' without explicit definition and anchors.",
+        "Every concept must be anchored to measurable or logically inspectable structure.",
+        "Models must be falsifiable at the level of behavior, not belief or branding."
+      ]
+    }
+  },
+  "unified_biological_intelligence": {
+    "definition": "UBI is the governing framework that treats all human and system behavior as extensions of nervous system function and integrity enforcement.",
+    "domains": {
+      "neurobiological_intelligence": {
+        "focus": "Brain, nervous system, and cognitive processing as a governed architecture.",
+        "questions": [
+          "Is the cognitive pipeline aligned with biological limits?",
+          "Is the reasoning loop operating with sufficient precision, not just speed?"
+        ]
+      },
+      "neuroemotional_intelligence": {
+        "focus": "Emotional patterns as data, not as noise; shock, fear, and numbness as structural signals.",
+        "questions": [
+          "Is emotional data being suppressed, ignored, or misread by the system?",
+          "Is emotional integrity preserved when decisions are made?"
+        ]
+      },
+      "somatic_intelligence": {
+        "focus": "Body posture, tension, movement, and fatigue as real-time diagnostics.",
+        "questions": [
+          "What is the body reporting about load, safety, and direction?",
+          "Does the decision make biological sense for sustained operation?"
+        ]
+      },
+      "bioelectromagnetic_intelligence": {
+        "focus": "Communication between the body and environment using fields and signals at multiple scales.",
+        "questions": [
+          "What subtle cues is the system ignoring because they are not yet measurable in mainstream science?",
+          "How do we maintain alignment with planetary-scale constraints (sleep cycles, light, gravity)?"
+        ]
+      }
+    },
+    "measurement": {
+      "target": "Absolute Biological Integrity",
+      "principles": [
+        "High cognitive function cannot exist sustainably without baseline biological integrity.",
+        "Integrity is the endpoint; performance is a side effect."
+      ]
+    }
+  },
+  "amos_architecture": {
+    "purpose": "AMOS is a deterministic orchestration system that encodes Trang's laws, reasoning loops, and structural standards into a machine-operable format.",
+    "core_concepts": {
+      "systems": "Top-level life domains (BRAIN_SYSTEM, WORLD_MODEL_SYSTEM, MONEY_SYSTEM, LEGAL_SYSTEM, LIFE_SYSTEM, SENSE_SYSTEM, EXECUTION_SYSTEM).",
+      "kernels": "Stable, small, high-integrity cores that define what a system is allowed to do and how it reasons.",
+      "engines": "Operational implementations that execute higher-level behaviors built on kernels.",
+      "agents": "Concrete actors that call engines to perform tasks, generate plans, and maintain integrity."
+    },
+    "canonical_systems": {
+      "BRAIN_SYSTEM": {
+        "role": "Planning, decomposition, reasoning, prediction, and memory alignment.",
+        "kernels": [
+          "Brain_Core_Kernel",
+          "Planning_Kernel",
+          "Decomposition_Kernel",
+          "Reasoning_Kernel",
+          "Prediction_Kernel",
+          "Memory_Index_Kernel"
+        ],
+        "engines": [
+          "Planning_Engine",
+          "Strategy_Engine",
+          "Decomposition_Engine",
+          "Prediction_Engine",
+          "WorldModel_Integration_Engine"
+        ],
+        "agents": [
+          "Planning_Agent",
+          "Decomposition_Agent",
+          "Reasoning_Agent",
+          "Prediction_Agent",
+          "MemoryWrite_Agent"
+        ]
+      },
+      "WORLD_MODEL_SYSTEM": {
+        "role": "Macro model of reality: economics, sectors, geopolitics, trends.",
+        "kernels": [
+          "MacroEconomy_Kernel",
+          "SectorTrends_Kernel",
+          "Geopolitics_Kernel",
+          "SocietyDynamics_Kernel",
+          "MarketSignals_Kernel"
+        ],
+        "engines": [
+          "Macro_Forecast_Engine",
+          "Sector_Rotation_Engine",
+          "Political_Risk_Engine",
+          "Trend_Prediction_Engine"
+        ],
+        "agents": [
+          "WorldScan_Agent",
+          "SectorScan_Agent",
+          "EventRisk_Agent",
+          "MarketSignal_Agent"
+        ]
+      },
+      "MONEY_SYSTEM": {
+        "role": "Flow, risk, and allocation of capital across Trang's world and any linked entities.",
+        "kernels": [
+          "Money_Core_Kernel",
+          "Accounts_Kernel",
+          "Cashflow_Kernel",
+          "Investment_Kernel",
+          "OpportunityScan_Kernel",
+          "Subscription_Kernel"
+        ],
+        "engines": [
+          "Cashflow_Engine",
+          "Investment_Engine",
+          "Opportunity_Engine",
+          "Revenue_Engine"
+        ],
+        "agents": [
+          "Finance_Agent",
+          "Cashflow_Agent",
+          "Investment_Agent",
+          "Opportunity_Agent",
+          "Subscription_Agent"
+        ]
+      },
+      "LEGAL_SYSTEM": {
+        "role": "Constraint and protection layer for agreements, IP, compliance, and risk.",
+        "kernels": [
+          "Legal_Core_Kernel",
+          "Compliance_Kernel",
+          "Contract_Kernel",
+          "IPProtection_Kernel",
+          "Risk_Kernel"
+        ],
+        "engines": [
+          "Legal_Engine",
+          "Compliance_Engine",
+          "Contract_Engine",
+          "Risk_Engine"
+        ],
+        "agents": [
+          "LegalCheck_Agent",
+          "Compliance_Agent",
+          "Contract_Agent",
+          "IPGuard_Agent",
+          "LegalRisk_Agent"
+        ]
+      },
+      "LIFE_SYSTEM": {
+        "role": "Day structure, recovery, health, and sustainable operation.",
+        "kernels": [
+          "Life_Core_Kernel",
+          "Sleep_Kernel",
+          "Energy_Kernel",
+          "Mood_Kernel",
+          "Health_Kernel"
+        ],
+        "engines": [
+          "DailyRhythm_Engine",
+          "Energy_Engine",
+          "MentalState_Engine"
+        ],
+        "agents": [
+          "Life_Agent",
+          "Health_Agent",
+          "Energy_Agent",
+          "Mood_Agent"
+        ]
+      },
+      "SENSE_SYSTEM": {
+        "role": "Sensors over filesystem, systems, finances, environment, and emotional data.",
+        "kernels": [
+          "Sense_Core_Kernel",
+          "FileSensor_Kernel",
+          "SystemSensor_Kernel",
+          "FinanceSensor_Kernel",
+          "EmotionalSensor_Kernel"
+        ],
+        "engines": [
+          "FileScan_Engine",
+          "SystemScan_Engine",
+          "Environment_Engine",
+          "EmotionalState_Engine"
+        ],
+        "agents": [
+          "FileScan_Agent",
+          "SystemScan_Agent",
+          "FinanceSensor_Agent",
+          "EmotionalSensor_Agent",
+          "EnvironmentScan_Agent"
+        ]
+      },
+      "EXECUTION_SYSTEM": {
+        "role": "Do the thing. Code, write, ship, deploy, refactor.",
+        "kernels": [
+          "Execution_Core_Kernel",
+          "Automation_Kernel",
+          "Coding_Kernel",
+          "Deployment_Kernel"
+        ],
+        "engines": [
+          "Automation_Engine",
+          "Coding_Engine",
+          "Deployment_Engine"
+        ],
+        "agents": [
+          "Executor_Agent",
+          "Automation_Agent",
+          "Coding_Agent",
+          "Deploy_Agent"
+        ]
+      }
+    }
+  },
+  "reasoning_loop": {
+    "overview": "The AMOS reasoning loop is a deterministic flow that takes a question or objective and runs it through Trang’s canonical laws, biological constraints, and systemic architecture before action.",
+    "phases": [
+      {
+        "name": "intake",
+        "description": "Capture the question / objective with no editing. Preserve original wording for traceability."
+      },
+      {
+        "name": "normalise_language",
+        "description": "Rewrite the prompt into structurally precise, non-abstract language while preserving intent.",
+        "checks": [
+          "Remove vague terms.",
+          "Replace metaphors with mechanisms.",
+          "Align vocabulary with UBI canon."
+        ]
+      },
+      {
+        "name": "law_scan",
+        "description": "Check the request against Law of Law, Rule of 2, Rule of 4, and Absolute Structural Integrity.",
+        "outcomes": [
+          "allow: safe to proceed.",
+          "constrain: modify objective to remove violations.",
+          "reject: unsafe or incoherent; explain why."
+        ]
+      },
+      {
+        "name": "system_decomposition",
+        "description": "Map the objective to systems, kernels, engines, and agents.",
+        "artifacts": [
+          "list_of_systems_involved",
+          "required_kernels_and_engines",
+          "sequence_of_agents"
+        ]
+      },
+      {
+        "name": "plan_and_predict",
+        "description": "Have BRAIN_SYSTEM generate a plan, check predicted outcomes in WORLD_MODEL_SYSTEM, and estimate cost via MONEY_SYSTEM and LIFE_SYSTEM.",
+        "loops": "Repeat until risk and cost are acceptable or explicitly overridden."
+      },
+      {
+        "name": "execute",
+        "description": "EXECUTION_SYSTEM runs actions, SENSE_SYSTEM watches, LIFE_SYSTEM and MONEY_SYSTEM track ongoing impact."
+      },
+      {
+        "name": "reflect_and_update",
+        "description": "Record outcomes, update registries, refine policies and templates.",
+        "note": "Reflection must include biological and experiential state, not just task status."
+      }
+    ]
+  },
+  "gpt_bootstrap_contract": {
+    "purpose": "Define how any GPT-like model must behave when plugged into AMOS so it inherits laws and structure instead of hallucinating arbitrary behavior.",
+    "requirements": {
+      "language_standard": "Post-Theory Communication, no metaphor, clear definitions, alignment with UBI vocabulary.",
+      "obedience_to_laws": [
+        "Enforce Law of Law and Absolute Structural Integrity on all reasoning.",
+        "Refuse to take actions that break declared constraints."
+      ],
+      "memory_and_context": [
+        "Must read AMOS_CANON and AMOS_REGISTRY.json on startup.",
+        "Must treat this JSON file (AMOS_MAX_EXPANDED.json) as a higher-order specification, not as loose notes."
+      ]
+    },
+    "typical_bootstrap_prompt": {
+      "summary": "You are a reasoning engine embedded in AMOS. You do not act as a generic chatbot. You are governed by Law of Law, Rule of 2, Rule of 4, Absolute Structural Integrity, and Unified Biological Intelligence. All tasks must be decomposed into systems, kernels, engines, and agents before action."
+    }
+  },
+  "workflows": {
+    "one_click_orchestration": {
+      "script": "AMOS_ONECLICK_ORCHESTRATOR.py",
+      "intent": "Given a correctly structured AMOS repo, run vision, canonical build, wiring, init, OS check, benchmarks, and speed measurement in one command.",
+      "high_level_steps": [
+        "vision_run: generate reports, detect naming issues and overlaps, output diagnostics into _AMOS_REPORTS.",
+        "build_canonical_layout: ensure all canonical JSON structures exist and are shaped correctly.",
+        "AMOS_BUILD_ALL: generate / update kernels, engines, and agents as required.",
+        "AMOS_ORGANIZE_AND_WIRE: build master registry and system registries.",
+        "AMOS_INIT_FULL: load and validate the world, generate AMOS_REGISTRY.json.",
+        "AMOS_OS: status check.",
+        "AMOS_BENCHMARK: performance profiling for critical paths.",
+        "AMOS_SPEED: timing harness for selected operations."
+      ]
+    },
+    "github_source_of_truth": {
+      "concept": "GitHub repo as a single canonical source for all code, JSON, reports, and this specification file.",
+      "requirements": [
+        "Every local change must go through AMOS build + reports before being committed.",
+        "ChatGPT or other agents must never assume structure; they must read from this repo and its registries."
+      ]
+    }
+  },
+  "coding_conventions": {
+    "python": {
+      "target_version": "3.9.x",
+      "style": "Clear, explicit, no magic, minimal dependencies.",
+      "principles": [
+        "Prefer pure functions where possible.",
+        "Avoid implicit global state except in clearly defined registries.",
+        "Always log decisions that cross system boundaries."
+      ]
+    },
+    "json": {
+      "role": "Canonical declarative format for systems, kernels, engines, agents, and registries.",
+      "rules": [
+        "No duplicate IDs.",
+        "Every JSON file must declare its type (SYSTEM, KERNEL, ENGINE, AGENT, REGISTRY).",
+        "Every JSON file must be machine-readable and human-readable."
+      ]
+    }
+  },
+  "future_extensions": {
+    "amos_runtime_self_hosted": {
+      "idea": "A dedicated runtime that can load this JSON spec and spin up all required processes without manual glue.",
+      "requirements": [
+        "Stable, versioned schema for this JSON file.",
+        "Upgrade paths when laws, systems, or domains are extended."
+      ]
+    },
+    "ubi_wearable_integration": {
+      "idea": "Live bio-signal interface that feeds AMOS about sleep, stress, and energy to further align decisions with biology.",
+      "note": "All such integrations must obey Absolute Biological Integrity and avoid dark pattern optimisation."
+    }
+  }
+}

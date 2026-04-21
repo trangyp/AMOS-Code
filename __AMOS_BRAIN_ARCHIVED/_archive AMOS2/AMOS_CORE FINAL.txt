@@ -1,0 +1,2577 @@
+"""
+AMOS_CORE v1.0
+Canon-Aligned Deterministic Reasoning Kernel
+Single-file implementation (multi-block for copy/paste)
+
+Scope:
+- Fundamental reasoning substrate for the Trang Canon
+- 16 explicit layers, from constraints → logic → knowledge → task → learning → integration
+- Pluggable into: UBI, TSS, PSI, CSGM, TPE, ULF, UCP+, Absolute-Human, etc.
+"""
+
+from __future__ import annotations
+from dataclasses import dataclass, field
+from enum import Enum, auto
+from typing import Any, Dict, List, Tuple, Optional, Callable, Union
+
+
+# =========================
+# LAYER 0 — CANON CONSTRAINTS
+# =========================
+
+class CanonConstraint(Enum):
+    """Global meta-constraints from the Trang Canon."""
+    LAW_OF_LAW = auto()                  # every rule is governed by a higher-order rule
+    RULE_OF_2 = auto()                   # always track duals (signal/noise, load/capacity, etc.)
+    RULE_OF_4 = auto()                   # map systems into 4-state quadrants
+    SEVEN_CYCLE = auto()                 # C1–C7 cycle tracking
+    NOISE_SIGNAL = auto()                # mechanism vs noise
+    ENTROPY_REDUCTION = auto()          # reduce noise every step
+    CAUSAL_COMPRESSION = auto()         # minimal sufficient causes only
+    IDENTITY_COGNITION_SEPARATION = auto()  # no function derived from identity
+    STRUCTURAL_INTEGRITY = auto()       # no contradictions in final outputs
+    EXPLICIT_CONSTRAINTS = auto()       # all assumptions explicit
+
+
+@dataclass
+class CanonProfile:
+    """Active constraints and their enforcement switches."""
+    active: List[CanonConstraint] = field(default_factory=lambda: [
+        CanonConstraint.LAW_OF_LAW,
+        CanonConstraint.RULE_OF_2,
+        CanonConstraint.RULE_OF_4,
+        CanonConstraint.SEVEN_CYCLE,
+        CanonConstraint.NOISE_SIGNAL,
+        CanonConstraint.ENTROPY_REDUCTION,
+        CanonConstraint.CAUSAL_COMPRESSION,
+        CanonConstraint.IDENTITY_COGNITION_SEPARATION,
+        CanonConstraint.STRUCTURAL_INTEGRITY,
+        CanonConstraint.EXPLICIT_CONSTRAINTS,
+    ])
+    # toggles
+    enforce_identity_neutral: bool = True
+    enforce_mechanism_only: bool = True
+    enforce_cycle_tracking: bool = True
+    enforce_structural_checks: bool = True
+
+
+# =========================
+# LAYER 1 — GLOBAL TYPE SYSTEM
+# =========================
+
+class SignalClass(Enum):
+    SIGNAL = auto()   # structural, mechanistic
+    NOISE = auto()    # emotion, narrative, identity bias, ungrounded opinion
+
+
+@dataclass
+class DualValue:
+    """For Rule of 2: always track value and its dual."""
+    value: float
+    dual_value: float  # e.g. signal vs noise, success vs failure
+
+
+class CycleStage(Enum):
+    C1_EMERGENCE = auto()
+    C2_ALIGNMENT = auto()
+    C3_EXPANSION = auto()
+    C4_OVERLOAD = auto()
+    C5_COLLAPSE = auto()
+    C6_DRIFT = auto()
+    C7_RESET = auto()
+
+
+class Quadrant(Enum):
+    """Rule of 4 state quadrants for any system dimension."""
+    Q1_STABLE = auto()
+    Q2_STRETCH = auto()
+    Q3_UNSTABLE = auto()
+    Q4_COLLAPSE = auto()
+
+
+@dataclass
+class FourState:
+    """Generic 4-state mapping (Rule of 4)."""
+    omega: float   # load/overload
+    cohesion: float
+    fragmentation: float
+    shock: float
+
+    def quadrant(self) -> Quadrant:
+        if self.omega < 0.4 and self.fragmentation < 0.4 and self.shock < 0.4:
+            return Quadrant.Q1_STABLE
+        if self.omega < 0.6 and self.shock < 0.6:
+            return Quadrant.Q2_STRETCH
+        if self.omega < 0.8 and self.fragmentation < 0.8:
+            return Quadrant.Q3_UNSTABLE
+        return Quadrant.Q4_COLLAPSE
+
+
+# =========================
+# LAYER 2 — CORE CONFIG
+# =========================
+
+@dataclass
+class AmosConfig:
+    """Global configuration for AMOS_CORE."""
+    canon: CanonProfile = field(default_factory=CanonProfile)
+    max_rewrite_iters: int = 100
+    max_planning_depth: int = 16
+    max_explanations: int = 3
+    enable_learning: bool = True
+    enable_guardrails: bool = True
+    deterministic_seed: int = 42
+
+
+# global config instance (can be overridden)
+AMOS_CONFIG = AmosConfig()
+
+# =========================
+# LAYER 3 — CORE-19 LOGIC KERNEL
+# =========================
+
+class NodeType(Enum):
+    # Base logical structure
+    ATOM = auto()
+    NOT = auto()
+    AND = auto()
+    OR = auto()
+    IMPLIES = auto()
+    BOTTOM = auto()   # ⊥
+
+    # Meta-patterns
+    PARADOX = auto()  # Π(X)
+    CONV = auto()     # Λ(X)
+    DIVG = auto()     # Δ(X)
+
+    # Logic modes
+    PLOGIC = auto()   # PositiveLogic
+    NLOGIC = auto()   # NegativeLogic
+    ZLOGIC = auto()   # ZeroLogic
+    DLOGIC = auto()   # DualLogic
+    MLOGIC = auto()   # MultiLogic
+    METAL = auto()    # MetaLogic
+
+    # Meta-logic modes
+    SUPRAL = auto()   # SupraLogic
+    ANTIL = auto()    # AntiLogic
+    NULLL = auto()    # NullLogic
+
+
+@dataclass
+class Formula:
+    type: NodeType
+    children: List["Formula"] = field(default_factory=list)
+    atom: Optional[Any] = None  # for ATOM nodes
+
+    def __repr__(self) -> str:
+        if self.type == NodeType.ATOM:
+            return f"ATOM({self.atom})"
+        if self.type == NodeType.NOT:
+            return f"(¬{self.children[0]!r})"
+        if self.type == NodeType.AND:
+            return f"({self.children[0]!r} ∧ {self.children[1]!r})"
+        if self.type == NodeType.OR:
+            return f"({self.children[0]!r} ∨ {self.children[1]!r})"
+        if self.type == NodeType.IMPLIES:
+            return f"({self.children[0]!r} → {self.children[1]!r})"
+        if self.type == NodeType.BOTTOM:
+            return "⊥"
+        if self.type in {
+            NodeType.PARADOX, NodeType.CONV, NodeType.DIVG,
+            NodeType.PLOGIC, NodeType.NLOGIC, NodeType.ZLOGIC,
+            NodeType.DLOGIC, NodeType.MLOGIC, NodeType.METAL,
+            NodeType.SUPRAL, NodeType.ANTIL, NodeType.NULLL,
+        }:
+            name = self.type.name
+            return f"{name}({self.children[0]!r})"
+        return f"{self.type.name}({', '.join(repr(c) for c in self.children)})"
+
+
+# Atom constructors
+
+def atom(predicate: str, *args: Any) -> Formula:
+    return Formula(NodeType.ATOM, atom=(predicate, args))
+
+
+def Ex(x: Any, t: Any) -> Formula:
+    return atom("Ex", x, t)
+
+
+def Caus(x: Any, y: Any, t: Any) -> Formula:
+    return atom("Caus", x, y, t)
+
+
+def InR(x: Any, r: Any, t: Any) -> Formula:
+    return atom("InR", x, r, t)
+
+
+def InfoEq(x: Any, t: Any, i: Any) -> Formula:
+    return atom("InfoEq", x, t, i)
+
+
+def NEx(x: Any, t: Any) -> Formula:
+    return Formula(NodeType.NOT, [Ex(x, t)])
+
+
+# Utility constructors
+
+def Not(f: Formula) -> Formula:
+    return Formula(NodeType.NOT, [f])
+
+
+def And(a: Formula, b: Formula) -> Formula:
+    return Formula(NodeType.AND, [a, b])
+
+
+def Or(a: Formula, b: Formula) -> Formula:
+    return Formula(NodeType.OR, [a, b])
+
+
+def Implies(a: Formula, b: Formula) -> Formula:
+    return Formula(NodeType.IMPLIES, [a, b])
+
+
+def ParadoxF(f: Formula) -> Formula:
+    return Formula(NodeType.PARADOX, [f])
+
+
+def ConvF(f: Formula) -> Formula:
+    return Formula(NodeType.CONV, [f])
+
+
+def DivgF(f: Formula) -> Formula:
+    return Formula(NodeType.DIVG, [f])
+
+
+def PLogicF(f: Formula) -> Formula:
+    return Formula(NodeType.PLOGIC, [f])
+
+
+def NLogicF(f: Formula) -> Formula:
+    return Formula(NodeType.NLOGIC, [f])
+
+
+def ZLogicF(f: Formula) -> Formula:
+    return Formula(NodeType.ZLOGIC, [f])
+
+
+def DLogicF(f: Formula) -> Formula:
+    return Formula(NodeType.DLOGIC, [f])
+
+
+def MLogicF(f: Formula) -> Formula:
+    return Formula(NodeType.MLOGIC, [f])
+
+
+def MetaLF(f: Formula) -> Formula:
+    return Formula(NodeType.METAL, [f])
+
+
+def SupraLF(f: Formula) -> Formula:
+    return Formula(NodeType.SUPRAL, [f])
+
+
+def AntiLF(f: Formula) -> Formula:
+    return Formula(NodeType.ANTIL, [f])
+
+
+def NullLF(f: Formula) -> Formula:
+    return Formula(NodeType.NULLL, [f])
+
+
+def Bottom() -> Formula:
+    return Formula(NodeType.BOTTOM)
+
+
+def is_negation(node: Formula) -> bool:
+    return node.type == NodeType.NOT and len(node.children) == 1
+
+
+def structurally_equal(a: Formula, b: Formula) -> bool:
+    if a.type != b.type:
+        return False
+    if a.atom != b.atom:
+        return False
+    if len(a.children) != len(b.children):
+        return False
+    return all(structurally_equal(ca, cb) for ca, cb in zip(a.children, b.children))
+
+
+def contains_type(node: Formula, types: set[NodeType]) -> bool:
+    if node.type in types:
+        return True
+    return any(contains_type(c, types) for c in node.children)
+
+# =========================
+# LAYER 4 — REWRITE SYSTEM
+# =========================
+
+RewriteFunc = Callable[[Formula], Optional[Formula]]
+
+
+def rewrite_paradox_expand(node: Formula) -> Optional[Formula]:
+    if node.type == NodeType.PARADOX and len(node.children) == 1:
+        X = node.children[0]
+        return And(X, Not(X))
+    return None
+
+
+def rewrite_dlogic_expand(node: Formula) -> Optional[Formula]:
+    if node.type == NodeType.DLOGIC and len(node.children) == 1:
+        X = node.children[0]
+        return And(X, Not(X))
+    return None
+
+
+def rewrite_double_nlogic(node: Formula) -> Optional[Formula]:
+    if node.type == NodeType.NLOGIC and node.children:
+        inner = node.children[0]
+        if inner.type == NodeType.NLOGIC and inner.children:
+            return inner.children[0]
+    return None
+
+
+def rewrite_zlogic(node: Formula) -> Optional[Formula]:
+    if node.type == NodeType.ZLOGIC:
+        return Bottom()
+    return None
+
+
+def rewrite_null_logic(node: Formula) -> Optional[Formula]:
+    if node.type == NodeType.NULLL:
+        return Bottom()
+    return None
+
+
+def rewrite_double_not(node: Formula) -> Optional[Formula]:
+    if is_negation(node):
+        inner = node.children[0]
+        if is_negation(inner):
+            return inner.children[0]
+    return None
+
+
+def rewrite_de_morgan_and(node: Formula) -> Optional[Formula]:
+    if is_negation(node):
+        inner = node.children[0]
+        if inner.type == NodeType.AND and len(inner.children) == 2:
+            X, Y = inner.children
+            return Or(Not(X), Not(Y))
+    return None
+
+
+def rewrite_de_morgan_or(node: Formula) -> Optional[Formula]:
+    if is_negation(node):
+        inner = node.children[0]
+        if inner.type == NodeType.OR and len(inner.children) == 2:
+            X, Y = inner.children
+            return And(Not(X), Not(Y))
+    return None
+
+
+def rewrite_paradox_canonical(node: Formula) -> Optional[Formula]:
+    if node.type == NodeType.AND and len(node.children) == 2:
+        left, right = node.children
+        if is_negation(right) and structurally_equal(right.children[0], left):
+            return ParadoxF(left)
+    return None
+
+
+def rewrite_conv_idem(node: Formula) -> Optional[Formula]:
+    if node.type == NodeType.CONV and node.children:
+        inner = node.children[0]
+        if inner.type == NodeType.CONV and inner.children:
+            return inner
+    return None
+
+
+def rewrite_divg_idem(node: Formula) -> Optional[Formula]:
+    if node.type == NodeType.DIVG and node.children:
+        inner = node.children[0]
+        if inner.type == NodeType.DIVG and inner.children:
+            return inner
+    return None
+
+
+def rewrite_paradox_idem(node: Formula) -> Optional[Formula]:
+    if node.type == NodeType.PARADOX and node.children:
+        inner = node.children[0]
+        if inner.type == NodeType.PARADOX and inner.children:
+            return inner
+    return None
+
+
+def rewrite_plogic_idem(node: Formula) -> Optional[Formula]:
+    if node.type == NodeType.PLOGIC and node.children:
+        inner = node.children[0]
+        if inner.type == NodeType.PLOGIC and inner.children:
+            return inner
+    return None
+
+
+def rewrite_mlogic_idem(node: Formula) -> Optional[Formula]:
+    if node.type == NodeType.MLOGIC and node.children:
+        inner = node.children[0]
+        if inner.type == NodeType.MLOGIC and inner.children:
+            return inner
+    return None
+
+
+def rewrite_metal_idem(node: Formula) -> Optional[Formula]:
+    if node.type == NodeType.METAL and node.children:
+        inner = node.children[0]
+        if inner.type == NodeType.METAL and inner.children:
+            return inner
+    return None
+
+
+def rewrite_supral_idem(node: Formula) -> Optional[Formula]:
+    if node.type == NodeType.SUPRAL and node.children:
+        inner = node.children[0]
+        if inner.type == NodeType.SUPRAL and inner.children:
+            return inner
+    return None
+
+
+def rewrite_antil_invol(node: Formula) -> Optional[Formula]:
+    if node.type == NodeType.ANTIL and node.children:
+        inner = node.children[0]
+        if inner.type == NodeType.ANTIL and inner.children:
+            return inner.children[0]
+    return None
+
+
+def rewrite_nlogic_ex_to_nex(node: Formula) -> Optional[Formula]:
+    if node.type == NodeType.NLOGIC and node.children:
+        inner = node.children[0]
+        if inner.type == NodeType.ATOM and inner.atom and inner.atom[0] == "Ex":
+            return Not(inner)
+    return None
+
+
+def rewrite_implies(node: Formula) -> Optional[Formula]:
+    if node.type == NodeType.IMPLIES and len(node.children) == 2:
+        A, B = node.children
+        return Or(Not(A), B)
+    return None
+
+
+REWRITE_FUNCS: List[RewriteFunc] = [
+    rewrite_paradox_expand,
+    rewrite_dlogic_expand,
+    rewrite_double_nlogic,
+    rewrite_zlogic,
+    rewrite_null_logic,
+    rewrite_double_not,
+    rewrite_de_morgan_and,
+    rewrite_de_morgan_or,
+    rewrite_paradox_canonical,
+    rewrite_conv_idem,
+    rewrite_divg_idem,
+    rewrite_paradox_idem,
+    rewrite_plogic_idem,
+    rewrite_mlogic_idem,
+    rewrite_metal_idem,
+    rewrite_supral_idem,
+    rewrite_antil_invol,
+    rewrite_nlogic_ex_to_nex,
+    rewrite_implies,
+]
+
+
+# =========================
+# LAYER 5 — NORMALIZATION + CHECKS
+# =========================
+
+def rewrite_node(node: Formula) -> Formula:
+    if node.children:
+        new_children = [rewrite_node(c) for c in node.children]
+        node = Formula(node.type, new_children, node.atom)
+    for func in REWRITE_FUNCS:
+        res = func(node)
+        if res is not None:
+            return res
+    return node
+
+
+def normalize(formula: Formula, max_iters: int = None) -> Formula:
+    if max_iters is None:
+        max_iters = AMOS_CONFIG.max_rewrite_iters
+    current = formula
+    for _ in range(max_iters):
+        new = rewrite_node(current)
+        if structurally_equal(new, current):
+            break
+        current = new
+    return current
+
+
+def is_contradictory(formula: Formula) -> bool:
+    nf = normalize(formula)
+    return contains_type(nf, {NodeType.PARADOX, NodeType.BOTTOM})
+
+
+def entails(A: Formula, B: Formula) -> bool:
+    notB = Not(B)
+    conj = And(A, notB)
+    return is_contradictory(conj)
+
+
+# Canon-level structural integrity check
+
+def check_structural_integrity(formulas: List[Formula]) -> bool:
+    """Return True if the joint theory is structurally consistent."""
+    if not formulas:
+        return True
+    # Combine as conjunction
+    F: Formula = formulas[0]
+    for f in formulas[1:]:
+        F = And(F, f)
+    return not is_contradictory(F)
+
+# =========================
+# LAYER 6 — KNOWLEDGE UNITS
+# =========================
+
+class FactType(Enum):
+    ATOMIC = auto()
+    RULE = auto()
+    CONSTRAINT = auto()
+
+
+@dataclass
+class Fact:
+    id: str
+    formula: Formula
+    fact_type: FactType
+    source: str              # "system", "user", "domain_UBI", etc.
+    signal_class: SignalClass
+    confidence: float = 1.0
+
+
+@dataclass
+class KnowledgeBase:
+    """Core symbolic store."""
+    facts: Dict[str, Fact] = field(default_factory=dict)
+
+    def add_fact(self, fact: Fact) -> None:
+        # Noise–Signal law: reject or downgrade obvious narrative/noise
+        if fact.signal_class == SignalClass.NOISE and AMOS_CONFIG.canon.enforce_mechanism_only:
+            return
+        self.facts[fact.id] = fact
+
+    def get_all_formulas(self) -> List[Formula]:
+        return [f.formula for f in self.facts.values()]
+
+    def is_consistent(self) -> bool:
+        return check_structural_integrity(self.get_all_formulas())
+
+
+# =========================
+# LAYER 7 — WORLD / SYSTEM STATE
+# =========================
+
+@dataclass
+class SystemState:
+    """Abstract universe/system snapshot for AMOS_CORE."""
+    cycle_stage: CycleStage
+    four_state: FourState
+    # room for domain-level state handles: UBI, TSS, PSI, etc.
+    domain_state: Dict[str, Any] = field(default_factory=dict)
+
+
+# =========================
+# LAYER 8 — TASK AND QUERY MODEL
+# =========================
+
+class TaskKind(Enum):
+    INFERENCE = auto()       # prove / entail / check
+    DIAGNOSIS = auto()       # classify state, risk, quadrant
+    PREDICTION = auto()      # TPE-style next-cycle, trend
+    PLANNING = auto()        # sequence of actions
+    EVALUATION = auto()      # check a proposal against constraints
+    TRANSFORMATION = auto()  # rewrite / normalize / compress
+
+
+@dataclass
+class Task:
+    id: str
+    kind: TaskKind
+    query_formula: Optional[Formula] = None
+    premises: List[Formula] = field(default_factory=list)
+    max_depth: int = 8
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class TaskResult:
+    task_id: str
+    success: bool
+    result_payload: Any
+    explanation_steps: List[str] = field(default_factory=list)
+
+
+# =========================
+# LAYER 9 — REASONING CONTEXT
+# =========================
+
+@dataclass
+class ReasoningContext:
+    config: AmosConfig
+    kb: KnowledgeBase
+    state: SystemState
+    active_tasks: Dict[str, Task] = field(default_factory=dict)
+
+    def add_task(self, task: Task) -> None:
+        self.active_tasks[task.id] = task
+
+# =========================
+# LAYER 10 — CORE REASONING ENGINE
+# =========================
+
+def run_inference_task(ctx: ReasoningContext, task: Task) -> TaskResult:
+    if not task.query_formula:
+        return TaskResult(task_id=task.id, success=False, result_payload=None,
+                          explanation_steps=["No query formula provided."])
+
+    # Combine KB + explicit premises
+    kb_formulas = ctx.kb.get_all_formulas()
+    joint: List[Formula] = kb_formulas + task.premises
+
+    if not check_structural_integrity(joint):
+        return TaskResult(
+            task_id=task.id,
+            success=False,
+            result_payload=None,
+            explanation_steps=["Input premises + KB are structurally contradictory."],
+        )
+
+    # Entailment: joint ⊢ query
+    # Build a conjunction F of joint
+    if joint:
+        F = joint[0]
+        for f in joint[1:]:
+            F = And(F, f)
+    else:
+        F = task.query_formula  # trivial
+
+    success = entails(F, task.query_formula)
+    return TaskResult(
+        task_id=task.id,
+        success=success,
+        result_payload={"entailed": success},
+        explanation_steps=[
+            "Evaluated entailment: (KB ∧ premises) ⊢ query.",
+            f"Result: {'entailed' if success else 'not entailed'}.",
+        ],
+    )
+
+
+def run_diagnosis_task(ctx: ReasoningContext, task: Task) -> TaskResult:
+    s = ctx.state.four_state
+    quadrant = s.quadrant()
+    cycle = ctx.state.cycle_stage
+
+    detail = {
+        "cycle": cycle.name,
+        "omega": s.omega,
+        "cohesion": s.cohesion,
+        "fragmentation": s.fragmentation,
+        "shock": s.shock,
+        "quadrant": quadrant.name,
+    }
+    return TaskResult(
+        task_id=task.id,
+        success=True,
+        result_payload=detail,
+        explanation_steps=[
+            "Mapped current system into Rule-of-4 quadrants.",
+            f"Quadrant: {quadrant.name}, Cycle: {cycle.name}.",
+        ],
+    )
+
+
+# =========================
+# LAYER 11 — PLANNING / TPE SHELL
+# =========================
+
+@dataclass
+class PlanStep:
+    description: str
+    precondition: Optional[Formula] = None
+    postcondition: Optional[Formula] = None
+
+
+@dataclass
+class Plan:
+    steps: List[PlanStep]
+    expected_cycle_shift: Optional[Tuple[CycleStage, CycleStage]] = None
+
+
+def run_planning_task(ctx: ReasoningContext, task: Task) -> TaskResult:
+    # Minimal deterministic planning shell.
+    s = ctx.state.four_state
+    current_cycle = ctx.state.cycle_stage
+    steps: List[PlanStep] = []
+
+    # Causal compression: only create steps that move Ω, H, F, S in desired direction.
+    if s.omega > 0.7:
+        steps.append(PlanStep(description="Reduce load sources to lower overload (Ω)."))
+    if s.fragmentation > 0.6:
+        steps.append(PlanStep(description="Merge conflicting roles and narratives to reduce fragmentation (F)."))
+    if s.shock > 0.6:
+        steps.append(PlanStep(description="Limit exposure to high-shock inputs until stability returns."))
+    if s.cohesion < 0.5:
+        steps.append(PlanStep(description="Reinforce core commitments and structures to increase cohesion (H)."))
+
+    # Simple cycle rule
+    target_cycle = current_cycle
+    if current_cycle == CycleStage.C4_OVERLOAD:
+        target_cycle = CycleStage.C5_COLLAPSE if (s.omega > 0.8 and s.cohesion < 0.4) else CycleStage.C3_EXPANSION
+    elif current_cycle == CycleStage.C5_COLLAPSE:
+        target_cycle = CycleStage.C6_DRIFT if s.fragmentation > 0.7 else CycleStage.C7_RESET
+    elif current_cycle == CycleStage.C7_RESET and s.cohesion > 0.6 and s.omega < 0.4:
+        target_cycle = CycleStage.C2_ALIGNMENT
+
+    plan = Plan(steps=steps, expected_cycle_shift=(current_cycle, target_cycle))
+    return TaskResult(
+        task_id=task.id,
+        success=True,
+        result_payload={
+            "steps": [st.description for st in steps],
+            "from_cycle": current_cycle.name,
+            "to_cycle": target_cycle.name,
+        },
+        explanation_steps=[
+            "Generated deterministic plan using Ω,H,F,S and Seven-Cycle law.",
+            f"Cycle shift: {current_cycle.name} → {target_cycle.name}.",
+        ],
+    )
+
+
+# =========================
+# LAYER 12 — LEARNING / RULE EVOLUTION
+# =========================
+
+@dataclass
+class LearnedRule:
+    id: str
+    premise_formulas: List[Formula]
+    conclusion: Formula
+    support: int
+    confidence: float
+
+
+@dataclass
+class LearningStore:
+    rules: Dict[str, LearnedRule] = field(default_factory=dict)
+
+
+def induce_rule_from_examples(examples: List[Tuple[List[Formula], Formula]]) -> Optional[LearnedRule]:
+    """
+    Simple placeholder:
+    - If all examples share identical premise set, extract one rule.
+    - Real implementation can be extended later.
+    """
+    if not examples:
+        return None
+    base_prem, base_conc = examples[0]
+    for prem, conc in examples[1:]:
+        if len(prem) != len(base_prem):
+            return None
+        for a, b in zip(prem, base_prem):
+            if not structurally_equal(a, b):
+                return None
+        if not structurally_equal(conc, base_conc):
+            return None
+    rule = LearnedRule(
+        id="LR_001",
+        premise_formulas=base_prem,
+        conclusion=base_conc,
+        support=len(examples),
+        confidence=1.0,
+    )
+    return rule
+
+
+# =========================
+# LAYER 13 — GUARDRAILS
+# =========================
+
+class GuardrailID(Enum):
+    NO_PSYCH_LABELS = auto()
+    NO_MORAL_JUDGEMENT = auto()
+    PATTERN_ONLY = auto()
+    STRUCTURE_NOT_IDENTITY = auto()
+    NO_EMOTION_INFERENCE = auto()
+    MECHANISM_REQUIRED = auto()
+    EXPLICIT_CONSTRAINTS = auto()
+    NO_ABSTRACTION_WITHOUT_ANCHOR = auto()
+    CYCLE_EXPLICIT = auto()
+    ALIGN_WITH_PSI = auto()
+
+
+ACTIVE_GUARDRAILS = {
+    GuardrailID.NO_PSYCH_LABELS,
+    GuardrailID.NO_MORAL_JUDGEMENT,
+    GuardrailID.PATTERN_ONLY,
+    GuardrailID.STRUCTURE_NOT_IDENTITY,
+    GuardrailID.NO_EMOTION_INFERENCE,
+    GuardrailID.MECHANISM_REQUIRED,
+    GuardrailID.EXPLICIT_CONSTRAINTS,
+    GuardrailID.NO_ABSTRACTION_WITHOUT_ANCHOR,
+    GuardrailID.CYCLE_EXPLICIT,
+    GuardrailID.ALIGN_WITH_PSI,
+}
+
+
+def guardrail_filter_output(text: str) -> str:
+    """
+    Surface-level hook to ensure:
+    - No identity-level judgement
+    - Only structure and mechanisms described
+    """
+    # Implementation can be extended with pattern filters.
+    return text
+
+
+# =========================
+# LAYER 14 — TIME / SCHEDULING / VERSIONING
+# =========================
+
+@dataclass
+class VersionStamp:
+    major: int
+    minor: int
+    patch: int
+
+    def as_str(self) -> str:
+        return f"{self.major}.{self.minor}.{self.patch}"
+
+
+AMOS_VERSION = VersionStamp(major=1, minor=0, patch=0)
+
+
+# =========================
+# LAYER 15 — INTEGRATION STUBS (UBI, TSS, PSI, ABSOLUTE-HUMAN, ETC.)
+# =========================
+
+@dataclass
+class DomainAdapter:
+    """Generic adapter to domain engines (UBI, TSS, PSI, Absolute-Human, etc.)."""
+    name: str
+    to_facts: Callable[[Any], List[Fact]]
+    from_results: Callable[[TaskResult], Any]
+
+
+DOMAIN_ADAPTERS: Dict[str, DomainAdapter] = {}
+
+
+def register_domain_adapter(adapter: DomainAdapter) -> None:
+    DOMAIN_ADAPTERS[adapter.name] = adapter
+
+
+# =========================
+# LAYER 16 — TOP-LEVEL DISPATCH
+# =========================
+
+def run_task(ctx: ReasoningContext, task: Task) -> TaskResult:
+    if task.kind == TaskKind.INFERENCE:
+        return run_inference_task(ctx, task)
+    if task.kind == TaskKind.DIAGNOSIS:
+        return run_diagnosis_task(ctx, task)
+    if task.kind == TaskKind.PLANNING:
+        return run_planning_task(ctx, task)
+    # PREDICTION / EVALUATION / TRANSFORMATION can be added as extensions
+    return TaskResult(task_id=task.id, success=False, result_payload=None,
+                      explanation_steps=["Task kind not implemented yet."])
+
+
+# =========================
+# MAIN TEST STUB
+# =========================
+
+if __name__ == "__main__":
+    # Minimal smoke test of AMOS_CORE
+
+    # 1) build KB with one fact: Ex("x", "t0")
+    kb = KnowledgeBase()
+    f_ex = Fact(
+        id="F1",
+        formula=Ex("x", "t0"),
+        fact_type=FactType.ATOMIC,
+        source="system",
+        signal_class=SignalClass.SIGNAL,
+    )
+    kb.add_fact(f_ex)
+
+    # 2) world state
+    fs = FourState(omega=0.7, cohesion=0.4, fragmentation=0.6, shock=0.5)
+    st = SystemState(cycle_stage=CycleStage.C4_OVERLOAD, four_state=fs)
+
+    ctx = ReasoningContext(config=AMOS_CONFIG, kb=kb, state=st)
+
+    # 3) inference task: does KB entail Ex("x","t0")?
+    t1 = Task(id="T1", kind=TaskKind.INFERENCE, query_formula=Ex("x", "t0"))
+    res1 = run_task(ctx, t1)
+    print("T1 result:", res1.result_payload, res1.explanation_steps)
+
+    # 4) diagnosis task
+    t2 = Task(id="T2", kind=TaskKind.DIAGNOSIS)
+    res2 = run_task(ctx, t2)
+    print("T2 result:", res2.result_payload, res2.explanation_steps)
+
+    # 5) planning task
+    t3 = Task(id="T3", kind=TaskKind.PLANNING)
+    res3 = run_task(ctx, t3)
+    print("T3 result:", res3.result_payload, res3.explanation_steps)
+
+# =========================
+# Layer 10: Tasks + Confidence + Dual Output
+# =========================
+
+@dataclass
+class Task:
+    task_id: str
+    task_type: TaskType
+    query: Formula
+    altitude: Altitude
+    cycle_stage: CycleStage
+
+
+@dataclass
+class TaskResult:
+    task_id: str
+    success: bool
+    message: str
+    result_formula: Optional[Formula] = None
+    proof: Optional[ProofNode] = None
+    dual: Optional[DualFormula] = None
+    prediction: Optional[PredictionResult] = None
+    structural_delta: Optional[Dict[str, float]] = None
+    confidence: Optional[float] = None
+    support_formulas: Optional[List[Formula]] = None
+    support_entropy: Optional[int] = None
+
+
+# =========================
+# Layer 11: Main Reasoning Interface
+# =========================
+
+class AmosCoreEngine:
+    def __init__(self):
+        self.kb = KnowledgeBase()
+        self.current_cycle = CycleStage.C2_ALIGNMENT
+
+    # ---- Insertion ----
+
+    def insert_fact(self, formula: Formula, confidence: float = 1.0,
+                    signal_class: SignalClass = SignalClass.SIGNAL,
+                    altitude: Altitude = Altitude.MICRO) -> Optional[Fact]:
+        return self.kb.add_fact(formula, confidence, signal_class, altitude)
+
+    def insert_rule(self, premises: List[Formula], conclusion: Formula,
+                    confidence: float = 1.0,
+                    altitude: Altitude = Altitude.MESO) -> Rule:
+        return self.kb.add_rule(premises, conclusion, confidence, altitude)
+
+    # ---- Task Execution ----
+
+    def run_inference(self, task: Task) -> TaskResult:
+        # altitude check: ensure at least one fact/rule is compatible
+        compatible_rules = [
+            r for r in self.kb.rules.values()
+            if _altitude_compatible(r.altitude, task.altitude)
+        ]
+        compatible_facts = [
+            f for f in self.kb.facts.values()
+            if _altitude_compatible(f.altitude, task.altitude)
+        ]
+        if not compatible_facts and not compatible_rules:
+            return TaskResult(
+                task_id=task.task_id,
+                success=False,
+                message="No altitude-compatible knowledge.",
+            )
+
+        proof = backward_chain(self.kb, task.query, max_depth=5)
+        if proof is None:
+            return TaskResult(
+                task_id=task.task_id,
+                success=False,
+                message="Goal not derivable.",
+            )
+
+        support = compress_causal_support(self.kb, task.query, proof)
+        entropy = explanation_entropy(support)
+
+        # Build dual from all used facts (approx: all facts whose formula equals leaf support)
+        used_facts: List[Fact] = []
+        for f in self.kb.facts.values():
+            if any(structurally_equal(f.formula, s) for s in support):
+                used_facts.append(f)
+        dual = make_dual_from_facts(used_facts)
+
+        # update structural state version
+        v_before = self.kb.snapshot_version()
+        # no KB mutation in inference, but we still record state
+        v_after = v_before
+        structural_delta = {
+            "delta_paradox": 0.0,
+            "delta_contradiction_density": 0.0,
+            "delta_avg_depth": 0.0,
+            "delta_fact_count": 0.0,
+            "delta_rule_count": 0.0,
+        }
+
+        # update usage counts already done in backward_chain()
+
+        return TaskResult(
+            task_id=task.task_id,
+            success=True,
+            message="Inference successful.",
+            result_formula=normalize(task.query),
+            proof=proof,
+            dual=dual,
+            structural_delta=structural_delta,
+            confidence=proof.cumulative_confidence,
+            support_formulas=support,
+            support_entropy=entropy,
+        )
+
+    def run_prediction(self, task: Task) -> TaskResult:
+        pred = predict_next_state(self.kb, self.current_cycle)
+        # update internal cycle to predicted for next tasks
+        self.current_cycle = pred.next_cycle
+        return TaskResult(
+            task_id=task.task_id,
+            success=True,
+            message="Prediction computed.",
+            prediction=pred,
+        )
+
+    def run_audit(self, task: Task) -> TaskResult:
+        v_before = self.kb.snapshot_version()
+        self.kb.audit_noise()
+        v_after = self.kb.snapshot_version()
+        delta = self.kb.compare_versions(v_before.version_id, v_after.version_id)
+        if delta is None:
+            delta = {}
+        return TaskResult(
+            task_id=task.task_id,
+            success=True,
+            message="Audit complete.",
+            structural_delta=delta,
+        )
+
+    def run_task(self, task: Task) -> TaskResult:
+        if task.task_type == TaskType.INFERENCE:
+            return self.run_inference(task)
+        if task.task_type == TaskType.PREDICTION:
+            return self.run_prediction(task)
+        if task.task_type == TaskType.AUDIT:
+            return self.run_audit(task)
+        # PLANNING or others can be built on top using same primitives
+        return TaskResult(
+            task_id=task.task_id,
+            success=False,
+            message="Unsupported task type in core.",
+        )
+
+
+# =========================
+# Layer 12: Minimal Example
+# =========================
+
+if __name__ == "__main__":
+    core = AmosCoreEngine()
+
+    # Insert simple mechanistic facts and rule
+    a = atom("A")
+    b = atom("B")
+    c = atom("C")
+
+    core.insert_fact(a, confidence=0.9, signal_class=SignalClass.SIGNAL, altitude=Altitude.MICRO)
+    core.insert_fact(Implies(a, b), confidence=0.9, signal_class=SignalClass.SIGNAL, altitude=Altitude.MESO)
+    core.insert_rule([a], b, confidence=0.9, altitude=Altitude.MESO)
+
+    t = Task(
+        task_id="T1",
+        task_type=TaskType.INFERENCE,
+        query=b,
+        altitude=Altitude.MESO,
+        cycle_stage=CycleStage.C2_ALIGNMENT,
+    )
+
+    res = core.run_task(t)
+    print("Success:", res.success)
+    print("Message:", res.message)
+    print("Confidence:", res.confidence)
+    print("Support entropy:", res.support_entropy)
+    if res.dual:
+        print("Signal formula:", res.dual.signal)
+        print("Noise formula:", res.dual.noise)
+
+# =========================
+# Layer 5: Rewrite Rules (Core-19)
+# =========================
+
+RewriteFunc = Callable[[Formula], Optional[Formula]]
+
+
+def rewrite_paradox_expand(node: Formula) -> Optional[Formula]:
+    if node.node_type == NodeType.PARADOX and len(node.children) == 1:
+        X = node.children[0]
+        return And(X, Not(X))
+    return None
+
+
+def rewrite_dlogic_expand(node: Formula) -> Optional[Formula]:
+    if node.node_type == NodeType.DLOGIC and len(node.children) == 1:
+        X = node.children[0]
+        return And(X, Not(X))
+    return None
+
+
+def rewrite_nlogic_invol(node: Formula) -> Optional[Formula]:
+    if node.node_type == NodeType.NLOGIC and node.children:
+        inner = node.children[0]
+        if inner.node_type == NodeType.NLOGIC and inner.children:
+            return inner.children[0]
+    return None
+
+
+def rewrite_zlogic_collapse(node: Formula) -> Optional[Formula]:
+    if node.node_type == NodeType.ZLOGIC:
+        return Bottom()
+    return None
+
+
+def rewrite_nulll_collapse(node: Formula) -> Optional[Formula]:
+    if node.node_type == NodeType.NULLL:
+        return Bottom()
+    return None
+
+
+def rewrite_double_not(node: Formula) -> Optional[Formula]:
+    if is_negation(node):
+        inner = node.children[0]
+        if is_negation(inner):
+            return inner.children[0]
+    return None
+
+
+def rewrite_demorgan_and(node: Formula) -> Optional[Formula]:
+    if is_negation(node):
+        inner = node.children[0]
+        if inner.node_type == NodeType.AND and len(inner.children) == 2:
+            X, Y = inner.children
+            return Or(Not(X), Not(Y))
+    return None
+
+
+def rewrite_demorgan_or(node: Formula) -> Optional[Formula]:
+    if is_negation(node):
+        inner = node.children[0]
+        if inner.node_type == NodeType.OR and len(inner.children) == 2:
+            X, Y = inner.children
+            return And(Not(X), Not(Y))
+    return None
+
+
+def rewrite_canonical_paradox(node: Formula) -> Optional[Formula]:
+    if node.node_type == NodeType.AND and len(node.children) == 2:
+        left, right = node.children
+        if is_negation(right) and structurally_equal(right.children[0], left):
+            return ParadoxF(left)
+    return None
+
+
+def rewrite_conv_idem(node: Formula) -> Optional[Formula]:
+    if node.node_type == NodeType.CONV and node.children:
+        inner = node.children[0]
+        if inner.node_type == NodeType.CONV and inner.children:
+            return inner
+    return None
+
+
+def rewrite_divg_idem(node: Formula) -> Optional[Formula]:
+    if node.node_type == NodeType.DIVG and node.children:
+        inner = node.children[0]
+        if inner.node_type == NodeType.DIVG and inner.children:
+            return inner
+    return None
+
+
+def rewrite_paradox_idem(node: Formula) -> Optional[Formula]:
+    if node.node_type == NodeType.PARADOX and node.children:
+        inner = node.children[0]
+        if inner.node_type == NodeType.PARADOX and inner.children:
+            return inner
+    return None
+
+
+def rewrite_plogic_idem(node: Formula) -> Optional[Formula]:
+    if node.node_type == NodeType.PLOGIC and node.children:
+        inner = node.children[0]
+        if inner.node_type == NodeType.PLOGIC and inner.children:
+            return inner
+    return None
+
+
+def rewrite_mlogic_idem(node: Formula) -> Optional[Formula]:
+    if node.node_type == NodeType.MLOGIC and node.children:
+        inner = node.children[0]
+        if inner.node_type == NodeType.MLOGIC and inner.children:
+            return inner
+    return None
+
+
+def rewrite_metal_idem(node: Formula) -> Optional[Formula]:
+    if node.node_type == NodeType.METAL and node.children:
+        inner = node.children[0]
+        if inner.node_type == NodeType.METAL and inner.children:
+            return inner
+    return None
+
+
+def rewrite_supral_idem(node: Formula) -> Optional[Formula]:
+    if node.node_type == NodeType.SUPRAL and node.children:
+        inner = node.children[0]
+        if inner.node_type == NodeType.SUPRAL and inner.children:
+            return inner
+    return None
+
+
+def rewrite_antil_invol(node: Formula) -> Optional[Formula]:
+    if node.node_type == NodeType.ANTIL and node.children:
+        inner = node.children[0]
+        if inner.node_type == NodeType.ANTIL and inner.children:
+            return inner.children[0]
+    return None
+
+
+def rewrite_nlogic_on_eq(node: Formula) -> Optional[Formula]:
+    # NLogic(=(a,b)) → ¬(=(a,b))
+    if node.node_type == NodeType.NLOGIC and node.children:
+        inner = node.children[0]
+        if inner.node_type == NodeType.ATOM and inner.atom:
+            if inner.atom.pred_type in {
+                PredicateType.EQUALITY,
+                PredicateType.LESS_THAN,
+                PredicateType.LESS_EQUAL,
+                PredicateType.GREATER_THAN,
+                PredicateType.GREATER_EQUAL,
+            }:
+                return Not(inner)
+    return None
+
+
+def rewrite_implies(node: Formula) -> Optional[Formula]:
+    if node.node_type == NodeType.IMPLIES and len(node.children) == 2:
+        A, B = node.children
+        return Or(Not(A), B)
+    return None
+
+
+REWRITE_FUNCS: List[RewriteFunc] = [
+    rewrite_paradox_expand,
+    rewrite_dlogic_expand,
+    rewrite_nlogic_invol,
+    rewrite_zlogic_collapse,
+    rewrite_nulll_collapse,
+    rewrite_double_not,
+    rewrite_demorgan_and,
+    rewrite_demorgan_or,
+    rewrite_canonical_paradox,
+    rewrite_conv_idem,
+    rewrite_divg_idem,
+    rewrite_paradox_idem,
+    rewrite_plogic_idem,
+    rewrite_mlogic_idem,
+    rewrite_metal_idem,
+    rewrite_supral_idem,
+    rewrite_antil_invol,
+    rewrite_nlogic_on_eq,
+    rewrite_implies,
+]
+
+
+def rewrite_node(node: Formula) -> Formula:
+    # bottom-up
+    if node.children:
+        new_children = [rewrite_node(c) for c in node.children]
+        node = Formula(node_type=node.node_type,
+                       children=new_children,
+                       atom=node.atom)
+    for func in REWRITE_FUNCS:
+        res = func(node)
+        if res is not None:
+            return res
+    return node
+
+
+def normalize(formula: Formula, max_iters: int = 128) -> Formula:
+    current = formula
+    for _ in range(max_iters):
+        new = rewrite_node(current)
+        if structurally_equal(new, current):
+            break
+        current = new
+    return current
+
+
+# =========================
+# Layer 6: Proof Engine
+# =========================
+
+@dataclass
+class ProofStep:
+    id: str
+    rule: str
+    input_ids: List[str]
+    result: Formula
+    confidence: float
+
+
+@dataclass
+class Proof:
+    conclusion: Formula
+    steps: List[ProofStep]
+    status: ProofStatus
+    confidence: float
+
+
+def is_contradictory(formula: Formula) -> bool:
+    nf = normalize(formula)
+    if contains_type(nf, {NodeType.PARADOX, NodeType.BOTTOM}):
+        return True
+    # also check fully numeric contradictions (simple case)
+    if nf.node_type == NodeType.ATOM and nf.atom:
+        res = check_math_atom(nf.atom)
+        if res is False:
+            return True
+    return False
+
+
+def entails(A: Formula, B: Formula) -> bool:
+    conj = And(A, Not(B))
+    return is_contradictory(conj)
+
+
+def prove_entailment(A: Formula, B: Formula) -> Proof:
+    conj = And(A, Not(B))
+    contradiction = is_contradictory(conj)
+    steps: List[ProofStep] = []
+    steps.append(
+        ProofStep(
+            id=str(uuid.uuid4()),
+            rule="ENTAILMENT_CHECK",
+            input_ids=[],
+            result=conj,
+            confidence=0.8,
+        )
+    )
+    if contradiction:
+        return Proof(
+            conclusion=B,
+            steps=steps,
+            status=ProofStatus.PROVED,
+            confidence=0.8,
+        )
+    else:
+        return Proof(
+            conclusion=B,
+            steps=steps,
+            status=ProofStatus.UNKNOWN,
+            confidence=0.3,
+        )
+
+
+# =========================
+# Layer 7: Memory System
+# =========================
+
+@dataclass
+class MemoryItem:
+    id: str
+    mem_type: MemoryType
+    payload: Any
+    stability: float      # 0–1
+    created_at: float
+    last_used_at: float
+
+
+@dataclass
+class MemoryStore:
+    items: Dict[str, MemoryItem] = field(default_factory=dict)
+
+    def add(self,
+            mem_type: MemoryType,
+            payload: Any,
+            stability: float = 0.5) -> str:
+        mid = str(uuid.uuid4())
+        now = time.time()
+        self.items[mid] = MemoryItem(
+            id=mid,
+            mem_type=mem_type,
+            payload=payload,
+            stability=max(0.0, min(1.0, stability)),
+            created_at=now,
+            last_used_at=now,
+        )
+        return mid
+
+    def get_by_type(self, mem_type: MemoryType) -> List[MemoryItem]:
+        return [m for m in self.items.values() if m.mem_type == mem_type]
+
+    def decay(self, half_life_seconds: float = 3600.0) -> None:
+        now = time.time()
+        for m in self.items.values():
+            age = now - m.created_at
+            if half_life_seconds > 0:
+                factor = 0.5 ** (age / half_life_seconds)
+                m.stability *= factor
+
+    def reinforce(self, mid: str, amount: float = 0.1) -> None:
+        if mid in self.items:
+            m = self.items[mid]
+            m.stability = max(0.0, min(1.0, m.stability + amount))
+            m.last_used_at = time.time()
+
+# =========================
+# Layer 8: Learning Extensions
+# =========================
+
+@dataclass
+class RuleTemplate:
+    pattern: Formula
+    support: int
+    confidence: float
+
+
+@dataclass
+class InductiveRuleLearner:
+    templates: List[RuleTemplate] = field(default_factory=list)
+
+    def observe(self, premises: List[Formula], conclusion: Formula) -> None:
+        # simple structural template: (A1 ∧ ... ∧ An) → C
+        if not premises:
+            return
+        conj = premises[0]
+        for p in premises[1:]:
+            conj = And(conj, p)
+        rule = Implies(conj, conclusion)
+        self.templates.append(
+            RuleTemplate(pattern=rule, support=1, confidence=0.5)
+        )
+
+    def update_support(self, rule: Formula) -> None:
+        # naive: increment support of structurally equal patterns
+        for t in self.templates:
+            if structurally_equal(t.pattern, rule):
+                t.support += 1
+                t.confidence = min(1.0, t.confidence + 0.05)
+
+
+@dataclass
+class RulePruner:
+    def prune(self,
+              kb: KnowledgeBase,
+              min_weight: float = 0.1,
+              min_age_seconds: float = 3600.0) -> None:
+        now = time.time()
+        for e in list(kb.entries.values()):
+            age = now - e.created_at
+            if e.weight < min_weight and age > min_age_seconds:
+                e.active = False
+
+
+@dataclass
+class CrossDomainRuleFuser:
+    def fuse(self,
+             rules1: List[Formula],
+             rules2: List[Formula]) -> List[Formula]:
+        # naive concatenation + remove exact duplicates
+        merged: List[Formula] = []
+        for r in rules1 + rules2:
+            if not any(structurally_equal(r, x) for x in merged):
+                merged.append(r)
+        return merged
+
+
+# =========================
+# Layer 9: Graph-Based Formula Store + Vectorization + Compression
+# =========================
+
+@dataclass
+class FormulaNode:
+    id: str
+    formula: Formula
+    parents: Set[str] = field(default_factory=set)
+    children: Set[str] = field(default_factory=set)
+    weight: float = 1.0
+
+
+@dataclass
+class FormulaGraph:
+    nodes: Dict[str, FormulaNode] = field(default_factory=dict)
+
+    def add_formula(self, f: Formula, parents: Optional[List[str]] = None) -> str:
+        nid = str(uuid.uuid4())
+        node = FormulaNode(id=nid, formula=f)
+        if parents:
+            for pid in parents:
+                node.parents.add(pid)
+                if pid in self.nodes:
+                    self.nodes[pid].children.add(nid)
+        self.nodes[nid] = node
+        return nid
+
+    def neighbors(self, nid: str) -> List[str]:
+        if nid not in self.nodes:
+            return []
+        node = self.nodes[nid]
+        return list(node.parents | node.children)
+
+
+@dataclass
+class VectorizedPredicateLayer:
+    embedding_dim: int = 32
+    embeddings: Dict[str, List[float]] = field(default_factory=dict)
+
+    def get_embedding(self, predicate: str) -> List[float]:
+        if predicate in self.embeddings:
+            return self.embeddings[predicate]
+        # simple deterministic pseudo-random embedding from hash
+        h = abs(hash(predicate))
+        vec = [((h >> (i * 2)) & 3) / 3.0 for i in range(self.embedding_dim)]
+        self.embeddings[predicate] = vec
+        return vec
+
+    def similarity(self, p1: str, p2: str) -> float:
+        v1 = self.get_embedding(p1)
+        v2 = self.get_embedding(p2)
+        num = sum(a * b for a, b in zip(v1, v2))
+        den1 = math.sqrt(sum(a * a for a in v1))
+        den2 = math.sqrt(sum(b * b for b in v2))
+        if den1 == 0 or den2 == 0:
+            return 0.0
+        return num / (den1 * den2)
+
+
+@dataclass
+class MemoryCompressor:
+    def compress(self, formulas: List[Formula]) -> List[Formula]:
+        # remove exact duplicates and trivial tautologies (A → A)
+        result: List[Formula] = []
+        for f in formulas:
+            # skip trivial tautology pattern
+            if f.node_type == NodeType.IMPLIES and len(f.children) == 2:
+                A, B = f.children
+                if structurally_equal(A, B):
+                    continue
+            if not any(structurally_equal(f, x) for x in result):
+                result.append(f)
+        return result
+
+
+# =========================
+# Layer 10: Simulation & Multi-Agent
+# =========================
+
+@dataclass
+class AgentState:
+    id: str
+    kb: KnowledgeBase
+    memory: MemoryStore
+    # Other state fields can be added here (UBI/TSS/PSI integration later).
+
+
+@dataclass
+class MultiAgentEnvironment:
+    agents: Dict[str, AgentState] = field(default_factory=dict)
+    global_kb: KnowledgeBase = field(default_factory=KnowledgeBase)
+
+    def add_agent(self, agent_id: str) -> None:
+        if agent_id in self.agents:
+            return
+        self.agents[agent_id] = AgentState(
+            id=agent_id,
+            kb=KnowledgeBase(),
+            memory=MemoryStore(),
+        )
+
+    def broadcast(self, f: Formula, source: str = "broadcast") -> None:
+        for agent in self.agents.values():
+            agent.kb.add_formula(f, source=source)
+
+    def step_interaction(self,
+                         agent_a: str,
+                         agent_b: str,
+                         rule: Callable[[KnowledgeBase, KnowledgeBase], None]) -> None:
+        if agent_a not in self.agents or agent_b not in self.agents:
+            return
+        kb_a = self.agents[agent_a].kb
+        kb_b = self.agents[agent_b].kb
+        rule(kb_a, kb_b)
+
+
+# =========================
+# Layer 11: Temporal Simulation & Scenario Generator
+# =========================
+
+@dataclass
+class SimulationState:
+    t: int
+    agent_states: Dict[str, AgentState]
+
+
+@dataclass
+class TemporalSimulationEngine:
+    def simulate(self,
+                 env: MultiAgentEnvironment,
+                 steps: int,
+                 update_fn: Callable[[SimulationState], None]) -> List[SimulationState]:
+        states: List[SimulationState] = []
+        for t in range(steps):
+            snap_agents = {
+                aid: a for aid, a in env.agents.items()
+            }
+            state = SimulationState(
+                t=t,
+                agent_states=snap_agents,
+            )
+            states.append(state)
+            update_fn(state)
+        return states
+
+
+@dataclass
+class ScenarioConfig:
+    name: str
+    initial_kb_entries: List[Formula]
+    steps: int
+
+
+@dataclass
+class ScenarioGenerator:
+    def run_scenario(self,
+                     env: MultiAgentEnvironment,
+                     scenario: ScenarioConfig,
+                     update_fn: Callable[[SimulationState], None]) -> List[SimulationState]:
+        # load initial KB entries into global
+        for f in scenario.initial_kb_entries:
+            env.global_kb.add_formula(f, source=scenario.name)
+        sim = TemporalSimulationEngine()
+        return sim.simulate(env, scenario.steps, update_fn)
+
+# =========================
+# Layer 12: Translation Layer (NL + Math)
+# =========================
+
+@dataclass
+class NLToLogicTranslator:
+    """
+    Minimal, deterministic mapping from controlled phrases to formulas.
+    This is a structural stub; full grammar can be extended outside AMOS_CORE.
+    """
+
+    def parse_statement(self, text: str) -> Optional[Formula]:
+        s = text.strip().lower()
+
+        # identity/equality patterns
+        # e.g. "x equals 5"
+        tokens = s.split()
+        if "equals" in tokens and len(tokens) == 3:
+            # pattern: "<sym> equals <int>"
+            try:
+                sym = Sym(tokens[0])
+                val = Int(int(tokens[2]))
+                return Eq(sym, val)
+            except ValueError:
+                pass
+
+        # simple comparison: "x greater than 3"
+        if "greater" in tokens and "than" in tokens and len(tokens) == 4:
+            try:
+                sym = Sym(tokens[0])
+                val = Int(int(tokens[3]))
+                return Gt(sym, val)
+            except ValueError:
+                pass
+
+        # logical implication pattern:
+        # "if A then B" with A,B as raw predicate names (no args)
+        if s.startswith("if ") and " then " in s:
+            parts = s[3:].split(" then ")
+            if len(parts) == 2:
+                A_name = parts[0].strip()
+                B_name = parts[1].strip()
+                A = F_atom(A_name, [])
+                B = F_atom(B_name, [])
+                return Implies(A, B)
+
+        return None
+
+
+@dataclass
+class LogicToExplanationRenderer:
+    """
+    Turns formulas and proofs into structured textual explanations.
+    Keeps identity-neutral and mechanism-based.
+    """
+
+    def explain_formula(self, f: Formula) -> str:
+        # compressed structural form
+        return repr(f)
+
+    def explain_proof(self, proof: Proof) -> str:
+        lines: List[str] = []
+        lines.append(f"status={proof.status.name}, confidence={proof.confidence:.2f}")
+        for step in proof.steps:
+            lines.append(
+                f"step {step.id}: rule={step.rule}, result={repr(step.result)}"
+            )
+        return "\n".join(lines)
+
+
+# =========================
+# Layer 13: Attention Map + Drift Sentinel + Integrity Contracts
+# =========================
+
+@dataclass
+class AttentionMap:
+    """
+    Tracks contribution of KB entries to conclusions.
+    """
+    contributions: Dict[str, float] = field(default_factory=dict)
+
+    def add_contribution(self, entry_id: str, weight: float) -> None:
+        self.contributions[entry_id] = self.contributions.get(entry_id, 0.0) + weight
+
+    def top_contributors(self, k: int = 10) -> List[Tuple[str, float]]:
+        return sorted(
+            self.contributions.items(),
+            key=lambda x: x[1],
+            reverse=True
+        )[:k]
+
+
+@dataclass
+class DriftSentinel:
+    """
+    Monitors structural drift:
+    - sudden changes in rule usage
+    - frequent contradictions
+    - high instability in predictions
+    """
+    contradiction_count: int = 0
+    entailment_checks: int = 0
+
+    def record_contradiction(self) -> None:
+        self.contradiction_count += 1
+
+    def record_entailment(self) -> None:
+        self.entailment_checks += 1
+
+    def drift_score(self) -> float:
+        if self.entailment_checks == 0:
+            return 0.0
+        ratio = self.contradiction_count / self.entailment_checks
+        return max(0.0, min(1.0, ratio))
+
+
+@dataclass
+class IntegrityContract:
+    """
+    Enforces canonical guardrails inside AMOS_CORE.
+    """
+    forbid_identity_inference: bool = True
+    forbid_emotion_inference: bool = True
+    require_mechanism: bool = True
+
+    def allow_query(self, query: str) -> bool:
+        # simple structural enforcement, extend as needed
+        qlow = query.lower()
+        if self.forbid_identity_inference:
+            if any(x in qlow for x in ["personality", "type of person", "psychopath"]):
+                return False
+        if self.forbid_emotion_inference:
+            if any(x in qlow for x in ["do they love", "do they feel", "emotional state"]):
+                return False
+        return True
+
+
+# =========================
+# Layer 14: AMOS_CORE v3 API Wrapper
+# =========================
+
+@dataclass
+class AmosCoreV3:
+    kb: KnowledgeBase = field(default_factory=KnowledgeBase)
+    memory: MemoryStore = field(default_factory=MemoryStore)
+    graph: FormulaGraph = field(default_factory=FormulaGraph)
+    vector_layer: VectorizedPredicateLayer = field(default_factory=VectorizedPredicateLayer)
+    compressor: MemoryCompressor = field(default_factory=MemoryCompressor)
+    learner: InductiveRuleLearner = field(default_factory=InductiveRuleLearner)
+    pruner: RulePruner = field(default_factory=RulePruner)
+    fuser: CrossDomainRuleFuser = field(default_factory=CrossDomainRuleFuser)
+    translator: NLToLogicTranslator = field(default_factory=NLToLogicTranslator)
+    explainer: LogicToExplanationRenderer = field(default_factory=LogicToExplanationRenderer)
+    attention: AttentionMap = field(default_factory=AttentionMap)
+    sentinel: DriftSentinel = field(default_factory=DriftSentinel)
+    contract: IntegrityContract = field(default_factory=IntegrityContract)
+
+    # ---- Core operations ----
+
+    def add_knowledge(self, f: Formula, source: str = "manual", weight: float = 1.0) -> str:
+        eid = self.kb.add_formula(f, source=source, weight=weight)
+        self.graph.add_formula(f)
+        return eid
+
+    def query_entailment(self, premises: List[Formula], conclusion: Formula) -> Proof:
+        # combine premises into a single formula A
+        if not premises:
+            A = conclusion  # trivial
+        else:
+            A = premises[0]
+            for p in premises[1:]:
+                A = And(A, p)
+        self.sentinel.record_entailment()
+        proof = prove_entailment(A, conclusion)
+        if proof.status == ProofStatus.PROVED:
+            # record success in memory
+            self.memory.add(MemoryType.RESULT, proof, stability=0.7)
+        return proof
+
+    def check_consistency(self) -> bool:
+        # KB-level consistency check
+        formulas = self.kb.active_formulas()
+        if not formulas:
+            return True
+        conj = formulas[0]
+        for f in formulas[1:]:
+            conj = And(conj, f)
+        if is_contradictory(conj):
+            self.sentinel.record_contradiction()
+            return False
+        return True
+
+    # ---- Translation based query ----
+
+    def query_from_text(self, premise_texts: List[str], conclusion_text: str) -> Proof:
+        # guardrail check on raw text
+        full_text = " ".join(premise_texts + [conclusion_text])
+        if not self.contract.allow_query(full_text):
+            return Proof(
+                conclusion=F_atom("BLOCKED", []),
+                steps=[],
+                status=ProofStatus.DISPROVED,
+                confidence=1.0,
+            )
+
+        premises: List[Formula] = []
+        for t in premise_texts:
+            f = self.translator.parse_statement(t)
+            if f is not None:
+                premises.append(f)
+
+        concl = self.translator.parse_statement(conclusion_text)
+        if concl is None:
+            # no parse; return unknown
+            return Proof(
+                conclusion=F_atom("UNPARSED", []),
+                steps=[],
+                status=ProofStatus.UNKNOWN,
+                confidence=0.0,
+            )
+
+        return self.query_entailment(premises, concl)
+
+    # ---- Learning and pruning ----
+
+    def learn_from_example(self, premises: List[Formula], conclusion: Formula) -> None:
+        self.learner.observe(premises, conclusion)
+
+    def prune_kb(self) -> None:
+        self.pruner.prune(self.kb)
+
+    # ---- Compression ----
+
+    def compress_kb(self) -> None:
+        active = self.kb.active_formulas()
+        compressed = self.compressor.compress(active)
+        # reconstruct KB from compressed formulas (simple approach)
+        self.kb = KnowledgeBase()
+        for f in compressed:
+            self.kb.add_formula(f, source="compressed", weight=1.0)
+
+    # ---- Introspection ----
+
+    def drift_score(self) -> float:
+        return self.sentinel.drift_score()
+
+
+# =========================
+# Layer 15: Minimal Example Stub
+# =========================
+
+if __name__ == "__main__":
+    core = AmosCoreV3()
+
+    # Example: 2 = 1 + 1
+    x = Sym("x")
+    f1 = Eq(Int(2), Int(1 + 1))
+    core.add_knowledge(f1, source="example")
+
+    # Query from text
+    proof = core.query_from_text(
+        premise_texts=["x equals 2"],
+        conclusion_text="x equals 2",
+    )
+    print(core.explainer.explain_proof(proof))
+    print("KB consistent:", core.check_consistency())
+    print("Drift score:", core.drift_score())
+
+# =========================
+# Layer: Axiom Compression Engine (ACE)
+# =========================
+
+@dataclass
+class AxiomCompressionEngine:
+    """
+    ACE reduces the KB into a minimal axiom set that still derives
+    the same consequences. This does not change truth, only compresses.
+    """
+
+    def compress_axioms(self, kb: KnowledgeBase) -> List[Formula]:
+        active = kb.active_formulas()
+        minimal_basis: List[Formula] = []
+
+        for f in active:
+            # test if f is derivable from current minimal_basis
+            if minimal_basis:
+                if entails(And(*minimal_basis) if len(minimal_basis) > 1 else minimal_basis[0], f):
+                    continue
+            minimal_basis.append(f)
+
+        return minimal_basis
+
+    def rebuild_kb_with_basis(self, kb: KnowledgeBase, basis: List[Formula]) -> None:
+        kb.entries = {}
+        for f in basis:
+            kb.add_formula(f, source="ACE_basis", weight=1.0)
+
+# =========================
+# Layer: Meta Self-Debugger
+# =========================
+
+@dataclass
+class MetaDebugger:
+    """
+    Self-audit layer.
+    Detects circular rules, unstable rules, contradiction-producing patterns.
+    """
+
+    def analyze_rules(self, kb: KnowledgeBase) -> Dict[str, Any]:
+        report = {
+            "circular_rules": [],
+            "contradiction_sources": [],
+        }
+
+        active = kb.active_formulas()
+        for f in active:
+            # detect self-deriving patterns A -> A, A ∧ ¬A, etc.
+            nf = normalize(f)
+            if nf.node_type == NodeType.IMPLIES and len(nf.children) == 2:
+                A, B = nf.children
+                if structurally_equal(A, B):
+                    report["circular_rules"].append(repr(f))
+
+            # detect contradictory rules
+            if is_contradictory(f):
+                report["contradiction_sources"].append(repr(f))
+
+        return report
+
+# =========================
+# Layer: Q-Time (Multi-Timeline Engine)
+# =========================
+
+@dataclass
+class QBranch:
+    state_id: str
+    weight: float
+    formulas: List[Formula]
+
+
+@dataclass
+class QTimeEngine:
+    """
+    Multi-timeline evaluator.
+    Generates branches from a base state, prunes contradictions,
+    and compares structural divergence.
+    """
+
+    def branch(self, base: List[Formula], variations: List[List[Formula]]) -> List[QBranch]:
+        branches: List[QBranch] = []
+        for i, var in enumerate(variations):
+            state = base + var
+            # prune contradictions
+            conj = state[0]
+            for f in state[1:]:
+                conj = And(conj, f)
+            if is_contradictory(conj):
+                continue
+            branches.append(
+                QBranch(
+                    state_id=f"branch_{i}",
+                    weight=1.0 / len(variations),
+                    formulas=state,
+                )
+            )
+        return branches
+
+    def divergence(self, b1: QBranch, b2: QBranch) -> float:
+        # structural divergence = ratio of non-matching formulas
+        s1 = set(repr(f) for f in b1.formulas)
+        s2 = set(repr(f) for f in b2.formulas)
+        diff = len(s1.symmetric_difference(s2))
+        tot = len(s1 | s2)
+        return diff / max(tot, 1)
+
+# =========================
+# Layer: Causal Graph Compiler
+# =========================
+
+@dataclass
+class CausalGraphCompiler:
+    """
+    Compiles logical dependencies (A -> B) into a causal DAG.
+    """
+
+    def compile(self, kb: KnowledgeBase, graph: FormulaGraph) -> None:
+        for eid, entry in kb.entries.items():
+            f = entry.formula
+            nf = normalize(f)
+
+            if nf.node_type == NodeType.IMPLIES:
+                A, B = nf.children
+                # add nodes if missing
+                aid = graph.add_formula(A)
+                bid = graph.add_formula(B)
+                # create causal edge A -> B
+                graph.nodes[aid].children.add(bid)
+                graph.nodes[bid].parents.add(aid)
+
+# =========================
+# Layer: Ultra-Compression + UCP++
+# =========================
+
+@dataclass
+class UltraCompressionEngine:
+    """
+    Removes redundant structure from KB and memory.
+    """
+
+    def ultra_compress(self, kb: KnowledgeBase, mem: MemoryStore) -> None:
+        # Remove formulas equivalent under normalization
+        uniq: List[Formula] = []
+        for f in kb.active_formulas():
+            if not any(structurally_equal(f, u) for u in uniq):
+                uniq.append(f)
+
+        kb.entries = {}
+        for f in uniq:
+            kb.add_formula(f, source="ultra_compressed", weight=1.0)
+
+        # Clear stale low-stability memory
+        for mid, item in list(mem.items.items()):
+            if item.stability < 0.05:
+                del mem.items[mid]
+
+
+@dataclass
+class UCPPlusPlus:
+    """
+    Universe-level causal execution protocol.
+    Applies transitions safely with contradiction control.
+    """
+
+    def execute(self,
+                current: List[Formula],
+                delta: List[Formula]) -> List[Formula]:
+
+        new_state = current + delta
+        conj = new_state[0]
+        for f in new_state[1:]:
+            conj = And(conj, f)
+
+        if is_contradictory(conj):
+            raise Exception("UCP++: attempted illegal transition (contradiction).")
+
+        # normalize entire state
+        normalized = [normalize(f) for f in new_state]
+        return normalized
+
+# =========================
+# Layer: Semantic Graph / Explainability
+# =========================
+
+@dataclass
+class SemanticGraph:
+    nodes: Dict[str, Formula] = field(default_factory=dict)
+    edges: List[Tuple[str, str, str]] = field(default_factory=list)
+    # edges = (src, dst, relation)
+
+    def add_reasoning_step(self, src: Formula, dst: Formula, relation: str) -> None:
+        sid, did = repr(src), repr(dst)
+        self.nodes[sid] = src
+        self.nodes[did] = dst
+        self.edges.append((sid, did, relation))
+
+    def export(self) -> Dict[str, Any]:
+        return {
+            "nodes": {k: repr(v) for k, v in self.nodes.items()},
+            "edges": self.edges,
+        }
+
+# =========================
+# Layer: Psycholinguistic Sanitizer
+# =========================
+
+@dataclass
+class PsycholinguisticSanitizer:
+    """
+    Enforces canon restrictions:
+    - no identity-based inference
+    - no emotional inference
+    - no personality judgments
+    - structure-only output
+    """
+
+    forbidden_tokens: List[str] = field(default_factory=lambda: [
+        "personality", "type of person", "psychopath",
+        "love", "fear", "sad", "angry",
+        "emotional state", "feels like",
+    ])
+
+    def sanitize(self, text: str) -> str:
+        out = text
+        for tok in self.forbidden_tokens:
+            if tok in out.lower():
+                out = out.lower().replace(tok, "[REDACTED]")
+        return out
+
+# =========================
+# Layer: Meta-Control (Drift Sentinel Upgrade)
+# =========================
+
+@dataclass
+class DriftSentinelV2(DriftSentinel):
+    """
+    Extended drift detection:
+    - monitors prediction instability
+    - monitors contradictory deltas
+    """
+
+    prediction_instability: float = 0.0
+
+    def update_instability(self, divergence: float) -> None:
+        # divergence ∈ [0,1]
+        self.prediction_instability = 0.7 * self.prediction_instability + 0.3 * divergence
+
+    def global_drift_score(self) -> float:
+        base = super().drift_score()
+        return max(0.0, min(1.0, 0.5 * base + 0.5 * self.prediction_instability))
+
+# ============================================
+# AMOS_CORE v3 — BLOCK 3/3
+# Domain Registry + Universe + Multi-Agent + Drift Audit
+# ============================================
+
+from dataclasses import dataclass, field
+from enum import Enum, auto
+from typing import Any, Callable, Dict, List, Optional, Tuple
+
+# Reuse AMOSConfig, Formula, Constraint, CausalGraph, etc. from previous blocks.
+
+
+# =========================
+# Layer 17: Domain Plugin Registry
+# =========================
+
+@dataclass
+class DomainSchema:
+    id: str
+    label: str
+    description: str
+    atom_signatures: Dict[str, Tuple[int, str]]  # pred → (arity, comment)
+    validators: List[Callable[[Formula], bool]] = field(default_factory=list)
+
+
+@dataclass
+class DomainPlugin:
+    schema: DomainSchema
+    pre_normalize_hooks: List[Callable[[Formula], Formula]] = field(default_factory=list)
+    post_normalize_hooks: List[Callable[[Formula], Formula]] = field(default_factory=list)
+
+
+class DomainRegistry:
+    def __init__(self) -> None:
+        self._plugins: Dict[str, DomainPlugin] = {}
+
+    def register(self, plugin: DomainPlugin) -> None:
+        self._plugins[plugin.schema.id] = plugin
+
+    def get(self, domain_id: str) -> Optional[DomainPlugin]:
+        return self._plugins.get(domain_id)
+
+    def all_ids(self) -> List[str]:
+        return list(self._plugins.keys())
+
+
+DOMAIN_REGISTRY = DomainRegistry()
+
+
+# =========================
+# Layer 18: Universe State Store
+# =========================
+
+@dataclass
+class UniverseState:
+    id: str
+    description: str = ""
+    formulas: List[Formula] = field(default_factory=list)
+    causal_graph: Optional[CausalGraph] = None
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+    def add_formula(self, f: Formula) -> None:
+        self.formulas.append(f)
+
+    def attach_causal_graph(self, g: CausalGraph) -> None:
+        self.causal_graph = g
+
+    def normalize_all(self, config: Optional[AMOSConfig] = None) -> None:
+        cfg = config or GLOBAL_CONFIG
+        normalized: List[Formula] = []
+        for f in self.formulas:
+            normalized.append(normalize(f, max_iters=cfg.max_normalize_iters))
+        self.formulas = normalized
+
+    def is_globally_consistent(self) -> bool:
+        big_and: Optional[Formula] = None
+        for f in self.formulas:
+            big_and = f if big_and is None else And(big_and, f)
+        if big_and is None:
+            return True
+        return not is_contradictory(big_and)
+
+
+# =========================
+# Layer 19: AMOS Node (Agent)
+# =========================
+
+@dataclass
+class AmosNodeConfig:
+    id: str
+    description: str = ""
+    domains: List[str] = field(default_factory=list)
+    config: AMOSConfig = field(default_factory=lambda: GLOBAL_CONFIG)
+
+
+@dataclass
+class AmosNode:
+    cfg: AmosNodeConfig
+    universe: UniverseState
+    local_cache: Dict[str, Any] = field(default_factory=dict)
+
+    def _apply_domain_hooks_pre(self, f: Formula) -> Formula:
+        for dom_id in self.cfg.domains:
+            plugin = DOMAIN_REGISTRY.get(dom_id)
+            if not plugin:
+                continue
+            for hook in plugin.pre_normalize_hooks:
+                f = hook(f)
+        return f
+
+    def _apply_domain_hooks_post(self, f: Formula) -> Formula:
+        for dom_id in self.cfg.domains:
+            plugin = DOMAIN_REGISTRY.get(dom_id)
+            if not plugin:
+                continue
+            for hook in plugin.post_normalize_hooks:
+                f = hook(f)
+        return f
+
+    def assert_formula(self, f: Formula) -> None:
+        f1 = self._apply_domain_hooks_pre(f)
+        nf = normalize(f1, max_iters=self.cfg.config.max_normalize_iters)
+        nf = self._apply_domain_hooks_post(nf)
+        self.universe.add_formula(nf)
+
+    def check_query(self, q: Formula) -> bool:
+        """
+        Check if universe entails q: Universe ⊢ q
+        Approximated via contradiction test.
+        """
+        big_and: Optional[Formula] = None
+        for f in self.universe.formulas:
+            big_and = f if big_and is None else And(big_and, f)
+        if big_and is None:
+            return False
+        return entails(big_and, q)
+
+    def attach_causal_graph(self, g: CausalGraph) -> None:
+        self.universe.attach_causal_graph(g)
+
+    def evaluate_causal_consistency(self) -> Dict[str, bool]:
+        if not self.universe.causal_graph:
+            return {}
+        return self.universe.causal_graph.evaluate_edge_consistency()
+
+
+# =========================
+# Layer 20: Federation (Multi-Node)
+# =========================
+
+@dataclass
+class FederationLink:
+    source_id: str
+    target_id: str
+    policy: str  # e.g. "share_consistent_only", "share_all"
+
+
+@dataclass
+class Federation:
+    nodes: Dict[str, AmosNode] = field(default_factory=dict)
+    links: List[FederationLink] = field(default_factory=list)
+
+    def add_node(self, node: AmosNode) -> None:
+        self.nodes[node.cfg.id] = node
+
+    def add_link(self, link: FederationLink) -> None:
+        self.links.append(link)
+
+    def propagate(self) -> None:
+        """
+        Very simple propagation: if policy == "share_consistent_only",
+        share formulas from source to target when source universe is consistent.
+        """
+        for link in self.links:
+            src = self.nodes.get(link.source_id)
+            tgt = self.nodes.get(link.target_id)
+            if not src or not tgt:
+                continue
+            if link.policy == "share_consistent_only":
+                if src.universe.is_globally_consistent():
+                    for f in src.universe.formulas:
+                        tgt.assert_formula(f)
+            elif link.policy == "share_all":
+                for f in src.universe.formulas:
+                    tgt.assert_formula(f)
+
+
+# =========================
+# Layer 21: Drift Audit Engine
+# =========================
+
+@dataclass
+class DriftMetric:
+    name: str
+    value: float
+    description: str = ""
+
+
+@dataclass
+class DriftReport:
+    node_id: str
+    metrics: List[DriftMetric]
+    notes: str = ""
+
+
+class DriftAuditEngine:
+    """
+    Structural drift/resolution audit engine.
+    """
+
+    def __init__(self, baseline_universe: UniverseState, config: Optional[AMOSConfig] = None) -> None:
+        self.baseline = baseline_universe
+        self.config = config or GLOBAL_CONFIG
+
+    def _formula_set(self, u: UniverseState) -> Dict[str, int]:
+        """
+        Canonicalize formulas by repr; count occurrences.
+        """
+        counts: Dict[str, int] = {}
+        for f in u.formulas:
+            key = repr(f)
+            counts[key] = counts.get(key, 0) + 1
+        return counts
+
+    def audit(self, node: AmosNode) -> DriftReport:
+        base = self._formula_set(self.baseline)
+        current = self._formula_set(node.universe)
+
+        # Jaccard similarity on keys
+        base_keys = set(base.keys())
+        cur_keys = set(current.keys())
+        intersection = len(base_keys & cur_keys)
+        union = len(base_keys | cur_keys) or 1
+        jaccard = intersection / union
+
+        # Size ratio
+        size_ratio = (len(cur_keys) / (len(base_keys) or 1))
+
+        metrics = [
+            DriftMetric(name="jaccard_formula_set", value=jaccard, description="Formula-set Jaccard similarity."),
+            DriftMetric(name="size_ratio", value=size_ratio, description="Current/base formula count ratio."),
+        ]
+
+        return DriftReport(
+            node_id=node.cfg.id,
+            metrics=metrics,
+            notes="Drift metrics based on formula-set comparison.",
+        )
+
+
+# =========================
+# Layer 22: Benchmark/Regression Harness
+# =========================
+
+@dataclass
+class BenchmarkCase:
+    id: str
+    description: str
+    input_formulas: List[Formula]
+    expected_properties: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class BenchmarkResult:
+    case_id: str
+    success: bool
+    details: Dict[str, Any] = field(default_factory=dict)
+
+
+class BenchmarkSuite:
+    """
+    Minimal deterministic regression harness.
+    """
+
+    def __init__(self, config: Optional[AMOSConfig] = None) -> None:
+        self.config = config or GLOBAL_CONFIG
+        self.cases: List[BenchmarkCase] = []
+
+    def register_case(self, case: BenchmarkCase) -> None:
+        self.cases.append(case)
+
+    def run(self, node: AmosNode) -> List[BenchmarkResult]:
+        results: List[BenchmarkResult] = []
+        for c in self.cases:
+            # Save node universe snapshot
+            original = list(node.universe.formulas)
+            try:
+                for f in c.input_formulas:
+                    node.assert_formula(f)
+                consistent = node.universe.is_globally_consistent()
+                expected_consistent = c.expected_properties.get("consistent", True)
+                success = (consistent == expected_consistent)
+                details = {
+                    "consistent": consistent,
+                    "expected_consistent": expected_consistent,
+                    "formula_count": len(node.universe.formulas),
+                }
+                results.append(BenchmarkResult(case_id=c.id, success=success, details=details))
+            finally:
+                node.universe.formulas = original
+        return results
+
+
+# =========================
+# Layer 23: Integration Shells for UBI/TSS/PSI/etc.
+# =========================
+
+class CycleStage(Enum):
+    C1_EMERGENCE = auto()
+    C2_ALIGNMENT = auto()
+    C3_EXPANSION = auto()
+    C4_OVERLOAD = auto()
+    C5_COLLAPSE = auto()
+    C6_DRIFT = auto()
+    C7_RESET = auto()
+
+
+@dataclass
+class TSSSnapshot:
+    cycle: CycleStage
+    omega_overload: float
+    cohesion_H: float
+    fragmentation_F: float
+    shock_S: float
+    cognitive_stability_C: float
+
+
+def tss_to_formula(snapshot: TSSSnapshot) -> Formula:
+    """
+    Encode TSS snapshot as structural atoms; actual predicate names
+    are placeholders; you will align them with your canon.
+    """
+    f_cycle = atom("Cycle", snapshot.cycle.name)
+    f_omega = atom("Omega", snapshot.omega_overload)
+    f_H = atom("CohesionH", snapshot.cohesion_H)
+    f_F = atom("FragmentationF", snapshot.fragmentation_F)
+    f_S = atom("ShockS", snapshot.shock_S)
+    f_C = atom("CognitiveC", snapshot.cognitive_stability_C)
+    return And(f_cycle, And(f_omega, And(f_H, And(f_F, And(f_S, f_C)))))
+
+
+# =========================
+# Layer 24: Absolute-Human Connector (Hook Only)
+# =========================
+
+def run_absolute_human_if_available(human_ctx: Any) -> Any:
+    """
+    Hook function.
+    If the Absolute-Human engine is importable, call its diagnostic entrypoint.
+    Otherwise, return None.
+    """
+    try:
+        import importlib
+        ah = importlib.import_module("absolute_human_engine")
+        if hasattr(ah, "diagnose_absolute_human"):
+            return ah.diagnose_absolute_human(human_ctx)
+    except Exception:
+        return None
+    return None
+
+
+# =========================
+# Layer 25: Universe Construction Convenience
+# =========================
+
+def make_minimal_universe(universe_id: str = "U0") -> Tuple[AmosNode, UniverseState]:
+    """
+    Helper to instantiate a minimal AMOS node + universe.
+    """
+    u = UniverseState(id=universe_id, description="Minimal AMOS universe.")
+    cfg = AmosNodeConfig(
+        id="AMOS_CORE",
+        description="Core AMOS reasoning node.",
+        domains=[],
+        config=GLOBAL_CONFIG,
+    )
+    node = AmosNode(cfg=cfg, universe=u)
+    return node, u
+
+
+# OPTIONAL: quick self-test when run directly
+if __name__ == "__main__":
+    node, u = make_minimal_universe()
+    x, t = "x", 0
+    f = ParadoxF(Ex(x, t))
+    node.assert_formula(f)
+    print("Universe consistent?", u.is_globally_consistent())
+    print("Formulas:", u.formulas)

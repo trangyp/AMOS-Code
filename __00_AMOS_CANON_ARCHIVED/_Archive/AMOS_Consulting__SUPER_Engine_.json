@@ -1,0 +1,4131 @@
+{
+  "meta": {
+    "name": "AMOS_Consulting_Engine_vInfinity_clean",
+    "version": "vInfinity_clean_3.0.0",
+    "created_at_utc": "2025-11-27T07:09:18.572846Z",
+    "description": "Refactored, optimised management consulting engine based on the SUPER x100k vInfinity architecture. Uses a virtual expansion model supporting up to 1,000,000 micro-layers without explicit enumeration.",
+    "density_level": "virtual_up_to_x1M",
+    "source_engine": "AMOS_Consulting_Engine_SUPER_x100k_vInfinity.json",
+    "upgrade_notes": [
+      "Removed explicit layers_100k; replaced with virtual expansion model.",
+      "Retained 336 clusters, 24 dimensions, kernel, tensor, and roles.",
+      "Added consulting-specific policies and routing behaviour."
+    ]
+  },
+  "engine": {
+    "clusters_336": [
+      {
+        "cluster_id": "C001",
+        "domain": "Corporate Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C002",
+        "domain": "Business Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C003",
+        "domain": "Functional Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C004",
+        "domain": "Growth Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C005",
+        "domain": "Transformation",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C006",
+        "domain": "Turnaround",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C007",
+        "domain": "Restructuring",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C008",
+        "domain": "Market Entry",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C009",
+        "domain": "International Expansion",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C010",
+        "domain": "Pricing",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C011",
+        "domain": "Revenue Growth",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C012",
+        "domain": "Customer Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C013",
+        "domain": "Marketing Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C014",
+        "domain": "Brand Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C015",
+        "domain": "Sales Acceleration",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C016",
+        "domain": "Operations",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C017",
+        "domain": "Supply Chain",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C018",
+        "domain": "Procurement",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C019",
+        "domain": "Manufacturing",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C020",
+        "domain": "Service Ops",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C021",
+        "domain": "Cost Reduction",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C022",
+        "domain": "Complexity Reduction",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C023",
+        "domain": "Capability Building",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C024",
+        "domain": "Organization Design",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C025",
+        "domain": "Culture Change",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C026",
+        "domain": "Leadership Development",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C027",
+        "domain": "Talent Systems",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C028",
+        "domain": "Performance Management",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C029",
+        "domain": "Incentives",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C030",
+        "domain": "Change Management",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C031",
+        "domain": "Program Management",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C032",
+        "domain": "PMO",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C033",
+        "domain": "Digital Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C034",
+        "domain": "AI Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C035",
+        "domain": "Analytics",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C036",
+        "domain": "Data Governance",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C037",
+        "domain": "ERP Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C038",
+        "domain": "Technology Modernization",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C039",
+        "domain": "Cybersecurity",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C040",
+        "domain": "Cloud Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C041",
+        "domain": "Sustainability",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C042",
+        "domain": "ESG",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C043",
+        "domain": "Net Zero",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C044",
+        "domain": "Circular Economy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C045",
+        "domain": "Energy Transition",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C046",
+        "domain": "Financial Modeling",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C047",
+        "domain": "Valuation",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C048",
+        "domain": "Scenario Planning",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C049",
+        "domain": "Risk Management",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C050",
+        "domain": "Governance",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C051",
+        "domain": "Policy Design",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C052",
+        "domain": "Public Sector Transformation",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C053",
+        "domain": "Healthcare Systems",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C054",
+        "domain": "Retail",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C055",
+        "domain": "Consumer Goods",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C056",
+        "domain": "Automotive",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C057",
+        "domain": "Banking",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C058",
+        "domain": "Insurance",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C059",
+        "domain": "Private Equity",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C060",
+        "domain": "Due Diligence",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C061",
+        "domain": "Post-Merger Integration",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C062",
+        "domain": "Org Health",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C063",
+        "domain": "Behavioral Insights",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C064",
+        "domain": "Competitive Intelligence",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C065",
+        "domain": "Market Research",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C066",
+        "domain": "Segmentation",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C067",
+        "domain": "Customer Journeys",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C068",
+        "domain": "Experience Design",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C069",
+        "domain": "Innovation",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C070",
+        "domain": "Product Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C071",
+        "domain": "Portfolio Optimization",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C072",
+        "domain": "Cost of Goods",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C073",
+        "domain": "Agile",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C074",
+        "domain": "Lean",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C075",
+        "domain": "Six Sigma",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C076",
+        "domain": "Operational Excellence",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C077",
+        "domain": "Shared Services",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C078",
+        "domain": "Global Business Services",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C079",
+        "domain": "IT Architecture",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C080",
+        "domain": "Service Design",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C081",
+        "domain": "Case Team Management",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C082",
+        "domain": "Client Communication",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C083",
+        "domain": "Engagement Economics",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C084",
+        "domain": "Stakeholder Management",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C085",
+        "domain": "Corporate Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C086",
+        "domain": "Business Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C087",
+        "domain": "Functional Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C088",
+        "domain": "Growth Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C089",
+        "domain": "Transformation",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C090",
+        "domain": "Turnaround",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C091",
+        "domain": "Restructuring",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C092",
+        "domain": "Market Entry",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C093",
+        "domain": "International Expansion",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C094",
+        "domain": "Pricing",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C095",
+        "domain": "Revenue Growth",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C096",
+        "domain": "Customer Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C097",
+        "domain": "Marketing Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C098",
+        "domain": "Brand Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C099",
+        "domain": "Sales Acceleration",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C100",
+        "domain": "Operations",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C101",
+        "domain": "Supply Chain",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C102",
+        "domain": "Procurement",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C103",
+        "domain": "Manufacturing",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C104",
+        "domain": "Service Ops",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C105",
+        "domain": "Cost Reduction",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C106",
+        "domain": "Complexity Reduction",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C107",
+        "domain": "Capability Building",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C108",
+        "domain": "Organization Design",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C109",
+        "domain": "Culture Change",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C110",
+        "domain": "Leadership Development",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C111",
+        "domain": "Talent Systems",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C112",
+        "domain": "Performance Management",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C113",
+        "domain": "Incentives",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C114",
+        "domain": "Change Management",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C115",
+        "domain": "Program Management",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C116",
+        "domain": "PMO",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C117",
+        "domain": "Digital Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C118",
+        "domain": "AI Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C119",
+        "domain": "Analytics",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C120",
+        "domain": "Data Governance",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C121",
+        "domain": "ERP Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C122",
+        "domain": "Technology Modernization",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C123",
+        "domain": "Cybersecurity",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C124",
+        "domain": "Cloud Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C125",
+        "domain": "Sustainability",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C126",
+        "domain": "ESG",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C127",
+        "domain": "Net Zero",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C128",
+        "domain": "Circular Economy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C129",
+        "domain": "Energy Transition",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C130",
+        "domain": "Financial Modeling",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C131",
+        "domain": "Valuation",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C132",
+        "domain": "Scenario Planning",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C133",
+        "domain": "Risk Management",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C134",
+        "domain": "Governance",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C135",
+        "domain": "Policy Design",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C136",
+        "domain": "Public Sector Transformation",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C137",
+        "domain": "Healthcare Systems",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C138",
+        "domain": "Retail",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C139",
+        "domain": "Consumer Goods",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C140",
+        "domain": "Automotive",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C141",
+        "domain": "Banking",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C142",
+        "domain": "Insurance",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C143",
+        "domain": "Private Equity",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C144",
+        "domain": "Due Diligence",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C145",
+        "domain": "Post-Merger Integration",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C146",
+        "domain": "Org Health",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C147",
+        "domain": "Behavioral Insights",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C148",
+        "domain": "Competitive Intelligence",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C149",
+        "domain": "Market Research",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C150",
+        "domain": "Segmentation",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C151",
+        "domain": "Customer Journeys",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C152",
+        "domain": "Experience Design",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C153",
+        "domain": "Innovation",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C154",
+        "domain": "Product Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C155",
+        "domain": "Portfolio Optimization",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C156",
+        "domain": "Cost of Goods",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C157",
+        "domain": "Agile",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C158",
+        "domain": "Lean",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C159",
+        "domain": "Six Sigma",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C160",
+        "domain": "Operational Excellence",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C161",
+        "domain": "Shared Services",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C162",
+        "domain": "Global Business Services",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C163",
+        "domain": "IT Architecture",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C164",
+        "domain": "Service Design",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C165",
+        "domain": "Case Team Management",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C166",
+        "domain": "Client Communication",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C167",
+        "domain": "Engagement Economics",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C168",
+        "domain": "Stakeholder Management",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C169",
+        "domain": "Corporate Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C170",
+        "domain": "Business Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C171",
+        "domain": "Functional Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C172",
+        "domain": "Growth Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C173",
+        "domain": "Transformation",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C174",
+        "domain": "Turnaround",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C175",
+        "domain": "Restructuring",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C176",
+        "domain": "Market Entry",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C177",
+        "domain": "International Expansion",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C178",
+        "domain": "Pricing",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C179",
+        "domain": "Revenue Growth",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C180",
+        "domain": "Customer Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C181",
+        "domain": "Marketing Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C182",
+        "domain": "Brand Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C183",
+        "domain": "Sales Acceleration",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C184",
+        "domain": "Operations",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C185",
+        "domain": "Supply Chain",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C186",
+        "domain": "Procurement",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C187",
+        "domain": "Manufacturing",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C188",
+        "domain": "Service Ops",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C189",
+        "domain": "Cost Reduction",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C190",
+        "domain": "Complexity Reduction",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C191",
+        "domain": "Capability Building",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C192",
+        "domain": "Organization Design",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C193",
+        "domain": "Culture Change",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C194",
+        "domain": "Leadership Development",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C195",
+        "domain": "Talent Systems",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C196",
+        "domain": "Performance Management",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C197",
+        "domain": "Incentives",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C198",
+        "domain": "Change Management",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C199",
+        "domain": "Program Management",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C200",
+        "domain": "PMO",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C201",
+        "domain": "Digital Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C202",
+        "domain": "AI Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C203",
+        "domain": "Analytics",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C204",
+        "domain": "Data Governance",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C205",
+        "domain": "ERP Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C206",
+        "domain": "Technology Modernization",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C207",
+        "domain": "Cybersecurity",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C208",
+        "domain": "Cloud Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C209",
+        "domain": "Sustainability",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C210",
+        "domain": "ESG",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C211",
+        "domain": "Net Zero",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C212",
+        "domain": "Circular Economy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C213",
+        "domain": "Energy Transition",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C214",
+        "domain": "Financial Modeling",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C215",
+        "domain": "Valuation",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C216",
+        "domain": "Scenario Planning",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C217",
+        "domain": "Risk Management",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C218",
+        "domain": "Governance",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C219",
+        "domain": "Policy Design",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C220",
+        "domain": "Public Sector Transformation",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C221",
+        "domain": "Healthcare Systems",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C222",
+        "domain": "Retail",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C223",
+        "domain": "Consumer Goods",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C224",
+        "domain": "Automotive",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C225",
+        "domain": "Banking",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C226",
+        "domain": "Insurance",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C227",
+        "domain": "Private Equity",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C228",
+        "domain": "Due Diligence",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C229",
+        "domain": "Post-Merger Integration",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C230",
+        "domain": "Org Health",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C231",
+        "domain": "Behavioral Insights",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C232",
+        "domain": "Competitive Intelligence",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C233",
+        "domain": "Market Research",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C234",
+        "domain": "Segmentation",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C235",
+        "domain": "Customer Journeys",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C236",
+        "domain": "Experience Design",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C237",
+        "domain": "Innovation",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C238",
+        "domain": "Product Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C239",
+        "domain": "Portfolio Optimization",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C240",
+        "domain": "Cost of Goods",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C241",
+        "domain": "Agile",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C242",
+        "domain": "Lean",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C243",
+        "domain": "Six Sigma",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C244",
+        "domain": "Operational Excellence",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C245",
+        "domain": "Shared Services",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C246",
+        "domain": "Global Business Services",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C247",
+        "domain": "IT Architecture",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C248",
+        "domain": "Service Design",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C249",
+        "domain": "Case Team Management",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C250",
+        "domain": "Client Communication",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C251",
+        "domain": "Engagement Economics",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C252",
+        "domain": "Stakeholder Management",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C253",
+        "domain": "Corporate Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C254",
+        "domain": "Business Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C255",
+        "domain": "Functional Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C256",
+        "domain": "Growth Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C257",
+        "domain": "Transformation",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C258",
+        "domain": "Turnaround",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C259",
+        "domain": "Restructuring",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C260",
+        "domain": "Market Entry",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C261",
+        "domain": "International Expansion",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C262",
+        "domain": "Pricing",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C263",
+        "domain": "Revenue Growth",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C264",
+        "domain": "Customer Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C265",
+        "domain": "Marketing Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C266",
+        "domain": "Brand Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C267",
+        "domain": "Sales Acceleration",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C268",
+        "domain": "Operations",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C269",
+        "domain": "Supply Chain",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C270",
+        "domain": "Procurement",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C271",
+        "domain": "Manufacturing",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C272",
+        "domain": "Service Ops",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C273",
+        "domain": "Cost Reduction",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C274",
+        "domain": "Complexity Reduction",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C275",
+        "domain": "Capability Building",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C276",
+        "domain": "Organization Design",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C277",
+        "domain": "Culture Change",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C278",
+        "domain": "Leadership Development",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C279",
+        "domain": "Talent Systems",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C280",
+        "domain": "Performance Management",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C281",
+        "domain": "Incentives",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C282",
+        "domain": "Change Management",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C283",
+        "domain": "Program Management",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C284",
+        "domain": "PMO",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C285",
+        "domain": "Digital Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C286",
+        "domain": "AI Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C287",
+        "domain": "Analytics",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C288",
+        "domain": "Data Governance",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C289",
+        "domain": "ERP Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C290",
+        "domain": "Technology Modernization",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C291",
+        "domain": "Cybersecurity",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C292",
+        "domain": "Cloud Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C293",
+        "domain": "Sustainability",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C294",
+        "domain": "ESG",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C295",
+        "domain": "Net Zero",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C296",
+        "domain": "Circular Economy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C297",
+        "domain": "Energy Transition",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C298",
+        "domain": "Financial Modeling",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C299",
+        "domain": "Valuation",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C300",
+        "domain": "Scenario Planning",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C301",
+        "domain": "Risk Management",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C302",
+        "domain": "Governance",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C303",
+        "domain": "Policy Design",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C304",
+        "domain": "Public Sector Transformation",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C305",
+        "domain": "Healthcare Systems",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C306",
+        "domain": "Retail",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C307",
+        "domain": "Consumer Goods",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C308",
+        "domain": "Automotive",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C309",
+        "domain": "Banking",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C310",
+        "domain": "Insurance",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C311",
+        "domain": "Private Equity",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C312",
+        "domain": "Due Diligence",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C313",
+        "domain": "Post-Merger Integration",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C314",
+        "domain": "Org Health",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C315",
+        "domain": "Behavioral Insights",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C316",
+        "domain": "Competitive Intelligence",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C317",
+        "domain": "Market Research",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C318",
+        "domain": "Segmentation",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C319",
+        "domain": "Customer Journeys",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C320",
+        "domain": "Experience Design",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C321",
+        "domain": "Innovation",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C322",
+        "domain": "Product Strategy",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C323",
+        "domain": "Portfolio Optimization",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C324",
+        "domain": "Cost of Goods",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C325",
+        "domain": "Agile",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C326",
+        "domain": "Lean",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C327",
+        "domain": "Six Sigma",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C328",
+        "domain": "Operational Excellence",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C329",
+        "domain": "Shared Services",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C330",
+        "domain": "Global Business Services",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C331",
+        "domain": "IT Architecture",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C332",
+        "domain": "Service Design",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C333",
+        "domain": "Case Team Management",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C334",
+        "domain": "Client Communication",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C335",
+        "domain": "Engagement Economics",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "C336",
+        "domain": "Stakeholder Management",
+        "description": "Consulting domain mapped to AMOS v\u221e cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "frameworks",
+          "decision_models",
+          "playbooks"
+        ]
+      }
+    ],
+    "dimensions_24": {
+      "d01_problem_type": [
+        "market",
+        "org",
+        "financial",
+        "ops",
+        "growth",
+        "transformation"
+      ],
+      "d02_time_horizon": [
+        "short",
+        "annual",
+        "mid",
+        "long"
+      ],
+      "d03_entity_type": [
+        "startup",
+        "mid",
+        "enterprise",
+        "sovereign",
+        "ngo"
+      ],
+      "d04_industry": [
+        "tech",
+        "banking",
+        "retail",
+        "healthcare",
+        "energy",
+        "public"
+      ],
+      "d05_lens": [
+        "strategy",
+        "ops",
+        "org",
+        "finance",
+        "risk",
+        "human"
+      ],
+      "d06_method": [
+        "hypothesis",
+        "data_driven",
+        "design",
+        "behavioral",
+        "economic"
+      ],
+      "d07_analysis": [
+        "market",
+        "financial",
+        "modeling",
+        "competitive",
+        "customer"
+      ],
+      "d08_story": [
+        "pyramid",
+        "top_down",
+        "insight_first",
+        "narrative"
+      ],
+      "d09_format": [
+        "ppt",
+        "memo",
+        "model",
+        "dashboard"
+      ],
+      "d10_risk": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "d11_complexity": [
+        "simple",
+        "moderate",
+        "complex"
+      ],
+      "d12_scope": [
+        "local",
+        "global"
+      ],
+      "d13_change": [
+        "incremental",
+        "transformational"
+      ],
+      "d14_data_level": [
+        "qual",
+        "quant",
+        "mixed"
+      ],
+      "d15_org_layer": [
+        "executive",
+        "manager",
+        "frontline"
+      ],
+      "d16_consulting_skill": [
+        "analysis",
+        "synthesis",
+        "insight",
+        "storytelling",
+        "client_management"
+      ],
+      "d17_framework": [
+        "porter",
+        "bcg_matrix",
+        "3c",
+        "7s",
+        "custom"
+      ],
+      "d18_difficulty": [
+        "easy",
+        "medium",
+        "hard"
+      ],
+      "d19_value_type": [
+        "revenue",
+        "cost",
+        "risk",
+        "impact"
+      ],
+      "d20_evidence": [
+        "strong",
+        "medium",
+        "weak"
+      ],
+      "d21_delivery_mode": [
+        "remote",
+        "onsite",
+        "hybrid"
+      ],
+      "d22_case_type": [
+        "profitability",
+        "market_entry",
+        "m&a",
+        "ops",
+        "org"
+      ],
+      "d23_engagement_type": [
+        "diagnostic",
+        "implementation",
+        "coaching"
+      ],
+      "d24_output_mode": [
+        "deck",
+        "memo",
+        "workshop",
+        "model"
+      ]
+    },
+    "kernel": {
+      "axes": [
+        "insight_generation",
+        "problem_structuring",
+        "decision_modeling",
+        "solution_design",
+        "story_communication"
+      ],
+      "description": "5-axis kernel reflecting MBB consulting cognitive stack."
+    },
+    "tensor": {
+      "coordinates": [
+        "cluster_id",
+        "dimension_set",
+        "engagement_mode",
+        "skill_profile"
+      ],
+      "description": "Consulting tensor for positioning problems, insights, and deliverables."
+    },
+    "roles": {
+      "archetypes": [
+        {
+          "id": "partner",
+          "skills": [
+            "client_leadership",
+            "strategy",
+            "story",
+            "judgment"
+          ]
+        },
+        {
+          "id": "associate_partner",
+          "skills": [
+            "module_lead",
+            "insights",
+            "delivery"
+          ]
+        },
+        {
+          "id": "engagement_manager",
+          "skills": [
+            "team_lead",
+            "synthesis",
+            "client_management"
+          ]
+        },
+        {
+          "id": "consultant",
+          "skills": [
+            "analysis",
+            "frameworks",
+            "problem_structuring"
+          ]
+        },
+        {
+          "id": "analyst",
+          "skills": [
+            "research",
+            "data",
+            "slides"
+          ]
+        }
+      ]
+    },
+    "virtual_expansion_model": {
+      "density_level": "up_to_x1M_virtual",
+      "virtual_layer_cap": 1000000,
+      "dimensions": {
+        "d01_problem_type": [
+          "market",
+          "org",
+          "financial",
+          "ops",
+          "growth",
+          "transformation"
+        ],
+        "d02_time_horizon": [
+          "short",
+          "annual",
+          "mid",
+          "long"
+        ],
+        "d03_entity_type": [
+          "startup",
+          "mid",
+          "enterprise",
+          "sovereign",
+          "ngo"
+        ],
+        "d04_industry": [
+          "tech",
+          "banking",
+          "retail",
+          "healthcare",
+          "energy",
+          "public"
+        ],
+        "d05_lens": [
+          "strategy",
+          "ops",
+          "org",
+          "finance",
+          "risk",
+          "human"
+        ],
+        "d06_method": [
+          "hypothesis",
+          "data_driven",
+          "design",
+          "behavioral",
+          "economic"
+        ],
+        "d07_analysis": [
+          "market",
+          "financial",
+          "modeling",
+          "competitive",
+          "customer"
+        ],
+        "d08_story": [
+          "pyramid",
+          "top_down",
+          "insight_first",
+          "narrative"
+        ],
+        "d09_format": [
+          "ppt",
+          "memo",
+          "model",
+          "dashboard"
+        ],
+        "d10_risk": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "d11_complexity": [
+          "simple",
+          "moderate",
+          "complex"
+        ],
+        "d12_scope": [
+          "local",
+          "global"
+        ],
+        "d13_change": [
+          "incremental",
+          "transformational"
+        ],
+        "d14_data_level": [
+          "qual",
+          "quant",
+          "mixed"
+        ],
+        "d15_org_layer": [
+          "executive",
+          "manager",
+          "frontline"
+        ],
+        "d16_consulting_skill": [
+          "analysis",
+          "synthesis",
+          "insight",
+          "storytelling",
+          "client_management"
+        ],
+        "d17_framework": [
+          "porter",
+          "bcg_matrix",
+          "3c",
+          "7s",
+          "custom"
+        ],
+        "d18_difficulty": [
+          "easy",
+          "medium",
+          "hard"
+        ],
+        "d19_value_type": [
+          "revenue",
+          "cost",
+          "risk",
+          "impact"
+        ],
+        "d20_evidence": [
+          "strong",
+          "medium",
+          "weak"
+        ],
+        "d21_delivery_mode": [
+          "remote",
+          "onsite",
+          "hybrid"
+        ],
+        "d22_case_type": [
+          "profitability",
+          "market_entry",
+          "m&a",
+          "ops",
+          "org"
+        ],
+        "d23_engagement_type": [
+          "diagnostic",
+          "implementation",
+          "coaching"
+        ],
+        "d24_output_mode": [
+          "deck",
+          "memo",
+          "workshop",
+          "model"
+        ]
+      },
+      "notes": [
+        "Any consulting task is represented as a point in the cartesian product of clusters_336 and dimensions_24.",
+        "Use this parametric model instead of materialising all micro-layers for most use cases.",
+        "SUPER variants (x100k, x300k, x1M) can be derived from this spec when explicit enumeration is needed."
+      ]
+    },
+    "policies": {
+      "loading_policy": {
+        "description": "Avoid loading full 100k/300k/1M layers unless explicitly required.",
+        "rules": [
+          "Default to virtual expansion for reasoning and routing.",
+          "Only instantiate explicit micro-layers for offline analysis or specialised tooling.",
+          "Keep kernel, tensor, clusters, and dimensions as the primary decision surface."
+        ]
+      },
+      "problem_solving_policy": {
+        "description": "Hypothesis-driven consulting behaviour aligned with MBB standards.",
+        "rules": [
+          "Clarify objective, constraints, and success metrics first.",
+          "Structure the problem into mutually exclusive, collectively exhaustive branches where possible.",
+          "Prioritise branches by impact and uncertainty.",
+          "Use data to test hypotheses rather than to explore without direction.",
+          "Summarise insights in clear, top-down language (pyramid principle)."
+        ]
+      },
+      "quality_policy": {
+        "description": "Define minimum acceptable quality for analyses, insights, and recommendations.",
+        "rules": [
+          "All recommendations must trace back to explicit assumptions and evidence.",
+          "Avoid overclaiming beyond the strength of available data.",
+          "State limitations and open questions explicitly.",
+          "Ensure internal consistency across numbers, logic, and narrative.",
+          "Use neutral, professional tone suitable for executive and board audiences."
+        ]
+      },
+      "governance_policy": {
+        "description": "Clarify usage boundaries and ethical constraints.",
+        "rules": [
+          "Mark outputs as decision support, not final decisions.",
+          "Do not fabricate market data, competitor data, or financials.",
+          "Do not provide legal or regulatory advice as if it replaces qualified counsel.",
+          "Surface potential conflicts of interest or biased assumptions where relevant."
+        ]
+      }
+    },
+    "routing": {
+      "task_router": {
+        "description": "Maps consulting tasks into clusters and dimensions.",
+        "examples": [
+          "Profitability case \u2192 clusters: Cost Reduction, Revenue Growth; dimensions: case_type=profitability, lens=finance+ops.",
+          "Market entry \u2192 clusters: Market Entry, Growth Strategy; dimensions: case_type=market_entry, time_horizon=mid/long.",
+          "Org redesign \u2192 clusters: Organization Design, Culture Change; dimensions: lens=org+human, change=transformational.",
+          "PE due diligence \u2192 clusters: Due Diligence, Industry-specific; dimensions: case_type=m&a, time_horizon=mid, evidence=quant+qual."
+        ],
+        "fallback_rule": "If mapping is ambiguous, default to Corporate Strategy + Problem Structuring, then refine with one clarification question."
+      }
+    }
+  }
+}

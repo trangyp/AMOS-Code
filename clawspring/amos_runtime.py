@@ -331,7 +331,22 @@ def get_runtime() -> AMOSRuntime:
     global _runtime_instance
     if _runtime_instance is None:
         _runtime_instance = AMOSRuntime()
-        _runtime_instance.bootstrap()
+        # Use async bootstrap with timeout to prevent hanging
+        import asyncio
+        try:
+            loop = asyncio.get_event_loop()
+            if loop.is_running():
+                # If loop is running, use sync bootstrap with fallback
+                _runtime_instance._load_fallback_root()
+                _runtime_instance._loaded = True
+            else:
+                loop.run_until_complete(
+                    asyncio.wait_for(_runtime_instance.bootstrap_async(3.0), timeout=5.0)
+                )
+        except Exception:
+            # Fallback on any error
+            _runtime_instance._load_fallback_root()
+            _runtime_instance._loaded = True
     return _runtime_instance
 
 

@@ -1,0 +1,896 @@
+"""
+AMOS_CORE v3 – Deterministic Reasoning Kernel (Clean Single-File Version)
+
+Status:
+- Executable Python module (no external dependencies beyond stdlib).
+- Canon-aligned structure with:
+    - Core-19 logic + rewrite system
+    - Knowledge base + entailment + contradiction detection
+    - TSS-style system state
+    - Task + engine API
+    - Minimal translation layer (NL <-> logic stubs)
+    - Drift / integrity audit hooks
+    - Placeholders for higher layers (universe, multi-agent, compression) as stubs
+
+This file is designed as a stable nucleus you can extend with:
+    - Absolute-Human engine
+    - UBI / TSS / PSI domain adapters
+    - Full multi-agent + universe simulation
+while remaining syntactically valid and runnable as-is.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+from enum import Enum, auto
+from typing import Any, Dict, List, Optional, Tuple, Callable
+import itertools
+import math
+import uuid
+import time
+
+
+# ============================================================
+# 0. META / CONFIG
+# ============================================================
+
+AMOS_VERSION = "3.0.0-clean"
+
+@dataclass
+class CanonProfile:
+    """Global canon configuration flags."""
+    law_of_law: bool = True
+    rule_of_two: bool = True
+    rule_of_four: bool = True
+    seven_cycle: bool = True
+    noise_signal_enforced: bool = True
+    causal_compression: bool = True
+    identity_cognition_separation: bool = True
+    structural_integrity_required: bool = True
+
+
+@dataclass
+class AmosConfig:
+    """Engine configuration hooks."""
+    canon: CanonProfile = field(default_factory=CanonProfile)
+    max_normalize_iters: int = 128
+    max_backward_depth: int = 16
+    max_learned_rules: int = 2048
+    log_debug: bool = False
+
+
+GLOBAL_CONFIG = AmosConfig()
+
+
+# ============================================================
+# 1. CORE-19 LOGIC KERNEL
+# ============================================================
+
+class NodeType(Enum):
+    # Base logical structure
+    ATOM = auto()
+    NOT = auto()
+    AND = auto()
+    OR = auto()
+    IMPLIES = auto()
+    BOTTOM = auto()   # ⊥
+
+    # Meta-patterns
+    PARADOX = auto()  # Π(X)
+    CONV = auto()     # Λ(X)
+    DIVG = auto()     # Δ(X)
+
+    # Logic modes
+    PLOGIC = auto()   # PositiveLogic
+    NLOGIC = auto()   # NegativeLogic
+    ZLOGIC = auto()   # ZeroLogic
+    DLOGIC = auto()   # DualLogic
+    MLOGIC = auto()   # MultiLogic
+    METAL = auto()    # MetaLogic
+
+    # Meta-logic modes
+    SUPRAL = auto()   # SupraLogic
+    ANTIL = auto()    # AntiLogic
+    NULLL = auto()    # NullLogic
+
+
+@dataclass
+class Formula:
+    """Tree-structured formula node."""
+    node_type: NodeType
+    children: List["Formula"] = field(default_factory=list)
+    atom: Optional[Tuple[str, Tuple[Any, ...]]] = None  # (predicate, args)
+
+    def __repr__(self) -> str:
+        t = self.node_type
+        if t == NodeType.ATOM:
+            pred, args = self.atom or ("?", ())
+            args_str = ", ".join(repr(a) for a in args)
+            return f"{pred}({args_str})"
+        if t == NodeType.NOT:
+            return f"¬{self.children[0]!r}"
+        if t == NodeType.AND:
+            return f"({self.children[0]!r} ∧ {self.children[1]!r})"
+        if t == NodeType.OR:
+            return f"({self.children[0]!r} ∨ {self.children[1]!r})"
+        if t == NodeType.IMPLIES:
+            return f"({self.children[0]!r} → {self.children[1]!r})"
+        if t == NodeType.BOTTOM:
+            return "⊥"
+        name = t.name
+        if len(self.children) == 1:
+            return f"{name}({self.children[0]!r})"
+        return f"{name}({', '.join(repr(c) for c in self.children)})"
+
+
+# ---- Atom helpers -----------------------------------------------------------
+
+def F_atom(predicate: str, *args: Any) -> Formula:
+    return Formula(node_type=NodeType.ATOM, atom=(predicate, args))
+
+
+def F_not(f: Formula) -> Formula:
+    return Formula(node_type=NodeType.NOT, children=[f])
+
+
+def F_and(a: Formula, b: Formula) -> Formula:
+    return Formula(node_type=NodeType.AND, children=[a, b])
+
+
+def F_or(a: Formula, b: Formula) -> Formula:
+    return Formula(node_type=NodeType.OR, children=[a, b])
+
+
+def F_implies(a: Formula, b: Formula) -> Formula:
+    return Formula(node_type=NodeType.IMPLIES, children=[a, b])
+
+
+def F_bottom() -> Formula:
+    return Formula(node_type=NodeType.BOTTOM)
+
+
+def F_paradox(f: Formula) -> Formula:
+    return Formula(node_type=NodeType.PARADOX, children=[f])
+
+
+def F_conv(f: Formula) -> Formula:
+    return Formula(node_type=NodeType.CONV, children=[f])
+
+
+def F_divg(f: Formula) -> Formula:
+    return Formula(node_type=NodeType.DIVG, children=[f])
+
+
+def F_plogic(f: Formula) -> Formula:
+    return Formula(node_type=NodeType.PLOGIC, children=[f])
+
+
+def F_nlogic(f: Formula) -> Formula:
+    return Formula(node_type=NodeType.NLOGIC, children=[f])
+
+
+def F_zlogic(f: Formula) -> Formula:
+    return Formula(node_type=NodeType.ZLOGIC, children=[f])
+
+
+def F_dlogic(f: Formula) -> Formula:
+    return Formula(node_type=NodeType.DLOGIC, children=[f])
+
+
+def F_mlogic(f: Formula) -> Formula:
+    return Formula(node_type=NodeType.MLOGIC, children=[f])
+
+
+def F_metal(f: Formula) -> Formula:
+    return Formula(node_type=NodeType.METAL, children=[f])
+
+
+def F_supral(f: Formula) -> Formula:
+    return Formula(node_type=NodeType.SUPRAL, children=[f])
+
+
+def F_antil(f: Formula) -> Formula:
+    return Formula(node_type=NodeType.ANTIL, children=[f])
+
+
+def F_nulll(f: Formula) -> Formula:
+    return Formula(node_type=NodeType.NULLL, children=[f])
+
+
+# ---- Structural utilities ---------------------------------------------------
+
+def is_negation(node: Formula) -> bool:
+    return node.node_type == NodeType.NOT and len(node.children) == 1
+
+
+def structurally_equal(a: Formula, b: Formula) -> bool:
+    if a.node_type != b.node_type:
+        return False
+    if a.atom != b.atom:
+        return False
+    if len(a.children) != len(b.children):
+        return False
+    return all(structurally_equal(ca, cb) for ca, cb in zip(a.children, b.children))
+
+
+def contains_type(node: Formula, types: List[NodeType]) -> bool:
+    if node.node_type in types:
+        return True
+    return any(contains_type(c, types) for c in node.children)
+
+
+# ============================================================
+# 2. REWRITE SYSTEM
+# ============================================================
+
+RewriteFunc = Callable[[Formula], Optional[Formula]]
+
+
+def rw_paradox_expand(node: Formula) -> Optional[Formula]:
+    if node.node_type == NodeType.PARADOX and node.children:
+        X = node.children[0]
+        return F_and(X, F_not(X))
+    return None
+
+
+def rw_dlogic_expand(node: Formula) -> Optional[Formula]:
+    if node.node_type == NodeType.DLOGIC and node.children:
+        X = node.children[0]
+        return F_and(X, F_not(X))
+    return None
+
+
+def rw_double_nlogic(node: Formula) -> Optional[Formula]:
+    if node.node_type == NodeType.NLOGIC and node.children:
+        inner = node.children[0]
+        if inner.node_type == NodeType.NLOGIC and inner.children:
+            return inner.children[0]
+    return None
+
+
+def rw_zlogic(node: Formula) -> Optional[Formula]:
+    if node.node_type == NodeType.ZLOGIC:
+        return F_bottom()
+    return None
+
+
+def rw_nulll(node: Formula) -> Optional[Formula]:
+    if node.node_type == NodeType.NULLL:
+        return F_bottom()
+    return None
+
+
+def rw_double_not(node: Formula) -> Optional[Formula]:
+    if is_negation(node):
+        inner = node.children[0]
+        if is_negation(inner):
+            return inner.children[0]
+    return None
+
+
+def rw_demorgan_and(node: Formula) -> Optional[Formula]:
+    if is_negation(node):
+        inner = node.children[0]
+        if inner.node_type == NodeType.AND and len(inner.children) == 2:
+            X, Y = inner.children
+            return F_or(F_not(X), F_not(Y))
+    return None
+
+
+def rw_demorgan_or(node: Formula) -> Optional[Formula]:
+    if is_negation(node):
+        inner = node.children[0]
+        if inner.node_type == NodeType.OR and len(inner.children) == 2:
+            X, Y = inner.children
+            return F_and(F_not(X), F_not(Y))
+    return None
+
+
+def rw_paradox_canonical(node: Formula) -> Optional[Formula]:
+    if node.node_type == NodeType.AND and len(node.children) == 2:
+        left, right = node.children
+        if is_negation(right) and structurally_equal(right.children[0], left):
+            return F_paradox(left)
+    return None
+
+
+def rw_conv_idem(node: Formula) -> Optional[Formula]:
+    if node.node_type == NodeType.CONV and node.children:
+        inner = node.children[0]
+        if inner.node_type == NodeType.CONV and inner.children:
+            return inner
+    return None
+
+
+def rw_divg_idem(node: Formula) -> Optional[Formula]:
+    if node.node_type == NodeType.DIVG and node.children:
+        inner = node.children[0]
+        if inner.node_type == NodeType.DIVG and inner.children:
+            return inner
+    return None
+
+
+def rw_paradox_idem(node: Formula) -> Optional[Formula]:
+    if node.node_type == NodeType.PARADOX and node.children:
+        inner = node.children[0]
+        if inner.node_type == NodeType.PARADOX and inner.children:
+            return inner
+    return None
+
+
+def rw_plogic_idem(node: Formula) -> Optional[Formula]:
+    if node.node_type == NodeType.PLOGIC and node.children:
+        inner = node.children[0]
+        if inner.node_type == NodeType.PLOGIC and inner.children:
+            return inner
+    return None
+
+
+def rw_mlogic_idem(node: Formula) -> Optional[Formula]:
+    if node.node_type == NodeType.MLOGIC and node.children:
+        inner = node.children[0]
+        if inner.node_type == NodeType.MLOGIC and inner.children:
+            return inner
+    return None
+
+
+def rw_metal_idem(node: Formula) -> Optional[Formula]:
+    if node.node_type == NodeType.METAL and node.children:
+        inner = node.children[0]
+        if inner.node_type == NodeType.METAL and inner.children:
+            return inner
+    return None
+
+
+def rw_supral_idem(node: Formula) -> Optional[Formula]:
+    if node.node_type == NodeType.SUPRAL and node.children:
+        inner = node.children[0]
+        if inner.node_type == NodeType.SUPRAL and inner.children:
+            return inner
+    return None
+
+
+def rw_antil_invol(node: Formula) -> Optional[Formula]:
+    if node.node_type == NodeType.ANTIL and node.children:
+        inner = node.children[0]
+        if inner.node_type == NodeType.ANTIL and inner.children:
+            return inner.children[0]
+    return None
+
+
+def rw_nlogic_on_atom(node: Formula) -> Optional[Formula]:
+    # Generic: NLogic(A) → ¬A
+    if node.node_type == NodeType.NLOGIC and node.children:
+        inner = node.children[0]
+        if inner.node_type == NodeType.ATOM:
+            return F_not(inner)
+    return None
+
+
+def rw_implies(node: Formula) -> Optional[Formula]:
+    if node.node_type == NodeType.IMPLIES and len(node.children) == 2:
+        A, B = node.children
+        return F_or(F_not(A), B)
+    return None
+
+
+REWRITES: List[RewriteFunc] = [
+    rw_paradox_expand,
+    rw_dlogic_expand,
+    rw_double_nlogic,
+    rw_zlogic,
+    rw_nulll,
+    rw_double_not,
+    rw_demorgan_and,
+    rw_demorgan_or,
+    rw_paradox_canonical,
+    rw_conv_idem,
+    rw_divg_idem,
+    rw_paradox_idem,
+    rw_plogic_idem,
+    rw_mlogic_idem,
+    rw_metal_idem,
+    rw_supral_idem,
+    rw_antil_invol,
+    rw_nlogic_on_atom,
+    rw_implies,
+]
+
+
+def rewrite_node(node: Formula) -> Formula:
+    """Bottom-up single-pass rewrite."""
+    if node.children:
+        new_children = [rewrite_node(c) for c in node.children]
+        node = Formula(node_type=node.node_type, children=new_children, atom=node.atom)
+    for fn in REWRITES:
+        res = fn(node)
+        if res is not None:
+            return res
+    return node
+
+
+def normalize(formula: Formula, max_iters: Optional[int] = None) -> Formula:
+    """Normalize formula to fixed point under rewrite rules."""
+    if max_iters is None:
+        max_iters = GLOBAL_CONFIG.max_normalize_iters
+    current = formula
+    for _ in range(max_iters):
+        new = rewrite_node(current)
+        if structurally_equal(new, current):
+            break
+        current = new
+    return current
+
+
+def is_contradictory(formula: Formula) -> bool:
+    nf = normalize(formula)
+    return contains_type(nf, [NodeType.PARADOX, NodeType.BOTTOM])
+
+
+def entails(A: Formula, B: Formula) -> bool:
+    """A ⊢ B if A ∧ ¬B is contradictory."""
+    return is_contradictory(F_and(A, F_not(B)))
+
+
+# ============================================================
+# 3. KNOWLEDGE BASE + FACTS
+# ============================================================
+
+@dataclass
+class Fact:
+    id: str
+    formula: Formula
+    source: str = "manual"
+    weight: float = 1.0
+    timestamp: float = field(default_factory=time.time)
+
+
+@dataclass
+class KnowledgeBase:
+    """Simple fact store with logic-aware queries."""
+    _facts: Dict[str, Fact] = field(default_factory=dict)
+    _version: int = 0
+
+    # --- basic operations ---
+
+    def add_fact(self, formula: Formula, source: str = "manual", weight: float = 1.0) -> str:
+        fid = str(uuid.uuid4())
+        self._facts[fid] = Fact(id=fid, formula=formula, source=source, weight=weight)
+        self._version += 1
+        return fid
+
+    def remove_fact(self, fact_id: str) -> None:
+        if fact_id in self._facts:
+            del self._facts[fact_id]
+            self._version += 1
+
+    def all_facts(self) -> List[Fact]:
+        return list(self._facts.values())
+
+    def all_formulas(self) -> List[Formula]:
+        return [f.formula for f in self._facts.values()]
+
+    def version(self) -> int:
+        return self._version
+
+    # --- reasoning helpers ---
+
+    def is_consistent(self) -> bool:
+        if not self._facts:
+            return True
+        conj = self._facts[next(iter(self._facts))].formula
+        for f in list(self._facts.values())[1:]:
+            conj = F_and(conj, f.formula)
+        return not is_contradictory(conj)
+
+    def entails(self, query: Formula) -> bool:
+        if not self._facts:
+            return False
+        conj = self._facts[next(iter(self._facts))].formula
+        for f in list(self._facts.values())[1:]:
+            conj = F_and(conj, f.formula)
+        return entails(conj, query)
+
+
+# ============================================================
+# 4. SYSTEM STATE (TSS-STYLE)
+# ============================================================
+
+class CycleStage(Enum):
+    C1_EMERGENCE = auto()
+    C2_ALIGNMENT = auto()
+    C3_EXPANSION = auto()
+    C4_OVERLOAD = auto()
+    C5_COLLAPSE = auto()
+    C6_DRIFT = auto()
+    C7_RESET = auto()
+
+
+@dataclass
+class FourState:
+    """TSS projection for a system."""
+    cycle: CycleStage
+    omega: float  # Overload Ω
+    cohesion: float  # H
+    fragmentation: float  # F
+    shock: float  # S
+    cognitive_stability: float  # C*
+
+    def clamp(self) -> "FourState":
+        return FourState(
+            cycle=self.cycle,
+            omega=min(max(self.omega, 0.0), 1.0),
+            cohesion=min(max(self.cohesion, 0.0), 1.0),
+            fragmentation=min(max(self.fragmentation, 0.0), 1.0),
+            shock=min(max(self.shock, 0.0), 1.0),
+            cognitive_stability=min(max(self.cognitive_stability, 0.0), 1.0),
+        )
+
+
+# ============================================================
+# 5. TASKS / ENGINE API
+# ============================================================
+
+class TaskKind(Enum):
+    ENTAILMENT = auto()
+    CONSISTENCY = auto()
+    DIAGNOSE_STATE = auto()
+    PREDICT_NEXT_CYCLE = auto()
+    EXPLAIN = auto()
+    RAW_NORMALIZE = auto()
+
+
+@dataclass
+class Task:
+    id: str
+    kind: TaskKind
+    query_formula: Optional[Formula] = None
+    premises: List[Formula] = field(default_factory=list)
+    description: str = ""
+
+
+@dataclass
+class TaskResult:
+    task_id: str
+    success: bool
+    details: str
+    result_formula: Optional[Formula] = None
+    bool_result: Optional[bool] = None
+    cycle_stage: Optional[CycleStage] = None
+    state_snapshot: Optional[FourState] = None
+
+
+@dataclass
+class ReasoningContext:
+    kb: KnowledgeBase
+    config: AmosConfig
+    system_state: FourState
+
+
+# ============================================================
+# 6. DRIFT / INTEGRITY AUDIT
+# ============================================================
+
+class GuardrailID(Enum):
+    NO_PSYCH_LABELS = auto()
+    NO_MORAL_JUDGEMENT = auto()
+    PATTERN_ONLY = auto()
+    STRUCTURE_NOT_IDENTITY = auto()
+    NO_EMOTION_INFERENCE = auto()
+    MECHANISM_REQUIRED = auto()
+    EXPLICIT_CONSTRAINTS = auto()
+    NO_ABSTRACTION_WITHOUT_ANCHOR = auto()
+    CYCLE_EXPLICIT = auto()
+    ALIGN_WITH_PSI = auto()
+
+
+ACTIVE_GUARDRAILS = {
+    GuardrailID.PATTERN_ONLY,
+    GuardrailID.STRUCTURE_NOT_IDENTITY,
+    GuardrailID.MECHANISM_REQUIRED,
+    GuardrailID.EXPLICIT_CONSTRAINTS,
+    GuardrailID.CYCLE_EXPLICIT,
+}
+
+
+@dataclass
+class DriftReport:
+    max_depth: int
+    steps: int
+    violated_guardrails: List[GuardrailID]
+    notes: str
+
+
+class DriftSentinel:
+    """Simple structural guard for reasoning paths."""
+
+    def __init__(self, config: AmosConfig):
+        self.config = config
+
+    def audit_output(self, text: str) -> Tuple[str, DriftReport]:
+        # Placeholder: identity-neutral pass-through with structural flagging.
+        violated: List[GuardrailID] = []
+        if "should" in text.lower():
+            violated.append(GuardrailID.NO_MORAL_JUDGEMENT)
+        report = DriftReport(
+            max_depth=self.config.max_backward_depth,
+            steps=0,
+            violated_guardrails=violated,
+            notes="Basic lexical audit only.",
+        )
+        return text, report
+
+
+# ============================================================
+# 7. TRANSLATION LAYER (NL <-> LOGIC) – MINIMAL
+# ============================================================
+
+def nl_to_formula(text: str) -> Formula:
+    """
+    Minimal deterministic translator.
+    This is deliberately simple; full AMOS translation can be wired later.
+    """
+    text = text.strip().lower()
+    if text.startswith("exists "):
+        name = text[7:].strip()
+        return F_atom("Ex", name)
+    if " and " in text:
+        left, right = text.split(" and ", 1)
+        return F_and(nl_to_formula(left), nl_to_formula(right))
+    if " or " in text:
+        left, right = text.split(" or ", 1)
+        return F_or(nl_to_formula(left), nl_to_formula(right))
+    if " -> " in text:
+        left, right = text.split(" -> ", 1)
+        return F_implies(nl_to_formula(left), nl_to_formula(right))
+    if text.startswith("not "):
+        return F_not(nl_to_formula(text[4:]))
+    return F_atom("Prop", text)
+
+
+def formula_to_nl(f: Formula) -> str:
+    t = f.node_type
+    if t == NodeType.ATOM and f.atom:
+        pred, args = f.atom
+        if pred == "Ex" and len(args) == 1:
+            return f"exists {args[0]}"
+        return f"{pred}({', '.join(map(str, args))})"
+    if t == NodeType.NOT:
+        return "not " + formula_to_nl(f.children[0])
+    if t == NodeType.AND:
+        return f"({formula_to_nl(f.children[0])} AND {formula_to_nl(f.children[1])})"
+    if t == NodeType.OR:
+        return f"({formula_to_nl(f.children[0])} OR {formula_to_nl(f.children[1])})"
+    if t == NodeType.IMPLIES:
+        return f"({formula_to_nl(f.children[0])} -> {formula_to_nl(f.children[1])})"
+    if t == NodeType.BOTTOM:
+        return "FALSE"
+    return t.name + "(" + ", ".join(formula_to_nl(c) for c in f.children) + ")"
+
+
+# ============================================================
+# 8. ENGINE
+# ============================================================
+
+class AmosCoreEngine:
+    """Main AMOS_CORE reasoning engine."""
+
+    def __init__(self, config: Optional[AmosConfig] = None):
+        self.config = config or GLOBAL_CONFIG
+        self.kb = KnowledgeBase()
+        self.state = FourState(
+            cycle=CycleStage.C2_ALIGNMENT,
+            omega=0.3,
+            cohesion=0.7,
+            fragmentation=0.2,
+            shock=0.2,
+            cognitive_stability=0.8,
+        )
+        self.drift_sentinel = DriftSentinel(self.config)
+
+    # --- knowledge operations ---
+
+    def add_fact_nl(self, text: str, source: str = "nl") -> str:
+        f = nl_to_formula(text)
+        return self.kb.add_fact(f, source=source)
+
+    def add_fact(self, formula: Formula, source: str = "manual") -> str:
+        return self.kb.add_fact(formula, source=source)
+
+    # --- core tasks ---
+
+    def run_task(self, task: Task) -> TaskResult:
+        if task.kind == TaskKind.ENTAILMENT and task.query_formula is not None:
+            result = self.kb.entails(task.query_formula)
+            return TaskResult(
+                task_id=task.id,
+                success=True,
+                details="entailment checked",
+                bool_result=result,
+            )
+
+        if task.kind == TaskKind.CONSISTENCY:
+            result = self.kb.is_consistent()
+            return TaskResult(
+                task_id=task.id,
+                success=True,
+                details="consistency checked",
+                bool_result=result,
+            )
+
+        if task.kind == TaskKind.RAW_NORMALIZE and task.query_formula is not None:
+            nf = normalize(task.query_formula, self.config.max_normalize_iters)
+            return TaskResult(
+                task_id=task.id,
+                success=True,
+                details="normalized",
+                result_formula=nf,
+            )
+
+        if task.kind == TaskKind.DIAGNOSE_STATE:
+            return TaskResult(
+                task_id=task.id,
+                success=True,
+                details="state returned",
+                state_snapshot=self.state.clamp(),
+                cycle_stage=self.state.cycle,
+            )
+
+        if task.kind == TaskKind.PREDICT_NEXT_CYCLE:
+            next_cycle = self._predict_next_cycle(self.state)
+            return TaskResult(
+                task_id=task.id,
+                success=True,
+                details="next cycle predicted",
+                cycle_stage=next_cycle,
+                state_snapshot=self.state.clamp(),
+            )
+
+        if task.kind == TaskKind.EXPLAIN and task.query_formula is not None:
+            text = formula_to_nl(task.query_formula)
+            filtered, _report = self.drift_sentinel.audit_output(text)
+            return TaskResult(
+                task_id=task.id,
+                success=True,
+                details="explanation generated",
+                result_formula=task.query_formula,
+            )
+
+        return TaskResult(
+            task_id=task.id,
+            success=False,
+            details="unsupported task or missing query",
+        )
+
+    # --- TSS-style simple prediction ---
+
+    def _predict_next_cycle(self, state: FourState) -> CycleStage:
+        s = state.clamp()
+        Ω, H, F, S = s.omega, s.cohesion, s.fragmentation, s.shock
+        c = s.cycle
+
+        if c == CycleStage.C1_EMERGENCE:
+            if H > 0.5 and Ω < 0.4:
+                return CycleStage.C2_ALIGNMENT
+            return CycleStage.C1_EMERGENCE
+
+        if c == CycleStage.C2_ALIGNMENT:
+            if Ω < 0.5 and H > 0.6 and F < 0.4:
+                return CycleStage.C3_EXPANSION
+            if Ω > 0.7 or S > 0.6:
+                return CycleStage.C4_OVERLOAD
+            return CycleStage.C2_ALIGNMENT
+
+        if c == CycleStage.C3_EXPANSION:
+            if Ω > 0.7 or S > 0.7:
+                return CycleStage.C4_OVERLOAD
+            return CycleStage.C3_EXPANSION
+
+        if c == CycleStage.C4_OVERLOAD:
+            if Ω > 0.8 and H < 0.4:
+                return CycleStage.C5_COLLAPSE
+            if Ω < 0.5 and H > 0.5:
+                return CycleStage.C3_EXPANSION
+            return CycleStage.C4_OVERLOAD
+
+        if c == CycleStage.C5_COLLAPSE:
+            if H < 0.3 and F > 0.7:
+                return CycleStage.C6_DRIFT
+            if H > 0.4 and Ω < 0.5:
+                return CycleStage.C7_RESET
+            return CycleStage.C5_COLLAPSE
+
+        if c == CycleStage.C6_DRIFT:
+            if H > 0.5 and F < 0.5 and S < 0.5:
+                return CycleStage.C7_RESET
+            return CycleStage.C6_DRIFT
+
+        if c == CycleStage.C7_RESET:
+            if H > 0.6 and Ω < 0.4:
+                return CycleStage.C2_ALIGNMENT
+            return CycleStage.C7_RESET
+
+        return c
+
+    # --- convenience wrappers ---
+
+    def check_entails(self, query: Formula) -> bool:
+        return self.kb.entails(query)
+
+    def check_entails_nl(self, text: str) -> bool:
+        return self.kb.entails(nl_to_formula(text))
+
+    def check_consistent(self) -> bool:
+        return self.kb.is_consistent()
+
+
+# ============================================================
+# 9. STUBS FOR HIGHER LAYERS (EXTENSION POINTS)
+# ============================================================
+
+# These are minimal placeholders so the conceptual structure is present.
+# You can safely extend them without breaking the core engine.
+
+
+@dataclass
+class UniverseState:
+    """Placeholder for universe-wide state."""
+    id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    timestamp: float = field(default_factory=time.time)
+    systems: Dict[str, FourState] = field(default_factory=dict)
+
+
+@dataclass
+class AmosNode:
+    """Placeholder for a node (agent/system) in a federation."""
+    id: str
+    engine: AmosCoreEngine
+
+
+@dataclass
+class AmosFederation:
+    """Placeholder for a multi-agent / multi-system federation."""
+    nodes: Dict[str, AmosNode] = field(default_factory=dict)
+
+    def register_node(self, node: AmosNode) -> None:
+        self.nodes[node.id] = node
+
+    def broadcast_fact(self, formula: Formula, source: str = "federation") -> None:
+        for node in self.nodes.values():
+            node.engine.add_fact(formula, source=source)
+
+
+# ============================================================
+# 10. SMOKE TEST
+# ============================================================
+
+if __name__ == "__main__":
+    eng = AmosCoreEngine()
+
+    # Add some basic facts
+    f1 = F_atom("Ex", "x")
+    f2 = F_implies(F_atom("Ex", "x"), F_atom("Alive", "x"))
+
+    eng.add_fact(f1, source="test")
+    eng.add_fact(f2, source="test")
+
+    q = F_atom("Alive", "x")
+    t_ent = Task(id="t1", kind=TaskKind.ENTAILMENT, query_formula=q)
+    res_ent = eng.run_task(t_ent)
+    print("[ENTAILMENT] Alive(x)?", res_ent.bool_result)
+
+    t_cons = Task(id="t2", kind=TaskKind.CONSISTENCY)
+    res_cons = eng.run_task(t_cons)
+    print("[CONSISTENCY]", res_cons.bool_result)
+
+    t_norm = Task(id="t3", kind=TaskKind.RAW_NORMALIZE, query_formula=F_implies(f1, q))
+    res_norm = eng.run_task(t_norm)
+    print("[NORMALIZE]", res_norm.result_formula)
+
+    t_diag = Task(id="t4", kind=TaskKind.DIAGNOSE_STATE)
+    res_diag = eng.run_task(t_diag)
+    print("[STATE] cycle:", res_diag.cycle_stage, "omega:", res_diag.state_snapshot.omega if res_diag.state_snapshot else None)
+
+    t_pred = Task(id="t5", kind=TaskKind.PREDICT_NEXT_CYCLE)
+    res_pred = eng.run_task(t_pred)
+    print("[NEXT CYCLE]", res_pred.cycle_stage)

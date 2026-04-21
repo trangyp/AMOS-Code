@@ -234,6 +234,131 @@ async def websocket_health(websocket: WebSocket):
         print("WebSocket client disconnected")
 
 
+# ============================================================================
+# Compiler Endpoints
+# ============================================================================
+
+
+class CompileRequest(BaseModel):
+    """Compiler request."""
+    instruction: str = Field(..., description="Natural language instruction")
+    repo_path: str = Field(".", description="Repository path")
+    dry_run: bool = Field(True, description="Dry run mode")
+
+
+class CompileResponse(BaseModel):
+    """Compiler response."""
+    success: bool
+    task_id: str | None
+    status: str
+    grounded_concepts: list[dict] = Field(default_factory=list)
+    execution_plan: list[dict] = Field(default_factory=list)
+    generated_files: list[str] = Field(default_factory=list)
+    error: str | None = None
+
+
+class UnifiedExecuteRequest(BaseModel):
+    """Unified runtime execution request."""
+    instruction: str = Field(..., description="Task instruction")
+    repo_path: str = Field(".", description="Repository path")
+
+
+class UnifiedExecuteResponse(BaseModel):
+    """Unified runtime execution response."""
+    success: bool
+    operation_id: str
+    status: str
+    phases: list[dict] = Field(default_factory=list)
+    duration_seconds: float = 0.0
+    error: str | None = None
+
+
+@app.post("/compiler/compile", response_model=CompileResponse)
+async def compiler_compile(request: CompileRequest):
+    """Compile natural language instruction to code."""
+    try:
+        from amos_compiler_integration import get_brain_compiler
+
+        compiler = get_brain_compiler(request.repo_path)
+        result = await compiler.compile(request.instruction)
+
+        return CompileResponse(
+            success=result.get("status") == "completed",
+            task_id=result.get("task_id"),
+            status=result.get("status", "unknown"),
+            grounded_concepts=result.get("grounded_concepts", []),
+            execution_plan=result.get("execution_plan", []),
+            generated_files=result.get("generated_files", []),
+            error=result.get("error"),
+        )
+    except Exception as e:
+        return CompileResponse(
+            success=False,
+            task_id=None,
+            status="error",
+            error=str(e),
+        )
+
+
+@app.post("/runtime/execute", response_model=UnifiedExecuteResponse)
+async def runtime_execute(request: UnifiedExecuteRequest):
+    """Execute through full AMOS unified pipeline."""
+    try:
+        from amos_unified_runtime import amos_execute
+
+        result = await amos_execute(request.instruction, request.repo_path)
+
+        return UnifiedExecuteResponse(
+            success=result.get("status") == "completed",
+            operation_id=result.get("operation_id", ""),
+            status=result.get("status", "unknown"),
+            phases=result.get("phases", []),
+            duration_seconds=result.get("duration_seconds", 0.0),
+            error=result.get("error"),
+        )
+    except Exception as e:
+        return UnifiedExecuteResponse(
+            success=False,
+            operation_id="",
+            status="error",
+            error=str(e),
+        )
+
+
+@app.get("/compiler/status")
+async def compiler_status():
+    """Get compiler subsystem status."""
+    status = {
+        "compiler_integration": False,
+        "brain_task_executor": False,
+        "unified_runtime": False,
+    }
+
+    try:
+        from amos_compiler_integration import get_brain_compiler
+        status["compiler_integration"] = True
+    except Exception:
+        pass
+
+    try:
+        from amos_brain_task_executor import get_task_executor
+        status["brain_task_executor"] = True
+    except Exception:
+        pass
+
+    try:
+        from amos_unified_runtime import get_unified_runtime
+        status["unified_runtime"] = True
+    except Exception:
+        pass
+
+    return {
+        "available": any(status.values()),
+        "components": status,
+        "total_available": sum(status.values()),
+    }
+
+
 def main():
     """Run the API server."""
     import uvicorn

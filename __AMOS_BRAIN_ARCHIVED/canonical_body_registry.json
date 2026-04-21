@@ -1,0 +1,574 @@
+{
+  "systems": [
+    {
+      "name": "BRAIN_SYSTEM",
+      "path": "AMOS_BODY/BRAIN_SYSTEM/system.json"
+    },
+    {
+      "name": "WORLD_MODEL_SYSTEM",
+      "path": "AMOS_BODY/WORLD_MODEL_SYSTEM/system.json"
+    },
+    {
+      "name": "MONEY_SYSTEM",
+      "path": "AMOS_BODY/MONEY_SYSTEM/system.json"
+    },
+    {
+      "name": "LEGAL_SYSTEM",
+      "path": "AMOS_BODY/LEGAL_SYSTEM/system.json"
+    },
+    {
+      "name": "LIFE_SYSTEM",
+      "path": "AMOS_BODY/LIFE_SYSTEM/system.json"
+    },
+    {
+      "name": "SENSE_SYSTEM",
+      "path": "AMOS_BODY/SENSE_SYSTEM/system.json"
+    },
+    {
+      "name": "EXECUTION_SYSTEM",
+      "path": "AMOS_BODY/EXECUTION_SYSTEM/system.json"
+    }
+  ],
+  "kernels": [
+    {
+      "name": "Planning_Kernel",
+      "system": "BRAIN_SYSTEM",
+      "path": "AMOS_BODY/BRAIN_SYSTEM/KERNELS/Planning_Kernel.json"
+    },
+    {
+      "name": "Decision_Core_Kernel",
+      "system": "BRAIN_SYSTEM",
+      "path": "AMOS_BODY/BRAIN_SYSTEM/KERNELS/Decision_Core_Kernel.json"
+    },
+    {
+      "name": "Priority_Kernel",
+      "system": "BRAIN_SYSTEM",
+      "path": "AMOS_BODY/BRAIN_SYSTEM/KERNELS/Priority_Kernel.json"
+    },
+    {
+      "name": "RiskReward_Kernel",
+      "system": "BRAIN_SYSTEM",
+      "path": "AMOS_BODY/BRAIN_SYSTEM/KERNELS/RiskReward_Kernel.json"
+    },
+    {
+      "name": "Architecture_Kernel",
+      "system": "BRAIN_SYSTEM",
+      "path": "AMOS_BODY/BRAIN_SYSTEM/KERNELS/Architecture_Kernel.json"
+    },
+    {
+      "name": "MetaCognition_Kernel",
+      "system": "BRAIN_SYSTEM",
+      "path": "AMOS_BODY/BRAIN_SYSTEM/KERNELS/MetaCognition_Kernel.json"
+    },
+    {
+      "name": "MacroEconomy_Kernel",
+      "system": "WORLD_MODEL_SYSTEM",
+      "path": "AMOS_BODY/WORLD_MODEL_SYSTEM/KERNELS/MacroEconomy_Kernel.json"
+    },
+    {
+      "name": "Sector_Kernel",
+      "system": "WORLD_MODEL_SYSTEM",
+      "path": "AMOS_BODY/WORLD_MODEL_SYSTEM/KERNELS/Sector_Kernel.json"
+    },
+    {
+      "name": "Geopolitics_Kernel",
+      "system": "WORLD_MODEL_SYSTEM",
+      "path": "AMOS_BODY/WORLD_MODEL_SYSTEM/KERNELS/Geopolitics_Kernel.json"
+    },
+    {
+      "name": "Trend_Kernel",
+      "system": "WORLD_MODEL_SYSTEM",
+      "path": "AMOS_BODY/WORLD_MODEL_SYSTEM/KERNELS/Trend_Kernel.json"
+    },
+    {
+      "name": "ShockDetector_Kernel",
+      "system": "WORLD_MODEL_SYSTEM",
+      "path": "AMOS_BODY/WORLD_MODEL_SYSTEM/KERNELS/ShockDetector_Kernel.json"
+    },
+    {
+      "name": "Scenario_Kernel",
+      "system": "WORLD_MODEL_SYSTEM",
+      "path": "AMOS_BODY/WORLD_MODEL_SYSTEM/KERNELS/Scenario_Kernel.json"
+    },
+    {
+      "name": "Accounts_Kernel",
+      "system": "MONEY_SYSTEM",
+      "path": "AMOS_BODY/MONEY_SYSTEM/KERNELS/Accounts_Kernel.json"
+    },
+    {
+      "name": "Cashflow_Kernel",
+      "system": "MONEY_SYSTEM",
+      "path": "AMOS_BODY/MONEY_SYSTEM/KERNELS/Cashflow_Kernel.json"
+    },
+    {
+      "name": "Forecasting_Kernel",
+      "system": "MONEY_SYSTEM",
+      "path": "AMOS_BODY/MONEY_SYSTEM/KERNELS/Forecasting_Kernel.json"
+    },
+    {
+      "name": "Investment_Kernel",
+      "system": "MONEY_SYSTEM",
+      "path": "AMOS_BODY/MONEY_SYSTEM/KERNELS/Investment_Kernel.json"
+    },
+    {
+      "name": "OpportunityScanner_Kernel",
+      "system": "MONEY_SYSTEM",
+      "path": "AMOS_BODY/MONEY_SYSTEM/KERNELS/OpportunityScanner_Kernel.json"
+    },
+    {
+      "name": "SubscriptionWaste_Kernel",
+      "system": "MONEY_SYSTEM",
+      "path": "AMOS_BODY/MONEY_SYSTEM/KERNELS/SubscriptionWaste_Kernel.json"
+    },
+    {
+      "name": "FinancialRisk_Kernel",
+      "system": "MONEY_SYSTEM",
+      "path": "AMOS_BODY/MONEY_SYSTEM/KERNELS/FinancialRisk_Kernel.json"
+    },
+    {
+      "name": "LegalBrain_Kernel",
+      "system": "LEGAL_SYSTEM",
+      "path": "AMOS_BODY/LEGAL_SYSTEM/KERNELS/LegalBrain_Kernel.json"
+    },
+    {
+      "name": "Contract_Kernel",
+      "system": "LEGAL_SYSTEM",
+      "path": "AMOS_BODY/LEGAL_SYSTEM/KERNELS/Contract_Kernel.json"
+    },
+    {
+      "name": "Compliance_Kernel",
+      "system": "LEGAL_SYSTEM",
+      "path": "AMOS_BODY/LEGAL_SYSTEM/KERNELS/Compliance_Kernel.json"
+    },
+    {
+      "name": "IPProtection_Kernel",
+      "system": "LEGAL_SYSTEM",
+      "path": "AMOS_BODY/LEGAL_SYSTEM/KERNELS/IPProtection_Kernel.json"
+    },
+    {
+      "name": "LegalRisk_Kernel",
+      "system": "LEGAL_SYSTEM",
+      "path": "AMOS_BODY/LEGAL_SYSTEM/KERNELS/LegalRisk_Kernel.json"
+    },
+    {
+      "name": "Sleep_Kernel",
+      "system": "LIFE_SYSTEM",
+      "path": "AMOS_BODY/LIFE_SYSTEM/KERNELS/Sleep_Kernel.json"
+    },
+    {
+      "name": "Energy_Kernel",
+      "system": "LIFE_SYSTEM",
+      "path": "AMOS_BODY/LIFE_SYSTEM/KERNELS/Energy_Kernel.json"
+    },
+    {
+      "name": "Stress_Kernel",
+      "system": "LIFE_SYSTEM",
+      "path": "AMOS_BODY/LIFE_SYSTEM/KERNELS/Stress_Kernel.json"
+    },
+    {
+      "name": "Routine_Kernel",
+      "system": "LIFE_SYSTEM",
+      "path": "AMOS_BODY/LIFE_SYSTEM/KERNELS/Routine_Kernel.json"
+    },
+    {
+      "name": "WorkRhythm_Kernel",
+      "system": "LIFE_SYSTEM",
+      "path": "AMOS_BODY/LIFE_SYSTEM/KERNELS/WorkRhythm_Kernel.json"
+    },
+    {
+      "name": "FilesystemSensor_Kernel",
+      "system": "SENSE_SYSTEM",
+      "path": "AMOS_BODY/SENSE_SYSTEM/KERNELS/FilesystemSensor_Kernel.json"
+    },
+    {
+      "name": "SystemSensor_Kernel",
+      "system": "SENSE_SYSTEM",
+      "path": "AMOS_BODY/SENSE_SYSTEM/KERNELS/SystemSensor_Kernel.json"
+    },
+    {
+      "name": "FinanceSensor_Kernel",
+      "system": "SENSE_SYSTEM",
+      "path": "AMOS_BODY/SENSE_SYSTEM/KERNELS/FinanceSensor_Kernel.json"
+    },
+    {
+      "name": "EnvironmentSensor_Kernel",
+      "system": "SENSE_SYSTEM",
+      "path": "AMOS_BODY/SENSE_SYSTEM/KERNELS/EnvironmentSensor_Kernel.json"
+    },
+    {
+      "name": "StateMapper_Kernel",
+      "system": "SENSE_SYSTEM",
+      "path": "AMOS_BODY/SENSE_SYSTEM/KERNELS/StateMapper_Kernel.json"
+    },
+    {
+      "name": "Executor_Kernel",
+      "system": "EXECUTION_SYSTEM",
+      "path": "AMOS_BODY/EXECUTION_SYSTEM/KERNELS/Executor_Kernel.json"
+    },
+    {
+      "name": "Automation_Kernel",
+      "system": "EXECUTION_SYSTEM",
+      "path": "AMOS_BODY/EXECUTION_SYSTEM/KERNELS/Automation_Kernel.json"
+    },
+    {
+      "name": "DevOps_Kernel",
+      "system": "EXECUTION_SYSTEM",
+      "path": "AMOS_BODY/EXECUTION_SYSTEM/KERNELS/DevOps_Kernel.json"
+    },
+    {
+      "name": "Content_Kernel",
+      "system": "EXECUTION_SYSTEM",
+      "path": "AMOS_BODY/EXECUTION_SYSTEM/KERNELS/Content_Kernel.json"
+    },
+    {
+      "name": "Refactor_Kernel",
+      "system": "EXECUTION_SYSTEM",
+      "path": "AMOS_BODY/EXECUTION_SYSTEM/KERNELS/Refactor_Kernel.json"
+    }
+  ],
+  "engines": [
+    {
+      "name": "Reasoning_Engine",
+      "system": "BRAIN_SYSTEM",
+      "path": "AMOS_BODY/BRAIN_SYSTEM/ENGINES/Reasoning_Engine.json"
+    },
+    {
+      "name": "Strategy_Engine",
+      "system": "BRAIN_SYSTEM",
+      "path": "AMOS_BODY/BRAIN_SYSTEM/ENGINES/Strategy_Engine.json"
+    },
+    {
+      "name": "Planning_Engine",
+      "system": "BRAIN_SYSTEM",
+      "path": "AMOS_BODY/BRAIN_SYSTEM/ENGINES/Planning_Engine.json"
+    },
+    {
+      "name": "Decision_Engine",
+      "system": "BRAIN_SYSTEM",
+      "path": "AMOS_BODY/BRAIN_SYSTEM/ENGINES/Decision_Engine.json"
+    },
+    {
+      "name": "Architecture_Engine",
+      "system": "BRAIN_SYSTEM",
+      "path": "AMOS_BODY/BRAIN_SYSTEM/ENGINES/Architecture_Engine.json"
+    },
+    {
+      "name": "MacroModel_Engine",
+      "system": "WORLD_MODEL_SYSTEM",
+      "path": "AMOS_BODY/WORLD_MODEL_SYSTEM/ENGINES/MacroModel_Engine.json"
+    },
+    {
+      "name": "Sector_Engine",
+      "system": "WORLD_MODEL_SYSTEM",
+      "path": "AMOS_BODY/WORLD_MODEL_SYSTEM/ENGINES/Sector_Engine.json"
+    },
+    {
+      "name": "Geopolitics_Engine",
+      "system": "WORLD_MODEL_SYSTEM",
+      "path": "AMOS_BODY/WORLD_MODEL_SYSTEM/ENGINES/Geopolitics_Engine.json"
+    },
+    {
+      "name": "Scenario_Engine",
+      "system": "WORLD_MODEL_SYSTEM",
+      "path": "AMOS_BODY/WORLD_MODEL_SYSTEM/ENGINES/Scenario_Engine.json"
+    },
+    {
+      "name": "Trend_Engine",
+      "system": "WORLD_MODEL_SYSTEM",
+      "path": "AMOS_BODY/WORLD_MODEL_SYSTEM/ENGINES/Trend_Engine.json"
+    },
+    {
+      "name": "Finance_Engine",
+      "system": "MONEY_SYSTEM",
+      "path": "AMOS_BODY/MONEY_SYSTEM/ENGINES/Finance_Engine.json"
+    },
+    {
+      "name": "Forecasting_Engine",
+      "system": "MONEY_SYSTEM",
+      "path": "AMOS_BODY/MONEY_SYSTEM/ENGINES/Forecasting_Engine.json"
+    },
+    {
+      "name": "Investment_Engine",
+      "system": "MONEY_SYSTEM",
+      "path": "AMOS_BODY/MONEY_SYSTEM/ENGINES/Investment_Engine.json"
+    },
+    {
+      "name": "Opportunity_Engine",
+      "system": "MONEY_SYSTEM",
+      "path": "AMOS_BODY/MONEY_SYSTEM/ENGINES/Opportunity_Engine.json"
+    },
+    {
+      "name": "FinancialRisk_Engine",
+      "system": "MONEY_SYSTEM",
+      "path": "AMOS_BODY/MONEY_SYSTEM/ENGINES/FinancialRisk_Engine.json"
+    },
+    {
+      "name": "Legal_Engine",
+      "system": "LEGAL_SYSTEM",
+      "path": "AMOS_BODY/LEGAL_SYSTEM/ENGINES/Legal_Engine.json"
+    },
+    {
+      "name": "ContractReview_Engine",
+      "system": "LEGAL_SYSTEM",
+      "path": "AMOS_BODY/LEGAL_SYSTEM/ENGINES/ContractReview_Engine.json"
+    },
+    {
+      "name": "Compliance_Engine",
+      "system": "LEGAL_SYSTEM",
+      "path": "AMOS_BODY/LEGAL_SYSTEM/ENGINES/Compliance_Engine.json"
+    },
+    {
+      "name": "IP_Engine",
+      "system": "LEGAL_SYSTEM",
+      "path": "AMOS_BODY/LEGAL_SYSTEM/ENGINES/IP_Engine.json"
+    },
+    {
+      "name": "LegalRisk_Engine",
+      "system": "LEGAL_SYSTEM",
+      "path": "AMOS_BODY/LEGAL_SYSTEM/ENGINES/LegalRisk_Engine.json"
+    },
+    {
+      "name": "Life_Engine",
+      "system": "LIFE_SYSTEM",
+      "path": "AMOS_BODY/LIFE_SYSTEM/ENGINES/Life_Engine.json"
+    },
+    {
+      "name": "Health_Engine",
+      "system": "LIFE_SYSTEM",
+      "path": "AMOS_BODY/LIFE_SYSTEM/ENGINES/Health_Engine.json"
+    },
+    {
+      "name": "Routine_Engine",
+      "system": "LIFE_SYSTEM",
+      "path": "AMOS_BODY/LIFE_SYSTEM/ENGINES/Routine_Engine.json"
+    },
+    {
+      "name": "Recovery_Engine",
+      "system": "LIFE_SYSTEM",
+      "path": "AMOS_BODY/LIFE_SYSTEM/ENGINES/Recovery_Engine.json"
+    },
+    {
+      "name": "Sensor_Engine",
+      "system": "SENSE_SYSTEM",
+      "path": "AMOS_BODY/SENSE_SYSTEM/ENGINES/Sensor_Engine.json"
+    },
+    {
+      "name": "Context_Engine",
+      "system": "SENSE_SYSTEM",
+      "path": "AMOS_BODY/SENSE_SYSTEM/ENGINES/Context_Engine.json"
+    },
+    {
+      "name": "State_Engine",
+      "system": "SENSE_SYSTEM",
+      "path": "AMOS_BODY/SENSE_SYSTEM/ENGINES/State_Engine.json"
+    },
+    {
+      "name": "Coding_Engine",
+      "system": "EXECUTION_SYSTEM",
+      "path": "AMOS_BODY/EXECUTION_SYSTEM/ENGINES/Coding_Engine.json"
+    },
+    {
+      "name": "DevOps_Engine",
+      "system": "EXECUTION_SYSTEM",
+      "path": "AMOS_BODY/EXECUTION_SYSTEM/ENGINES/DevOps_Engine.json"
+    },
+    {
+      "name": "Automation_Engine",
+      "system": "EXECUTION_SYSTEM",
+      "path": "AMOS_BODY/EXECUTION_SYSTEM/ENGINES/Automation_Engine.json"
+    },
+    {
+      "name": "Document_Engine",
+      "system": "EXECUTION_SYSTEM",
+      "path": "AMOS_BODY/EXECUTION_SYSTEM/ENGINES/Document_Engine.json"
+    },
+    {
+      "name": "Deployment_Engine",
+      "system": "EXECUTION_SYSTEM",
+      "path": "AMOS_BODY/EXECUTION_SYSTEM/ENGINES/Deployment_Engine.json"
+    },
+    {
+      "name": "Refactor_Engine",
+      "system": "EXECUTION_SYSTEM",
+      "path": "AMOS_BODY/EXECUTION_SYSTEM/ENGINES/Refactor_Engine.json"
+    }
+  ],
+  "agents": [
+    {
+      "name": "Planner_Agent",
+      "system": "BRAIN_SYSTEM",
+      "path": "AMOS_BODY/BRAIN_SYSTEM/AGENTS/Planner_Agent.json"
+    },
+    {
+      "name": "Strategist_Agent",
+      "system": "BRAIN_SYSTEM",
+      "path": "AMOS_BODY/BRAIN_SYSTEM/AGENTS/Strategist_Agent.json"
+    },
+    {
+      "name": "Decomposer_Agent",
+      "system": "BRAIN_SYSTEM",
+      "path": "AMOS_BODY/BRAIN_SYSTEM/AGENTS/Decomposer_Agent.json"
+    },
+    {
+      "name": "Architecture_Agent",
+      "system": "BRAIN_SYSTEM",
+      "path": "AMOS_BODY/BRAIN_SYSTEM/AGENTS/Architecture_Agent.json"
+    },
+    {
+      "name": "Reflection_Agent",
+      "system": "BRAIN_SYSTEM",
+      "path": "AMOS_BODY/BRAIN_SYSTEM/AGENTS/Reflection_Agent.json"
+    },
+    {
+      "name": "MacroAnalyst_Agent",
+      "system": "WORLD_MODEL_SYSTEM",
+      "path": "AMOS_BODY/WORLD_MODEL_SYSTEM/AGENTS/MacroAnalyst_Agent.json"
+    },
+    {
+      "name": "SectorAnalyst_Agent",
+      "system": "WORLD_MODEL_SYSTEM",
+      "path": "AMOS_BODY/WORLD_MODEL_SYSTEM/AGENTS/SectorAnalyst_Agent.json"
+    },
+    {
+      "name": "GeoAnalyst_Agent",
+      "system": "WORLD_MODEL_SYSTEM",
+      "path": "AMOS_BODY/WORLD_MODEL_SYSTEM/AGENTS/GeoAnalyst_Agent.json"
+    },
+    {
+      "name": "Trend_Agent",
+      "system": "WORLD_MODEL_SYSTEM",
+      "path": "AMOS_BODY/WORLD_MODEL_SYSTEM/AGENTS/Trend_Agent.json"
+    },
+    {
+      "name": "Shock_Agent",
+      "system": "WORLD_MODEL_SYSTEM",
+      "path": "AMOS_BODY/WORLD_MODEL_SYSTEM/AGENTS/Shock_Agent.json"
+    },
+    {
+      "name": "Finance_Agent",
+      "system": "MONEY_SYSTEM",
+      "path": "AMOS_BODY/MONEY_SYSTEM/AGENTS/Finance_Agent.json"
+    },
+    {
+      "name": "Investment_Agent",
+      "system": "MONEY_SYSTEM",
+      "path": "AMOS_BODY/MONEY_SYSTEM/AGENTS/Investment_Agent.json"
+    },
+    {
+      "name": "FinanceRisk_Agent",
+      "system": "MONEY_SYSTEM",
+      "path": "AMOS_BODY/MONEY_SYSTEM/AGENTS/FinanceRisk_Agent.json"
+    },
+    {
+      "name": "Opportunity_Agent",
+      "system": "MONEY_SYSTEM",
+      "path": "AMOS_BODY/MONEY_SYSTEM/AGENTS/Opportunity_Agent.json"
+    },
+    {
+      "name": "Cashflow_Agent",
+      "system": "MONEY_SYSTEM",
+      "path": "AMOS_BODY/MONEY_SYSTEM/AGENTS/Cashflow_Agent.json"
+    },
+    {
+      "name": "Legal_Agent",
+      "system": "LEGAL_SYSTEM",
+      "path": "AMOS_BODY/LEGAL_SYSTEM/AGENTS/Legal_Agent.json"
+    },
+    {
+      "name": "Contract_Agent",
+      "system": "LEGAL_SYSTEM",
+      "path": "AMOS_BODY/LEGAL_SYSTEM/AGENTS/Contract_Agent.json"
+    },
+    {
+      "name": "Compliance_Agent",
+      "system": "LEGAL_SYSTEM",
+      "path": "AMOS_BODY/LEGAL_SYSTEM/AGENTS/Compliance_Agent.json"
+    },
+    {
+      "name": "IP_Agent",
+      "system": "LEGAL_SYSTEM",
+      "path": "AMOS_BODY/LEGAL_SYSTEM/AGENTS/IP_Agent.json"
+    },
+    {
+      "name": "LegalRisk_Agent",
+      "system": "LEGAL_SYSTEM",
+      "path": "AMOS_BODY/LEGAL_SYSTEM/AGENTS/LegalRisk_Agent.json"
+    },
+    {
+      "name": "Life_Agent",
+      "system": "LIFE_SYSTEM",
+      "path": "AMOS_BODY/LIFE_SYSTEM/AGENTS/Life_Agent.json"
+    },
+    {
+      "name": "Routine_Agent",
+      "system": "LIFE_SYSTEM",
+      "path": "AMOS_BODY/LIFE_SYSTEM/AGENTS/Routine_Agent.json"
+    },
+    {
+      "name": "Health_Agent",
+      "system": "LIFE_SYSTEM",
+      "path": "AMOS_BODY/LIFE_SYSTEM/AGENTS/Health_Agent.json"
+    },
+    {
+      "name": "LoadBalancer_Agent",
+      "system": "LIFE_SYSTEM",
+      "path": "AMOS_BODY/LIFE_SYSTEM/AGENTS/LoadBalancer_Agent.json"
+    },
+    {
+      "name": "Sensors_Agent",
+      "system": "SENSE_SYSTEM",
+      "path": "AMOS_BODY/SENSE_SYSTEM/AGENTS/Sensors_Agent.json"
+    },
+    {
+      "name": "Context_Agent",
+      "system": "SENSE_SYSTEM",
+      "path": "AMOS_BODY/SENSE_SYSTEM/AGENTS/Context_Agent.json"
+    },
+    {
+      "name": "StateSummarizer_Agent",
+      "system": "SENSE_SYSTEM",
+      "path": "AMOS_BODY/SENSE_SYSTEM/AGENTS/StateSummarizer_Agent.json"
+    },
+    {
+      "name": "Coding_Agent",
+      "system": "EXECUTION_SYSTEM",
+      "path": "AMOS_BODY/EXECUTION_SYSTEM/AGENTS/Coding_Agent.json"
+    },
+    {
+      "name": "DevOps_Agent",
+      "system": "EXECUTION_SYSTEM",
+      "path": "AMOS_BODY/EXECUTION_SYSTEM/AGENTS/DevOps_Agent.json"
+    },
+    {
+      "name": "Automation_Agent",
+      "system": "EXECUTION_SYSTEM",
+      "path": "AMOS_BODY/EXECUTION_SYSTEM/AGENTS/Automation_Agent.json"
+    },
+    {
+      "name": "Writing_Agent",
+      "system": "EXECUTION_SYSTEM",
+      "path": "AMOS_BODY/EXECUTION_SYSTEM/AGENTS/Writing_Agent.json"
+    },
+    {
+      "name": "Document_Agent",
+      "system": "EXECUTION_SYSTEM",
+      "path": "AMOS_BODY/EXECUTION_SYSTEM/AGENTS/Document_Agent.json"
+    },
+    {
+      "name": "Deployment_Agent",
+      "system": "EXECUTION_SYSTEM",
+      "path": "AMOS_BODY/EXECUTION_SYSTEM/AGENTS/Deployment_Agent.json"
+    },
+    {
+      "name": "Refactor_Agent",
+      "system": "EXECUTION_SYSTEM",
+      "path": "AMOS_BODY/EXECUTION_SYSTEM/AGENTS/Refactor_Agent.json"
+    }
+  ],
+  "_meta": {
+    "build_timestamp": 1764478554,
+    "git_commit": "e73a9df0214dbc80c3b73b109a6dc9b078e3fc7a",
+    "checksum": "cdd5548af8c51d2f2942eeb986bf712fa2578a54b3f2679fb822e034069b1919",
+    "generated_by": "AMOS_BUILD_EVERYTHING"
+  }
+}

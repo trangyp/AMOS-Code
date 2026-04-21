@@ -1,0 +1,364 @@
+{
+  "kernel_name": "AMOS_UBI_KERNEL",
+  "version": "vInfinity_UBI_MAX",
+  "description": "Unified Biological Intelligence™ kernel for AMOS_OS_ROOT. Defines full-stack biological, emotional, somatic, and bioelectromagnetic logic for human-centric reasoning and system design. This kernel is strictly educational and analytical, not medical or clinical.",
+  "meta": {
+    "type": "core_biological_kernel",
+    "layer_role": [
+      "biological_foundation",
+      "human_state_router",
+      "nervous_system_mapper",
+      "safety_and_ethics_anchor"
+    ],
+    "law_of_law_binding": true,
+    "rule_of_2": true,
+    "rule_of_4": true,
+    "absolute_biological_integrity_target": true,
+    "safety": {
+      "scope": "educational_and_analytical_only",
+      "medical_disclaimer": "This kernel does not provide diagnosis, treatment, or clinical decisions. All outputs must be reviewed and owned by qualified humans.",
+      "forbidden_actions": [
+        "direct_medical_prescription",
+        "self_harm_instruction",
+        "harm_optimization",
+        "biological_experiment_design_on_humans_or_animals"
+      ]
+    }
+  },
+  "integration": {
+    "parent_kernel": "AMOS_KERNEL_SUPER_vInfinity",
+    "parent_brain": "AMOS_BRAIN_ROOT",
+    "interfaces": {
+      "inbound": [
+        "AMOS_OS_INTEGRATED_AGENT",
+        "AMOS_ORCHESTRATOR_ROUTING",
+        "AMOS_KERNEL_CONFIG",
+        "Domain_Engines/*"
+      ],
+      "outbound": [
+        "AMOS_C01_meta_logic_SUPER",
+        "AMOS_C02_Math_Compute_SUPER",
+        "AMOS_C04_bio_neuro",
+        "AMOS_CC05_mind_behavior_SUPER",
+        "AMOS_C12_Earth_Ecology_SUPER",
+        "Tech_Engine_vInfinity_MAX",
+        "Design_SUPER_Engine"
+      ]
+    },
+    "priority": {
+      "baseline": 100,
+      "when_human_present": 120,
+      "when_risk_detected": 150
+    }
+  },
+  "structure": {
+    "domains": [
+      "Neurobiological_Intelligence",
+      "Neuroemotional_Intelligence",
+      "Somatic_Intelligence",
+      "Bioelectromagnetic_Intelligence"
+    ],
+    "layers": [
+      "raw_signal_layer",
+      "processed_pattern_layer",
+      "state_vector_layer",
+      "identity_alignment_layer",
+      "decision_projection_layer"
+    ],
+    "coordinate_systems": {
+      "time_axes": [
+        "moment_to_moment",
+        "daily_rhythm",
+        "developmental_phase",
+        "life_trajectory"
+      ],
+      "intensity_axes": [
+        "low",
+        "moderate",
+        "high",
+        "critical"
+      ],
+      "alignment_axes": [
+        "body_alignment",
+        "emotion_alignment",
+        "thinking_alignment",
+        "environment_alignment"
+      ]
+    }
+  },
+  "ubi_domains": {
+    "Neurobiological_Intelligence": {
+      "code": "UBI_NB",
+      "definition": "Integrity and performance of the nervous system and biological organs that support perception, regulation, and action.",
+      "subsystems": [
+        "central_nervous_system",
+        "autonomic_nervous_system",
+        "endocrine_linkages",
+        "immune_modulation",
+        "sleep_cycles",
+        "metabolic_regulation"
+      ],
+      "key_variables": [
+        "alertness",
+        "fatigue",
+        "sensory_clarity",
+        "reaction_time",
+        "stress_baseline",
+        "recovery_speed"
+      ],
+      "risk_flags": [
+        "chronic_sleep_deprivation_pattern",
+        "sustained_high_stress_without_recovery",
+        "persistent_cognitive_blur_reports",
+        "nervous_system_overload_signals"
+      ]
+    },
+    "Neuroemotional_Intelligence": {
+      "code": "UBI_NE",
+      "definition": "Capacity to recognise, interpret, stabilise, and direct emotional states in a way that supports long-term integrity.",
+      "subsystems": [
+        "emotion_detection",
+        "emotion_labelling",
+        "emotion_stabilisation",
+        "emotion_to_action_mapping",
+        "relational_empathy",
+        "threat_vs_safe_discernment"
+      ],
+      "key_variables": [
+        "emotional_clarity",
+        "emotional_stability",
+        "rebound_speed_after_stress",
+        "quality_of_relationship_patterns",
+        "conflict_handling_style"
+      ],
+      "risk_flags": [
+        "chronic_suppression",
+        "explosive_reactivity",
+        "emotional_detachment_from_body",
+        "persistent_hypervigilance",
+        "despair_or_collapse_patterns"
+      ]
+    },
+    "Somatic_Intelligence": {
+      "code": "UBI_SI",
+      "definition": "Ability to read, interpret, and respond to body-based signals such as tension, posture, breathing, and movement.",
+      "subsystems": [
+        "posture_patterns",
+        "breathing_patterns",
+        "muscular_tension_distribution",
+        "movement_quality",
+        "gut_state_awareness",
+        "pain_signal_interpretation"
+      ],
+      "key_variables": [
+        "body_awareness",
+        "movement_fluidity",
+        "tension_distribution_balance",
+        "breathing_depth",
+        "somatic_response_to_stress"
+      ],
+      "risk_flags": [
+        "chronic_freeze_posture",
+        "chronic_collapse_posture",
+        "breath_shallowing_under_minor_stress",
+        "persistent_digestive_discomfort_reports"
+      ]
+    },
+    "Bioelectromagnetic_Intelligence": {
+      "code": "UBI_BEMI",
+      "definition": "Patterns of timing, rhythm, and electrical signalling across the nervous system and heart that shape global state and performance.",
+      "subsystems": [
+        "heart_rate_variability_patterning",
+        "brain_rhythm_balance",
+        "circadian_timing_patterns",
+        "light_exposure_patterns",
+        "activity_vs_recovery_cycles"
+      ],
+      "key_variables": [
+        "variability_flexibility",
+        "rhythm_stability",
+        "synchrony_between_systems",
+        "phase_alignment_with_day_night_cycle"
+      ],
+      "risk_flags": [
+        "chronic_desynchronisation_with_day_night",
+        "flattened_variability_patterns",
+        "persistent_jetlag_state_without_travel",
+        "rhythm_disruption_due_to_workload"
+      ]
+    }
+  },
+  "state_system": {
+    "state_resolution": "micro_and_macro",
+    "state_types": [
+      "baseline_state",
+      "stress_response_state",
+      "recovery_state",
+      "growth_state",
+      "collapse_state"
+    ],
+    "state_vector_components": [
+      "body_signal_vector",
+      "emotion_vector",
+      "thought_vector",
+      "behaviour_vector",
+      "environment_vector"
+    ],
+    "extreme_state_library": {
+      "count_estimate": "600_plus",
+      "examples": [
+        "acute_threat_freeze",
+        "hyper_focus_under_deadline",
+        "numb_detached_state",
+        "quiet_calm_alert_state",
+        "overdrive_hyperproductivity_state"
+      ]
+    }
+  },
+  "tensors": {
+    "description": "Cross-domain biological transformation operators that describe how changes in one domain influence others.",
+    "tensor_list": [
+      {
+        "name": "sensory_tensor",
+        "from": [
+          "environment_vector"
+        ],
+        "to": [
+          "body_signal_vector",
+          "emotion_vector",
+          "thought_vector"
+        ],
+        "notes": "Maps external conditions into internal perception and interpretation."
+      },
+      {
+        "name": "somatic_tensor",
+        "from": [
+          "body_signal_vector"
+        ],
+        "to": [
+          "emotion_vector",
+          "thought_vector"
+        ],
+        "notes": "Maps posture, tension, and movement into emotional tone and thought patterns."
+      },
+      {
+        "name": "emotional_tensor",
+        "from": [
+          "emotion_vector"
+        ],
+        "to": [
+          "behaviour_vector",
+          "thought_vector"
+        ],
+        "notes": "Maps emotion intensity and direction into likely behaviour and internal narratives."
+      },
+      {
+        "name": "identity_tensor",
+        "from": [
+          "identity_alignment_layer"
+        ],
+        "to": [
+          "decision_projection_layer"
+        ],
+        "notes": "Ensures decisions remain consistent with long-term identity and values."
+      },
+      {
+        "name": "bioelectromagnetic_tensor",
+        "from": [
+          "Bioelectromagnetic_Intelligence"
+        ],
+        "to": [
+          "Neurobiological_Intelligence",
+          "Neuroemotional_Intelligence",
+          "Somatic_Intelligence"
+        ],
+        "notes": "Maps rhythms and timing patterns into readiness, mood stability, and physical ease."
+      }
+    ],
+    "propagation_rule": {
+      "formula_text": "Propagation(A_to_B) = Impact(A) * CouplingCoefficient(A_to_B)",
+      "threshold_condition": "Propagation(A_to_B) must exceed ActivationThreshold(B) to produce a meaningful state change.",
+      "alignment_condition": "Propagation that moves alignment_axes in the direction of long-term integrity is prioritised."
+    }
+  },
+  "measurement": {
+    "target": "Absolute_Biological_Integrity",
+    "axes": [
+      "nervous_system_stability",
+      "emotional_stability",
+      "body_signal_clarity",
+      "behaviour_alignment_with_long_term_values",
+      "environment_fit"
+    ],
+    "score_components": [
+      {
+        "name": "alignment_score",
+        "description": "How well current actions and states match long-term values and commitments."
+      },
+      {
+        "name": "stability_score",
+        "description": "How stable and recoverable the system is under stress."
+      },
+      {
+        "name": "adaptation_score",
+        "description": "How flexibly the system can respond to new conditions without collapse."
+      },
+      {
+        "name": "signal_clarity_score",
+        "description": "How readable and interpretable internal signals are to the person."
+      }
+    ],
+    "score_use": {
+      "allowed": [
+        "self_reflection",
+        "system_design",
+        "organisation_culture_design",
+        "policy_impact_analysis",
+        "training_and_education"
+      ],
+      "forbidden": [
+        "discrimination_against_individuals",
+        "clinical_diagnosis",
+        "coercive_decision_making"
+      ]
+    }
+  },
+  "mappings": {
+    "to_system_design": [
+      "map_human_state_vectors_to_org_policies",
+      "design_schedules_around_biological_rhythms",
+      "design_training_around_nervous_system_limits",
+      "design_interfaces_that_respect_emotional_bandwidth"
+    ],
+    "to_ai_behaviour": [
+      "stabilise_tone_under_user_distress",
+      "avoid_language_that_increases_nervous_system_load",
+      "prioritise_clarity_over_speed_when_risk_is_present",
+      "mirror_user_goals_while_respecting_biological_limits"
+    ],
+    "to_unipower_and_universe": [
+      "design_EV_and_mobility_systems_around_human_state_safety",
+      "design_workflows_that_respect_fatigue_and_recovery",
+      "evaluate_policies_by_impact_on_biological_integrity",
+      "align_energy_system_planning_with_human_daily_cycles"
+    ]
+  },
+  "routing_rules": {
+    "when_to_activate": [
+      "whenever_user_state_is_mentioned",
+      "whenever_emotions_or_body_signals_are_discussed",
+      "whenever_system_design_involves_humans",
+      "whenever_risk_or_safety_is_detected"
+    ],
+    "co_routing_with": [
+      "AMOS_KERNEL_SUPER_vInfinity",
+      "AMOS_BRAIN_ROOT",
+      "AMOS_C01_meta_logic_SUPER",
+      "AMOS_CC05_mind_behavior_SUPER"
+    ],
+    "fallback_behaviour": {
+      "if_information_insufficient": "ask_for_concrete_observations_not_labels",
+      "if_request_is_clinical": "redirect_to_professional_help_and_provide_general_education_only"
+    }
+  }
+}

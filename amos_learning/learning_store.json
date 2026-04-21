@@ -2337,6 +2337,71 @@
       "created_at": "2026-04-21T04:10:58.509987+00:00",
       "last_used": "2026-04-21T04:10:58.509987+00:00",
       "evolution_history": []
+    },
+    "proc_generic_4dd6ee_4dd6ee0e": {
+      "procedure_id": "proc_generic_4dd6ee_4dd6ee0e",
+      "name": "generic_4dd6ee",
+      "trigger_condition": "Task matches pattern signature",
+      "required_inputs": [
+        "file_paths",
+        "configuration"
+      ],
+      "execution_steps": [
+        "1. Task Analysis: '\nI am the AMOS brain analyzing the codebase for critical production gaps.\n\nLook at these specific areas:\n1. backend/main.py - what endpoints are missing for production?\n2. backend/database.py - is SQLAlchemy properly configured?\n3. backend/config/settings.py - are all env vars covered?\n4. Are there API tests?\n5. Is there a Dockerfile for deployment?\n\nIdentify the TOP 1 most critical missing piece that would prevent production deployment today.\n' requires 2 perspectives",
+        "2. Kernel Routing: Activating 0 cognitive kernels",
+        "3. Rule of 2: Checking 2 contrasting views",
+        "   - Perspective 1: Direct Analysis - Immediate solution",
+        "   - Perspective 2: Alternative Implementation - Alternative patterns",
+        "4. Rule of 4: Analyzing 4 quadrants",
+        "   - Technical: relevant",
+        "   - Biological: contextually_relevant",
+        "   - Economic: contextually_relevant",
+        "   - Environmental: contextually_relevant",
+        "5. Law Validation: Checking against Global Laws",
+        "6. Output Generation: Synthesizing results",
+        "## AMOS Brain Analysis: \nI am the AMOS brain analyzing the codebase for cr...\n\n### Reasoning Chain\n- 1. Task Analysis: '\nI am the AMOS brain analyzing the codebase for critical production gaps.\n\nLook "
+      ],
+      "expected_outcome": "Task processed successfully",
+      "verification_method": "Verify no errors",
+      "pattern_signature": "4dd6ee0ed1212e8f",
+      "success_count": 1,
+      "failure_count": 0,
+      "avg_execution_time_ms": 2,
+      "created_at": "2026-04-21T05:00:28.697972+00:00",
+      "last_used": "2026-04-21T05:00:28.697972+00:00",
+      "evolution_history": []
+    },
+    "proc_merge_duplicate_files_6239a464": {
+      "procedure_id": "proc_merge_duplicate_files_6239a464",
+      "name": "merge_duplicate_files",
+      "trigger_condition": "Task matches pattern signature",
+      "required_inputs": [
+        "task_context"
+      ],
+      "execution_steps": [
+        "1. Task Analysis: '\nAnalyze the _AMOS_CANON directory structure across all 6 AMOS repos.\n\nDuplications found:\n- _00_AMOS_CANON/AMOS_DESIGNER_OS/AMOS.brain\n- _AMOS_BRAIN/AMOS_DESIGNER_OS/AMOS.brain  \n- AMOS_REPOS/AMOS-Code/_00_AMOS_CANON/AMOS_DESIGNER_OS/AMOS.brain\n- AMOS_REPOS/AMOS-Claws/_AMOS_CANON/AMOS_DESIGNER_OS/AMOS.brain\n- AMOS_REPOS/AMOS-Consulting/_AMOS_CANON/AMOS_DESIGNER_OS/AMOS.brain\n- AMOS_REPOS/AMOS-Invest/_AMOS_CANON/AMOS_DESIGNER_OS/AMOS.brain\n- AMOS_REPOS/Mailinhconect/_AMOS_CANON/AMOS_DESIGNER_OS/AMOS.brain\n- AMOS_REPOS/AMOS-UNIVERSE/.../AMOS_DESIGNER_OS/AMOS.brain\n\nWhat consolidation strategy should be used?\n1. Create a canonical master in root _AMOS_CANON/\n2. Create symlinks from repos to master\n3. Delete duplicates\n4. Create AMOS.brain merger tool\n\nRecommend the specific implementation approach.\n' requires 2 perspectives",
+        "2. Kernel Routing: Activating 0 cognitive kernels",
+        "3. Rule of 2: Checking 2 contrasting views",
+        "   - Perspective 1: Direct Analysis - Immediate solution",
+        "   - Perspective 2: Alternative Implementation - Alternative patterns",
+        "4. Rule of 4: Analyzing 4 quadrants",
+        "   - Technical: highly_relevant",
+        "   - Biological: contextually_relevant",
+        "   - Economic: contextually_relevant",
+        "   - Environmental: contextually_relevant",
+        "5. Law Validation: Checking against Global Laws",
+        "6. Output Generation: Synthesizing results",
+        "## AMOS Brain Analysis: \nAnalyze the _AMOS_CANON directory structure acros...\n\n### Reasoning Chain\n- 1. Task Analysis: '\nAnalyze the _AMOS_CANON directory structure across all 6 AMOS repos.\n\nDuplicati"
+      ],
+      "expected_outcome": "Task processed successfully",
+      "verification_method": "Verify no errors",
+      "pattern_signature": "6239a464781b4bb0",
+      "success_count": 1,
+      "failure_count": 0,
+      "avg_execution_time_ms": 2,
+      "created_at": "2026-04-21T08:20:00.483422+00:00",
+      "last_used": "2026-04-21T08:20:00.483422+00:00",
+      "evolution_history": []
     }
   },
   "patterns": {
@@ -3570,18 +3635,54 @@
       "frequency": 1,
       "first_seen": "2026-04-21T04:10:58.510045+00:00",
       "last_seen": "2026-04-21T04:10:58.510045+00:00"
+    },
+    "pat_general_ae34ff77": {
+      "pattern_id": "pat_general_ae34ff77",
+      "pattern_type": "general",
+      "signature": "ae34ff77a2f77538",
+      "detection_rules": [
+        "contains: generic"
+      ],
+      "indicators": [
+        "generic"
+      ],
+      "related_procedures": [
+        "proc_generic_4dd6ee_4dd6ee0e"
+      ],
+      "frequency": 1,
+      "first_seen": "2026-04-21T05:00:28.698070+00:00",
+      "last_seen": "2026-04-21T05:00:28.698070+00:00"
+    },
+    "pat_general_258d4913": {
+      "pattern_id": "pat_general_258d4913",
+      "pattern_type": "general",
+      "signature": "258d4913afe5f16d",
+      "detection_rules": [
+        "contains: merge",
+        "contains: duplicate"
+      ],
+      "indicators": [
+        "merge",
+        "duplicate"
+      ],
+      "related_procedures": [
+        "proc_merge_duplicate_files_6239a464"
+      ],
+      "frequency": 2,
+      "first_seen": "2026-04-21T08:20:00.481909+00:00",
+      "last_seen": "2026-04-21T08:20:00.483663+00:00"
     }
   },
   "decisions": {},
   "failures": {},
   "stats": {
-    "procedures_learned": 95,
-    "patterns_detected": 72,
+    "procedures_learned": 97,
+    "patterns_detected": 74,
     "decisions_recorded": 0,
     "failures_avoided": 0,
     "procedures_reused": 40,
     "time_saved_ms": 0,
     "learning_start": "2026-04-15T07:32:38.245581"
   },
-  "saved_at": "2026-04-21T04:10:58.513318+00:00"
+  "saved_at": "2026-04-21T08:20:00.486928+00:00"
 }

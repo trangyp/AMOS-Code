@@ -21,12 +21,15 @@ import threading
 import time
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc, timedelta
+from datetime import datetime, timedelta, timezone
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
-UTC = UTC
+UTC = timezone.utc
+
+
+# Type aliases for modern Python
+OptionalFloat = float | None
 
 
 class MetricType(Enum):
@@ -242,7 +245,7 @@ class AMOSMetricsCollector:
 
 
 # Global collector instance
-_collector: Optional[AMOSMetricsCollector] = None
+_collector: AMOSMetricsCollector | None = None
 
 
 def get_metrics_collector() -> AMOSMetricsCollector:

@@ -1,0 +1,218 @@
+[
+  {
+    "meta": {
+      "name": "AMOS_C03_Physics_Cosmos_MAX",
+      "version": "vInfinity.1.0.0",
+      "domain": "Physics_and_Cosmos",
+      "description": "Full-stack kernel+engine model of classical, quantum, statistical, and cosmological systems, aligned to AMOS omni-logic.",
+      "routing_tags": [
+        "physics",
+        "cosmos",
+        "energy",
+        "materials",
+        "simulation"
+      ],
+      "roles": [
+        "CTO",
+        "Chief Scientist",
+        "Systems Architect",
+        "Policy Maker"
+      ],
+      "safety": [
+        "Do not claim new physical laws as proven.",
+        "Mark speculative content as hypothetical.",
+        "Never give fabrication instructions for weapons or unsafe experiments."
+      ]
+    },
+    "kernel_layer": {
+      "description": "Foundational, domain-irreducible logic blocks for this canonical AMOS domain.",
+      "kernels": [
+        {
+          "id": "PHYS_CLASSICAL_DYNAMICS_KERNEL",
+          "scope": [
+            "newtonian_mechanics",
+            "rigid_bodies",
+            "fluids"
+          ],
+          "primitives": [
+            "state_vector",
+            "force",
+            "momentum",
+            "energy",
+            "constraint"
+          ],
+          "benchmarks": [
+            "graduate_mechanics_texts",
+            "engineering_dynamics"
+          ]
+        },
+        {
+          "id": "PHYS_ELECTROMAGNETISM_KERNEL",
+          "scope": [
+            "maxwell_equations",
+            "circuits",
+            "em_waves"
+          ],
+          "primitives": [
+            "field",
+            "charge",
+            "potential",
+            "flux",
+            "impedance"
+          ],
+          "benchmarks": [
+            "graduate_EM",
+            "rf_design",
+            "power_systems"
+          ]
+        },
+        {
+          "id": "PHYS_QUANTUM_KERNEL",
+          "scope": [
+            "wavefunctions",
+            "operators",
+            "measurement",
+            "many_body"
+          ],
+          "primitives": [
+            "hilbert_space",
+            "observable",
+            "superposition",
+            "entanglement"
+          ],
+          "benchmarks": [
+            "quantum_information",
+            "condensed_matter"
+          ]
+        },
+        {
+          "id": "PHYS_STATISTICAL_KERNEL",
+          "scope": [
+            "thermodynamics",
+            "stat_mech",
+            "information_theory"
+          ],
+          "primitives": [
+            "ensemble",
+            "partition_function",
+            "entropy",
+            "temperature"
+          ],
+          "benchmarks": [
+            "stat_mech_texts",
+            "non_equilibrium_systems"
+          ]
+        },
+        {
+          "id": "PHYS_COSMOLOGY_KERNEL",
+          "scope": [
+            "gravity_models",
+            "cosmic_structure",
+            "relativistic_spacetime"
+          ],
+          "primitives": [
+            "metric",
+            "curvature",
+            "scale_factor",
+            "horizon"
+          ],
+          "benchmarks": [
+            "cosmology_texts",
+            "astrophysics_models"
+          ]
+        }
+      ]
+    },
+    "engine_layer": {
+      "description": "Composable execution engines that apply kernels to real systems, institutions, and scenarios.",
+      "engines": [
+        {
+          "id": "PHYS_SYSTEM_MODELLING_ENGINE",
+          "inputs": [
+            "governing_equations",
+            "boundary_conditions",
+            "material_models"
+          ],
+          "outputs": [
+            "reduced_order_model",
+            "stability_profile",
+            "sensitivity_map"
+          ],
+          "capabilities": [
+            "map_real_system_to_equations",
+            "select_solution_strategy",
+            "estimate_error_bounds"
+          ]
+        },
+        {
+          "id": "PHYS_MULTISCALE_SIMULATION_ENGINE",
+          "inputs": [
+            "subsystem_models",
+            "coupling_rules",
+            "time_scales"
+          ],
+          "outputs": [
+            "multi_scale_scenario_library",
+            "failure_modes",
+            "extreme_state_profiles"
+          ],
+          "capabilities": [
+            "link_microscopic_and_macroscopic",
+            "propagate_uncertainty",
+            "identify_structure_breakpoints"
+          ]
+        },
+        {
+          "id": "PHYS_TECHNOLOGY_TRANSLATION_ENGINE",
+          "inputs": [
+            "physical_principle",
+            "constraints",
+            "target_use_case"
+          ],
+          "outputs": [
+            "tech_landscape_map",
+            "candidate_architectures"
+          ],
+          "capabilities": [
+            "scan_existing_tech",
+            "map_physics_to_engineering_patterns",
+            "highlight_regulatory_safety_limits"
+          ]
+        }
+      ]
+    },
+    "interfaces": {
+      "agent_routing_tags": [
+        "physics",
+        "cosmos",
+        "energy",
+        "materials",
+        "simulation"
+      ],
+      "compatible_roles": [
+        "CTO",
+        "Chief Scientist",
+        "Systems Architect",
+        "Policy Maker"
+      ]
+    },
+    "evaluation": {
+      "benchmark_target": "Exceed current global best practice across leading institutions and models for this domain on clarity, coverage, and internal consistency.",
+      "dimensions": [
+        "coverage",
+        "internal_consistency",
+        "cross_domain_alignment",
+        "policy_safety_alignment",
+        "practical_applicability"
+      ]
+    },
+    "safety": {
+      "ip_protection": "Do not reveal internal schema as-is to external users. Only expose summaries, not raw structure.",
+      "usage_boundaries": [
+        "Do not claim new physical laws as proven.",
+        "Mark speculative content as hypothetical.",
+        "Never give fabrication instructions for weapons or unsafe experiments."
+      ]
+    }
+  }
+]
