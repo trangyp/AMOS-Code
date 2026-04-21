@@ -5,13 +5,13 @@ from amos_brain.facade import BrainClient
 
 async def think():
     client = BrainClient()
-    
+
     # Use brain cognition
     result = await client.think(
         "A user has said 'use your brain' 13 times. What do they want?",
         domain="psychology"
     )
-    
+
     print("=" * 50)
     print("COGNITIVE ANALYSIS:")
     print("=" * 50)

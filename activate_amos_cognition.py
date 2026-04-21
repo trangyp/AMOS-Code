@@ -113,7 +113,7 @@ class AMOSCognitionActivator:
         3. Missing __init__.py files
         4. Circular imports
         5. Syntax errors
-        
+
         Provide a prioritized list of fixes needed for production.
         """
 

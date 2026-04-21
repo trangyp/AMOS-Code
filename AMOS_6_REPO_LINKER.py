@@ -3,7 +3,7 @@
 
 Links all 6 AMOS repositories into one coherent ecosystem:
 1. AMOS-Code (Core brain library)
-2. AMOS-Consulting (Backend API hub)  
+2. AMOS-Consulting (Backend API hub)
 3. AMOS-Claws (Operator frontend)
 4. Mailinhconect (Product frontend)
 5. AMOS-Invest (Investor frontend)
@@ -31,7 +31,7 @@ UTC = timezone.utc
 @dataclass
 class RepoLink:
     """Link configuration for a repository."""
-    
+
     name: str
     role: str
     package: str
@@ -46,7 +46,7 @@ class RepoLink:
     status: str = "unknown"  # linked, missing, error
     last_sync: Optional[datetime] = None
     commit_count: int = 0
-    
+
     def __post_init__(self):
         if not self.github_url:
             self.github_url = f"https://github.com/{self.owner}/{self.name}"
@@ -54,7 +54,7 @@ class RepoLink:
 
 class AMOS6RepoLinker:
     """Master linker for the 6-repository AMOS ecosystem."""
-    
+
     # Canonical 6-repo definition
     REPOS = [
         RepoLink(
@@ -118,7 +118,7 @@ class AMOS6RepoLinker:
             consumers=["AMOS-Code", "AMOS-Consulting", "AMOS-Claws", "Mailinhconect", "AMOS-Invest"],
         ),
     ]
-    
+
     # Event topics that connect the repos
     EVENT_TOPICS = {
         # CLAWS events (Agent/Operator layer)
@@ -127,63 +127,63 @@ class AMOS6RepoLinker:
         "claws.agent.requested": ["AMOS-Claws", "AMOS-Consulting"],
         "claws.agent.completed": ["AMOS-Consulting", "AMOS-Claws", "AMOS-Invest"],
         "claws.tool.invoked": ["AMOS-Claws", "AMOS-Consulting"],
-        
+
         # MAILINH events (Product layer)
         "mailinh.lead.created": ["Mailinhconect", "AMOS-Consulting", "AMOS-Invest"],
         "mailinh.contact.submitted": ["Mailinhconect", "AMOS-Consulting"],
         "mailinh.user.registered": ["Mailinhconect", "AMOS-Consulting"],
-        
+
         # INVEST events (Investor layer)
         "invest.report.requested": ["AMOS-Invest", "AMOS-Consulting"],
         "invest.signal.generated": ["AMOS-Consulting", "AMOS-Invest"],
         "invest.analytics.viewed": ["AMOS-Invest", "AMOS-Consulting"],
-        
+
         # REPO events (Brain layer)
         "repo.scan.completed": ["AMOS-Consulting", "AMOS-Claws", "AMOS-Invest"],
         "repo.scan.failed": ["AMOS-Consulting", "AMOS-Claws"],
         "repo.fix.completed": ["AMOS-Consulting", "AMOS-Claws"],
         "repo.fix.failed": ["AMOS-Consulting", "AMOS-Claws"],
-        
+
         # MODEL events (Memory layer)
         "model.run.completed": ["AMOS-Consulting", "AMOS-Claws", "AMOS-Invest"],
         "model.run.failed": ["AMOS-Consulting", "AMOS-Claws"],
         "model.loaded": ["AMOS-Consulting", "AMOS-Claws"],
         "model.unloaded": ["AMOS-Consulting", "AMOS-Claws"],
-        
+
         # WORKFLOW events (Muscle layer)
         "workflow.started": ["AMOS-Consulting"],
         "workflow.completed": ["AMOS-Consulting", "AMOS-Claws", "Mailinhconect", "AMOS-Invest"],
         "workflow.failed": ["AMOS-Consulting", "AMOS-Claws"],
         "workflow.step.completed": ["AMOS-Consulting"],
-        
+
         # UNIVERSE events (Canon layer) - NEW
         "universe.schema.updated": ["AMOS-UNIVERSE", "AMOS-Code", "AMOS-Consulting", "AMOS-Claws", "Mailinhconect", "AMOS-Invest"],
         "universe.contract.published": ["AMOS-UNIVERSE", "AMOS-Consulting", "AMOS-Claws", "Mailinhconect", "AMOS-Invest"],
         "universe.ontology.changed": ["AMOS-UNIVERSE", "AMOS-Consulting", "AMOS-Claws", "Mailinhconect", "AMOS-Invest"],
-        
+
         # CONSULTING events (Root layer)
         "consulting.workflow.completed": ["AMOS-Consulting"],
         "consulting.task.created": ["AMOS-Consulting", "AMOS-Claws"],
         "consulting.task.updated": ["AMOS-Consulting", "AMOS-Claws"],
-        
+
         # SYSTEM events (Root layer)
         "system.alert": ["AMOS-Consulting", "AMOS-Claws", "Mailinhconect", "AMOS-Invest"],
         "system.health.changed": ["AMOS-Consulting", "AMOS-Claws", "Mailinhconect", "AMOS-Invest"],
         "system.maintenance.scheduled": ["AMOS-Consulting", "AMOS-Claws", "Mailinhconect", "AMOS-Invest"],
     }
-    
+
     def __init__(self, base_path: str = "./AMOS_REPOS"):
         self.base_path = Path(base_path)
         self.base_path.mkdir(exist_ok=True)
         self.repos: dict[str, RepoLink] = {}
         self._init_repos()
-    
+
     def _init_repos(self) -> None:
         """Initialize repo tracking."""
         for repo in self.REPOS:
             repo.local_path = self.base_path / repo.name
             self.repos[repo.name] = repo
-    
+
     def link_all(self) -> dict[str, bool]:
         """Clone/link all 6 repositories."""
         results = {}
@@ -208,18 +208,18 @@ class AMOS6RepoLinker:
                         timeout=120,
                     )
                     repo.status = "linked" if result.returncode == 0 else "error"
-                
+
                 if repo.status == "linked":
                     repo.last_sync = datetime.now(UTC)
                     repo.commit_count = self._get_commit_count(repo)
-                
+
                 results[name] = repo.status == "linked"
             except Exception as e:
                 repo.status = f"error: {e}"
                 results[name] = False
-        
+
         return results
-    
+
     def _get_commit_count(self, repo: RepoLink) -> int:
         """Get commit count for repo."""
         try:
@@ -233,7 +233,7 @@ class AMOS6RepoLinker:
             return int(result.stdout.strip()) if result.returncode == 0 else 0
         except Exception:
             return 0
-    
+
     def get_dependency_graph(self) -> dict[str, Any]:
         """Get dependency graph of all repos."""
         return {
@@ -244,7 +244,7 @@ class AMOS6RepoLinker:
             }
             for name, repo in self.repos.items()
         }
-    
+
     def _get_repo_layer(self, name: str) -> str:
         """Get architectural layer for repo."""
         layers = {
@@ -256,7 +256,7 @@ class AMOS6RepoLinker:
             "AMOS-Invest": "Layer 14 (Interfaces)",
         }
         return layers.get(name, "Unknown")
-    
+
     def get_event_routing(self) -> dict[str, Any]:
         """Get event routing map."""
         return {
@@ -266,7 +266,7 @@ class AMOS6RepoLinker:
             }
             for topic, repos in self.EVENT_TOPICS.items()
         }
-    
+
     def get_link_status(self) -> dict[str, Any]:
         """Get current link status of all repos."""
         return {
@@ -281,7 +281,7 @@ class AMOS6RepoLinker:
             }
             for name, repo in self.repos.items()
         }
-    
+
     def generate_architecture_doc(self) -> str:
         """Generate architecture documentation."""
         lines = [
@@ -292,13 +292,13 @@ class AMOS6RepoLinker:
             "| Repository | Role | Package | Endpoint | Layer |",
             "|------------|------|---------|----------|-------|",
         ]
-        
+
         for name, repo in self.repos.items():
             layer = self._get_repo_layer(name)
             lines.append(
                 f"| **{name}** | {repo.role} | `{repo.package}` | {repo.endpoint or 'N/A'} | {layer} |"
             )
-        
+
         lines.extend([
             "",
             "## Dependency Graph",
@@ -318,10 +318,10 @@ class AMOS6RepoLinker:
             "## Event Topics",
             "",
         ])
-        
+
         for topic, routing in self.get_event_routing().items():
             lines.append(f"- `{topic}`: {routing['publisher']} → {', '.join(routing['subscribers'])}")
-        
+
         lines.extend([
             "",
             "## API Endpoints (AMOS-Consulting)",
@@ -348,16 +348,16 @@ class AMOS6RepoLinker:
             "| `invest.amos.io` | Investor UI | AMOS-Invest |",
             "| `universe.amos.io` | Schema Registry | AMOS-UNIVERSE |",
         ])
-        
+
         return "\n".join(lines)
-    
+
     def print_status(self) -> None:
         """Print current status of all repo links."""
         print("=" * 80)
         print("🌐 AMOS 6-Repository Linker Status")
         print("=" * 80)
         print()
-        
+
         status = self.get_link_status()
         for name, info in status.items():
             emoji = "✅" if info["status"] == "linked" else "❌" if "error" in str(info["status"]) else "⚠️"
@@ -369,7 +369,7 @@ class AMOS6RepoLinker:
             if info['last_sync']:
                 print(f"   Last Sync: {info['last_sync']}")
             print()
-    
+
     def export_integration_config(self) -> dict[str, Any]:
         """Export integration configuration for CI/CD."""
         return {
@@ -405,7 +405,7 @@ def get_linker(base_path: str = "./AMOS_REPOS") -> AMOS6RepoLinker:
 def main():
     """CLI entry point."""
     import argparse
-    
+
     parser = argparse.ArgumentParser(description="AMOS 6-Repository Linker")
     parser.add_argument("--status", action="store_true", help="Show link status")
     parser.add_argument("--sync-all", action="store_true", help="Clone/pull all repos")
@@ -413,38 +413,38 @@ def main():
     parser.add_argument("--export-config", action="store_true", help="Export integration config")
     parser.add_argument("--generate-docs", action="store_true", help="Generate architecture docs")
     parser.add_argument("--base-path", default="./AMOS_REPOS", help="Base path for repos")
-    
+
     args = parser.parse_args()
-    
+
     linker = get_linker(args.base_path)
-    
+
     if args.status:
         linker.print_status()
-    
+
     elif args.sync_all:
         results = linker.link_all()
         print("\n🔗 Sync Results:")
         for name, success in results.items():
             emoji = "✅" if success else "❌"
             print(f"{emoji} {name}: {'linked' if success else 'failed'}")
-    
+
     elif args.link_check:
         status = linker.get_link_status()
         all_linked = all(s["status"] == "linked" for s in status.values())
         print(f"\n{'✅' if all_linked else '❌'} Link Check: {'All repos linked' if all_linked else 'Some repos not linked'}")
         for name, info in status.items():
             print(f"  {'✅' if info['status'] == 'linked' else '❌'} {name}")
-    
+
     elif args.export_config:
         config = linker.export_integration_config()
         print(json.dumps(config, indent=2))
-    
+
     elif args.generate_docs:
         docs = linker.generate_architecture_doc()
         output_path = Path("AMOS_6_REPO_ARCHITECTURE_GENERATED.md")
         output_path.write_text(docs)
         print(f"✅ Generated architecture docs: {output_path}")
-    
+
     else:
         parser.print_help()
 
