@@ -21,12 +21,9 @@ import json
 import uuid
 from collections.abc import Awaitable, Callable
 from contextlib import asynccontextmanager
-from datetime import datetime, timezone
-UTC = timezone.utc, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Optional
-
-UTC = UTC
 
 import structlog
 from fastapi import FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect

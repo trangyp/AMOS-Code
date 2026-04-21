@@ -12,10 +12,7 @@ from __future__ import annotations
 import asyncio
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-UTC = timezone.utc
 from pathlib import Path
-
-UTC = UTC
 from typing import Any
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
@@ -48,7 +45,7 @@ class AgentMetrics:
     budget_spent: float
     budget_remaining: float
     execution_time_ms: float
-    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
 
 class AgentMonitor:
@@ -58,7 +55,7 @@ class AgentMonitor:
         self.subscribers: dict[str, set[WebSocket]] = {}
         self.metrics_history: dict[str, list[AgentMetrics]] = {}
         self._running = False
-        self._task: asyncio.Task = None
+        self._task: asyncio.Task | None = None
 
     async def start(self):
         """Start monitoring loop."""
@@ -149,7 +146,7 @@ class AgentMonitor:
                                         "final_metrics": {
                                             "total_actions": metrics.actions_count,
                                             "total_spent": round(metrics.budget_spent, 4),
-                                            "timestamp": datetime.now(UTC).isoformat(),
+                                            "timestamp": datetime.now(timezone.utc).isoformat(),
                                         },
                                     },
                                 )
@@ -223,7 +220,7 @@ async def agent_monitor_websocket(websocket: WebSocket, run_id: str):
                             "remaining": status.get("budget_remaining"),
                         },
                     },
-                    "timestamp": datetime.now(UTC).isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
             )
         else:
@@ -231,7 +228,7 @@ async def agent_monitor_websocket(websocket: WebSocket, run_id: str):
                 {
                     "type": "error",
                     "message": f"Agent run {run_id} not found",
-                    "timestamp": datetime.now(UTC).isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
             )
             await websocket.close()
@@ -241,7 +238,7 @@ async def agent_monitor_websocket(websocket: WebSocket, run_id: str):
             {
                 "type": "error",
                 "message": "Brain not available",
-                "timestamp": datetime.now(UTC).isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
         )
         await websocket.close()

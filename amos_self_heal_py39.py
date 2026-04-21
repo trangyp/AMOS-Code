@@ -98,8 +98,8 @@ def main():
     
     # Use brain to validate fixes
     engine = get_framework_engine()
-    equations = engine.get_all_equations()
-    print(f"[BRAIN] Using {len(equations)} equations for validation")
+    stats = engine.get_stats()
+    print(f"[BRAIN] Using {stats['total_equations']} equations for validation")
 
     print("="*70)
     print("AMOS SELF-HEAL: FULL 6-REPOSITORY INTEGRATION")

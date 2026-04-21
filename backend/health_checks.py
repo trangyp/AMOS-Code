@@ -27,8 +27,6 @@ try:
 except ImportError:
     SUPERBRAIN_AVAILABLE = False
 
-UTC = UTC
-
 
 class HealthStatus(str, Enum):
     HEALTHY = "healthy"

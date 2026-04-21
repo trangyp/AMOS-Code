@@ -1,8 +1,47 @@
 {
-  "consolidated_from": [
-    "_00_AMOS_CANON",
-    "_AMOS_BRAIN"
-  ],
-  "target": "_AMOS_CANON",
-  "timestamp": "1776740659.041408"
+  "manifest_version": "1.0.0",
+  "canon_name": "AMOS_CANON",
+  "description": "Canonical core for AMOS deterministic intelligence system",
+  "created_at": "2025-04-21T10:00:00Z",
+  "author": "Trang",
+  "kernels": {
+    "audit_quality": {
+      "path": "Kernels/AMOS_Audit_Quality_Engine_v0.json",
+      "domain": "Governance_Risk",
+      "description": "Cross-domain audit quality kernel"
+    },
+    "neural_cognition": {
+      "path": "Kernels/Biology_Cognition/neural_cognition_kernel.json",
+      "domain": "Biology_Cognition",
+      "description": "Neural cognition and predictive processing kernel"
+    },
+    "operational_risk": {
+      "path": "Kernels/Governance_Risk/operational_risk_kernel.json",
+      "domain": "Governance_Risk",
+      "description": "Operational risk and compliance kernel"
+    },
+    "formal_logic": {
+      "path": "Kernels/Logic/formal_logic_kernel.json",
+      "domain": "Logic",
+      "description": "Formal logic and type theory kernel"
+    },
+    "systems_architecture": {
+      "path": "Kernels/Tech/systems_architecture_kernel.json",
+      "domain": "Tech",
+      "description": "Systems architecture and reliability kernel"
+    }
+  },
+  "registries": {
+    "glossary": "AMOS_CANONICAL_GLOSSARY.json",
+    "agents": "AMOS_AGENT_REGISTRY.json",
+    "body": "canonical_body_registry.json"
+  },
+  "python_modules": [
+    "canon_core.py",
+    "canon_loader.py",
+    "canon_enforcer.py",
+    "canon_validator.py",
+    "canon_registry.py",
+    "canon_bridge.py"
+  ]
 }

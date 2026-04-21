@@ -690,6 +690,11 @@ def __getattr__(name: str):
     if name in debug_names:
         return locals()[name]
 
+    # OpenClaw bridge - lazy load
+    openclaw_names = {"get_openclaw_bridge", "amos_openclaw_health", "detect_openclaw_fakes"}
+    if name in openclaw_names:
+        return _lazy_import(name)
+
     raise AttributeError(f"module 'amos_brain' has no attribute '{name}'")
 
 
@@ -790,6 +795,10 @@ __all__ = [
     "EquationComputeRequest",
     "EquationComputeResponse",
     "get_cognitive_runtime",
+    # OpenClaw
+    "get_openclaw_bridge",
+    "amos_openclaw_health",
+    "detect_openclaw_fakes",
 ]
 
 

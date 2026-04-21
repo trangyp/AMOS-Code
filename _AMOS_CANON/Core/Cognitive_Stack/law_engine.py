@@ -1,15 +1,12 @@
 #!/usr/bin/env python3
-"""
-law_engine.py - AMOS Canonical Law Engine
+"""law_engine.py - AMOS Canonical Law Engine
 
 Enforces AMOS Constitutional Laws across all components.
-Provides law compliance verification and enforcement.
-
 Part of AMOS Canon - One Source of Truth
 """
 
 from __future__ import annotations
-from typing import Any, Optional, Callable
+from typing import Any, Optional
 from datetime import datetime, timezone
 from enum import Enum
 
@@ -25,7 +22,8 @@ class LawPriority(Enum):
 class LawViolation:
     """Represents a violation of an AMOS Law."""
 
-    def __init__(self, law_id: str, message: str, priority: LawPriority) -> None:
+    def __init__(self, law_id: str, message: str,
+                 priority: LawPriority) -> None:
         self.law_id = law_id
         self.message = message
         self.priority = priority
@@ -72,13 +70,14 @@ class LawEngine:
             }
         }
 
-    def check_compliance(self, component: str, action: str) -> list[LawViolation]:
+    def check_compliance(self, component: str,
+                         action: str) -> list[LawViolation]:
         """Check if action complies with all laws."""
         violations = []
-        # Law 0: Check for subprocess creation
         if "subprocess" in action.lower():
             violations.append(LawViolation(
-                "LAW_0", f"Subprocess detected in {component}", LawPriority.CRITICAL
+                "LAW_0", f"Subprocess in {component}",
+                LawPriority.CRITICAL
             ))
         return violations
 

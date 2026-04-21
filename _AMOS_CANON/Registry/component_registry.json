@@ -1,0 +1,31 @@
+{
+  "canonical_id": "component_registry",
+  "version": "1.0.0",
+  "created": "2026-04-21T00:00:00+00:00",
+  "components": {
+    "law_engine": {
+      "path": "Core/Cognitive_Stack/law_engine.py",
+      "purpose": "Enforces AMOS Constitutional Laws",
+      "singleton": true,
+      "dependencies": []
+    },
+    "canonical_identity": {
+      "path": "Core/Cognitive_Stack/canonical_identity.py",
+      "purpose": "Manages canonical identity across components",
+      "singleton": true,
+      "dependencies": []
+    },
+    "repository_bridge": {
+      "path": "Integration/repository_bridge.py",
+      "purpose": "Connects AMOS Canon with repository subsystems",
+      "singleton": true,
+      "dependencies": []
+    },
+    "system_orchestrator": {
+      "path": "Integration/system_orchestrator.py",
+      "purpose": "Central orchestration layer for components",
+      "singleton": true,
+      "dependencies": []
+    }
+  }
+}

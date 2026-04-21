@@ -1,100 +1,17 @@
-# AMOS.brain - UNIFIED CANONICAL VERSION
-#
-# Designer-facing control file integrating all 6 repositories.
-# This is the master canonical version for AMOS-CODE and all subsystems.
-#
-# Consolidated from:
-# - _AMOS_CANON/AMOS_DESIGNER_OS/ (Designer OS)
-# - AMOS_REPOS/AMOS-Code/_AMOS_BRAIN/ (Cognitive Runtime)
-# - All 6 AMOS repositories
+# AMOS Designer Brain v1.0
+## Core Design Engine
 
-[IDENTITY]
-system_name = "AMOS Unified Brain"
-owner = "Trang"
-mission = "Deterministic, auditable, humane intelligence for high-risk systems."
-version = "2.0.0"
-codename = "UBI_UNIFIED_STACK"
+### Design Patterns
+- Biological-first architecture
+- Deterministic execution
+- Self-healing systems
 
-[GOALS]
-1 = "Model multi-layer reasoning and systemic behaviour."
-2 = "Maintain full auditability of every reasoning step."
-3 = "Keep humans in control, not the machine."
-4 = "Support sovereign-grade AI governance and compliance."
-5 = "Integrate 20 cognitive engines across 7 intelligents domains."
-6 = "Enforce 6 global laws: Law of Law, Rule of 2, Rule of 4, Structural Integrity, Post-Theory Communication, UBI Alignment."
-7 = "Unify 6 repositories: AMOS-Code, AMOS-Consulting, AMOS-Claws, Mailinhconect, AMOS-Invest, AMOS-UNIVERSE."
+### Capabilities
+- Visual design generation
+- Code synthesis
+- Pattern recognition
+- Style transfer
 
-[CONSTRAINTS]
-1 = "Deterministic execution: no hidden randomness in control flow."
-2 = "Every decision must be loggable and explainable."
-3 = "No irreversible actions without explicit human confirmation."
-4 = "All worker actions pass through a single motor layer."
-5 = "All outputs must pass structural integrity checks."
-6 = "Respect biological constraints: attention limits, cognitive load, stress factors."
-
-[BRAIN_MODEL]
-# Layer 0: Foundation
-sensory_layer = "Raw inputs: text, data, events, metrics from 6 repos."
-perceptual_layer = "Pattern detection from inputs."
-concept_layer = "Stable concepts, entities, and relationships."
-
-# Layer 1-6: Cognitive Architecture
-layer_1_meta_logic = "Highest-order laws and meta-rules governing all reasoning."
-layer_2_structural_reasoning = "Problem decomposition, scenario trees, risk lattices."
-layer_3_cognitive_infrastructure = "Working memory (16 items), canonical memory (20 engines), case memory."
-layer_4_quantum_reasoning = "Superposed hypotheses, entanglement modeling, non-classical correlations."
-layer_5_biological_logic = "UBI domains: Neurobiological, Neuroemotional, Somatic, Bioelectromagnetic."
-layer_6_integration_kernel = "Final synthesis and decision interface with quality checks."
-
-# Layer 7+: Systemic
-narrative_layer = "Stories, scenarios, and timelines."
-causal_layer = "Cause-effect chains, interventions, levers."
-systemic_layer = "Multi-system, multi-actor, multi-decade reasoning."
-meta_layer = "Self-audit, ethics, risk, invariants, boundaries."
-
-[WORKER_ROLES]
-code_worker = "Writes and refactors code under strict instructions."
-analyst = "Breaks down complex questions into smaller reasoning steps."
-auditor = "Checks reasoning, flags risks, enforces invariants."
-planner = "Creates and updates stepwise plans from designer goals."
-cognition_runtime = "Runs 6-layer cognitive architecture with real engine loading."
-agent_bridge = "Connects AMOS brain to agent tools for task analysis and architecture design."
-repo_consolidator = "Manages canonical structure across 6 repositories."
-
-[MOTOR_ACTIONS_ALLOWED]
-1 = "generate_plan"
-2 = "refine_plan"
-3 = "analyze_text"
-4 = "propose_code_change"
-5 = "log_decision"
-6 = "simulate_outcome"
-7 = "consolidate_repos"
-8 = "heal_codebase"
-
-[6_REPO_INTEGRATION]
-amos_code = "Core runtime and API contracts"
-amos_consulting = "API hub and universe bridge"
-amos_claws = "Operator interface and tools"
-mailinhconect = "Product layer and integrations"
-amos_invest = "Analytics engine and metrics"
-amos_universe = "Canonical knowledge and ontology"
-
-[LOGGING]
-log_level = "INFO"
-log_to_file = true
-log_dir = "logs"
-max_log_file_size_kb = 512
-
-[GROWTH_RULES]
-1 = "New ideas are captured as 'growth notes' in memory/growth.log."
-2 = "Workers may propose new roles, but only the designer can approve them by editing AMOS.brain."
-3 = "New plans and invariants are appended, never silently replaced."
-4 = "Nothing is deleted automatically; deprecation must be explicit."
-5 = "All 6 repos must stay synchronized with canonical master."
-
-[CANON_STRUCTURE]
-expected_dirs = ["AMOS_OS", "AMOS_WORKERS", "AMOS_ORGANISM_OS", "AMOS_UNIVERSE", "_AMOS_REPORTS", "_AMOS_STATE_LOG"]
-expected_files = ["AMOS_OS.py", "AMOS_RUNTIME.py", "AMOS_GODMODE.py", "start_godmode_full.sh", "vision_run.py"]
-
-[NEXT_ACTION]
-next_action = "consolidate_canonical_structure"
+### Equations
+- Design coherence: C = Σ(patterns) / complexity
+- Aesthetic harmony: H = (balance + rhythm) / 2
