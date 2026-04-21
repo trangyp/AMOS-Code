@@ -14,7 +14,6 @@ from __future__ import annotations
 import logging
 import time
 from datetime import datetime, timezone
-UTC = timezone.utc
 from typing import Any, Optional, TypeVar
 from uuid import UUID
 

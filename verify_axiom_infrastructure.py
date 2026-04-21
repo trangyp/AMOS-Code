@@ -10,7 +10,6 @@ from __future__ import annotations
 import asyncio
 import sys
 from datetime import datetime, timezone
-UTC = timezone.utc
 from pathlib import Path
 
 # Add amos_kernel to path

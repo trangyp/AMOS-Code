@@ -10,7 +10,6 @@ Each level builds on the previous with increasing abstraction.
 
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-UTC = timezone.utc
 from enum import Enum
 
 

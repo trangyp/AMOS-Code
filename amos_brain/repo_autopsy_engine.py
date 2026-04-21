@@ -14,7 +14,6 @@ from datetime import datetime, timezone
 UTC = timezone.utc
 
 
-UTC = timezone.utc
 from enum import Enum
 from pathlib import Path
 from typing import Any

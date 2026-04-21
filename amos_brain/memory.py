@@ -8,7 +8,6 @@ import logging
 from datetime import datetime, timezone
 
 # Python 3.9 compatibility - UTC is only in 3.11+
-UTC = timezone.utc
 from pathlib import Path
 from typing import Any, Optional
 

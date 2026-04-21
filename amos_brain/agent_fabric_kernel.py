@@ -15,7 +15,6 @@ from datetime import datetime, timezone
 UTC = timezone.utc
 
 
-UTC = timezone.utc
 from enum import StrEnum
 from typing import Any
 

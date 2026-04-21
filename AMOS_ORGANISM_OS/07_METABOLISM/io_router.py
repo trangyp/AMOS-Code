@@ -11,7 +11,6 @@ import uuid
 from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
-UTC = timezone.utc
 from enum import Enum
 from pathlib import Path
 from typing import Any, Optional

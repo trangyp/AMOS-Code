@@ -1,7 +1,7 @@
 """AMOS Organism Bridge - Connect Organism OS to Cognitive System."""
 
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 # Define ORGANISM_PATH for reference
 ORGANISM_PATH = Path(
@@ -117,7 +117,7 @@ class OrganismBridge:
 
 
 # Singleton instance
-_organism_bridge: OrganismBridge | None = None
+_organism_bridge: Optional[OrganismBridge] = None
 
 
 def get_organism_bridge() -> OrganismBridge:

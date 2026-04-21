@@ -6,7 +6,7 @@ Part of AMOS Canon - One Source of Truth
 """
 
 from __future__ import annotations
-from typing import Any, Optional
+from typing import Any
 from datetime import datetime, timezone
 from enum import Enum
 
@@ -92,7 +92,7 @@ class LawEngine:
         }
 
 
-_INSTANCE: Optional[LawEngine] = None
+_INSTANCE: LawEngine | None = None
 
 
 def get_law_engine() -> LawEngine:

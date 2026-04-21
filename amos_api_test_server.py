@@ -7,7 +7,6 @@ import logging
 import sys
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
-UTC = timezone.utc
 from typing import Any, Optional
 
 from fastapi import FastAPI, HTTPException

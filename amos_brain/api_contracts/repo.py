@@ -3,7 +3,6 @@ from __future__ import annotations
 """Repo Doctor API contracts for repository analysis and fixing."""
 
 from datetime import datetime, timezone
-UTC = timezone.utc
 from enum import Enum
 from typing import Any
 

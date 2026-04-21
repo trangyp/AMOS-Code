@@ -2,7 +2,6 @@
 
 from datetime import datetime, timezone
 
-UTC = timezone.utc
 from typing import Any
 
 from amos_universe.contracts.pydantic.base import BaseAMOSModel

@@ -8,7 +8,6 @@ Uses amos_brain_working.think() to:
 """
 
 from datetime import datetime, timezone
-UTC = timezone.utc
 from pathlib import Path
 from typing import Any
 

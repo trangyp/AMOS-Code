@@ -1,7 +1,6 @@
 """Universal Law Kernel - main validation orchestrator"""
 
 from datetime import datetime, timezone
-UTC = timezone.utc
 from typing import Optional
 
 from .collapse import collapse_risk

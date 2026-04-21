@@ -6,7 +6,6 @@ Uses real brain components: CognitiveEngine, MasterOrchestrator, SuperBrain.
 """
 
 from datetime import datetime, timezone
-UTC = timezone.utc
 from pathlib import Path
 from typing import Any
 

@@ -16,7 +16,6 @@ import argparse
 import subprocess
 import sys
 from datetime import datetime, timezone
-UTC = timezone.utc
 from pathlib import Path
 
 UTC = UTC

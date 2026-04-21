@@ -10,7 +10,6 @@ Version: 3.0.0
 from __future__ import annotations
 
 from datetime import datetime, timezone
-UTC = timezone.utc
 from typing import Any, Literal
 
 from pydantic import BaseModel, Field

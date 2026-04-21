@@ -11,7 +11,6 @@ Version: 3.0.0
 import asyncio
 import json
 from datetime import datetime, timezone
-UTC = timezone.utc
 from typing import Any
 
 UTC = UTC

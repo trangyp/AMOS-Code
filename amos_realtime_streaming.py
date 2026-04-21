@@ -17,7 +17,6 @@ import logging
 from collections.abc import AsyncGenerator, Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-UTC = timezone.utc
 from enum import Enum
 
 UTC = UTC

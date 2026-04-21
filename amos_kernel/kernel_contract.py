@@ -13,7 +13,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-UTC = timezone.utc
 from typing import Any, Optional
 
 from amos_kernel.contracts import CORE_INVARIANTS, KernelResult

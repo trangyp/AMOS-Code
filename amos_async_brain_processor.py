@@ -10,7 +10,6 @@ from __future__ import annotations
 import asyncio
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-UTC = timezone.utc
 from typing import Any, Optional
 
 from amos_brain import BrainClient, get_brain

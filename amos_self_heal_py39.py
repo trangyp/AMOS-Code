@@ -105,20 +105,8 @@ def main():
     print("AMOS SELF-HEAL: FULL 6-REPOSITORY INTEGRATION")
     print("="*70)
     
-    # Use brain to guide self-healing
-    if HAS_REPOS:
-        print("\n🧠 BRAIN-GUIDED SELF-HEALING ACTIVE")
-        from amos_brain.facade import get_brain
-        brain = get_brain()
-        
-        # Brain decides healing strategy
-        decision = brain.decide(
-            context={"task": "self_heal", "target": "python39_compat"},
-            options=["aggressive_fix", "conservative_fix", "skip"]
-        )
-        print(f"   Brain decision: {decision}")
-    else:
-        print("\n⚠️  Brain not available - using basic healing")
+    # Skip brain-guided to avoid import issues - just fix files directly
+    print("\n🔧 DIRECT FILE HEALING MODE")
     print("="*70)
     
     # REPORT ALL 6 REPOS

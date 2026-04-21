@@ -12,7 +12,6 @@ import asyncio
 import uuid
 from dataclasses import dataclass
 from datetime import datetime, timezone
-UTC = timezone.utc
 from enum import Enum
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException

@@ -20,10 +20,10 @@ def fix_file(filepath):
         )
         fixes.append('datetime.UTC import')
     
-    # Fix 2: from datetime import datetime, UTC
-    if 'from datetime import datetime, UTC' in content:
+    # Fix 2: from datetime import datetime, timezone
+    if 'from datetime import datetime, timezone' in content:
         content = content.replace(
-            'from datetime import datetime, UTC',
+            'from datetime import datetime, timezone',
             'from datetime import datetime, timezone\nUTC = timezone.utc'
         )
         fixes.append('datetime, UTC import')

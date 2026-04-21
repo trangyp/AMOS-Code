@@ -11,7 +11,6 @@ Version: 1.0.0
 from __future__ import annotations
 
 from datetime import datetime, timezone
-UTC = timezone.utc
 from typing import Any, Generic, Optional, Protocol, TypeVar, runtime_checkable
 
 UTC = UTC

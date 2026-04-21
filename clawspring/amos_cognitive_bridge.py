@@ -13,7 +13,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime, timezone
 
-UTC = timezone.utc
 from typing import Any
 
 from clawspring.amos_ubi_engine import AMOSUBIEngine, UBIResult

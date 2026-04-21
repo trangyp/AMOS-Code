@@ -17,7 +17,6 @@ Usage:
 import os
 from datetime import datetime, timezone
 
-UTC = timezone.utc
 from typing import Any
 
 from amos_brain.agent_bridge import AMOSAgentBridge, ToolDecision

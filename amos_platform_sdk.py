@@ -29,7 +29,6 @@ import logging
 from collections.abc import AsyncIterator
 from dataclasses import dataclass, field
 from datetime import timezone
-UTC = timezone.utc
 from typing import Any
 from urllib.parse import urljoin
 # Real HTTP client

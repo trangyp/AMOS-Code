@@ -14,7 +14,6 @@ import asyncio
 import json
 import time
 from datetime import datetime, timezone
-UTC = timezone.utc
 from typing import Any, Optional
 from uuid import uuid4
 

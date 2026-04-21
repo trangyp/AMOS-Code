@@ -12,7 +12,6 @@ import json
 import sys
 from dataclasses import dataclass
 from datetime import datetime, timezone
-UTC = timezone.utc
 from typing import Any
 
 from .axiom_state import get_state_manager

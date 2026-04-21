@@ -15,7 +15,6 @@ from datetime import datetime
 from typing import Any
 from uuid import uuid4
 
-UTC = timezone.utc
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel, Field
 

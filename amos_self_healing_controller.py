@@ -24,8 +24,7 @@ from __future__ import annotations
 import asyncio
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-UTC = timezone.utc, timedelta
+from datetime import datetime, timedelta, timezone
 from enum import Enum, auto
 
 UTC = UTC

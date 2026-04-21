@@ -13,7 +13,6 @@ import logging
 from abc import ABC, abstractmethod
 from datetime import datetime, timezone
 
-UTC = timezone.utc
 from typing import Any, Optional
 
 import aiohttp

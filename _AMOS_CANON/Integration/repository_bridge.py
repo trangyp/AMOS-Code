@@ -8,7 +8,7 @@ Part of AMOS Canon - One Source of Truth
 """
 
 from __future__ import annotations
-from typing import Any, Optional
+from typing import Any
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -41,7 +41,7 @@ class RepositoryBridge:
             if path.exists():
                 self._repos[name] = path
 
-    def get_repository(self, name: str) -> Optional[Path]:
+    def get_repository(self, name: str) -> Path | None:
         """Get path to named repository."""
         return self._repos.get(name)
 
@@ -60,7 +60,7 @@ class RepositoryBridge:
         }
 
 
-_INSTANCE: Optional[RepositoryBridge] = None
+_INSTANCE: RepositoryBridge | None = None
 
 
 def get_repository_bridge() -> RepositoryBridge:

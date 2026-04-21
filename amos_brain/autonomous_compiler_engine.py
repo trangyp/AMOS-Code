@@ -21,7 +21,6 @@ import hashlib
 import subprocess
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-UTC = timezone.utc
 from pathlib import Path
 from typing import Optional
 

@@ -9,7 +9,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-UTC = timezone.utc
 from threading import Lock
 from typing import Any, Optional
 

@@ -14,7 +14,6 @@ from datetime import datetime, timezone
 
 UTC = timezone.utc
 
-UTC = timezone.utc
 from typing import Any, Protocol
 
 from amos_brain.integrated_brain_api import (

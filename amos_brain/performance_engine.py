@@ -39,7 +39,6 @@ from datetime import datetime, timezone
 UTC = timezone.utc
 
 
-UTC = timezone.utc
 from typing import Any, Optional
 
 

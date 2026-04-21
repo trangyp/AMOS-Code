@@ -18,9 +18,8 @@ from copy import deepcopy
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 
-UTC = timezone.utc
 from enum import Enum, auto
-from typing import Any
+from typing import Any, Optional
 
 # ============================================================================
 # Core AMOS Data Structures
@@ -146,7 +145,7 @@ class Morph:
     scope: dict[str, Any] = field(default_factory=dict)
     preconditions: list[str] = field(default_factory=list)
     postconditions: list[str] = field(default_factory=list)
-    rollback_fn: Callable[[], None] | None = None
+    rollback_fn: Optional[Callable[[], None]] = None
     estimated_cost: float = 1.0
     risk: float = 0.1
 
@@ -159,8 +158,8 @@ class Branch:
     source_state: StateGraph
     target_state: StateGraph
     morphs: list[Morph] = field(default_factory=list)
-    scores: AMOSScores | None = None
-    legality: LegalityAssessment | None = None
+    scores: Optional[AMOSScores] = None
+    legality: Optional[LegalityAssessment] = None
 
 
 # ============================================================================
@@ -493,7 +492,7 @@ class CollapseKernel:
                 validated.append(b)
         return validated
 
-    def apply_collapse_function(self, branches: list[Branch]) -> Branch | None:
+    def apply_collapse_function(self, branches: list[Branch]) -> Optional[Branch]:
         """Stage 2: Apply lawful collapse.
 
         B* = argmax [weighted composite score]
@@ -850,7 +849,7 @@ class AMOSKernelRuntime:
 
 
 # Singleton instance
-_kernel_runtime: AMOSKernelRuntime | None = None
+_kernel_runtime: Optional[AMOSKernelRuntime] = None
 
 
 def get_kernel_runtime() -> AMOSKernelRuntime:

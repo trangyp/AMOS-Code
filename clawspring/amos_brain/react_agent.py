@@ -16,7 +16,6 @@ from datetime import datetime, timezone
 
 UTC = timezone.utc
 
-UTC = timezone.utc
 from enum import Enum, auto
 from typing import Any, Protocol, runtime_checkable
 

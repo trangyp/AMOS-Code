@@ -32,7 +32,6 @@ References:
 import json
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
-UTC = timezone.utc
 from typing import Any
 
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect

@@ -15,7 +15,6 @@ from __future__ import annotations
 import asyncio
 from collections.abc import AsyncIterator
 from datetime import datetime, timezone
-UTC = timezone.utc
 from pathlib import Path
 from typing import Any, Optional
 

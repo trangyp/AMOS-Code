@@ -15,7 +15,6 @@ v5 transforms AMOS from economic organism to civilization-scale actor.
 
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-UTC = timezone.utc
 from enum import Enum
 
 UTC = UTC

@@ -29,7 +29,6 @@ from __future__ import annotations
 
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
-UTC = timezone.utc
 from typing import Any, Optional
 
 from agent_knowledge import knowledge_manager, recall

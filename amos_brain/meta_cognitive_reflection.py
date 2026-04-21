@@ -34,7 +34,6 @@ from datetime import datetime, timezone
 UTC = timezone.utc
 
 
-UTC = timezone.utc
 from enum import Enum, auto
 from pathlib import Path
 from typing import Any, Optional

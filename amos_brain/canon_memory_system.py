@@ -18,7 +18,6 @@ from datetime import datetime, timezone
 UTC = timezone.utc
 
 
-UTC = timezone.utc
 from typing import Any, Optional
 
 from .canon_knowledge_engine import CanonKnowledgeEntry, get_canon_knowledge_engine

@@ -15,7 +15,6 @@ from datetime import datetime, timezone
 
 UTC = timezone.utc
 
-UTC = timezone.utc
 from amos_brain.integrated_brain_api import get_brain_api
 
 

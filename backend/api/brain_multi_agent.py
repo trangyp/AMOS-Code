@@ -13,7 +13,6 @@ from __future__ import annotations
 import asyncio
 from collections.abc import AsyncIterator
 from datetime import datetime, timezone
-UTC = timezone.utc
 from typing import Any, Optional
 
 from fastapi import APIRouter, HTTPException, Query
