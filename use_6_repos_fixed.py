@@ -89,7 +89,7 @@ def use_amos_brain(filepath: Path, content: str) -> dict:
     """USE AMOS brain to analyze if file needs fixing."""
     issues = {"needs_fix": False, "reasons": []}
 
-    # Check for datetime.UTC issues
+    # Check for UTC issues
     if "from datetime import" in content and "UTC" in content:
         lines = content.split('\n')
         for i, line in enumerate(lines, 1):
@@ -117,15 +117,18 @@ def fix_file_proper(filepath: Path) -> tuple[bool, list[str]]:
     original = content
     fixes_applied = []
 
-    # Fix 1: from datetime import UTC
-    if "from datetime import UTC" in content:
+    # Fix 1: from datetime import datetime, timezone
+UTC = timezone.utc
+    if "from datetime import datetime, timezone
+UTC = timezone.utc" in content:
         content = content.replace(
-            "from datetime import UTC",
+            "from datetime import datetime, timezone
+UTC = timezone.utc",
             "from datetime import datetime, timezone\nUTC = timezone.utc"
         )
-        fixes_applied.append("datetime.UTC fix")
+        fixes_applied.append("UTC fix")
 
-    # Fix 2: from datetime import datetime, UTC
+    # Fix 2: from datetime import datetime, timezone
     pattern = r"from datetime import datetime,?\s*UTC"
     if re.search(pattern, content):
         content = re.sub(pattern, "from datetime import datetime, timezone", content)

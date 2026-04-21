@@ -12,16 +12,21 @@ def fix_file(filepath: Path) -> bool:
 
     # Pattern 1: from datetime import datetime, timezone, timezone
     # Replace with: from datetime import datetime, timezone\nUTC = timezone.utc
-    pattern1 = r'from datetime import UTC,\s*datetime,\s*timezone'
+    pattern1 = r'from datetime import datetime, timezone
+UTC = timezone.utc,\s*datetime,\s*timezone'
     replacement1 = 'from datetime import datetime, timezone\nUTC = timezone.utc'
     content = re.sub(pattern1, replacement1, content)
 
-    # Pattern 2: from datetime import UTC, timezone
-    pattern2 = r'from datetime import UTC,\s*timezone'
+    # Pattern 2: from datetime import datetime, timezone
+UTC = timezone.utc, timezone
+    pattern2 = r'from datetime import datetime, timezone
+UTC = timezone.utc,\s*timezone'
     content = re.sub(pattern2, replacement1, content)
 
-    # Pattern 3: from datetime import UTC
-    pattern3 = r'from datetime import UTC'
+    # Pattern 3: from datetime import datetime, timezone
+UTC = timezone.utc
+    pattern3 = r'from datetime import datetime, timezone
+UTC = timezone.utc'
     content = re.sub(pattern3, 'from datetime import timezone\nUTC = timezone.utc', content)
 
     # Pattern 4: from datetime import ..., UTC, ...

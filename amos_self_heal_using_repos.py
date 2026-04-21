@@ -191,8 +191,9 @@ class AMOSSelfHealer:
         original = content
         fixes = []
 
-        # Pattern 1: Fix datetime.UTC import
-        pattern1 = r"from datetime import UTC,?\s*datetime|from datetime import datetime,?\s*UTC"
+        # Pattern 1: Fix UTC import
+        pattern1 = r"from datetime import datetime, timezone
+UTC = timezone.utc,?\s*datetime|from datetime import datetime,?\s*UTC"
         if re.search(pattern1, content):
             content = re.sub(pattern1, "from datetime import datetime, timezone", content)
             if "UTC = timezone.utc" not in content:
@@ -201,10 +202,11 @@ class AMOSSelfHealer:
                     r"\1\nUTC = timezone.utc",
                     content
                 )
-            fixes.append("datetime.UTC_fix")
+            fixes.append("UTC_fix")
 
         # Pattern 2: Fix bare UTC import
-        pattern2 = r"^from datetime import UTC$"
+        pattern2 = r"^from datetime import datetime, timezone
+UTC = timezone.utc$"
         if re.search(pattern2, content, re.MULTILINE):
             content = re.sub(
                 pattern2,

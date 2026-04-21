@@ -145,8 +145,57 @@ class AMOS:
             session_id=self.session_id,
         )
 
+    # ===== 6 REPO LINKING SYSTEM =====
+
+    def link_all_repos(self) -> AMOSResult:
+        """Link all 6 AMOS repositories into unified system."""
+        repos = [
+            ("AMOS-Code", "core", "AMOS_REPOS/AMOS-Code"),
+            ("AMOS-Consulting", "api_hub", "AMOS_REPOS/AMOS-Consulting"),
+            ("AMOS-Claws", "operator_frontend", "AMOS_REPOS/AMOS-Claws"),
+            ("AMOS-Invest", "investor_frontend", "AMOS_REPOS/AMOS-Invest"),
+            ("Mailinhconect", "product_frontend", "AMOS_REPOS/Mailinhconect"),
+            ("AMOS-UNIVERSE", "knowledge", "AMOS_REPOS/AMOS-UNIVERSE"),
+        ]
+
+        linked = []
+        failed = []
+
+        for name, role, path in repos:
+            try:
+                from pathlib import Path
+                repo_path = Path(path)
+                if repo_path.exists():
+                    linked.append({"name": name, "role": role, "path": str(repo_path)})
+                else:
+                    failed.append({"name": name, "error": "Path not found"})
+            except Exception as e:
+                failed.append({"name": name, "error": str(e)})
+
+        return AMOSResult(
+            success=len(failed) == 0,
+            data={"linked": linked, "failed": failed, "total": len(repos)},
+            law_compliant=len(failed) == 0,
+            confidence="high" if len(failed) == 0 else "medium",
+            reasoning=[f"Linked {len(linked)} of {len(repos)} repositories"],
+            layer="REPO_LINKER",
+            session_id=self.session_id,
+        )
+
+    def get_repo_status(self) -> AMOSResult:
+        """Get status of all 6 linked repositories."""
+        result = self.link_all_repos()
+        return AMOSResult(
+            success=result.success,
+            data=result.data,
+            law_compliant=result.law_compliant,
+            confidence=result.confidence,
+            reasoning=result.reasoning,
+            layer="REPO_STATUS",
+            session_id=self.session_id,
+        )
+
     def validate(self, action: str) -> AMOSResult:
-        """Validate action against Global Laws L1-L6."""
         if not self._initialized:
             self.initialize()
 

@@ -1,0 +1,169 @@
+{
+  "tool": "AMOS-Code repo_doctor",
+  "timestamp": "2026-04-21T04:12:25.778402+00:00",
+  "files_parsed": 20,
+  "valid": 20,
+  "invalid": 0,
+  "details": [
+    {
+      "file": "amos_activate_self_driving.py",
+      "valid": true,
+      "language": "python",
+      "errors": 0,
+      "imports": 2,
+      "exports": 0
+    },
+    {
+      "file": "amos_knowledge_loader.py",
+      "valid": true,
+      "language": "python",
+      "errors": 0,
+      "imports": 6,
+      "exports": 0
+    },
+    {
+      "file": "amos_organism_runner.py",
+      "valid": true,
+      "language": "python",
+      "errors": 0,
+      "imports": 14,
+      "exports": 0
+    },
+    {
+      "file": "test_amos.py",
+      "valid": true,
+      "language": "python",
+      "errors": 0,
+      "imports": 43,
+      "exports": 0
+    },
+    {
+      "file": "amos_mcp_tools.py",
+      "valid": true,
+      "language": "python",
+      "errors": 0,
+      "imports": 9,
+      "exports": 0
+    },
+    {
+      "file": "amos_auth_system.py",
+      "valid": true,
+      "language": "python",
+      "errors": 0,
+      "imports": 18,
+      "exports": 0
+    },
+    {
+      "file": "equation_auth.py",
+      "valid": true,
+      "language": "python",
+      "errors": 0,
+      "imports": 18,
+      "exports": 0
+    },
+    {
+      "file": "amos_brain_complete_ui.py",
+      "valid": true,
+      "language": "python",
+      "errors": 0,
+      "imports": 10,
+      "exports": 0
+    },
+    {
+      "file": "amos_self_evolution.py",
+      "valid": true,
+      "language": "python",
+      "errors": 0,
+      "imports": 10,
+      "exports": 0
+    },
+    {
+      "file": "brain_fix_engine.py",
+      "valid": true,
+      "language": "python",
+      "errors": 0,
+      "imports": 5,
+      "exports": 0
+    },
+    {
+      "file": "pipeline_engine.py",
+      "valid": true,
+      "language": "python",
+      "errors": 0,
+      "imports": 2,
+      "exports": 0
+    },
+    {
+      "file": "amos_agent_bridge.py",
+      "valid": true,
+      "language": "python",
+      "errors": 0,
+      "imports": 4,
+      "exports": 0
+    },
+    {
+      "file": "AMOS_6_REPO_LINKER.py",
+      "valid": true,
+      "language": "python",
+      "errors": 0,
+      "imports": 8,
+      "exports": 0
+    },
+    {
+      "file": "amos_brain_task_automation.py",
+      "valid": true,
+      "language": "python",
+      "errors": 0,
+      "imports": 9,
+      "exports": 0
+    },
+    {
+      "file": "amos_observer.py",
+      "valid": true,
+      "language": "python",
+      "errors": 0,
+      "imports": 10,
+      "exports": 0
+    },
+    {
+      "file": "brain_minimal.py",
+      "valid": true,
+      "language": "python",
+      "errors": 0,
+      "imports": 3,
+      "exports": 0
+    },
+    {
+      "file": "amos_event_driven.py",
+      "valid": true,
+      "language": "python",
+      "errors": 0,
+      "imports": 11,
+      "exports": 0
+    },
+    {
+      "file": "amos_service_orchestrator.py",
+      "valid": true,
+      "language": "python",
+      "errors": 0,
+      "imports": 11,
+      "exports": 0
+    },
+    {
+      "file": "amos_security_compliance.py",
+      "valid": true,
+      "language": "python",
+      "errors": 0,
+      "imports": 23,
+      "exports": 0
+    },
+    {
+      "file": "test_local_llms.py",
+      "valid": true,
+      "language": "python",
+      "errors": 0,
+      "imports": 4,
+      "exports": 0
+    }
+  ]
+}

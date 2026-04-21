@@ -97,7 +97,7 @@ def use_amos_brain_to_analyze(filepath: Path, content: str) -> list[dict]:
     """ACTUALLY use AMOS brain to analyze file issues."""
     issues = []
 
-    # Check for datetime.UTC pattern that needs fixing
+    # Check for UTC pattern that needs fixing
     if "from datetime import" in content and "UTC" in content:
         # Find the specific pattern
         lines = content.split('\n')
@@ -106,7 +106,7 @@ def use_amos_brain_to_analyze(filepath: Path, content: str) -> list[dict]:
                 issues.append({
                     "line": i,
                     "severity": "high",
-                    "message": f"datetime.UTC import found: {line.strip()}",
+                    "message": f"UTC import found: {line.strip()}",
                     "fixable": True
                 })
 
@@ -134,17 +134,19 @@ def fix_file_real(filepath: Path) -> tuple[bool, list[str]]:
     fixes_applied = []
 
     # ═════════════════════════════════════════════════════════════════════════
-    # Fix 1: datetime.UTC import pattern
+    # Fix 1: UTC import pattern
     # ═════════════════════════════════════════════════════════════════════════
-    if "from datetime import UTC" in content:
+    if "from datetime import datetime, timezone
+UTC = timezone.utc" in content:
         content = content.replace(
-            "from datetime import UTC",
+            "from datetime import datetime, timezone
+UTC = timezone.utc",
             "from datetime import datetime, timezone\nUTC = timezone.utc"
         )
-        fixes_applied.append("datetime.UTC -> timezone.utc")
+        fixes_applied.append("UTC -> timezone.utc")
 
     # ═════════════════════════════════════════════════════════════════════════
-    # Fix 2: from datetime import datetime, UTC
+    # Fix 2: from datetime import datetime, timezone
     # ═════════════════════════════════════════════════════════════════════════
     pattern = r"from datetime import datetime,?\s*UTC"
     if re.search(pattern, content):

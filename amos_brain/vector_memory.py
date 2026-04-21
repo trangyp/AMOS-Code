@@ -438,7 +438,8 @@ class MemoryVectorBridge:
 
 # ============================================================================
 # Singleton Instance
-# ============================================================================_vector_memory_instance: Optional[VectorMemoryService] = None
+# ============================================================================
+_vector_memory_instance: Optional[VectorMemoryService] = None
 
 
 def get_vector_memory() -> VectorMemoryService:

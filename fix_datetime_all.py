@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fix all datetime.UTC compatibility issues for Python 3.9."""
+"""Fix all UTC compatibility issues for Python 3.9."""
 import os
 import re
 
@@ -19,17 +19,20 @@ for root, dirs, files in os.walk('.'):
                 
                 original = content
                 
-                # Fix 1: from datetime import UTC
-                if 'from datetime import UTC' in content:
+                # Fix 1: from datetime import datetime, timezone
+UTC = timezone.utc
+                if 'from datetime import datetime, timezone
+UTC = timezone.utc' in content:
                     content = content.replace(
-                        'from datetime import UTC',
+                        'from datetime import datetime, timezone
+UTC = timezone.utc',
                         'from datetime import datetime, timezone\nUTC = timezone.utc'
                     )
                     fixes += 1
                     print(f"Fixed: {filepath}")
                 
-                # Fix 2: datetime.UTC usage
-                if 'datetime.UTC' in content and 'from datetime import' in content:
+                # Fix 2: UTC usage
+                if 'UTC' in content and 'from datetime import' in content:
                     # Check if timezone is already imported
                     if 'timezone' not in content:
                         content = content.replace(
@@ -38,11 +41,11 @@ for root, dirs, files in os.walk('.'):
                         )
                         content = content.replace('# from datetime import', 'from datetime import', 1)
                     
-                    # Replace datetime.UTC with UTC
-                    content = content.replace('datetime.UTC', 'UTC')
+                    # Replace UTC with UTC
+                    content = content.replace('UTC', 'UTC')
                     if content != original:
                         fixes += 1
-                        print(f"Fixed datetime.UTC: {filepath}")
+                        print(f"Fixed UTC: {filepath}")
                 
                 if content != original:
                     with open(filepath, 'w') as f:

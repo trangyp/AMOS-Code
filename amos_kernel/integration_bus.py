@@ -80,7 +80,8 @@ class BusMessage:
     ) -> BusMessage:
         """Factory method to create a message."""
         msg_id = hashlib.sha256(
-            f"{bus_type.value}:{topic}:{datetime.now(UTC).isoformat()}:{json.dumps(payload, sort_keys=True, default=str)}".encode()
+            f"{bus_type.value}:{topic}:{datetime.now(UTC).isoformat()}:"
+            f"{json.dumps(payload, sort_keys=True, default=str)}".encode()
         ).hexdigest()[:16]
 
         return cls(

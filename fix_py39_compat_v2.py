@@ -39,7 +39,8 @@ def fix_file(filepath):
             changes.append("Added from __future__ import annotations")
 
     # Fix timezone.utc import
-    if "from datetime import UTC" in content or "from datetime import datetime" in content:
+    if "from datetime import datetime, timezone
+UTC = timezone.utc" in content or "from datetime import datetime" in content:
         content = re.sub(
             r"from datetime import (?:UTC, )?datetime(?:, UTC)?",
             "from datetime import datetime, timezone\nUTC = timezone.utc",

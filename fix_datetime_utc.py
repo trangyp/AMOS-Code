@@ -20,16 +20,16 @@ def fix_datetime_utc(filepath):
             content,
         )
 
-        # Replace 'from datetime import UTC' followed by other imports
+        # Replace 'from datetime import datetime, timezone UTC = timezone.utc' followed by other imports
         content = re.sub(
-            r"from datetime import UTC, ([^\n]+)",
+            r"from datetime import datetime, timezone\nUTC = timezone.utc, ([^\n]+)",
             r"from datetime import \1\nfrom datetime import timezone",
             content,
         )
 
-        # Replace standalone 'from datetime import UTC'
+        # Replace standalone 'from datetime import datetime, timezone UTC = timezone.utc'
         content = re.sub(
-            r"from datetime import UTC\s*$",
+            r"from datetime import datetime, timezone\nUTC = timezone.utc\s*$",
             "from datetime import timezone",
             content,
             flags=re.MULTILINE,

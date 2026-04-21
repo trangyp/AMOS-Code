@@ -12,7 +12,8 @@ def fix_file(filepath):
 
     # Pattern 1: from datetime import datetime, timezone
     content = re.sub(
-        r"from datetime import UTC,\s*datetime,\s*timezone",
+        r"from datetime import datetime, timezone
+UTC = timezone.utc,\s*datetime,\s*timezone",
         "from datetime import datetime, timezone",
         content,
     )
@@ -26,7 +27,8 @@ def fix_file(filepath):
 
     # Pattern 3: from datetime import timezone
     content = re.sub(
-        r"from datetime import UTC\s*$",
+        r"from datetime import datetime, timezone
+UTC = timezone.utc\s*$",
         "from datetime import timezone\nUTC = timezone.utc",
         content,
         flags=re.MULTILINE,

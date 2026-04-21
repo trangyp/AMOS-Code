@@ -6,7 +6,10 @@ from pathlib import Path
 from typing import Any, Optional
 from dataclasses import dataclass, field
 
-LEGACY_BRAIN_PATH = Path("/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/_00_AMOS_CANON/_LEGACY BRAIN2/Core")
+LEGACY_BRAIN_PATH = (
+    Path("/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code")
+    / "_00_AMOS_CANON/_LEGACY BRAIN2/Core"
+)
 
 
 @dataclass
