@@ -276,6 +276,151 @@ class ModelRouter:
         return list(self._providers.keys())
 
 
+# ============================================================================
+# LLM Provider Implementations
+# ============================================================================
+
+class LLMProvider:
+    """Base class for LLM providers."""
+
+    async def generate(self, request: ModelRequest) -> ModelResponse:
+        """Generate response from LLM."""
+        raise NotImplementedError
+
+
+class OpenAIProvider(LLMProvider):
+    """OpenAI GPT provider."""
+
+    def __init__(self, api_key: str | None = None, base_url: str | None = None):
+        self.api_key = api_key
+        self.base_url = base_url or "https://api.openai.com/v1"
+        self._client: Any = None
+
+    async def _get_client(self) -> Any:
+        """Get or create OpenAI client."""
+        if self._client is None:
+            try:
+                import openai
+                self._client = openai.AsyncOpenAI(
+                    api_key=self.api_key,
+                    base_url=self.base_url,
+                )
+            except ImportError:
+                raise RuntimeError("OpenAI package not installed")
+        return self._client
+
+    async def generate(self, request: ModelRequest) -> ModelResponse:
+        """Generate using OpenAI API."""
+        try:
+            client = await self._get_client()
+            model = request.model_id or "gpt-4o"
+
+            response = await client.chat.completions.create(
+                model=model,
+                messages=[{"role": "user", "content": request.prompt}],
+                **request.parameters,
+            )
+
+            content = response.choices[0].message.content or ""
+            tokens_used = response.usage.total_tokens if response.usage else 0
+
+            return ModelResponse(
+                request_id=request.model_id,
+                content=content,
+                model_id=model,
+                tokens_used=tokens_used,
+                metadata={"provider": "openai"},
+            )
+        except Exception as e:
+            return ModelResponse(
+                request_id=request.model_id,
+                content=f"Error: {e!s}",
+                model_id=request.model_id or "unknown",
+                tokens_used=0,
+                metadata={"error": str(e), "provider": "openai"},
+            )
+
+
+class LocalProvider(LLMProvider):
+    """Local LLM provider (e.g., Ollama, llama.cpp)."""
+
+    def __init__(self, base_url: str = "http://localhost:11434"):
+        self.base_url = base_url
+
+    async def generate(self, request: ModelRequest) -> ModelResponse:
+        """Generate using local LLM via HTTP API."""
+        import aiohttp
+
+        try:
+            model = request.model_id or "llama3.2"
+
+            async with aiohttp.ClientSession() as session:
+                async with session.post(
+                    f"{self.base_url}/api/generate",
+                    json={
+                        "model": model,
+                        "prompt": request.prompt,
+                        "stream": False,
+                        **request.parameters,
+                    },
+                ) as response:
+                    if response.status == 200:
+                        data = await response.json()
+                        return ModelResponse(
+                            request_id=request.model_id,
+                            content=data.get("response", ""),
+                            model_id=model,
+                            tokens_used=data.get("eval_count", 0),
+                            metadata={"provider": "local"},
+                        )
+                    else:
+                        return ModelResponse(
+                            request_id=request.model_id,
+                            content=f"HTTP {response.status}",
+                            model_id=model,
+                            tokens_used=0,
+                            metadata={"error": f"HTTP {response.status}"},
+                        )
+        except Exception as e:
+            return ModelResponse(
+                request_id=request.model_id,
+                content=f"Error: {e!s}",
+                model_id=request.model_id or "unknown",
+                tokens_used=0,
+                metadata={"error": str(e), "provider": "local"},
+            )
+
+
+class MockProvider(LLMProvider):
+    """Mock provider for testing."""
+
+    async def generate(self, request: ModelRequest) -> ModelResponse:
+        """Return mock response."""
+        return ModelResponse(
+            request_id=request.model_id,
+            content=f"Mock response for: {request.prompt[:50]}...",
+            model_id=request.model_id or "mock",
+            tokens_used=len(request.prompt.split()),
+            metadata={"provider": "mock"},
+        )
+
+
+def create_llm_provider(
+    provider_type: str,
+    api_key: str | None = None,
+    base_url: str | None = None,
+) -> LLMProvider:
+    """Factory function to create LLM providers."""
+    if provider_type == "openai":
+        return OpenAIProvider(api_key=api_key, base_url=base_url)
+    elif provider_type == "local":
+        return LocalProvider(base_url=base_url or "http://localhost:11434")
+    elif provider_type == "mock":
+        return MockProvider()
+    else:
+        raise ValueError(f"Unknown provider type: {provider_type}")
+
+
 class ModelBus(IntegrationBus[ModelRequest]):
     """Bus for LLM/AI model integration."""
 
